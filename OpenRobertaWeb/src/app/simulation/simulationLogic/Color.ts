@@ -1,4 +1,4 @@
-import * as CONSTANTS from "./simulation.constants";
+import * as CONSTANTS from "./constants";
 
 
 // https://stackoverflow.com/questions/13070054/convert-rgb-strings-to-hex-in-javascript

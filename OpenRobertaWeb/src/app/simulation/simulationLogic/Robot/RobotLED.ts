@@ -1,5 +1,5 @@
 import { Vector } from "matter-js"
-import * as C from "../simulation.constants"
+import * as C from "../constants"
 import { Unit } from "../Unit"
 import { Util } from "../Util"
 
