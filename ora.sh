@@ -49,11 +49,9 @@ function _export {
          ;;
   esac
   
-  echo 'script for start of the server/db are copied'
-  cp admin.sh ${exportpath}
-  chmod ugo+rx admin.sh
-
-  echo "NOTE: You are responsible to supply a usable database and set the corresponding -d parameter for server startup. SEE THE README.md"
+  echo 'script for starting the server is copied (.sh and .bat)'
+  cp admin.sh admin-help.txt admin.bat ${exportpath}
+  chmod ugo+rx admin.sh admin.bat
 }
 
 # ---------------------------------------- begin of the script ----------------------------------------------------
@@ -88,7 +86,7 @@ do
                    shift; shift ;;
     -Xmx*)         XMX=$1
                    shift ;;
-    -rdbg|-rdg)    RDBG='-agentlib:jdwp=transport=dt_socket,server=y,address=8000,suspend=y' # -rdg was a typo, kept for compatibility
+    -rdbg)         RDBG='-agentlib:jdwp=transport=dt_socket,server=y,address=0.0.0.0:2000,suspend=y'
                    shift ;;
     -q)            QUIET='yes'
                    shift ;;
@@ -128,8 +126,8 @@ new-docker-setup) base_dir="$1"
                 fi
                 cp -r Docker/openroberta $base_dir
                 cp Docker/_README.md $base_dir
-                echo "New docker setup created in $base_dir. Edit 'decl.sh' and setup databases and servers now."
-                echo "Please read the first paragraph in `Docker/_README.md` !" ;;
+                echo 'New docker setup created in $base_dir. Edit `decl.sh` and setup databases and servers now.'
+                echo 'Please read the first paragraph in `Docker/_README.md` !' ;;
 
 new-server-in-docker-setup)
                 base_dir="$1"

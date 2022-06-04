@@ -9,11 +9,11 @@
 	OF ANY KIND, either express or implied. See the License for the specific 
 	language governing permissions and limitations under the License. -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>de.fhg.iais.openroberta</groupId>
     <artifactId>OpenRobertaParent</artifactId>
-    <version>4.1.2-SNAPSHOT</version>
+    <version>4.2.13-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>RobertaParent</name>
     <description>the parent project of the OpenRoberta application</description>
@@ -46,12 +46,10 @@
         <module>RobotArdu</module>
         <module>RobotNAO</module>
         <module>RobotMbed</module>
-        <module>RobotVorwerk</module>
         <module>RobotWeDo</module>
         <module>RobotEdison</module>
-        <module>RobotRaspberryPi</module>
         <module>OpenRobertaServer</module>
-        <module>TypeScriptSources</module>
+        <module>RobotCyberpi</module>
     </modules>
     <repositories>
         <repository>
@@ -123,12 +121,7 @@
             </dependency>
             <dependency>
                 <groupId>de.fhg.iais.openroberta</groupId>
-                <artifactId>RobotVorwerk</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>de.fhg.iais.openroberta</groupId>
-                <artifactId>RobotWedo</artifactId>
+                <artifactId>RobotWeDo</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -138,21 +131,17 @@
             </dependency>
             <dependency>
                 <groupId>de.fhg.iais.openroberta</groupId>
+                <artifactId>RobotCyberpi</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>de.fhg.iais.openroberta</groupId>
                 <artifactId>OpenRobertaRobot</artifactId>
                 <type>test-jar</type>
                 <scope>test</scope>
                 <version>${project.version}</version>
             </dependency>
-            <dependency>
-                <groupId>de.fhg.iais.openroberta</groupId>
-                <artifactId>TypeScriptSources</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>de.fhg.iais.openroberta</groupId>
-                <artifactId>NNprocessor</artifactId>
-                <version>${project.version}</version>
-            </dependency>
+
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
@@ -161,7 +150,7 @@
             <dependency>
                 <groupId>ch.qos.logback</groupId>
                 <artifactId>logback-classic</artifactId>
-                <version>1.2.3</version>
+                <version>1.2.9</version>
             </dependency>
             <dependency>
                 <groupId>net.sf.jopt-simple</groupId>
@@ -236,7 +225,7 @@
             <dependency>
                 <groupId>commons-io</groupId>
                 <artifactId>commons-io</artifactId>
-                <version>2.6</version>
+                <version>2.7</version>
             </dependency>
             <dependency>
                 <groupId>com.google.guava</groupId>
@@ -256,7 +245,7 @@
             <dependency>
                 <groupId>org.apache.httpcomponents</groupId>
                 <artifactId>httpclient</artifactId>
-                <version>4.5.5</version>
+                <version>4.5.13</version>
             </dependency>
             <dependency>
                 <groupId>javax.mail</groupId>
@@ -271,7 +260,7 @@
             <dependency>
                 <groupId>org.yaml</groupId>
                 <artifactId>snakeyaml</artifactId>
-                <version>1.23</version>
+                <version>1.26</version>
             </dependency>
             <dependency>
                 <groupId>org.antlr</groupId>
@@ -279,9 +268,15 @@
                 <version>4.7.2</version>
             </dependency>
             <dependency>
-                <groupId>xmlunit</groupId>
-                <artifactId>xmlunit</artifactId>
-                <version>1.6</version>
+                <groupId>org.xmlunit</groupId>
+                <artifactId>xmlunit-core</artifactId>
+                <version>2.8.2</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.xmlunit</groupId>
+                <artifactId>xmlunit-assertj3</artifactId>
+                <version>2.8.2</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
@@ -293,7 +288,7 @@
             <dependency>
                 <groupId>org.assertj</groupId>
                 <artifactId>assertj-core</artifactId>
-                <version>3.17.2</version>
+                <version>3.20.2</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
@@ -324,6 +319,11 @@
                 <groupId>com.jcraft</groupId>
                 <artifactId>jsch</artifactId>
                 <version>0.1.54</version>
+            </dependency>
+            <dependency>
+                <groupId>com.googlecode.owasp-java-html-sanitizer</groupId>
+                <artifactId>owasp-java-html-sanitizer</artifactId>
+                <version>20211018.1</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -367,8 +367,13 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>xmlunit</groupId>
-            <artifactId>xmlunit</artifactId>
+            <groupId>org.xmlunit</groupId>
+            <artifactId>xmlunit-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.xmlunit</groupId>
+            <artifactId>xmlunit-assertj3</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>

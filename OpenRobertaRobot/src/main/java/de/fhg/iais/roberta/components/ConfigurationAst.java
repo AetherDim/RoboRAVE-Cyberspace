@@ -1,7 +1,5 @@
 package de.fhg.iais.roberta.components;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -10,16 +8,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import de.fhg.iais.roberta.syntax.SC;
+import de.fhg.iais.roberta.util.syntax.SC;
+import de.fhg.iais.roberta.syntax.configuration.ConfigurationComponent;
 import de.fhg.iais.roberta.util.dbc.Assert;
 import de.fhg.iais.roberta.util.dbc.DbcException;
 
 /**
  * An AST representation of the old/new configurations. Contains an insertion ordered Map of {@link ConfigurationComponent}s. May have subclasses with hardcoded
- * configurations which can reuse the {@link Builder} using the generic {@link Builder#build(Class)}. TODO this subclassing should be removed and the class
- * declared final once the hardcoded vorwerk configuration is removed
+ * configurations which can reuse the {@link Builder} using the generic {@link Builder#build()}.
  */
-public class ConfigurationAst {
+public final class ConfigurationAst {
     // LinkedHashMap to preserve insertion order of elements. Helps to recreate the same XML output as XML input.
     private final LinkedHashMap<String, ConfigurationComponent> configurationComponents;
     private final List<String> componentTypes;
@@ -34,7 +32,7 @@ public class ConfigurationAst {
     private final String password;
     private String robotName;
 
-    protected ConfigurationAst(
+    private ConfigurationAst(
         Iterable<ConfigurationComponent> configurationComponents,
         String robotType,
         String xmlVersion,
@@ -215,7 +213,12 @@ public class ConfigurationAst {
     }
 
     public String getFirstMotorPort(String side) {
-        return getFirstMotor(side).getUserDefinedPortName();
+        ConfigurationComponent firstMotor = getFirstMotor(side);
+        if ( firstMotor == null ) {
+            return null;
+        } else {
+            return firstMotor.getUserDefinedPortName();
+        }
     }
 
     public ConfigurationComponent getFirstMotor(String side) {
@@ -245,7 +248,7 @@ public class ConfigurationAst {
      * This class is a builder of {@link ConfigurationAst}
      */
     public static class Builder {
-        private List<ConfigurationComponent> configurationComponents = new ArrayList<>();
+        private final List<ConfigurationComponent> configurationComponents = new ArrayList<>();
 
         private String robotType = "";
         private String xmlVersion = "";
@@ -341,49 +344,6 @@ public class ConfigurationAst {
                 this.ipAddress,
                 this.userName,
                 this.password);
-        }
-
-        /**
-         * Builds the configuration for a potential hardcoded subclass of {@link ConfigurationAst}. Subclasses of {@link ConfigurationAst} should provide a
-         * private constructor matching the constructor arguments of {@link ConfigurationAst}. TODO should be removed once the hardcoded vorwerk configuration
-         * is removed
-         *
-         * @param configAstClass the class of {@link ConfigurationAst} to be built
-         * @param <C> the built subtype of {@link ConfigurationAst}
-         * @return an instance of the provided child configuration of {@link ConfigurationAst}
-         */
-        public <C extends ConfigurationAst> C build(Class<C> configAstClass) {
-            try {
-                Constructor<C> declaredConstructor =
-                    configAstClass
-                        .getDeclaredConstructor(
-                            Collection.class,
-                            String.class,
-                            String.class,
-                            String.class,
-                            String.class,
-                            Float.TYPE,
-                            Float.TYPE,
-                            String.class,
-                            String.class,
-                            String.class);
-                declaredConstructor.setAccessible(true);
-                return declaredConstructor
-                    .newInstance(
-                        this.configurationComponents,
-                        this.robotType,
-                        this.xmlVersion,
-                        this.description,
-                        this.tags,
-                        this.wheelDiameter,
-                        this.trackWidth,
-                        this.ipAddress,
-                        this.userName,
-                        this.password);
-            } catch ( IllegalAccessException | InvocationTargetException | InstantiationException | NoSuchMethodException | SecurityException
-                | IllegalArgumentException e ) {
-                throw new DbcException("configuration class " + configAstClass.getSimpleName() + " has no constructor usable by the configuration builder", e);
-            }
         }
     }
 }

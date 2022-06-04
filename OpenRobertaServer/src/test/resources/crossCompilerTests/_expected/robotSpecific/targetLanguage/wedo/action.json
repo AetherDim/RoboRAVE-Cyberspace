@@ -1,0 +1,372 @@
+{"ops": [
+  {
+    "opc": "expr",
+    "expr": "NUM_CONST",
+    "value": "0"
+  },
+  {
+    "opc": "VarDeclaration",
+    "name": "numVar",
+    "type": "NUMBER"
+  },
+  {
+    "opc": "expr",
+    "expr": "BOOL_CONST",
+    "value": true
+  },
+  {
+    "opc": "VarDeclaration",
+    "name": "boolVar",
+    "type": "BOOLEAN"
+  },
+  {
+    "opc": "expr",
+    "expr": "STRING_CONST",
+    "value": ""
+  },
+  {
+    "opc": "VarDeclaration",
+    "name": "stringVar",
+    "type": "STRING"
+  },
+  {
+    "opc": "expr",
+    "expr": "COLOR_CONST",
+    "value": 10
+  },
+  {
+    "opc": "VarDeclaration",
+    "name": "colourVar",
+    "type": "COLOR"
+  },
+  {
+    "opc": "comment",
+    "type": "start",
+    "target": "createMethodCall"
+  },
+  {
+    "opc": "expr",
+    "expr": "NUM_CONST",
+    "value": 11
+  },
+  {
+    "opc": "jump",
+    "conditional": "always",
+    "target": 13
+  },
+  {
+    "opc": "comment",
+    "type": "end",
+    "target": "createMethodCall"
+  },
+  {"opc": "stop"},
+  {
+    "opc": "comment",
+    "type": "start",
+    "target": "createMethodVoid"
+  },
+  {
+    "opc": "comment",
+    "type": "start",
+    "target": "createMethodCall"
+  },
+  {
+    "opc": "expr",
+    "expr": "NUM_CONST",
+    "value": 17
+  },
+  {
+    "opc": "jump",
+    "conditional": "always",
+    "target": 32
+  },
+  {
+    "opc": "comment",
+    "type": "end",
+    "target": "createMethodCall"
+  },
+  {
+    "opc": "comment",
+    "type": "start",
+    "target": "createMethodCall"
+  },
+  {
+    "opc": "expr",
+    "expr": "NUM_CONST",
+    "value": 21
+  },
+  {
+    "opc": "jump",
+    "conditional": "always",
+    "target": 42
+  },
+  {
+    "opc": "comment",
+    "type": "end",
+    "target": "createMethodCall"
+  },
+  {
+    "opc": "comment",
+    "type": "start",
+    "target": "createMethodCall"
+  },
+  {
+    "opc": "expr",
+    "expr": "NUM_CONST",
+    "value": 25
+  },
+  {
+    "opc": "jump",
+    "conditional": "always",
+    "target": 54
+  },
+  {
+    "opc": "comment",
+    "type": "end",
+    "target": "createMethodCall"
+  },
+  {
+    "opc": "comment",
+    "type": "start",
+    "target": "createMethodCall"
+  },
+  {
+    "opc": "expr",
+    "expr": "NUM_CONST",
+    "value": 29
+  },
+  {
+    "opc": "jump",
+    "conditional": "always",
+    "target": 75
+  },
+  {
+    "opc": "comment",
+    "type": "end",
+    "target": "createMethodCall"
+  },
+  {
+    "opc": "return",
+    "values": false
+  },
+  {
+    "opc": "comment",
+    "type": "end",
+    "target": "createMethodVoid"
+  },
+  {
+    "opc": "comment",
+    "type": "start",
+    "target": "createMethodVoid"
+  },
+  {
+    "opc": "expr",
+    "name": "numVar",
+    "expr": "Var"
+  },
+  {
+    "opc": "expr",
+    "name": "numVar",
+    "expr": "Var"
+  },
+  {
+    "opc": "motorOnAction",
+    "speedOnly": false,
+    "port": "1",
+    "name": "W"
+  },
+  {
+    "opc": "motorStop",
+    "port": "1",
+    "name": "W"
+  },
+  {
+    "opc": "expr",
+    "name": "numVar",
+    "expr": "Var"
+  },
+  {
+    "opc": "motorOnAction",
+    "speedOnly": true,
+    "port": "1",
+    "name": "W"
+  },
+  {
+    "opc": "motorStop",
+    "port": "1",
+    "name": "W"
+  },
+  {
+    "opc": "return",
+    "values": false
+  },
+  {
+    "opc": "comment",
+    "type": "end",
+    "target": "createMethodVoid"
+  },
+  {
+    "opc": "comment",
+    "type": "start",
+    "target": "createMethodVoid"
+  },
+  {
+    "opc": "expr",
+    "name": "boolVar",
+    "expr": "Var"
+  },
+  {"opc": "ShowTextAction"},
+  {
+    "opc": "expr",
+    "name": "colourVar",
+    "expr": "Var"
+  },
+  {"opc": "ShowTextAction"},
+  {
+    "opc": "expr",
+    "name": "numVar",
+    "expr": "Var"
+  },
+  {"opc": "ShowTextAction"},
+  {
+    "opc": "expr",
+    "name": "stringVar",
+    "expr": "Var"
+  },
+  {"opc": "ShowTextAction"},
+  {"opc": "ClearDisplay"},
+  {
+    "opc": "return",
+    "values": false
+  },
+  {
+    "opc": "comment",
+    "type": "end",
+    "target": "createMethodVoid"
+  },
+  {
+    "opc": "comment",
+    "type": "start",
+    "target": "createMethodVoid"
+  },
+  {
+    "opc": "expr",
+    "expr": "NUM_CONST",
+    "value": "261.626"
+  },
+  {
+    "opc": "expr",
+    "expr": "NUM_CONST",
+    "value": "2000"
+  },
+  {
+    "opc": "ToneAction",
+    "name": "W"
+  },
+  {
+    "opc": "expr",
+    "expr": "NUM_CONST",
+    "value": "293.665"
+  },
+  {
+    "opc": "expr",
+    "expr": "NUM_CONST",
+    "value": "1000"
+  },
+  {
+    "opc": "ToneAction",
+    "name": "W"
+  },
+  {
+    "opc": "expr",
+    "expr": "NUM_CONST",
+    "value": "329.628"
+  },
+  {
+    "opc": "expr",
+    "expr": "NUM_CONST",
+    "value": "500"
+  },
+  {
+    "opc": "ToneAction",
+    "name": "W"
+  },
+  {
+    "opc": "expr",
+    "expr": "NUM_CONST",
+    "value": "349.228"
+  },
+  {
+    "opc": "expr",
+    "expr": "NUM_CONST",
+    "value": "250"
+  },
+  {
+    "opc": "ToneAction",
+    "name": "W"
+  },
+  {
+    "opc": "expr",
+    "expr": "NUM_CONST",
+    "value": "391.995"
+  },
+  {
+    "opc": "expr",
+    "expr": "NUM_CONST",
+    "value": "125"
+  },
+  {
+    "opc": "ToneAction",
+    "name": "W"
+  },
+  {
+    "opc": "expr",
+    "name": "numVar",
+    "expr": "Var"
+  },
+  {
+    "opc": "expr",
+    "name": "numVar",
+    "expr": "Var"
+  },
+  {
+    "opc": "ToneAction",
+    "name": "W"
+  },
+  {
+    "opc": "return",
+    "values": false
+  },
+  {
+    "opc": "comment",
+    "type": "end",
+    "target": "createMethodVoid"
+  },
+  {
+    "opc": "comment",
+    "type": "start",
+    "target": "createMethodVoid"
+  },
+  {
+    "opc": "expr",
+    "name": "colourVar",
+    "expr": "Var"
+  },
+  {
+    "opc": "ledOnAction",
+    "name": "W"
+  },
+  {
+    "opc": "statusLightAction",
+    "name": "W"
+  },
+  {
+    "opc": "return",
+    "values": false
+  },
+  {
+    "opc": "comment",
+    "type": "end",
+    "target": "createMethodVoid"
+  }
+]}

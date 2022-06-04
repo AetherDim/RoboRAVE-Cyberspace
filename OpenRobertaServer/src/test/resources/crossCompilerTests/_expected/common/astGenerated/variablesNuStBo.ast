@@ -1,0 +1,20 @@
+StmtTextComment[textComment: Variable Test START]
+
+Var [number] := Binary [ADD, NumConst[value: 0], NumConst[value: 5]]
+
+
+Var [number] := Binary [ADD, NumConst[value: 3], NumConst[value: 0.999999999999]]
+
+
+Var [string] := StringConst[value: abc]
+
+
+Var [string] := StringConst[value: 123]
+
+
+Var [string] := StringConst[value: ³½¹]]
+
+
+Var [boolean2] := Unary [NOT, BoolConst[value: true]]
+
+StmtTextComment[textComment: Variable Test START END]

@@ -14,8 +14,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * the response for the /projectWorkflow/source REST request<br>
- * <br>
+ * the response for the /projectWorkflow/source REST request<br><br>
  * Version: 1<br>
  * Datum: 2020-06-15
  */
@@ -100,11 +99,10 @@ public class ProjectSourceResponse extends BaseResponse {
     }
 
     /**
-     * merge the properties of a JSON-object into this bean. The bean must be "under construction". The keys of the JSON-Object must be valid. The bean remains
-     * "under construction".<br>
+     * merge the properties of a JSON-object into this bean. The bean must be "under construction".
+     * The keys of the JSON-Object must be valid. The bean remains "under construction".<br>
      * Throws a runtime exception if inconsistencies are detected.
      */
-    @Override
     public ProjectSourceResponse merge(JSONObject jsonO) {
         try {
             for ( String key : JSONObject.getNames(jsonO) ) {
@@ -171,7 +169,6 @@ public class ProjectSourceResponse extends BaseResponse {
      * Checks whether all required fields are set. All lists are made immutable.<br>
      * Throws a runtime exception if inconsistencies are detected.
      */
-    @Override
     public ProjectSourceResponse immutable() {
         if ( this.immutable ) {
             return this;
@@ -189,25 +186,25 @@ public class ProjectSourceResponse extends BaseResponse {
         if ( !this.immutable ) {
             _message = "ProjectSourceResponse-object is already immutable: " + toString();
         }
-        if ( this.rc == null ) {
+        if ( rc == null ) {
             _message = "required property rc of ProjectSourceResponse-object is not set: " + toString();
         }
-        if ( this.initToken == null ) {
+        if ( initToken == null ) {
             _message = "required property initToken of ProjectSourceResponse-object is not set: " + toString();
         }
-        if ( !this.serverTimeDefined ) {
+        if ( !serverTimeDefined ) {
             _message = "required property serverTime of ProjectSourceResponse-object is not set: " + toString();
         }
-        if ( this.serverVersion == null ) {
+        if ( serverVersion == null ) {
             _message = "required property serverVersion of ProjectSourceResponse-object is not set: " + toString();
         }
-        if ( this.sourceCode == null ) {
+        if ( sourceCode == null ) {
             _message = "required property sourceCode of ProjectSourceResponse-object is not set: " + toString();
         }
-        if ( this.progXML == null ) {
+        if ( progXML == null ) {
             _message = "required property progXML of ProjectSourceResponse-object is not set: " + toString();
         }
-        if ( this.confAnnos == null ) {
+        if ( confAnnos == null ) {
             _message = "required property confAnnos of ProjectSourceResponse-object is not set: " + toString();
         }
         if ( _message != null ) {
@@ -305,7 +302,6 @@ public class ProjectSourceResponse extends BaseResponse {
      * generates a JSON-object from an immutable bean.<br>
      * Throws a runtime exception if inconsistencies are detected.
      */
-    @Override
     public JSONObject toJson() {
         if ( !this.immutable ) {
             throw new RuntimeException("no JSON from an object under construction: " + toString());
@@ -360,7 +356,7 @@ public class ProjectSourceResponse extends BaseResponse {
             jsonO.put("progXML", this.progXML);
             {
                 JSONObject map = new JSONObject();
-                for ( Entry<String, JSONObject> entry : this.confAnnos.entrySet() ) {
+                for ( Entry<String, JSONObject> entry : confAnnos.entrySet() ) {
                     map.put(entry.getKey(), entry.getValue());
                 }
                 jsonO.put("confAnnos", map);
@@ -373,49 +369,7 @@ public class ProjectSourceResponse extends BaseResponse {
 
     @Override
     public String toString() {
-        return "ProjectSourceResponse [immutable="
-            + this.immutable
-            + ", cmd="
-            + this.cmd
-            + ", rc="
-            + this.rc
-            + ", message="
-            + this.message
-            + ", cause="
-            + this.cause
-            + ", parameters="
-            + this.parameters
-            + ", initToken="
-            + this.initToken
-            + ", serverTime="
-            + this.serverTime
-            + ", serverVersion="
-            + this.serverVersion
-            + ", robotWait="
-            + this.robotWait
-            + ", robotBattery="
-            + this.robotBattery
-            + ", robotName="
-            + this.robotName
-            + ", robotVersion="
-            + this.robotVersion
-            + ", robotFirmwareName="
-            + this.robotFirmwareName
-            + ", robotSensorvalues="
-            + this.robotSensorvalues
-            + ", robotNepoexitvalue="
-            + this.robotNepoexitvalue
-            + ", robotState="
-            + this.robotState
-            + ", notificationsAvailable="
-            + this.notificationsAvailable
-            + ", sourceCode="
-            + this.sourceCode
-            + ", progXML="
-            + this.progXML
-            + ", confAnnos="
-            + this.confAnnos
-            + " ]";
+        return "ProjectSourceResponse [immutable=" + this.immutable + ", cmd=" + this.cmd + ", rc=" + this.rc + ", message=" + this.message + ", cause=" + this.cause + ", parameters=" + this.parameters + ", initToken=" + this.initToken + ", serverTime=" + this.serverTime + ", serverVersion=" + this.serverVersion + ", robotWait=" + this.robotWait + ", robotBattery=" + this.robotBattery + ", robotName=" + this.robotName + ", robotVersion=" + this.robotVersion + ", robotFirmwareName=" + this.robotFirmwareName + ", robotSensorvalues=" + this.robotSensorvalues + ", robotNepoexitvalue=" + this.robotNepoexitvalue + ", robotState=" + this.robotState + ", notificationsAvailable=" + this.notificationsAvailable + ", sourceCode=" + this.sourceCode + ", progXML=" + this.progXML + ", confAnnos=" + this.confAnnos + " ]";
     }
 
     @Override

@@ -7,8 +7,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.ProcessBuilder.Redirect;
-import java.lang.reflect.Constructor;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -25,6 +23,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.StringJoiner;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -36,14 +35,16 @@ import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.Yaml;
 
-import de.fhg.iais.roberta.factory.IRobotFactory;
+import de.fhg.iais.roberta.factory.RobotFactory;
+import de.fhg.iais.roberta.util.basic.Pair;
 import de.fhg.iais.roberta.util.dbc.Assert;
 import de.fhg.iais.roberta.util.dbc.DbcException;
 
 public class Util {
     private static final Logger LOG = LoggerFactory.getLogger(Util.class);
     private static final String PROPERTY_DEFAULT_PATH = "classpath:/openRoberta.properties";
-
+    // see: https://stackoverflow.com/questions/201323/how-can-i-validate-an-email-address-using-a-regular-expression
+    private static final Pattern VALID_EMAIL = Pattern.compile("(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|\"(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21\\x23-\\x5b\\x5d-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])*\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21-\\x5a\\x53-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])+)\\])");
     /**
      * YAML parser. NOT thread-safe!
      */
@@ -106,7 +107,7 @@ public class Util {
      * @param pluginDefines modifications of the plugin's properties as a list of "<pluginName>:<key>=<value>"
      * @return the factory for this plugin
      */
-    public static IRobotFactory configureRobotPlugin(String robotName, String resourceDir, String tempDir, List<String> pluginDefines) {
+    public static RobotFactory configureRobotPlugin(String robotName, String resourceDir, String tempDir, List<String> pluginDefines) {
         Properties basicPluginProperties = Util.loadProperties("classpath:/" + robotName + ".properties");
         if ( basicPluginProperties == null ) {
             throw new DbcException("robot plugin " + robotName + " has no property file " + robotName + ".properties -  Server does NOT start");
@@ -126,24 +127,15 @@ public class Util {
                 }
             }
         }
-        String pluginFactory = basicPluginProperties.getProperty("robot.plugin.factory");
-        if ( pluginFactory == null ) {
-            throw new DbcException("robot plugin " + robotName + " has no factory. Check the properties - Server does NOT start");
-        } else {
-            try {
-                PluginProperties pluginProperties = new PluginProperties(robotName, resourceDir, tempDir, basicPluginProperties);
-                @SuppressWarnings("unchecked")
-                Class<IRobotFactory> factoryClass = (Class<IRobotFactory>) Util.class.getClassLoader().loadClass(pluginFactory);
-                Constructor<IRobotFactory> factoryConstructor = factoryClass.getDeclaredConstructor(PluginProperties.class);
-                IRobotFactory factory = factoryConstructor.newInstance(pluginProperties);
-                return factory;
-            } catch ( Exception e ) {
-                throw new DbcException(
-                    " factory for robot plugin "
-                        + robotName
-                        + " could not be build. Plugin-jar not on the classpath? Invalid properties? Problems with validators? Server does NOT start",
-                    e);
-            }
+        try {
+            PluginProperties pluginProperties = new PluginProperties(robotName, resourceDir, tempDir, basicPluginProperties);
+            return new RobotFactory(pluginProperties);
+        } catch ( Exception e ) {
+            throw new DbcException(
+                " factory for robot plugin "
+                    + robotName
+                    + " could not be build. Plugin-jar not on the classpath? Invalid properties? Problems with validators? Server does NOT start",
+                e);
         }
     }
 
@@ -253,7 +245,7 @@ public class Util {
     private static void loadIncludes(Properties properties, InputStream inputStream) throws IOException {
         BufferedReader reader = null;
         try {
-            reader = new BufferedReader(new InputStreamReader(inputStream, Charset.forName("iso-8859-1")));
+            reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.ISO_8859_1));
             String line = null;
             while ( (line = reader.readLine()) != null ) {
                 if ( line.startsWith("#include ") ) {
@@ -267,6 +259,16 @@ public class Util {
                 reader.close();
             }
         }
+    }
+
+    /**
+     * Check whether a String is a valid Java identifier. It is checked, that no reserved word is used
+     *
+     * @param s String to check
+     * @return <code>true</code> if the given String is a valid Java identifier; <code>false</code> otherwise.
+     */
+    public final static boolean isValidEmailAddress(String s) {
+        return s != null && VALID_EMAIL.matcher(s).matches();
     }
 
     /**
@@ -322,7 +324,7 @@ public class Util {
         final Class<?> clazz = Util.class;
         final String lineSeparator = System.lineSeparator();
         final StringBuilder sb = new StringBuilder();
-        try (BufferedReader in = new BufferedReader(new InputStreamReader(clazz.getResourceAsStream(resourceName), "UTF-8"))) {
+        try (BufferedReader in = new BufferedReader(new InputStreamReader(clazz.getResourceAsStream(resourceName), StandardCharsets.UTF_8))) {
             String line;
             while ( (line = in.readLine()) != null ) {
                 sb.append(line).append(lineSeparator);
@@ -386,7 +388,7 @@ public class Util {
         Assert.nonEmptyString(uri, "URI is null or empty at %s", prefixForDebug);
         InputStream in = getInputStream(false, uri);
         try {
-            Map<?, ?> map = (Map<?, ?>) YAML.load(in);
+            Map<?, ?> map = YAML.load(in);
             JSONObject toAdd = new JSONObject(map);
             Object includeObject = toAdd.remove("include");
             Util.mergeJsonIntoFirst(prefixForDebug, accumulator, toAdd, override);
@@ -420,7 +422,7 @@ public class Util {
         Assert.nonEmptyString(uri, "URI is null or empty");
         InputStream in = getInputStream(false, uri);
         try {
-            Map<?, ?> map = (Map<?, ?>) YAML.load(in);
+            Map<?, ?> map = YAML.load(in);
             return new JSONObject(map);
         } catch ( Exception e ) {
             throw new DbcException("invalid YAML file " + uri, e);
@@ -476,7 +478,7 @@ public class Util {
      * @param crosscompilerSourceForDebuggingOnly for logging if the crosscompiler fails. Allows debugging of erros in the code generators
      * @return true, when the crosscompiler succeeds; false, otherwise
      */
-    public static Pair<Boolean, String> runCrossCompiler(String[] executableWithParameters, String crosscompilerSourceForDebuggingOnly) {
+    public static Pair<Boolean, String> runCrossCompiler(String[] executableWithParameters, String crosscompilerSourceForDebuggingOnly, boolean isNativeEditorCode) {
         int ecode = -1;
         String crosscompilerResponse;
         try {
@@ -491,44 +493,53 @@ public class Util {
             crosscompilerResponse = sj.toString();
             ecode = p.waitFor();
             p.destroy();
+            if ( ecode != 0 ) {
+                Util.logCrosscompilerError(LOG, crosscompilerResponse, crosscompilerSourceForDebuggingOnly, isNativeEditorCode);
+                crosscompilerResponse = ""; // already logged above
+            }
+            return Pair.of(ecode == 0, crosscompilerResponse);
         } catch ( Exception e ) {
             crosscompilerResponse = "exception when calling the cross compiler";
             LOG.error(crosscompilerResponse, e);
-            ecode = -1;
+            return Pair.of(false, crosscompilerResponse);
         }
-        if ( ecode != 0 ) {
-            Util.logCrosscompilerError(LOG, crosscompilerResponse, crosscompilerSourceForDebuggingOnly);
-        }
-        return Pair.of(ecode == 0, crosscompilerResponse);
     }
 
     /**
-     * log that the cross compiler returned with an error - the error message<br>
-     * - the program, that was erroreneous
+     * log that the cross compiler returned with an error, but only if the source is not from the source code editor
      *
      * @param reporterLogger the logger for the class, to which the error was returned
      * @param crosscompilerResponse the response of the crosscompiler
      * @param crosscompilerSourceForDebuggingOnly the program, that produced the error
+     * @param isNativeEditorCode flag to distinguish error source. True: Source code editor, False: NEPO generated
      */
-    public static void logCrosscompilerError(Logger reporterLogger, String crosscompilerResponse, String crosscompilerSourceForDebuggingOnly) {
-        reporterLogger.info("crosscompilation of program failed. Messages logged to logger 'crosscompiler_error'");
-        StringBuilder sb = new StringBuilder();
-        sb.append("\n***** cross compilation failed with response:\n").append(crosscompilerResponse);
-        sb.append("\n***** for program:\n").append(crosscompilerSourceForDebuggingOnly).append("\n*****");
-        LoggerFactory.getLogger("crosscompiler_error").info(sb.toString());
-
+    public static void logCrosscompilerError(
+        Logger reporterLogger,
+        String crosscompilerResponse,
+        String crosscompilerSourceForDebuggingOnly,
+        boolean isNativeEditorCode) //
+    {
+        if ( !isNativeEditorCode ) {
+            reporterLogger.error("crosscompilation of NEPO generated program failed. Messages are logged to logger 'crosscompiler_error'");
+            StringBuilder sb = new StringBuilder();
+            sb.append("\n***** cross compilation failed with response:\n").append(crosscompilerResponse);
+            sb.append("\n***** for program:\n").append(crosscompilerSourceForDebuggingOnly).append("\n*****");
+            LoggerFactory.getLogger("crosscompiler_error").info(sb.toString());
+        }
     }
 
     /**
      * transform the binary to a <b>base64 encoded hexadecimal</b> string
      *
      * @param path path to the file, which contains the binary generated by a crosscompiler
+     * @param optPrefix prefix to be prepended to the binary generated by a crosscompiler
      * @return the encoded binary
      */
-    public static final String getBase64EncodedHex(String path) {
+    public static final String getBase64EncodedHex(String path, String optPrefix) {
         try {
             String compiledHex = FileUtils.readFileToString(new File(path), "UTF-8");
             final Base64.Encoder urec = Base64.getEncoder();
+            compiledHex = optPrefix + compiledHex;
             compiledHex = urec.encodeToString(compiledHex.getBytes());
             return compiledHex;
         } catch ( IOException e ) {
@@ -558,11 +569,11 @@ public class Util {
     /**
      * Compares two version strings.
      *
-     * @note It does not work if "1.10" is supposed to be equal to "1.10.0".
      * @param str1 a string of ordinal numbers separated by decimal points.
      * @param str2 a string of ordinal numbers separated by decimal points.
      * @return The result is a negative integer if str1 is _numerically_ less than str2. The result is a positive integer if str1 is _numerically_ greater than
-     *         str2. The result is zero if the strings are _numerically_ equal.
+     *     str2. The result is zero if the strings are _numerically_ equal.
+     * @note It does not work if "1.10" is supposed to be equal to "1.10.0".
      */
     public static int versionCompare(String str1, String str2) {
         String[] vals1 = str1.split("\\.");

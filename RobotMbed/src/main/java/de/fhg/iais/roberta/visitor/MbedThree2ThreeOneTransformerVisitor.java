@@ -5,10 +5,10 @@ import java.util.Map;
 
 import de.fhg.iais.roberta.bean.NewUsedHardwareBean;
 import de.fhg.iais.roberta.components.ConfigurationAst;
-import de.fhg.iais.roberta.components.ConfigurationComponent;
+import de.fhg.iais.roberta.syntax.configuration.ConfigurationComponent;
 import de.fhg.iais.roberta.factory.BlocklyDropdownFactory;
 import de.fhg.iais.roberta.syntax.Phrase;
-import de.fhg.iais.roberta.syntax.SC;
+import de.fhg.iais.roberta.util.syntax.SC;
 import de.fhg.iais.roberta.syntax.action.light.LightAction;
 import de.fhg.iais.roberta.syntax.action.light.LightStatusAction;
 import de.fhg.iais.roberta.syntax.action.mbed.LedOnAction;
@@ -16,7 +16,7 @@ import de.fhg.iais.roberta.syntax.action.sound.PlayNoteAction;
 import de.fhg.iais.roberta.syntax.action.sound.ToneAction;
 import de.fhg.iais.roberta.syntax.lang.expr.Expr;
 import de.fhg.iais.roberta.syntax.sensor.ExternalSensor;
-import de.fhg.iais.roberta.syntax.sensor.SensorMetaDataBean;
+import de.fhg.iais.roberta.util.syntax.SensorMetaDataBean;
 import de.fhg.iais.roberta.syntax.sensor.generic.AccelerometerSensor;
 import de.fhg.iais.roberta.syntax.sensor.generic.CompassSensor;
 import de.fhg.iais.roberta.syntax.sensor.generic.GetSampleSensor;
@@ -26,7 +26,7 @@ import de.fhg.iais.roberta.syntax.sensor.generic.SoundSensor;
 import de.fhg.iais.roberta.syntax.sensor.generic.TemperatureSensor;
 import de.fhg.iais.roberta.util.dbc.DbcException;
 
-public class MbedThree2ThreeOneTransformerVisitor implements IMbedTransformerVisitor<Void> {
+public class MbedThree2ThreeOneTransformerVisitor extends BaseVisitor<Phrase<Void>> implements IMbedTransformerVisitor<Void> {
 
     private static final Map<String, String> NEW_NAMES = new HashMap<>();
     static {
@@ -78,9 +78,9 @@ public class MbedThree2ThreeOneTransformerVisitor implements IMbedTransformerVis
 
     @Override
     public Phrase<Void> visitLedOnAction(LedOnAction<Phrase<Void>> ledOnAction) {
-        String newName = getNewName(ledOnAction.getPort());
+        String newName = getNewName(ledOnAction.getUserDefinedPort());
 
-        return LedOnAction.make(newName, (Expr<Void>) ledOnAction.getLedColor().modify(this), ledOnAction.getProperty(), ledOnAction.getComment());
+        return LedOnAction.make(ledOnAction.getProperty(), ledOnAction.getComment(), (Expr<Void>) ledOnAction.getLedColor().modify(this), newName, ledOnAction.hide);
     }
 
     @Override
@@ -99,7 +99,7 @@ public class MbedThree2ThreeOneTransformerVisitor implements IMbedTransformerVis
 
     @Override
     public Phrase<Void> visitLightStatusAction(LightStatusAction<Phrase<Void>> lightStatusAction) {
-        String newName = getNewName(lightStatusAction.getPort());
+        String newName = getNewName(lightStatusAction.getUserDefinedPort());
 
         return LightStatusAction.make(newName, lightStatusAction.getStatus(), lightStatusAction.getProperty(), lightStatusAction.getComment());
     }
@@ -109,20 +109,21 @@ public class MbedThree2ThreeOneTransformerVisitor implements IMbedTransformerVis
         String newName = getNewName(playNoteAction.getPort());
 
         return PlayNoteAction
-            .make(newName, playNoteAction.getDuration(), playNoteAction.getFrequency(), playNoteAction.getProperty(), playNoteAction.getComment());
+            .make(newName, playNoteAction.getDuration(), playNoteAction.getFrequency(), playNoteAction.getProperty(), playNoteAction.getComment(),
+                playNoteAction.getHide());
     }
 
     @Override
     public Phrase<Void> visitToneAction(ToneAction<Phrase<Void>> toneAction) {
         String newName = getNewName(toneAction.getPort());
-
         return ToneAction
             .make(
                 (Expr<Void>) toneAction.getFrequency().modify(this),
                 (Expr<Void>) toneAction.getDuration().modify(this),
                 newName,
                 toneAction.getProperty(),
-                toneAction.getComment());
+                toneAction.getComment(),
+                toneAction.getHide());
     }
 
     @Override
@@ -146,7 +147,7 @@ public class MbedThree2ThreeOneTransformerVisitor implements IMbedTransformerVis
     }
 
     @Override
-    public Phrase<Void> visitAccelerometer(AccelerometerSensor<Phrase<Void>> accelerometerSensor) {
+    public Phrase<Void> visitAccelerometerSensor(AccelerometerSensor<Phrase<Void>> accelerometerSensor) {
         return AccelerometerSensor.make(getNewBean(accelerometerSensor), accelerometerSensor.getProperty(), accelerometerSensor.getComment());
     }
 
@@ -168,7 +169,8 @@ public class MbedThree2ThreeOneTransformerVisitor implements IMbedTransformerVis
                 sensorGetSample.getSensorTypeAndMode(),
                 getNewBean(sensor).getPort(),
                 sensorGetSample.getSlot(),
-                sensorGetSample.isPortInMutation(),
+                sensorGetSample.getMutation(),
+                sensorGetSample.getHide(),
                 sensorGetSample.getProperty(),
                 sensorGetSample.getComment(),
                 getBlocklyDropdownFactory());
@@ -189,7 +191,7 @@ public class MbedThree2ThreeOneTransformerVisitor implements IMbedTransformerVis
     }
 
     private SensorMetaDataBean getNewBean(ExternalSensor<?> sensor) {
-        String newName = getNewName(sensor.getPort());
-        return new SensorMetaDataBean(newName, sensor.getMode(), sensor.getSlot(), sensor.isPortInMutation());
+        String newName = getNewName(sensor.getUserDefinedPort());
+        return new SensorMetaDataBean(newName, sensor.getMode(), sensor.getSlot(), sensor.getMutation());
     }
 }

@@ -3,6 +3,9 @@ package de.fhg.iais.roberta.visitor.hardware;
 import de.fhg.iais.roberta.syntax.action.motor.MotorGetPowerAction;
 import de.fhg.iais.roberta.syntax.action.motor.MotorSetPowerAction;
 import de.fhg.iais.roberta.syntax.action.motor.MotorStopAction;
+import de.fhg.iais.roberta.syntax.actors.arduino.LedOffAction;
+import de.fhg.iais.roberta.syntax.actors.arduino.LedOnAction;
+import de.fhg.iais.roberta.syntax.actors.arduino.StepMotorAction;
 import de.fhg.iais.roberta.syntax.sensor.generic.AccelerometerSensor;
 import de.fhg.iais.roberta.syntax.sensor.generic.ColorSensor;
 import de.fhg.iais.roberta.syntax.sensor.generic.CompassSensor;
@@ -30,10 +33,10 @@ import de.fhg.iais.roberta.syntax.sensor.generic.VoltageSensor;
 import de.fhg.iais.roberta.util.dbc.DbcException;
 import de.fhg.iais.roberta.visitor.hardware.actor.ILightVisitor;
 import de.fhg.iais.roberta.visitor.hardware.actor.IMotorVisitor;
-import de.fhg.iais.roberta.visitor.hardware.actor.ISerialVisitor;
 import de.fhg.iais.roberta.visitor.hardware.sensor.ISensorVisitor;
 
-public interface IFestobionicVisitor<V> extends IMotorVisitor<V>, ISerialVisitor<V>, ILightVisitor<V>, ISensorVisitor<V> {
+
+public interface IFestobionicVisitor<V> extends IMotorVisitor<V>, ILightVisitor<V>, ISensorVisitor<V> {
     @Override
     default V visitMotorSetPowerAction(MotorSetPowerAction<V> motorSetPowerAction) {
         throw new DbcException("Not supported!");
@@ -110,7 +113,7 @@ public interface IFestobionicVisitor<V> extends IMotorVisitor<V>, ISerialVisitor
     }
 
     @Override
-    default V visitAccelerometer(AccelerometerSensor<V> accelerometerSensor) {
+    default V visitAccelerometerSensor(AccelerometerSensor<V> accelerometerSensor) {
         throw new DbcException("Not supported!");
     }
 
@@ -167,5 +170,17 @@ public interface IFestobionicVisitor<V> extends IMotorVisitor<V>, ISerialVisitor
     @Override
     default V visitVemlLightSensor(VemlLightSensor<V> vemlLightSensor) {
         throw new DbcException("Not supported!");
+    }
+
+    default V visitLedOffAction(LedOffAction<Void> ledOffAction) {
+    	throw new DbcException("Not supported!");
+    }
+
+    default V visitLedOnAction(LedOnAction<Void> ledOnAction) {
+    	throw new DbcException("Not supported!");
+    }
+	
+    default V visitStepMotorAction(StepMotorAction<Void> stepMotorAction) {
+    	throw new DbcException("Not supported!");
     }
 }

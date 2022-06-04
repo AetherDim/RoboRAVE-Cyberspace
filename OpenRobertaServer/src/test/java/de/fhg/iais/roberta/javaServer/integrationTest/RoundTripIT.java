@@ -31,7 +31,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
 
-import de.fhg.iais.roberta.factory.IRobotFactory;
+import de.fhg.iais.roberta.factory.RobotFactory;
 import de.fhg.iais.roberta.generated.restEntities.FullRestRequest;
 import de.fhg.iais.roberta.javaServer.basics.TestConfiguration;
 import de.fhg.iais.roberta.javaServer.restServices.all.controller.ClientProgramController;
@@ -96,7 +96,7 @@ public class RoundTripIT {
     @Before
     public void setUp() throws Exception {
         // TODO: Does this work? Check and re-engineer
-        ServerProperties serverProperties = new ServerProperties(Util.loadProperties("classpath:/openRoberta.properties"));
+        ServerProperties serverProperties = new ServerProperties(Util.loadProperties("classpath:/openRoberta.propertiesxxx"));
         browserVisibility = Boolean.parseBoolean(serverProperties.getStringProperty("browser.visibility"));
         brickCommunicator = new RobotCommunicator();
         xsltTransformer = new XsltTransformer();
@@ -107,7 +107,7 @@ public class RoundTripIT {
 
         restUser = new ClientUser(brickCommunicator, serverProperties, null);
         restProject = new ClientProgramController(serverProperties);
-        Map<String, IRobotFactory> robotPlugins = new HashMap<>();
+        Map<String, RobotFactory> robotPlugins = new HashMap<>();
         loadPlugin(robotPlugins);
         s1 = HttpSessionState.initOnlyLegalForDebugging("", robotPlugins, serverProperties, 1);
 
@@ -221,7 +221,7 @@ public class RoundTripIT {
 
     private void startServerAndLogin() throws IOException, InterruptedException {
         List<String> addr = Arrays.asList("server.ip=localhost", "server.port=1998");
-        server = new ServerStarter("classpath:/openRoberta.properties", addr).start(EMPTY_STRING_LIST);
+        server = new ServerStarter("classpath:/openRoberta.propertiesxxx", addr).start(EMPTY_STRING_LIST);
         int port = server.getURI().getPort();
         baseUrl = "http://localhost:" + port;
         driver.get(baseUrl + "/");
@@ -305,11 +305,11 @@ public class RoundTripIT {
         return memoryDbSetup.getOneBigIntegerAsLong(sqlStmt);
     }
 
-    private static void loadPlugin(Map<String, IRobotFactory> robotPlugins) {
+    private static void loadPlugin(Map<String, RobotFactory> robotPlugins) {
         try {
             @SuppressWarnings("unchecked")
-            Class<IRobotFactory> factoryClass = (Class<IRobotFactory>) ServerStarter.class.getClassLoader().loadClass("de.fhg.iais.roberta.factory.EV3Factory");
-            Constructor<IRobotFactory> factoryConstructor = factoryClass.getDeclaredConstructor(RobotCommunicator.class);
+            Class<RobotFactory> factoryClass = (Class<RobotFactory>) ServerStarter.class.getClassLoader().loadClass("de.fhg.iais.roberta.factory.EV3Factory");
+            Constructor<RobotFactory> factoryConstructor = factoryClass.getDeclaredConstructor(RobotCommunicator.class);
             robotPlugins.put("ev3", factoryConstructor.newInstance(RoundTripIT.brickCommunicator));
         } catch ( Exception e ) {
             throw new DbcException("robot plugin ev3 has an invalid factory. Check the properties. Server does NOT start", e);

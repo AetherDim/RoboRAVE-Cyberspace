@@ -3,6 +3,7 @@ package de.fhg.iais.roberta.visitor.codegen;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import com.google.common.collect.ClassToInstanceMap;
 
@@ -10,15 +11,13 @@ import de.fhg.iais.roberta.bean.CodeGeneratorSetupBean;
 import de.fhg.iais.roberta.bean.IProjectBean;
 import de.fhg.iais.roberta.bean.UsedHardwareBean;
 import de.fhg.iais.roberta.components.ConfigurationAst;
-import de.fhg.iais.roberta.components.ConfigurationComponent;
+import de.fhg.iais.roberta.syntax.configuration.ConfigurationComponent;
 import de.fhg.iais.roberta.components.UsedActor;
 import de.fhg.iais.roberta.components.UsedSensor;
 import de.fhg.iais.roberta.inter.mode.action.ILanguage;
-import de.fhg.iais.roberta.syntax.BlockType;
-import de.fhg.iais.roberta.syntax.BlockTypeContainer;
-import de.fhg.iais.roberta.syntax.MotorDuration;
+import de.fhg.iais.roberta.util.syntax.MotorDuration;
 import de.fhg.iais.roberta.syntax.Phrase;
-import de.fhg.iais.roberta.syntax.SC;
+import de.fhg.iais.roberta.util.syntax.SC;
 import de.fhg.iais.roberta.syntax.action.communication.BluetoothCheckConnectAction;
 import de.fhg.iais.roberta.syntax.action.communication.BluetoothConnectAction;
 import de.fhg.iais.roberta.syntax.action.communication.BluetoothReceiveAction;
@@ -42,11 +41,12 @@ import de.fhg.iais.roberta.syntax.action.sound.PlayNoteAction;
 import de.fhg.iais.roberta.syntax.action.sound.ToneAction;
 import de.fhg.iais.roberta.syntax.action.sound.VolumeAction;
 import de.fhg.iais.roberta.syntax.action.speech.SayTextAction;
+import de.fhg.iais.roberta.syntax.action.speech.SayTextWithSpeedAndPitchAction;
 import de.fhg.iais.roberta.syntax.action.speech.SetLanguageAction;
 import de.fhg.iais.roberta.syntax.lang.blocksequence.MainTask;
 import de.fhg.iais.roberta.syntax.lang.expr.ColorConst;
 import de.fhg.iais.roberta.syntax.lang.expr.ConnectConst;
-import de.fhg.iais.roberta.syntax.lang.functions.FunctionNames;
+import de.fhg.iais.roberta.util.syntax.FunctionNames;
 import de.fhg.iais.roberta.syntax.lang.functions.MathRandomFloatFunct;
 import de.fhg.iais.roberta.syntax.lang.functions.MathRandomIntFunct;
 import de.fhg.iais.roberta.syntax.lang.stmt.StmtList;
@@ -65,9 +65,10 @@ import de.fhg.iais.roberta.syntax.sensor.generic.TimerSensor;
 import de.fhg.iais.roberta.syntax.sensor.generic.TouchSensor;
 import de.fhg.iais.roberta.syntax.sensor.generic.UltrasonicSensor;
 import de.fhg.iais.roberta.util.dbc.DbcException;
+import de.fhg.iais.roberta.visitor.EV3DevMethods;
+import de.fhg.iais.roberta.visitor.IEv3Visitor;
 import de.fhg.iais.roberta.visitor.IVisitor;
 import de.fhg.iais.roberta.visitor.codegen.utilities.TTSLanguageMapper;
-import de.fhg.iais.roberta.visitor.hardware.IEv3Visitor;
 import de.fhg.iais.roberta.visitor.lang.codegen.prog.AbstractPythonVisitor;
 
 /**
@@ -158,13 +159,24 @@ public final class Ev3PythonVisitor extends AbstractPythonVisitor implements IEv
         } else {
             sayTextAction.getMsg().accept(this);
         }
-        BlockType emptyBlock = BlockTypeContainer.getByName("EMPTY_EXPR");
-        if ( !(sayTextAction.getSpeed().getKind().equals(emptyBlock) && sayTextAction.getPitch().getKind().equals(emptyBlock)) ) {
-            this.sb.append(",");
-            sayTextAction.getSpeed().accept(this);
-            this.sb.append(",");
-            sayTextAction.getPitch().accept(this);
+        this.sb.append(")");
+        return null;
+    }
+
+    @Override
+    public Void visitSayTextWithSpeedAndPitchAction(SayTextWithSpeedAndPitchAction<Void> sayTextAction) {
+        this.sb.append("hal.sayText(");
+        if ( !sayTextAction.getMsg().getKind().hasName("STRING_CONST") ) {
+            this.sb.append("str(");
+            sayTextAction.getMsg().accept(this);
+            this.sb.append(")");
+        } else {
+            sayTextAction.getMsg().accept(this);
         }
+        this.sb.append(",");
+        sayTextAction.getSpeed().accept(this);
+        this.sb.append(",");
+        sayTextAction.getPitch().accept(this);
         this.sb.append(")");
         return null;
     }
@@ -209,17 +221,17 @@ public final class Ev3PythonVisitor extends AbstractPythonVisitor implements IEv
     @Override
     public Void visitShowTextAction(ShowTextAction<Void> showTextAction) {
         this.sb.append("hal.drawText(");
-        if ( !showTextAction.getMsg().getKind().hasName("STRING_CONST") ) {
+        if ( !showTextAction.msg.getKind().hasName("STRING_CONST") ) {
             this.sb.append("str(");
-            showTextAction.getMsg().accept(this);
+            showTextAction.msg.accept(this);
             this.sb.append(")");
         } else {
-            showTextAction.getMsg().accept(this);
+            showTextAction.msg.accept(this);
         }
         this.sb.append(", ");
-        showTextAction.getX().accept(this);
+        showTextAction.x.accept(this);
         this.sb.append(", ");
-        showTextAction.getY().accept(this);
+        showTextAction.y.accept(this);
         this.sb.append(")");
         return null;
     }
@@ -372,8 +384,7 @@ public final class Ev3PythonVisitor extends AbstractPythonVisitor implements IEv
         String rightMotorPort = this.brickConfiguration.getFirstMotorPort(SC.RIGHT);
         if ( isActorOnPort(leftMotorPort) && isActorOnPort(rightMotorPort) ) {
             MotorDuration<Void> duration = curveAction.getParamLeft().getDuration();
-
-            this.sb.append("hal.driveInCurve(");
+            this.sb.append(this.getBean(CodeGeneratorSetupBean.class).getHelperMethodGenerator().getHelperMethodName(EV3DevMethods.DRIVE_IN_CURVE)).append("(");
             this.sb.append(getEnumCode(curveAction.getDirection()) + ", ");
             this.sb.append("'" + leftMotorPort + "', ");
             curveAction.getParamLeft().getSpeed().accept(this);
@@ -392,10 +403,10 @@ public final class Ev3PythonVisitor extends AbstractPythonVisitor implements IEv
     public Void visitKeysSensor(KeysSensor<Void> keysSensor) {
         switch ( keysSensor.getMode() ) {
             case SC.PRESSED:
-                this.sb.append("hal.isKeyPressed('" + keysSensor.getPort().toLowerCase() + "')");
+                this.sb.append("hal.isKeyPressed('" + keysSensor.getUserDefinedPort().toLowerCase() + "')");
                 break;
             case SC.WAIT_FOR_PRESS_AND_RELEASE:
-                this.sb.append("hal.isKeyPressedAndReleased(" + keysSensor.getPort().toLowerCase() + ")");
+                this.sb.append("hal.isKeyPressedAndReleased(" + keysSensor.getUserDefinedPort().toLowerCase() + ")");
                 break;
             default:
                 throw new DbcException("Invalide mode for KeysSensor!");
@@ -405,7 +416,7 @@ public final class Ev3PythonVisitor extends AbstractPythonVisitor implements IEv
 
     @Override
     public Void visitColorSensor(ColorSensor<Void> colorSensor) {
-        String colorSensorPort = colorSensor.getPort();
+        String colorSensorPort = colorSensor.getUserDefinedPort();
         String colorSensorMode = colorSensor.getMode();
         String methodName;
         switch ( colorSensorMode ) {
@@ -430,7 +441,7 @@ public final class Ev3PythonVisitor extends AbstractPythonVisitor implements IEv
 
     @Override
     public Void visitHTColorSensor(HTColorSensor<Void> htColorSensor) {
-        String colorSensorPort = htColorSensor.getPort();
+        String colorSensorPort = htColorSensor.getUserDefinedPort();
         String colorSensorMode = htColorSensor.getMode();
         String methodName;
         switch ( colorSensorMode ) {
@@ -455,7 +466,7 @@ public final class Ev3PythonVisitor extends AbstractPythonVisitor implements IEv
 
     @Override
     public Void visitEncoderSensor(EncoderSensor<Void> encoderSensor) {
-        String encoderSensorPort = encoderSensor.getPort().toString();
+        String encoderSensorPort = encoderSensor.getUserDefinedPort().toString();
         if ( encoderSensor.getMode().equals(SC.RESET) ) {
             this.sb.append("hal.resetMotorTacho('" + encoderSensorPort + "')");
         } else {
@@ -466,7 +477,7 @@ public final class Ev3PythonVisitor extends AbstractPythonVisitor implements IEv
 
     @Override
     public Void visitGyroSensor(GyroSensor<Void> gyroSensor) {
-        String gyroSensorPort = gyroSensor.getPort();
+        String gyroSensorPort = gyroSensor.getUserDefinedPort();
         if ( gyroSensor.getMode().equals(SC.RESET) ) {
             this.sb.append("hal.resetGyroSensor('" + gyroSensorPort + "')");
         } else {
@@ -477,7 +488,7 @@ public final class Ev3PythonVisitor extends AbstractPythonVisitor implements IEv
 
     @Override
     public Void visitCompassSensor(CompassSensor<Void> compassSensor) {
-        String compassSensorPort = compassSensor.getPort();
+        String compassSensorPort = compassSensor.getUserDefinedPort();
         switch ( compassSensor.getMode() ) {
             case SC.CALIBRATE:
                 // Calibration is not supported by ev3dev hitechnic sensor for now
@@ -494,7 +505,7 @@ public final class Ev3PythonVisitor extends AbstractPythonVisitor implements IEv
 
     @Override
     public Void visitInfraredSensor(InfraredSensor<Void> infraredSensor) {
-        String infraredSensorPort = infraredSensor.getPort();
+        String infraredSensorPort = infraredSensor.getUserDefinedPort();
         switch ( infraredSensor.getMode() ) {
             case SC.DISTANCE:
                 this.sb.append("hal.getInfraredSensorDistance('" + infraredSensorPort + "')");
@@ -511,7 +522,7 @@ public final class Ev3PythonVisitor extends AbstractPythonVisitor implements IEv
 
     @Override
     public Void visitIRSeekerSensor(IRSeekerSensor<Void> irSeekerSensor) {
-        String irSeekerSensorPort = irSeekerSensor.getPort();
+        String irSeekerSensorPort = irSeekerSensor.getUserDefinedPort();
         switch ( irSeekerSensor.getMode() ) {
             case SC.MODULATED:
                 this.sb.append("hal.getHiTecIRSeekerSensorValue('" + irSeekerSensorPort + "', 'AC')");
@@ -527,7 +538,7 @@ public final class Ev3PythonVisitor extends AbstractPythonVisitor implements IEv
 
     @Override
     public Void visitTimerSensor(TimerSensor<Void> timerSensor) {
-        String timerNumber = timerSensor.getPort();
+        String timerNumber = timerSensor.getUserDefinedPort();
         switch ( timerSensor.getMode() ) {
             case SC.DEFAULT:
             case SC.VALUE:
@@ -544,13 +555,13 @@ public final class Ev3PythonVisitor extends AbstractPythonVisitor implements IEv
 
     @Override
     public Void visitTouchSensor(TouchSensor<Void> touchSensor) {
-        this.sb.append("hal.isPressed('" + touchSensor.getPort() + "')");
+        this.sb.append("hal.isPressed('" + touchSensor.getUserDefinedPort() + "')");
         return null;
     }
 
     @Override
     public Void visitUltrasonicSensor(UltrasonicSensor<Void> ultrasonicSensor) {
-        String ultrasonicSensorPort = ultrasonicSensor.getPort();
+        String ultrasonicSensorPort = ultrasonicSensor.getUserDefinedPort();
         if ( ultrasonicSensor.getMode().equals(SC.DISTANCE) ) {
             this.sb.append("hal.getUltraSonicSensorDistance('" + ultrasonicSensorPort + "')");
         } else {
@@ -561,7 +572,7 @@ public final class Ev3PythonVisitor extends AbstractPythonVisitor implements IEv
 
     @Override
     public Void visitSoundSensor(SoundSensor<Void> soundSensor) {
-        String soundSensorPort = soundSensor.getPort();
+        String soundSensorPort = soundSensor.getUserDefinedPort();
         this.sb.append("hal.getSoundLevel('" + soundSensorPort + "')");
         return null;
     }
@@ -672,6 +683,8 @@ public final class Ev3PythonVisitor extends AbstractPythonVisitor implements IEv
         nlIndent();
         this.sb.append("import os");
         nlIndent();
+        this.sb.append("import time");
+        nlIndent();
         nlIndent();
         this.sb.append("class BreakOutOfALoop(Exception): pass");
         nlIndent();
@@ -760,7 +773,10 @@ public final class Ev3PythonVisitor extends AbstractPythonVisitor implements IEv
     private boolean isActorUsed(ConfigurationComponent actor, String port) {
         for ( UsedActor usedActor : this.getBean(UsedHardwareBean.class).getUsedActors() ) {
             if ( !usedActor.getType().equals(SC.VOICE) ) { // TODO workaround for the internal voice actor, should be removed once the new configuration is used
-                String usedActorComponentType = this.brickConfiguration.getConfigurationComponent(usedActor.getPort()).getComponentType();
+                String usedActorComponentType = Optional.ofNullable(this.brickConfiguration.optConfigurationComponent(usedActor.getPort()))
+                    .map(ConfigurationComponent::getComponentType)
+                    .orElse(null);
+
                 if ( port.equals(usedActor.getPort()) && actor.getComponentType().equals(usedActorComponentType) ) {
                     return true;
                 }

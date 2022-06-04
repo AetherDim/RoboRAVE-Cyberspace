@@ -30,7 +30,7 @@ import de.fhg.iais.roberta.persistence.util.DbSession;
 import de.fhg.iais.roberta.persistence.util.HttpSessionState;
 import de.fhg.iais.roberta.robotCommunication.RobotCommunicator;
 import de.fhg.iais.roberta.util.Key;
-import de.fhg.iais.roberta.util.Pair;
+import de.fhg.iais.roberta.util.basic.Pair;
 import de.fhg.iais.roberta.util.Statistics;
 import de.fhg.iais.roberta.util.UtilForREST;
 import de.fhg.iais.roberta.util.dbc.DbcException;
@@ -51,7 +51,7 @@ public class ProjectWorkflowRestController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response getSourceCode(@OraData DbSession dbSession, FullRestRequest fullRequest) {
-        HttpSessionState httpSessionState = UtilForREST.handleRequestInit(LOG, fullRequest, true);
+        HttpSessionState httpSessionState = UtilForREST.handleRequestInit(dbSession, LOG, fullRequest, true);
         try {
             ProjectWorkflowRequest wfRequest = ProjectWorkflowRequest.make(fullRequest.getData());
             ProjectSourceResponse response = ProjectSourceResponse.make();
@@ -67,7 +67,7 @@ public class ProjectWorkflowRestController {
             Statistics.info("ProgramSource", "success", project.hasSucceeded());
             return UtilForREST.responseWithFrontendInfo(response, httpSessionState, this.robotCommunicator);
         } catch ( Exception e ) {
-            LOG.info("getSourceCode failed", e);
+            LOG.error("getSourceCode failed", e);
             Statistics.info("ProgramSource", "success", false);
             return UtilForREST.makeBaseResponseForError(Key.SERVER_ERROR, httpSessionState, this.robotCommunicator);
         } finally {
@@ -82,7 +82,7 @@ public class ProjectWorkflowRestController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response getSimulationVMCode(@OraData DbSession dbSession, FullRestRequest fullRequest) {
-        HttpSessionState httpSessionState = UtilForREST.handleRequestInit(LOG, fullRequest, true);
+        HttpSessionState httpSessionState = UtilForREST.handleRequestInit(dbSession, LOG, fullRequest, true);
         try {
             ProjectWorkflowRequest wfRequest = ProjectWorkflowRequest.make(fullRequest.getData());
             ProjectSourceSimulationResponse response = ProjectSourceSimulationResponse.make();
@@ -95,7 +95,7 @@ public class ProjectWorkflowRestController {
             response.setFileExtension(project.getSourceCodeFileExtension());
             response.setProgXML(project.getAnnotatedProgramAsXml());
             response.setConfAnnos(project.getConfAnnotationList());
-            response.setJavaScriptConfiguration(project.getSimSensorConfigurationJSON());
+            response.setConfiguration(project.getConfigurationJSON());
             addProjectResultToResponse(response, project);
             Statistics.info("SimulationRun", "LoggedIn", httpSessionState.isUserLoggedIn(), "success", project.hasSucceeded());
             return UtilForREST.responseWithFrontendInfo(response, httpSessionState, this.robotCommunicator);
@@ -115,7 +115,7 @@ public class ProjectWorkflowRestController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response runProgram(@OraData DbSession dbSession, FullRestRequest fullRequest) {
-        HttpSessionState httpSessionState = UtilForREST.handleRequestInit(LOG, fullRequest, true);
+        HttpSessionState httpSessionState = UtilForREST.handleRequestInit(dbSession, LOG, fullRequest, true);
         try {
             ProjectWorkflowRequest wfRequest = ProjectWorkflowRequest.make(fullRequest.getData());
             ProjectNepoResponse response = ProjectNepoResponse.make();
@@ -124,8 +124,8 @@ public class ProjectWorkflowRestController {
             ProjectService.executeWorkflow("run", project);
             response.setCmd("runPBack");
             response.setConfAnnos(project.getConfAnnotationList());
-            response.setErrorCounter(project.getErrorCounter());
             response.setCompiledCode(project.getCompiledHex());
+            response.setConfiguration(project.getConfigurationJSON());
             // TODO auto connection robots return COMPILERWORKFLOW_SUCCESS or COMPILERWORKFLOW_PROGRAM_GENERATION_SUCCESS
             // TODO which is not mapped to anything in the frontend, ROBOT_PUSH_RUN is mapped to the message that was used before workflows
             if ( project.getResult() == Key.COMPILERWORKFLOW_SUCCESS || project.getResult() == Key.COMPILERWORKFLOW_PROGRAM_GENERATION_SUCCESS ) {
@@ -157,7 +157,7 @@ public class ProjectWorkflowRestController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response compileProgram(@OraData DbSession dbSession, FullRestRequest fullRequest) {
-        HttpSessionState httpSessionState = UtilForREST.handleRequestInit(LOG, fullRequest, true);
+        HttpSessionState httpSessionState = UtilForREST.handleRequestInit(dbSession, LOG, fullRequest, true);
         try {
             ProjectWorkflowRequest wfRequest = ProjectWorkflowRequest.make(fullRequest.getData());
             ProjectNepoResponse response = ProjectNepoResponse.make();
@@ -166,7 +166,6 @@ public class ProjectWorkflowRestController {
             ProjectService.executeWorkflow("compile", project);
             response.setCmd("compileP");
             response.setProgXML(project.getAnnotatedProgramAsXml());
-            response.setErrorCounter(project.getErrorCounter());
             response.setCompiledCode(project.getCompiledHex());
             addProjectResultToResponse(response, project);
             final int programLength = StringUtils.countMatches(project.getAnnotatedProgramAsXml(), "<block ");
@@ -188,14 +187,13 @@ public class ProjectWorkflowRestController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response runNative(@OraData DbSession dbSession, FullRestRequest fullRequest) {
-        HttpSessionState httpSessionState = UtilForREST.handleRequestInit(LOG, fullRequest, true);
+        HttpSessionState httpSessionState = UtilForREST.handleRequestInit(dbSession, LOG, fullRequest, true);
         try {
             ProjectWorkflowRequest wfRequest = ProjectWorkflowRequest.make(fullRequest.getData());
             ProjectNativeResponse response = ProjectNativeResponse.make();
             Project project = request2project(wfRequest, dbSession, httpSessionState, this.robotCommunicator, false, false);
             ProjectService.executeWorkflow("runnative", project);
             response.setCmd("runNative");
-            response.setErrorCounter(project.getErrorCounter());
             response.setCompiledCode(project.getCompiledHex());
             addProjectResultToResponse(response, project);
             Statistics.info("ProgramRunNative", "LoggedIn", httpSessionState.isUserLoggedIn(), "success", project.hasSucceeded());
@@ -216,14 +214,13 @@ public class ProjectWorkflowRestController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response compileNative(@OraData DbSession dbSession, FullRestRequest fullRequest) {
-        HttpSessionState httpSessionState = UtilForREST.handleRequestInit(LOG, fullRequest, true);
+        HttpSessionState httpSessionState = UtilForREST.handleRequestInit(dbSession, LOG, fullRequest, true);
         try {
             ProjectWorkflowRequest wfRequest = ProjectWorkflowRequest.make(fullRequest.getData());
             ProjectNativeResponse response = ProjectNativeResponse.make();
             Project project = request2project(wfRequest, dbSession, httpSessionState, this.robotCommunicator, false, false);
             ProjectService.executeWorkflow("compilenative", project);
             response.setCmd("runNative");
-            response.setErrorCounter(project.getErrorCounter());
             response.setCompiledCode(project.getCompiledHex());
             addProjectResultToResponse(response, project);
             Statistics.info("ProgramCompileNative", "LoggedIn", httpSessionState.isUserLoggedIn(), "success", project.hasSucceeded());
@@ -258,7 +255,6 @@ public class ProjectWorkflowRestController {
             ProjectService.executeWorkflow("reset", project);
             response.setCmd("reset");
             response.setProgramName(project.getProgramName());
-            response.setErrorCounter(project.getErrorCounter());
             response.setCompiledCode(project.getCompiledHex());
             addProjectResultToResponse(response, project);
             Statistics.info("ProgramReset", "LoggedIn", httpSessionState.isUserLoggedIn(), "success", project.hasSucceeded());
@@ -323,7 +319,7 @@ public class ProjectWorkflowRestController {
         return project.build();
     }
 
-    private static Pair<String, String> splitExportXML(String exportXmlAsString) {
+    public static Pair<String, String> splitExportXML(String exportXmlAsString) {
         String[] parts = exportXmlAsString.split("\\s*</program>\\s*<config>\\s*");
         String[] programParts = parts[0].split("<program>");
         String program = programParts[1];

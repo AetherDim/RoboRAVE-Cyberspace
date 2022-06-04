@@ -77,9 +77,11 @@ public class RobotDownloadProgram {
                 case "mbot":
                 case "unowifirev2":
                 case "bob3":
+                case "rob3rta":
                     fileName = programName + ".hex";
                     filePath = this.pathToCrosscompilerBaseDir + token + "/" + programName + "/target";
                     break;
+                case "festobionicflower":
                 case "festobionic":
                     fileName = programName + ".zip";
                     filePath = this.pathToCrosscompilerBaseDir + token + "/" + programName + "/target";

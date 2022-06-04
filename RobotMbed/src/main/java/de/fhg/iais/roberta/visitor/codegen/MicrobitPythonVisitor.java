@@ -8,20 +8,17 @@ import com.google.common.collect.ClassToInstanceMap;
 import de.fhg.iais.roberta.bean.IProjectBean;
 import de.fhg.iais.roberta.bean.UsedHardwareBean;
 import de.fhg.iais.roberta.components.ConfigurationAst;
-import de.fhg.iais.roberta.components.ConfigurationComponent;
+import de.fhg.iais.roberta.syntax.configuration.ConfigurationComponent;
 import de.fhg.iais.roberta.inter.mode.general.IMode;
 import de.fhg.iais.roberta.mode.action.mbed.DisplayTextMode;
 import de.fhg.iais.roberta.syntax.Phrase;
-import de.fhg.iais.roberta.syntax.SC;
+import de.fhg.iais.roberta.util.syntax.SC;
 import de.fhg.iais.roberta.syntax.action.display.ClearDisplayAction;
 import de.fhg.iais.roberta.syntax.action.generic.PinWriteValueAction;
-import de.fhg.iais.roberta.syntax.action.light.LightAction;
-import de.fhg.iais.roberta.syntax.action.light.LightStatusAction;
 import de.fhg.iais.roberta.syntax.action.mbed.DisplayGetPixelAction;
 import de.fhg.iais.roberta.syntax.action.mbed.DisplayImageAction;
 import de.fhg.iais.roberta.syntax.action.mbed.DisplaySetPixelAction;
 import de.fhg.iais.roberta.syntax.action.mbed.DisplayTextAction;
-import de.fhg.iais.roberta.syntax.action.mbed.PinSetPullAction;
 import de.fhg.iais.roberta.syntax.action.mbed.RadioReceiveAction;
 import de.fhg.iais.roberta.syntax.action.mbed.RadioSendAction;
 import de.fhg.iais.roberta.syntax.action.mbed.RadioSetChannelAction;
@@ -29,7 +26,6 @@ import de.fhg.iais.roberta.syntax.action.motor.MotorGetPowerAction;
 import de.fhg.iais.roberta.syntax.action.motor.MotorOnAction;
 import de.fhg.iais.roberta.syntax.action.motor.MotorSetPowerAction;
 import de.fhg.iais.roberta.syntax.action.motor.MotorStopAction;
-import de.fhg.iais.roberta.syntax.action.serial.SerialWriteAction;
 import de.fhg.iais.roberta.syntax.action.sound.PlayNoteAction;
 import de.fhg.iais.roberta.syntax.action.sound.ToneAction;
 import de.fhg.iais.roberta.syntax.expr.mbed.Image;
@@ -53,8 +49,8 @@ import de.fhg.iais.roberta.syntax.sensor.generic.PinTouchSensor;
 import de.fhg.iais.roberta.syntax.sensor.generic.TemperatureSensor;
 import de.fhg.iais.roberta.syntax.sensor.generic.TimerSensor;
 import de.fhg.iais.roberta.util.dbc.DbcException;
+import de.fhg.iais.roberta.visitor.IMbedVisitor;
 import de.fhg.iais.roberta.visitor.IVisitor;
-import de.fhg.iais.roberta.visitor.hardware.IMbedVisitor;
 import de.fhg.iais.roberta.visitor.lang.codegen.prog.AbstractPythonVisitor;
 
 /**
@@ -181,7 +177,7 @@ public final class MicrobitPythonVisitor extends AbstractPythonVisitor implement
 
     @Override
     public Void visitKeysSensor(KeysSensor<Void> keysSensor) {
-        String port = keysSensor.getPort();
+        String port = keysSensor.getUserDefinedPort();
         ConfigurationComponent configurationComponent = this.robotConfiguration.getConfigurationComponent(port);
         String pin1 = configurationComponent.getProperty("PIN1");
         this.sb.append("microbit.button_").append(pin1.toLowerCase(Locale.ENGLISH)).append(".is_pressed()");
@@ -213,7 +209,7 @@ public final class MicrobitPythonVisitor extends AbstractPythonVisitor implement
     }
 
     @Override
-    public Void visitAccelerometer(AccelerometerSensor<Void> accelerometerSensor) {
+    public Void visitAccelerometerSensor(AccelerometerSensor<Void> accelerometerSensor) {
         if ( accelerometerSensor.getSlot().equals(SC.STRENGTH) ) {
             this.sb.append("math.sqrt(microbit.accelerometer.get_x()**2 + microbit.accelerometer.get_y()**2 + microbit.accelerometer.get_z()**2)");
         } else {
@@ -230,7 +226,7 @@ public final class MicrobitPythonVisitor extends AbstractPythonVisitor implement
 
     @Override
     public Void visitPinGetValueSensor(PinGetValueSensor<Void> pinValueSensor) {
-        String port = pinValueSensor.getPort();
+        String port = pinValueSensor.getUserDefinedPort();
         ConfigurationComponent configurationComponent = this.robotConfiguration.getConfigurationComponent(port);
         String pin1 = configurationComponent.getProperty("PIN1");
         String valueType = pinValueSensor.getMode().toLowerCase(Locale.ENGLISH);
@@ -256,6 +252,24 @@ public final class MicrobitPythonVisitor extends AbstractPythonVisitor implement
         if ( !this.usedGlobalVarInFunctions.isEmpty() ) {
             this.sb.append("global ").append(String.join(", ", this.usedGlobalVarInFunctions));
         }
+//        TODO add as soon as microbit runtime is updated
+//        if ( this.robotConfiguration.isComponentTypePresent(SC.DIGITAL_PIN) ) {
+//            for ( ConfigurationComponent usedConfigurationBlock : this.robotConfiguration.getConfigurationComponentsValues() ) {
+//                if ( usedConfigurationBlock.getComponentType().equals(SC.DIGITAL_PIN) ) {
+//                    String pin1 = usedConfigurationBlock.getProperty("PIN1");
+//                    String mode = usedConfigurationBlock.getProperty("PIN_PULL");
+//                    if ( mode.equals("PIN_PULL_UP") ) {
+//                        mode = "PULL_UP";
+//                    } else if ( mode.equals("PIN_PULL_DOWN") ) {
+//                        mode = "PULL_DOWN";
+//                    } else {
+//                        continue;
+//                    }
+//                    nlIndent();
+//                    this.sb.append("microbit.MicroBitDigitalPin.set_pull(microbit.pin" + pin1 + ".").append(mode).append(");");
+//                }
+//            }
+//        }
         return null;
     }
 
@@ -310,7 +324,7 @@ public final class MicrobitPythonVisitor extends AbstractPythonVisitor implement
 
     @Override
     public Void visitPinTouchSensor(PinTouchSensor<Void> pinTouchSensor) {
-        this.sb.append("microbit.pin" + pinTouchSensor.getPort() + ".is_touched()");
+        this.sb.append("microbit.pin" + pinTouchSensor.getUserDefinedPort() + ".is_touched()");
         return null;
     }
 
@@ -360,26 +374,6 @@ public final class MicrobitPythonVisitor extends AbstractPythonVisitor implement
         this.sb.append(".write_").append(valueType);
         pinWriteValueAction.getValue().accept(this);
         this.sb.append(");");
-        return null;
-    }
-
-    @Override
-    public Void visitPinSetPullAction(PinSetPullAction<Void> pinSetPullAction) {
-        // TODO add as soon as microbit runtime is updated
-        //        this.sb.append("microbit.pin" + pinSetPullAction.getPort().getValues()[0] + ".set_pull(");
-        //        switch ( pinSetPullAction.getMode() ) {
-        //            case SC.UP:
-        //                this.sb.append("PULL_UP");
-        //                break;
-        //            case SC.DOWN:
-        //                this.sb.append("PULL_DOWN");
-        //                break;
-        //            case SC.NONE:
-        //            default:
-        //                this.sb.append("NO_PULL");
-        //                break;
-        //        }
-        //        this.sb.append(");");
         return null;
     }
 
@@ -449,14 +443,6 @@ public final class MicrobitPythonVisitor extends AbstractPythonVisitor implement
     }
 
     @Override
-    public Void visitSerialWriteAction(SerialWriteAction<Void> serialWriteAction) {
-        this.sb.append("print(");
-        serialWriteAction.getValue().accept(this);
-        this.sb.append(")");
-        return null;
-    }
-
-    @Override
     public Void visitToneAction(ToneAction<Void> toneAction) {
         this.sb.append("music.pitch(");
         toneAction.getFrequency().accept(this);
@@ -479,16 +465,6 @@ public final class MicrobitPythonVisitor extends AbstractPythonVisitor implement
 
     @Override
     public Void visitConnectConst(ConnectConst<Void> connectConst) {
-        throw new DbcException("Not supported!");
-    }
-
-    @Override
-    public Void visitLightAction(LightAction<Void> lightAction) {
-        throw new DbcException("Not supported!");
-    }
-
-    @Override
-    public Void visitLightStatusAction(LightStatusAction<Void> lightStatusAction) {
         throw new DbcException("Not supported!");
     }
 

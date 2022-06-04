@@ -1,0 +1,376 @@
+{"ops": [
+  {
+    "opc": "expr",
+    "expr": "NUM_CONST",
+    "value": "0"
+  },
+  {
+    "opc": "VarDeclaration",
+    "name": "n1",
+    "type": "NUMBER"
+  },
+  {
+    "opc": "expr",
+    "expr": "BOOL_CONST",
+    "value": false
+  },
+  {
+    "opc": "VarDeclaration",
+    "name": "b",
+    "type": "BOOLEAN"
+  },
+  {
+    "opc": "expr",
+    "expr": "NUM_CONST",
+    "value": "1"
+  },
+  {
+    "opc": "VarDeclaration",
+    "name": "n2",
+    "type": "NUMBER"
+  },
+  {
+    "opc": "expr",
+    "expr": "NUM_CONST",
+    "value": "4"
+  },
+  {
+    "opc": "VarDeclaration",
+    "name": "n3",
+    "type": "NUMBER"
+  },
+  {
+    "opc": "comment",
+    "value": "Basic Functions START"
+  },
+  {
+    "opc": "comment",
+    "type": "start",
+    "target": "createMethodCall"
+  },
+  {
+    "opc": "expr",
+    "expr": "NUM_CONST",
+    "value": 12
+  },
+  {
+    "opc": "jump",
+    "conditional": "always",
+    "target": 35
+  },
+  {
+    "opc": "comment",
+    "type": "end",
+    "target": "createMethodCall"
+  },
+  {
+    "opc": "comment",
+    "type": "start",
+    "target": "createMethodCall"
+  },
+  {
+    "opc": "expr",
+    "expr": "NUM_CONST",
+    "value": 16
+  },
+  {
+    "opc": "jump",
+    "conditional": "always",
+    "target": 42
+  },
+  {
+    "opc": "comment",
+    "type": "end",
+    "target": "createMethodCall"
+  },
+  {
+    "opc": "comment",
+    "type": "start",
+    "target": "createMethodCall"
+  },
+  {
+    "opc": "expr",
+    "expr": "NUM_CONST",
+    "value": 20
+  },
+  {
+    "opc": "jump",
+    "conditional": "always",
+    "target": 63
+  },
+  {
+    "opc": "comment",
+    "type": "end",
+    "target": "createMethodCall"
+  },
+  {
+    "opc": "AssignStmt",
+    "name": "n1"
+  },
+  {
+    "opc": "comment",
+    "type": "start",
+    "target": "createMethodCall"
+  },
+  {
+    "opc": "expr",
+    "expr": "NUM_CONST",
+    "value": 25
+  },
+  {
+    "opc": "jump",
+    "conditional": "always",
+    "target": 57
+  },
+  {
+    "opc": "comment",
+    "type": "end",
+    "target": "createMethodCall"
+  },
+  {
+    "opc": "AssignStmt",
+    "name": "b"
+  },
+  {
+    "opc": "comment",
+    "type": "start",
+    "target": "createMethodCall"
+  },
+  {
+    "opc": "expr",
+    "expr": "NUM_CONST",
+    "value": 31
+  },
+  {
+    "opc": "expr",
+    "expr": "NUM_CONST",
+    "value": "10"
+  },
+  {
+    "opc": "jump",
+    "conditional": "always",
+    "target": 69
+  },
+  {
+    "opc": "comment",
+    "type": "end",
+    "target": "createMethodCall"
+  },
+  {
+    "opc": "AssignStmt",
+    "name": "n1"
+  },
+  {
+    "opc": "comment",
+    "value": "Basic Functions END"
+  },
+  {"opc": "stop"},
+  {
+    "opc": "comment",
+    "type": "start",
+    "target": "createMethodVoid"
+  },
+  {
+    "opc": "expr",
+    "name": "n2",
+    "expr": "Var"
+  },
+  {
+    "opc": "expr",
+    "name": "n3",
+    "expr": "Var"
+  },
+  {
+    "op": "ADD",
+    "opc": "expr",
+    "expr": "Binary"
+  },
+  {
+    "opc": "AssignStmt",
+    "name": "n1"
+  },
+  {
+    "opc": "return",
+    "values": false
+  },
+  {
+    "opc": "comment",
+    "type": "end",
+    "target": "createMethodVoid"
+  },
+  {
+    "opc": "comment",
+    "type": "start",
+    "target": "createMethodVoid"
+  },
+  {
+    "opc": "comment",
+    "type": "start",
+    "target": "createMethodIfReturn"
+  },
+  {
+    "opc": "expr",
+    "expr": "NUM_CONST",
+    "value": "5"
+  },
+  {
+    "opc": "expr",
+    "name": "n1",
+    "expr": "Var"
+  },
+  {
+    "op": "EQ",
+    "opc": "expr",
+    "expr": "Binary"
+  },
+  {
+    "opc": "jump",
+    "conditional": false,
+    "target": 50
+  },
+  {
+    "opc": "expr",
+    "expr": "null"
+  },
+  {
+    "opc": "jump",
+    "conditional": "always",
+    "target": 55
+  },
+  {
+    "opc": "comment",
+    "type": "end",
+    "target": "createMethodIfReturn"
+  },
+  {
+    "opc": "expr",
+    "name": "n1",
+    "expr": "Var"
+  },
+  {
+    "opc": "expr",
+    "expr": "NUM_CONST",
+    "value": "1000"
+  },
+  {
+    "op": "ADD",
+    "opc": "expr",
+    "expr": "Binary"
+  },
+  {
+    "opc": "AssignStmt",
+    "name": "n1"
+  },
+  {
+    "opc": "return",
+    "values": false
+  },
+  {
+    "opc": "comment",
+    "type": "end",
+    "target": "createMethodVoid"
+  },
+  {
+    "opc": "comment",
+    "type": "start",
+    "target": "createMethodReturn"
+  },
+  {
+    "opc": "expr",
+    "name": "n1",
+    "expr": "Var"
+  },
+  {
+    "opc": "AssignStmt",
+    "name": "n1"
+  },
+  {
+    "opc": "expr",
+    "name": "b",
+    "expr": "Var"
+  },
+  {
+    "opc": "return",
+    "values": true
+  },
+  {
+    "opc": "comment",
+    "type": "end",
+    "target": "createMethodReturn"
+  },
+  {
+    "opc": "comment",
+    "type": "start",
+    "target": "createMethodReturn"
+  },
+  {
+    "opc": "expr",
+    "name": "n1",
+    "expr": "Var"
+  },
+  {
+    "opc": "AssignStmt",
+    "name": "n1"
+  },
+  {
+    "opc": "expr",
+    "name": "n1",
+    "expr": "Var"
+  },
+  {
+    "opc": "return",
+    "values": true
+  },
+  {
+    "opc": "comment",
+    "type": "end",
+    "target": "createMethodReturn"
+  },
+  {
+    "opc": "comment",
+    "type": "start",
+    "target": "createMethodReturn"
+  },
+  {
+    "opc": "VarDeclaration",
+    "name": "x",
+    "type": "NUMBER"
+  },
+  {
+    "opc": "expr",
+    "name": "x",
+    "expr": "Var"
+  },
+  {
+    "opc": "expr",
+    "expr": "NUM_CONST",
+    "value": "2"
+  },
+  {
+    "op": "DIVIDE",
+    "opc": "expr",
+    "expr": "Binary"
+  },
+  {
+    "opc": "AssignStmt",
+    "name": "x"
+  },
+  {
+    "opc": "expr",
+    "name": "x",
+    "expr": "Var"
+  },
+  {
+    "opc": "unbindVar",
+    "name": "x"
+  },
+  {
+    "opc": "return",
+    "values": true
+  },
+  {
+    "opc": "comment",
+    "type": "end",
+    "target": "createMethodReturn"
+  }
+]}

@@ -1,0 +1,4 @@
+
+(repeat [FOREVER_ARDU, BoolConst[value: true]]
+AktionStmt [PinWriteValueAction [DIGITAL, A, NumConst[value: 1]]]
+)

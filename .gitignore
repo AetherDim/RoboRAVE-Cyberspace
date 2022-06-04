@@ -22,3 +22,4 @@ OpenRobertaServer/db-*
 dbIptoCountry/
 **/notifications.json
 *.tsbuildinfo
+**/data/test/output/*

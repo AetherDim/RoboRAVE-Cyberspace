@@ -9,8 +9,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * the request description for the /setStatusText REST request<br>
- * <br>
+ * the request description for the /setStatusText REST request<br><br>
  * Version: 1<br>
  * Datum: 2020-06-15
  */
@@ -60,11 +59,10 @@ public class SetStatusTextRequest extends BaseRequest {
     }
 
     /**
-     * merge the properties of a JSON-object into this bean. The bean must be "under construction". The keys of the JSON-Object must be valid. The bean remains
-     * "under construction".<br>
+     * merge the properties of a JSON-object into this bean. The bean must be "under construction".
+     * The keys of the JSON-Object must be valid. The bean remains "under construction".<br>
      * Throws a runtime exception if inconsistencies are detected.
      */
-    @Override
     public SetStatusTextRequest merge(JSONObject jsonO) {
         try {
             for ( String key : JSONObject.getNames(jsonO) ) {
@@ -92,7 +90,6 @@ public class SetStatusTextRequest extends BaseRequest {
      * Checks whether all required fields are set. All lists are made immutable.<br>
      * Throws a runtime exception if inconsistencies are detected.
      */
-    @Override
     public SetStatusTextRequest immutable() {
         if ( this.immutable ) {
             return this;
@@ -110,13 +107,13 @@ public class SetStatusTextRequest extends BaseRequest {
         if ( !this.immutable ) {
             _message = "SetStatusTextRequest-object is already immutable: " + toString();
         }
-        if ( this.english == null ) {
+        if ( english == null ) {
             _message = "required property english of SetStatusTextRequest-object is not set: " + toString();
         }
-        if ( this.german == null ) {
+        if ( german == null ) {
             _message = "required property german of SetStatusTextRequest-object is not set: " + toString();
         }
-        if ( !this.timestampDefined ) {
+        if ( !timestampDefined ) {
             _message = "required property timestamp of SetStatusTextRequest-object is not set: " + toString();
         }
         if ( _message != null ) {
@@ -194,7 +191,6 @@ public class SetStatusTextRequest extends BaseRequest {
      * generates a JSON-object from an immutable bean.<br>
      * Throws a runtime exception if inconsistencies are detected.
      */
-    @Override
     public JSONObject toJson() {
         if ( !this.immutable ) {
             throw new RuntimeException("no JSON from an object under construction: " + toString());
@@ -216,17 +212,7 @@ public class SetStatusTextRequest extends BaseRequest {
 
     @Override
     public String toString() {
-        return "SetStatusTextRequest [immutable="
-            + this.immutable
-            + ", cmd="
-            + this.cmd
-            + ", english="
-            + this.english
-            + ", german="
-            + this.german
-            + ", timestamp="
-            + this.timestamp
-            + " ]";
+        return "SetStatusTextRequest [immutable=" + this.immutable + ", cmd=" + this.cmd + ", english=" + this.english + ", german=" + this.german + ", timestamp=" + this.timestamp + " ]";
     }
 
     @Override

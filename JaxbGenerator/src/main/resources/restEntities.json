@@ -259,7 +259,9 @@
         { "name": "configuration", "type": "JSONObject" },
         { "name": "sim", "type": "boolean" },
         { "name": "multipleSim", "type": "boolean" },
-        { "name": "neuralNetwork", "type": "boolean", "required": false },
+        { "name": "nn", "type": "boolean" },
+        { "name": "webotsSim", "type": "boolean"},
+        { "name": "webotsUrl", "type": "String", "required": false},
         { "name": "connection", "type": "String" },
         { "name": "vendor", "type": "String" },
         { "name": "configurationUsed", "type": "boolean" },
@@ -481,7 +483,7 @@
         { "name": "fileExtension", "type": "String" },
         { "name": "progXML", "type": "String" },
         { "name": "confAnnos", "type": "String->JSONObject" },
-        { "name": "javaScriptConfiguration", "type": "JSONObject" }
+        { "name": "configuration", "type": "JSONObject" }
       ]
     },
     {
@@ -491,9 +493,9 @@
       "properties": [
         { "name": "programName", "type": "String", "required": false },
         { "name": "progXML", "type": "String", "required": false },
-        { "name": "errorCounter", "type": "int" },
         { "name": "confAnnos", "type": "String->JSONObject", "required": false },
-        { "name": "compiledCode", "type": "String" }
+        { "name": "compiledCode", "type": "String" },
+        { "name": "configuration", "type": "JSONObject", "required": false }
       ]
     },
     {
@@ -502,7 +504,6 @@
     	"description": "the response for the /projectWorkflow/runNative, ../compileNative and ../reset REST request",
       "properties": [
         { "name": "programName", "type": "String", "required": false },
-        { "name": "errorCounter", "type": "int" },
         { "name": "confAnnos", "type": "String->JSONObject", "required": false },
         { "name": "compiledCode", "type": "String" }
       ]

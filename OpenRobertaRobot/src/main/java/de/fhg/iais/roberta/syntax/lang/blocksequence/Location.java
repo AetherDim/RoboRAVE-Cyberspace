@@ -1,12 +1,10 @@
 package de.fhg.iais.roberta.syntax.lang.blocksequence;
 
 import de.fhg.iais.roberta.blockly.generated.Block;
-import de.fhg.iais.roberta.syntax.BlockTypeContainer;
-import de.fhg.iais.roberta.syntax.BlocklyBlockProperties;
-import de.fhg.iais.roberta.syntax.lang.expr.Assoc;
+import de.fhg.iais.roberta.util.syntax.BlockTypeContainer;
+import de.fhg.iais.roberta.util.syntax.BlocklyBlockProperties;
+import de.fhg.iais.roberta.util.syntax.Assoc;
 import de.fhg.iais.roberta.util.dbc.Assert;
-import de.fhg.iais.roberta.visitor.IVisitor;
-import de.fhg.iais.roberta.visitor.lang.ILanguageVisitor;
 
 /**
  * This class stores the information of the location of the top block in a blockly program.
@@ -17,7 +15,7 @@ public class Location<V> extends Task<V> {
     private final String x;
     private final String y;
 
-    private Location(String x, String y) {
+    public Location(String x, String y) {
         super(BlockTypeContainer.getByName("LOCATION"), BlocklyBlockProperties.make("t", "t", true, false, false, false, false, true, false, false), null);
         Assert.isTrue(!x.equals("") && !y.equals(""));
         this.x = x;
@@ -58,11 +56,6 @@ public class Location<V> extends Task<V> {
     @Override
     public Assoc getAssoc() {
         return null;
-    }
-
-    @Override
-    protected V acceptImpl(IVisitor<V> visitor) {
-        return ((ILanguageVisitor<V>) visitor).visitLocation(this);
     }
 
     @Override

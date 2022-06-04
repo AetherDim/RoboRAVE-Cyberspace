@@ -9,8 +9,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * the request description for the /resendActivation REST request<br>
- * <br>
+ * the request description for the /resendActivation REST request<br><br>
  * Version: 1<br>
  * Datum: 2020-06-15
  */
@@ -57,11 +56,10 @@ public class ResendActivationRequest extends BaseRequest {
     }
 
     /**
-     * merge the properties of a JSON-object into this bean. The bean must be "under construction". The keys of the JSON-Object must be valid. The bean remains
-     * "under construction".<br>
+     * merge the properties of a JSON-object into this bean. The bean must be "under construction".
+     * The keys of the JSON-Object must be valid. The bean remains "under construction".<br>
      * Throws a runtime exception if inconsistencies are detected.
      */
-    @Override
     public ResendActivationRequest merge(JSONObject jsonO) {
         try {
             for ( String key : JSONObject.getNames(jsonO) ) {
@@ -87,7 +85,6 @@ public class ResendActivationRequest extends BaseRequest {
      * Checks whether all required fields are set. All lists are made immutable.<br>
      * Throws a runtime exception if inconsistencies are detected.
      */
-    @Override
     public ResendActivationRequest immutable() {
         if ( this.immutable ) {
             return this;
@@ -105,10 +102,10 @@ public class ResendActivationRequest extends BaseRequest {
         if ( !this.immutable ) {
             _message = "ResendActivationRequest-object is already immutable: " + toString();
         }
-        if ( this.accountName == null ) {
+        if ( accountName == null ) {
             _message = "required property accountName of ResendActivationRequest-object is not set: " + toString();
         }
-        if ( this.language == null ) {
+        if ( language == null ) {
             _message = "required property language of ResendActivationRequest-object is not set: " + toString();
         }
         if ( _message != null ) {
@@ -164,7 +161,6 @@ public class ResendActivationRequest extends BaseRequest {
      * generates a JSON-object from an immutable bean.<br>
      * Throws a runtime exception if inconsistencies are detected.
      */
-    @Override
     public JSONObject toJson() {
         if ( !this.immutable ) {
             throw new RuntimeException("no JSON from an object under construction: " + toString());
@@ -185,15 +181,7 @@ public class ResendActivationRequest extends BaseRequest {
 
     @Override
     public String toString() {
-        return "ResendActivationRequest [immutable="
-            + this.immutable
-            + ", cmd="
-            + this.cmd
-            + ", accountName="
-            + this.accountName
-            + ", language="
-            + this.language
-            + " ]";
+        return "ResendActivationRequest [immutable=" + this.immutable + ", cmd=" + this.cmd + ", accountName=" + this.accountName + ", language=" + this.language + " ]";
     }
 
     @Override

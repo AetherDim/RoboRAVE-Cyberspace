@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -29,7 +30,7 @@ import org.slf4j.LoggerFactory;
 
 import de.fhg.iais.roberta.blockly.generated.Export;
 import de.fhg.iais.roberta.components.Project;
-import de.fhg.iais.roberta.factory.IRobotFactory;
+import de.fhg.iais.roberta.factory.RobotFactory;
 import de.fhg.iais.roberta.generated.restEntities.FullRestRequest;
 import de.fhg.iais.roberta.javaServer.restServices.all.controller.ClientAdmin;
 import de.fhg.iais.roberta.javaServer.restServices.all.controller.ProjectWorkflowRestController;
@@ -42,7 +43,7 @@ import de.fhg.iais.roberta.persistence.util.SessionFactoryWrapper;
 import de.fhg.iais.roberta.robotCommunication.RobotCommunicator;
 import de.fhg.iais.roberta.testutil.JSONUtilForServer;
 import de.fhg.iais.roberta.util.Key;
-import de.fhg.iais.roberta.util.Pair;
+import de.fhg.iais.roberta.util.basic.Pair;
 import de.fhg.iais.roberta.util.RandomUrlPostfix;
 import de.fhg.iais.roberta.util.ServerProperties;
 import de.fhg.iais.roberta.util.Util;
@@ -72,6 +73,9 @@ public class CompilerWorkflowRobotCommonIT {
             "server.log.configfile=/logback-test.xml"
         };
 
+    private static final boolean CROSSCOMPILER_CALL = true;
+    private static final boolean SHOW_SUCCESS = true;
+
     private static final String RESOURCE_BASE = "/crossCompilerTests/common/";
     private static final String ORA_CC_RSC_ENVVAR = ServerProperties.CROSSCOMPILER_RESOURCE_BASE.replace('.', '_');
     private static final String PARTIAL_SUCCESS_DEF = "disabled=\"true\"";
@@ -79,11 +83,9 @@ public class CompilerWorkflowRobotCommonIT {
 
     private static ServerProperties serverProperties;
     private static RobotCommunicator robotCommunicator;
-    private static Map<String, IRobotFactory> pluginMap;
+    private static Map<String, RobotFactory> pluginMap;
     private static HttpSessionState httpSessionState;
 
-    private static boolean crosscompilerCall;
-    private static boolean showSuccess;
     private static JSONObject robotsFromTestSpec;
     private static JSONObject progDeclsFromTestSpec;
 
@@ -106,8 +108,9 @@ public class CompilerWorkflowRobotCommonIT {
         ServerStarter.initLoggingBeforeFirstUse(ARGS);
         LOG.info("XXXXXXXXXX START of COMMON-IT XXXXXXXXXX");
         if ( System.getenv(ORA_CC_RSC_ENVVAR) == null ) {
-            LOG.error("the environment variable \"" + ORA_CC_RSC_ENVVAR + "\" must contain the absolute path to the ora-cc-rsc repository - test fails");
-            Assert.fail();
+            String msg = "the environment variable \"" + ORA_CC_RSC_ENVVAR + "\" must contain the absolute path to the ora-cc-rsc repository - test fails";
+            LOG.error(msg);
+            Assert.fail(msg);
         }
         Properties baseServerProperties = Util.loadProperties(null);
         serverProperties = new ServerProperties(baseServerProperties);
@@ -115,8 +118,6 @@ public class CompilerWorkflowRobotCommonIT {
         pluginMap = ServerStarter.configureRobotPlugins(robotCommunicator, serverProperties, EMPTY_STRING_LIST);
         httpSessionState = HttpSessionState.initOnlyLegalForDebugging("", pluginMap, serverProperties, 1);
         JSONObject testSpecification = Util.loadYAML("classpath:/crossCompilerTests/testSpec.yml");
-        crosscompilerCall = testSpecification.getBoolean("crosscompilercall");
-        showSuccess = testSpecification.getBoolean("showsuccess");
         robotsFromTestSpec = testSpecification.getJSONObject("robots");
         progDeclsFromTestSpec = testSpecification.getJSONObject("progs");
         Set<String> robots = robotsFromTestSpec.keySet();
@@ -135,7 +136,7 @@ public class CompilerWorkflowRobotCommonIT {
     }
 
     @AfterClass
-    public static void printResults() {
+    public static void tearDownClassAndPrintResults() {
         logSummary();
         LOG.info("XXXXXXXXXX results of COMMON-IT crosscompilercall XXXXXXXXXX");
         for ( String result : resultsCrosscompilerCalls ) {
@@ -151,6 +152,9 @@ public class CompilerWorkflowRobotCommonIT {
         }
         logSummary();
         LOG.info("XXXXXXXXXX END of COMMON-IT XXXXXXXXXX");
+        if ( !resultAcc ) {
+            Assert.fail();
+        }
     }
 
     @Before
@@ -184,7 +188,8 @@ public class CompilerWorkflowRobotCommonIT {
                 String templateWithConfig = getTemplateWithConfigReplaced(robotDir, robotName);
                 final String[] programNameArray = progDeclsFromTestSpec.keySet().toArray(new String[0]);
                 Arrays.sort(programNameArray);
-                nextProg: for ( String progName : programNameArray ) {
+                nextProg:
+                for ( String progName : programNameArray ) {
                     JSONObject progDeclFromTestSpec = progDeclsFromTestSpec.getJSONObject(progName);
                     JSONObject exclude = progDeclFromTestSpec.optJSONObject("exclude");
                     if ( exclude != null ) {
@@ -197,13 +202,13 @@ public class CompilerWorkflowRobotCommonIT {
                     }
                     String generatedXml = generateFinalProgram(templateWithConfig, progName, progDeclFromTestSpec);
                     resultAcc = (compileProgramViaRestService(robotName, progName, generatedXml) != Result.FAILURE) && resultAcc;
-                    IRobotFactory factory = pluginMap.get(robotName);
+                    RobotFactory factory = pluginMap.get(robotName);
                     if ( factory.hasSim() ) {
                         resultAcc = (genSimulationCodeViaRestService(robotName, progName, generatedXml) != Result.FAILURE) && resultAcc;
                     }
                 }
                 JSONObject workflowDeclFromTestSpec = progDeclsFromTestSpec.getJSONObject(WORKFLOWTESTPROG_NAME);
-                if ( crosscompilerCall ) {
+                if ( CROSSCOMPILER_CALL ) {
                     String generatedWorkflowXml = generateFinalProgram(templateWithConfig, WORKFLOWTESTPROG_NAME, workflowDeclFromTestSpec);
                     resultAcc = (executeAllWorkflows(robotName, generatedWorkflowXml)) && resultAcc;
                 }
@@ -275,17 +280,16 @@ public class CompilerWorkflowRobotCommonIT {
     @Ignore
     @Test
     public void testSingleWorkflow() throws Exception {
-        String workflowName = "reset";
-        final String robotName = "festobionic";
-        String pathToProgramFile = "robotSpecific/festobionic/sensors.xml"; // relative to OpenRobertaServer/src/test/resources/crossCompilerTests
-        String programFileName = "sensors";
-        String fullResource = "/crossCompilerTests/" + pathToProgramFile + "/" + programFileName + ".xml";
+        String workflowName = "transform";
+        final String robotName = "mbot2";
+        String pathToProgramFile = "robotSpecific/mbot2/action.xml"; // relative to OpenRobertaServer/src/test/resources/crossCompilerTests
+        String fullResource = "/crossCompilerTests/" + pathToProgramFile;
         String xmlText = Util.readResourceContent(fullResource);
-        Pair<Result, String> showSourceResult = executeWorkflowShowSource(programFileName, xmlText, robotName);
+        Pair<Result, String> showSourceResult = executeWorkflowShowSource(xmlText, robotName);
         if ( showSourceResult.getFirst() == Result.FAILURE ) {
             Assert.fail();
         }
-        Result result = executeWorkflow(workflowName, robotName, programFileName, xmlText, showSourceResult.getSecond());
+        Result result = executeWorkflow(workflowName, robotName, xmlText, showSourceResult.getSecond());
         if ( result == Result.FAILURE ) {
             Assert.fail();
         }
@@ -306,7 +310,7 @@ public class CompilerWorkflowRobotCommonIT {
         try {
             String token = RandomUrlPostfix.generate(12, 12, 3, 3, 3);
             httpSessionState.setToken(token);
-            if ( crosscompilerCall ) {
+            if ( CROSSCOMPILER_CALL ) {
                 setRobotTo(robotName);
                 JSONObject cmd = JSONUtilForServer.mkD("{'programName':'prog','language':'de'}");
                 cmd.getJSONObject("data").put("progXML", programAndConfigXml);
@@ -367,17 +371,20 @@ public class CompilerWorkflowRobotCommonIT {
      * @return
      */
     private boolean executeAllWorkflows(String robotName, String programXml) {
-        Pair<Result, String> showSourceResult = executeWorkflowShowSource(WORKFLOWTESTPROG_NAME, programXml, robotName);
+        Pair<Result, String> showSourceResult = executeWorkflowShowSource(programXml, robotName);
         if ( showSourceResult.getFirst() == Result.FAILURE ) {
             LOG.error("Could not generate source code for robot {}", robotName);
             return false;
         }
-
+        List<String> requiredWorkflowsList = Arrays.asList("showsource", "compile", "run", "runnative", "compilenative", "transform", "getsimulationcode");
+        Set<String> requiredWorkflows = new HashSet<>(requiredWorkflowsList);
         Set<String> allWorkflowsOfRobot = pluginMap.get(robotName).getWorkflows();
-        List<String> workflowsWithoutShowSource = allWorkflowsOfRobot.stream().filter(s -> !s.equals("showsource")).collect(Collectors.toList());
+        requiredWorkflows.addAll(allWorkflowsOfRobot);
+        List<String> workflowsWithoutShowSource = requiredWorkflows.stream().filter(s -> !s.equals("showsource")).collect(Collectors.toList());
+
         boolean resultAcc = true;
         for ( String workflow : workflowsWithoutShowSource ) {
-            resultAcc = (executeWorkflow(workflow, robotName, WORKFLOWTESTPROG_NAME, programXml, showSourceResult.getSecond()) != Result.FAILURE) && resultAcc;
+            resultAcc = (executeWorkflow(workflow, robotName, programXml, showSourceResult.getSecond()) != Result.FAILURE) && resultAcc;
         }
         return resultAcc;
     }
@@ -392,13 +399,13 @@ public class CompilerWorkflowRobotCommonIT {
      * @param sourceCode the sourcecode of the program as geneated by the "showsource" workflow
      * @return
      */
-    private Result executeWorkflow(String workflow, String robotName, String programName, String programXml, String sourceCode) {
+    private Result executeWorkflow(String workflow, String robotName, String programXml, String sourceCode) {
         String reason = "?";
         Result result;
         logStart(robotName, "workflow", workflow);
         try {
             String token = RandomUrlPostfix.generate(12, 12, 3, 3, 3);
-            IRobotFactory factory = pluginMap.get(robotName);
+            RobotFactory factory = pluginMap.get(robotName);
             Project.Builder builder;
             if ( workflow.contains("native") ) {
                 builder = UnitTestHelper.setupWithNativeSource(factory, sourceCode);
@@ -434,7 +441,7 @@ public class CompilerWorkflowRobotCommonIT {
      * @param robotName name of the robot, not null
      * @return a pair of (Result enumeration, the generated source)
      */
-    private Pair<Result, String> executeWorkflowShowSource(String programName, String programXml, String robotName) {
+    private Pair<Result, String> executeWorkflowShowSource(String programXml, String robotName) {
         String reason = "?";
         Result result = Result.FAILURE;
         String sourceCode = "";
@@ -487,7 +494,6 @@ public class CompilerWorkflowRobotCommonIT {
             LOG.info("XXXXXXXXXX COMMON-IT succeeded XXXXXXXXXX");
         } else {
             LOG.error("XXXXXXXXXX at least one test of COMMON-IT FAILED XXXXXXXXXX");
-            Assert.fail();
         }
     }
 
@@ -511,11 +517,11 @@ public class CompilerWorkflowRobotCommonIT {
         LOG.info(String.format(format, robotName, progName));
         LOG.info("]]]]]]]]]]");
         if ( result == Result.SUCCESS ) {
-            if ( showSuccess ) {
+            if ( SHOW_SUCCESS ) {
                 resultList.add(String.format("succ; %-15s; %-60s;", robotName, progName));
             }
         } else {
-            resultList.add(String.format("fail; %-15s; %-60s;", robotName, progName));
+            resultList.add(String.format("FAIL; %-15s; %-60s;", robotName, progName));
         }
     }
 
@@ -539,7 +545,7 @@ public class CompilerWorkflowRobotCommonIT {
      * only one source file). All sources are logged.
      *
      * @param tokenDir the directory containing all programs generated for this token
-     * @param dir the program name, that is used as directory name for all artefacts, that belong to the program.
+     * @param programNameUsedAsDirectoryName the program name, that is used as directory name for all artefacts, that belong to the program.
      */
     private static void logProgramFromTokenDir(String tokenDir, String programNameUsedAsDirectoryName) {
         String sourceDir = tokenDir + "/" + programNameUsedAsDirectoryName + "/source";

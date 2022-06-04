@@ -242,7 +242,6 @@ public class UserGroupController {
             }
 
             List<String> groupNames = request.getGroupNames();
-
             userGroupProcessor.deleteGroups(groupNames, loggedInUser, true);
 
             UtilForREST.addResultInfo(response, userGroupProcessor);
@@ -339,21 +338,22 @@ public class UserGroupController {
                 return UtilForREST.makeBaseResponseForError(Key.USER_ERROR_NOT_LOGGED_IN, httpSessionState, this.brickCommunicator);
             }
 
-            String groupName = request.getGroupName();
-            String memberAccount = request.getCurrentGroupMemberAccount();
-            String newMemberAccount = request.getNewGroupMemberAccount();
-
+            String groupName = request.getGroupName().trim();
+            String memberAccount = request.getCurrentGroupMemberAccount().trim();
+            String newMemberAccount = request.getNewGroupMemberAccount().trim();
+            if ( newMemberAccount.equals("") ) {
+                return UtilForREST.makeBaseResponseForError(Key.SERVER_ERROR, httpSessionState, this.brickCommunicator);
+            }
             UserGroup userGroup = userGroupProcessor.getGroup(groupName, loggedInUser, false);
             if ( userGroup == null ) {
                 return UtilForREST.makeBaseResponseForError(userGroupProcessor.getMessage(), httpSessionState, this.brickCommunicator);
             }
-
             if ( memberAccount.equals("") ) {
                 List<String> memberAsList = new ArrayList<String>(1);
                 memberAsList.add(newMemberAccount.trim());
                 userGroupProcessor.addMembersToUserGroup(userGroup, memberAsList);
             } else {
-                User member = userProcessor.getMemberOfUserGroup(userGroup, memberAccount.trim());
+                User member = userProcessor.getUser(userGroup, memberAccount.trim());
 
                 if ( member == null ) {
                     return UtilForREST.makeBaseResponseForError(userProcessor.getMessage(), httpSessionState, this.brickCommunicator);
@@ -448,9 +448,7 @@ public class UserGroupController {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/setUserGroupMemberDefaultPasswords")
     public Response setUserGroupMemberDefaultPasswords(@OraData DbSession dbSession, FullRestRequest fullRequest) throws Exception {
-        LOG.info("command is setUserGroupMemberDefaultPasswords");
-        HttpSessionState httpSessionState = UtilForREST.handleRequestInit(LOG, fullRequest, true);
-
+        HttpSessionState httpSessionState = UtilForREST.handleRequestInit(dbSession, LOG, fullRequest, true);
         try {
             BaseResponse response = BaseResponse.make();
             UserGroupMembersRequest request = UserGroupMembersRequest.make(fullRequest.getData());
@@ -473,7 +471,7 @@ public class UserGroupController {
 
             User tmpUser;
             for ( String memberAccountName : groupMemberAccounts ) {
-                tmpUser = userProcessor.getMemberOfUserGroup(userGroup, memberAccountName);
+                tmpUser = userProcessor.getUser(userGroup, memberAccountName);
                 if ( tmpUser != null ) {
                     //Set the userName as password. If the user does not exists, do not abort the whole request
                     userProcessor.resetPassword(tmpUser.getId(), tmpUser.getAccount());

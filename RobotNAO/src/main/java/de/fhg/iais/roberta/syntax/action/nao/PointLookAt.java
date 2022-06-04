@@ -7,20 +7,18 @@ import de.fhg.iais.roberta.blockly.generated.Field;
 import de.fhg.iais.roberta.blockly.generated.Value;
 import de.fhg.iais.roberta.mode.action.nao.Frame;
 import de.fhg.iais.roberta.mode.action.nao.PointLook;
-import de.fhg.iais.roberta.syntax.BlockTypeContainer;
-import de.fhg.iais.roberta.syntax.BlocklyBlockProperties;
-import de.fhg.iais.roberta.syntax.BlocklyComment;
-import de.fhg.iais.roberta.syntax.BlocklyConstants;
+import de.fhg.iais.roberta.util.syntax.BlockTypeContainer;
+import de.fhg.iais.roberta.util.syntax.BlocklyBlockProperties;
+import de.fhg.iais.roberta.util.syntax.BlocklyComment;
+import de.fhg.iais.roberta.util.syntax.BlocklyConstants;
 import de.fhg.iais.roberta.syntax.Phrase;
 import de.fhg.iais.roberta.syntax.action.Action;
 import de.fhg.iais.roberta.syntax.lang.expr.Expr;
-import de.fhg.iais.roberta.transformer.AbstractJaxb2Ast;
 import de.fhg.iais.roberta.transformer.Ast2Jaxb;
 import de.fhg.iais.roberta.transformer.ExprParam;
 import de.fhg.iais.roberta.transformer.Jaxb2Ast;
+import de.fhg.iais.roberta.transformer.Jaxb2ProgramAst;
 import de.fhg.iais.roberta.typecheck.BlocklyType;
-import de.fhg.iais.roberta.visitor.IVisitor;
-import de.fhg.iais.roberta.visitor.hardware.INaoVisitor;
 
 /**
  * This class represents the <b>naoActions_pointAt</b> block from Blockly into the AST (abstract syntax tree). Object from this class will generate code for
@@ -90,15 +88,15 @@ public final class PointLookAt<V> extends Action<V> {
         return this.pointLook;
     }
 
-    public Expr<V> getpointX() {
+    public Expr<V> getPointX() {
         return this.pointX;
     }
 
-    public Expr<V> getpointY() {
+    public Expr<V> getPointY() {
         return this.pointY;
     }
 
-    public Expr<V> getpointZ() {
+    public Expr<V> getPointZ() {
         return this.pointZ;
     }
 
@@ -111,11 +109,6 @@ public final class PointLookAt<V> extends Action<V> {
         return "PointLookAt [" + this.frame + ", " + this.pointLook + ", " + this.pointX + ", " + this.pointY + ", " + this.pointZ + ", " + this.speed + "]";
     }
 
-    @Override
-    protected V acceptImpl(IVisitor<V> visitor) {
-        return ((INaoVisitor<V>) visitor).visitPointLookAt(this);
-    }
-
     /**
      * Transformation from JAXB object to corresponding AST object.
      *
@@ -123,7 +116,7 @@ public final class PointLookAt<V> extends Action<V> {
      * @param helper class for making the transformation
      * @return corresponding AST object
      */
-    public static <V> Phrase<V> jaxbToAst(Block block, AbstractJaxb2Ast<V> helper) {
+    public static <V> Phrase<V> jaxbToAst(Block block, Jaxb2ProgramAst<V> helper) {
         List<Field> fields = Jaxb2Ast.extractFields(block, (short) 2);
         List<Value> values = Jaxb2Ast.extractValues(block, (short) 4);
 
@@ -138,10 +131,10 @@ public final class PointLookAt<V> extends Action<V> {
             .make(
                 Frame.get(frame),
                 PointLook.get(pointLook),
-                helper.convertPhraseToExpr(pointX),
-                helper.convertPhraseToExpr(pointY),
-                helper.convertPhraseToExpr(pointZ),
-                helper.convertPhraseToExpr(speed),
+                Jaxb2Ast.convertPhraseToExpr(pointX),
+                Jaxb2Ast.convertPhraseToExpr(pointY),
+                Jaxb2Ast.convertPhraseToExpr(pointZ),
+                Jaxb2Ast.convertPhraseToExpr(speed),
                 Jaxb2Ast.extractBlockProperties(block),
                 Jaxb2Ast.extractComment(block));
     }

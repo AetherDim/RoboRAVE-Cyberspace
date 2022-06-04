@@ -1,25 +1,31 @@
 package de.fhg.iais.roberta.syntax.action.motor.differential;
 
-import de.fhg.iais.roberta.blockly.generated.Block;
-import de.fhg.iais.roberta.syntax.BlockTypeContainer;
-import de.fhg.iais.roberta.syntax.BlocklyBlockProperties;
-import de.fhg.iais.roberta.syntax.BlocklyComment;
-import de.fhg.iais.roberta.syntax.Phrase;
+import de.fhg.iais.roberta.blockly.generated.Hide;
+import de.fhg.iais.roberta.util.syntax.BlockType;
+import de.fhg.iais.roberta.util.syntax.BlockTypeContainer;
+import de.fhg.iais.roberta.util.syntax.BlocklyBlockProperties;
+import de.fhg.iais.roberta.util.syntax.BlocklyComment;
+import de.fhg.iais.roberta.util.syntax.BlocklyConstants;
 import de.fhg.iais.roberta.syntax.action.Action;
-import de.fhg.iais.roberta.transformer.AbstractJaxb2Ast;
-import de.fhg.iais.roberta.transformer.Ast2Jaxb;
-import de.fhg.iais.roberta.transformer.Jaxb2Ast;
-import de.fhg.iais.roberta.visitor.IVisitor;
-import de.fhg.iais.roberta.visitor.hardware.actor.IDifferentialMotorVisitor;
+import de.fhg.iais.roberta.transformer.NepoField;
+import de.fhg.iais.roberta.transformer.NepoHide;
+import de.fhg.iais.roberta.transformer.NepoPhrase;
 
 /**
  * This class represents the <b>robActions_motorDiff_stop</b> block from Blockly into the AST (abstract syntax tree). Object from this class will generate code
  * to stop the work of the motors.<br/>
  */
+@NepoPhrase(containerType = "STOP_ACTION")
 public class MotorDriveStopAction<V> extends Action<V> {
+    @NepoField(name = BlocklyConstants.ACTORPORT, value = BlocklyConstants.EMPTY_PORT)
+    public final String port;
+    @NepoHide
+    public final Hide hide;
 
-    private MotorDriveStopAction(BlocklyBlockProperties properties, BlocklyComment comment) {
-        super(BlockTypeContainer.getByName("STOP_ACTION"), properties, comment);
+    public MotorDriveStopAction(BlockType kind, BlocklyBlockProperties properties, BlocklyComment comment, String port, Hide hide) {
+        super(kind, properties, comment);
+        this.port = port;
+        this.hide = hide;
         setReadOnly();
     }
 
@@ -31,34 +37,14 @@ public class MotorDriveStopAction<V> extends Action<V> {
      * @return read only object of class {@link MotorDriveStopAction}
      */
     public static <V> MotorDriveStopAction<V> make(BlocklyBlockProperties properties, BlocklyComment comment) {
-        return new MotorDriveStopAction<V>(properties, comment);
+        return new MotorDriveStopAction<>(BlockTypeContainer.getByName("STOP_ACTION"), properties, comment, BlocklyConstants.EMPTY_PORT, null);
     }
 
-    @Override
-    public String toString() {
-        return "StopAction []";
+    public static <V> MotorDriveStopAction<V> make(BlocklyBlockProperties properties, BlocklyComment comment, String port, Hide hide) {
+        return new MotorDriveStopAction<>(BlockTypeContainer.getByName("STOP_ACTION"), properties, comment, port, hide);
     }
 
-    @Override
-    protected V acceptImpl(IVisitor<V> visitor) {
-        return ((IDifferentialMotorVisitor<V>) visitor).visitMotorDriveStopAction(this);
-    }
-
-    /**
-     * Transformation from JAXB object to corresponding AST object.
-     *
-     * @param block for transformation
-     * @param helper class for making the transformation
-     * @return corresponding AST object
-     */
-    public static <V> Phrase<V> jaxbToAst(Block block, AbstractJaxb2Ast<V> helper) {
-        return MotorDriveStopAction.make(Jaxb2Ast.extractBlockProperties(block), Jaxb2Ast.extractComment(block));
-    }
-
-    @Override
-    public Block astToBlock() {
-        Block jaxbDestination = new Block();
-        Ast2Jaxb.setBasicProperties(this, jaxbDestination);
-        return jaxbDestination;
+    public String getPort() {
+        return this.port;
     }
 }

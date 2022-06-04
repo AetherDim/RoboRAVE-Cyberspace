@@ -9,8 +9,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * the request description for the /deleteUser REST request<br>
- * <br>
+ * the request description for the /deleteUser REST request<br><br>
  * Version: 1<br>
  * Datum: 2020-06-15
  */
@@ -57,11 +56,10 @@ public class DeleteUserRequest extends BaseRequest {
     }
 
     /**
-     * merge the properties of a JSON-object into this bean. The bean must be "under construction". The keys of the JSON-Object must be valid. The bean remains
-     * "under construction".<br>
+     * merge the properties of a JSON-object into this bean. The bean must be "under construction".
+     * The keys of the JSON-Object must be valid. The bean remains "under construction".<br>
      * Throws a runtime exception if inconsistencies are detected.
      */
-    @Override
     public DeleteUserRequest merge(JSONObject jsonO) {
         try {
             for ( String key : JSONObject.getNames(jsonO) ) {
@@ -87,7 +85,6 @@ public class DeleteUserRequest extends BaseRequest {
      * Checks whether all required fields are set. All lists are made immutable.<br>
      * Throws a runtime exception if inconsistencies are detected.
      */
-    @Override
     public DeleteUserRequest immutable() {
         if ( this.immutable ) {
             return this;
@@ -105,10 +102,10 @@ public class DeleteUserRequest extends BaseRequest {
         if ( !this.immutable ) {
             _message = "DeleteUserRequest-object is already immutable: " + toString();
         }
-        if ( this.accountName == null ) {
+        if ( accountName == null ) {
             _message = "required property accountName of DeleteUserRequest-object is not set: " + toString();
         }
-        if ( this.password == null ) {
+        if ( password == null ) {
             _message = "required property password of DeleteUserRequest-object is not set: " + toString();
         }
         if ( _message != null ) {
@@ -164,7 +161,6 @@ public class DeleteUserRequest extends BaseRequest {
      * generates a JSON-object from an immutable bean.<br>
      * Throws a runtime exception if inconsistencies are detected.
      */
-    @Override
     public JSONObject toJson() {
         if ( !this.immutable ) {
             throw new RuntimeException("no JSON from an object under construction: " + toString());
@@ -185,15 +181,7 @@ public class DeleteUserRequest extends BaseRequest {
 
     @Override
     public String toString() {
-        return "DeleteUserRequest [immutable="
-            + this.immutable
-            + ", cmd="
-            + this.cmd
-            + ", accountName="
-            + this.accountName
-            + ", password="
-            + this.password
-            + " ]";
+        return "DeleteUserRequest [immutable=" + this.immutable + ", cmd=" + this.cmd + ", accountName=" + this.accountName + ", password=" + this.password + " ]";
     }
 
     @Override

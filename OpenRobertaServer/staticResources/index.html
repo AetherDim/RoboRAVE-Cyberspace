@@ -16,24 +16,12 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 -->
+
 <head>
 <meta http-equiv="content-type" content="text/html; charset=utf-8" />
 <meta name="description" content="Open Roberta Lab - Online-Programmierumgebung für Roboter mit der grafischen Programmiersprache NEPO®" />
 <meta property="og:image" content="https://www.roborave.de/images/content/RoboRAVE_Cyberspace_Logo.png" />
 <meta name="keywords" content="Open, Roberta, Programmierumgebung, NEPO, Initiative" />
-
-<link rel="stylesheet" type="text/css" href="js/libs/bootstrap/bootstrap-3.3.1-dist/dist/css/bootstrap.min.css"></link>
-<link rel="stylesheet" type="text/css" href="js/libs/bootstrap/bootstrap-3.3.1-dist/dist/css/bootstrap-table.min.css"></link>
-<link rel="stylesheet" type="text/css" href="/css/slick.css"></link>
-<link rel="stylesheet" type="text/css" href="/css/slick-theme.css"></link>
-<link rel="stylesheet" type="text/css" href="/css/languages.min.css"></link>
-<link rel="stylesheet" type="text/css" href="/css/typicons.css"></link>
-<link rel="stylesheet" type="text/css" href="/css/font-awesome.min.css"></link>
-<link rel="stylesheet" type="text/css" href="/css/wysiwyg.css"></link>
-<link rel="stylesheet" type="text/css" href="/css/bootstrap-tagsinput.css"></link>
-<link rel="stylesheet" type="text/css" href="/css/enjoyhint.css"></link>
-<link rel="stylesheet" type="text/css" href="/css/prettify.css"></link>
-<link rel="stylesheet" type="text/css" href="/css/roberta.css"></link>
 
 <!-- internet explorer redirect -->
 <!-- Due to a bug we cannot support IE -->
@@ -48,6 +36,21 @@ limitations under the License.
     }
 </script>
 
+
+<link rel="stylesheet" type="text/css" href="js/libs/bootstrap/bootstrap-3.3.1-dist/dist/css/bootstrap.min.css"></link>
+<link rel="stylesheet" type="text/css" href="js/libs/bootstrap/bootstrap-3.3.1-dist/dist/css/bootstrap-table.min.css"></link>
+<link rel="stylesheet" type="text/css" href="/css/slick.css"></link>
+<link rel="stylesheet" type="text/css" href="/css/slick-theme.css"></link>
+<link rel="stylesheet" type="text/css" href="/css/languages.min.css"></link>
+<link rel="stylesheet" type="text/css" href="/css/typicons.css"></link>
+<link rel="stylesheet" type="text/css" href="/css/font-awesome.min.css"></link>
+<link rel="stylesheet" type="text/css" href="/css/wysiwyg.css"></link>
+<link rel="stylesheet" type="text/css" href="/css/bootstrap-tagsinput.css"></link>
+<link rel="stylesheet" type="text/css" href="/css/enjoyhint.css"></link>
+<link rel="stylesheet" type="text/css" href="/css/prettify.css"></link>
+<link rel="stylesheet" type="text/css" href="/css/roberta.css"></link>
+<link rel="stylesheet" type="text/css" href="/css/neuralnetwork-bundle.css"></link>
+<link rel="stylesheet" type="text/css" href="/css/fonts/materialIcons.css">
 <!-- Make sure css files are loaded before js files -->
 <script src="js/require.js"></script>
 <script src="js/imports.js"></script>
@@ -82,6 +85,7 @@ limitations under the License.
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <title>Open Roberta Lab</title>
 </head>
+
 <body>
     <div class="cover" width="100%" height="100%"></div>
     <div class="pace"></div>
@@ -117,29 +121,32 @@ limitations under the License.
                             class="head-navi-title hidden-sm hidden-md hidden-lg" lkey="Blockly.Msg.MENU_EDIT"></span>
                     </a>
                         <ul class="dropdown-menu">
-                            <li class="menuRunProg"><a href="#"><span id="menuRunProg" class="typcn typcn-media-play" lkey="Blockly.Msg.MENU_START_BRICK">run
-                                    on brick</span><span class="kbd text-muted">Ctrl+R</span></a></li>
-                            <li><a href="#"><span id="menuRunSim" class="typcn typcn-simulation" lkey="Blockly.Msg.MENU_START_SIM">run in simulation</span><span class="kbd text-muted">Ctrl+G</span></a></li>
+                            <li class="menuRunProg"><a href="#"><span id="menuRunProg" class="typcn typcn-media-play"
+                                    lkey="Blockly.Msg.MENU_START_BRICK">run on brick</span><span class="kbd text-muted">Ctrl+R</span></a></li>
+                            <li><a href="#" id="menuRunSim" class="typcn typcn-simulation" lkey="Blockly.Msg.MENU_START_SIM">run in simulation</span></a></li>
                             <li id="robotDefaultFirmware" class="hidden menuRunProg"><a href="#" id="menuDefaultFirmware" class="typcn typcn-arrow-sync"
                                 lkey="Blockly.Msg.MENU_RESET_FIRMWARE">reset to the factory defaults</a></li>
                             <li><a href="#" id="menuNewProg" class="typcn typcn-document-add" lkey="Blockly.Msg.MENU_NEW">neu ...</a></li>
-                            <li class="login"><a href="#"><span id="menuListProg" class="typcn typcn-th-list" lkey="Blockly.Msg.MENU_LIST_PROG">Liste ...</span><span class="kbd text-muted">Ctrl+M</span></a></li>
-                            <li class="login"><a href="#" ><span id="menuRunMulipleSim" class="typcn typcn-open" lkey="Blockly.Msg.MENU_RUN_MULT_SIM">run
-                                    multiple robot simulation</span><span class="kbd text-muted">Ctrl+Shift+G</span></a></li>
+                            <li class="login"><a href="#"><span id="menuListProg" class="typcn typcn-th-list" lkey="Blockly.Msg.MENU_LIST_PROG">Liste
+                                        ...</span><span class="kbd text-muted">Ctrl+M</span></a></li>
+                            <li class="login"><a href="#" id="menuRunMulipleSim" class="typcn typcn-open" lkey="Blockly.Msg.MENU_RUN_MULT_SIM">run
+                                        multiple robot simulation</a></li>
                             <li><a href="#" id="menuListExamples" class="typcn typcn-th-list" lkey="Blockly.Msg.MENU_LIST_PROG_EXAMPLES">Beispielprogramme
                                     ...</a></li>
                             <li class="login"><a href="#"><span id="menuSaveProg" class="typcn typcn-cloud-storage" lkey="Blockly.Msg.MENU_SAVE">speichern</span><span class="kbd text-muted">Ctrl+S</span></a></li>
                             <li class="login"><a href="#"><span id="menuSaveAsProg" class="typcn typcn-cloud-storage" lkey="Blockly.Msg.MENU_SAVE_AS">speichern
-                                    unter ...</span><span class="kbd text-muted">Ctrl+Shift+S</span></a></li>
-                            <li class=""><a href="#"><span id="menuShowCode" class="typcn typcn-code" lkey="Blockly.Msg.MENU_SHOW_CODE">show code</span><span class="kbd text-muted">Ctrl+Z</span></a></li>
-                            <li class=""><a href="#"><span id="menuSourceCodeEditor" class="typcn typcn-edit" lkey="Blockly.Msg.MENU_SOURCE_CODE_EDITOR">open
-                                    source code editor</span><span class="kbd text-muted">Ctrl+Shift+Z</span></a></li>
+                                        unter ...</span><span class="kbd text-muted">Ctrl+Shift+S</span></a></li>
+                            <li class=""><a href="#" id="menuShowCode" class="typcn typcn-code" lkey="Blockly.Msg.MENU_SHOW_CODE">show code </a></li>
+                            <li class=""><a href="#" id="menuSourceCodeEditor" class="typcn typcn-edit" lkey="Blockly.Msg.MENU_SOURCE_CODE_EDITOR">open
+                                    source code editor</a></li>
                             <li class=""><a href="#" id="menuLinkProg" class="typcn typcn-link" lkey="Blockly.Msg.MENU_CREATE_LINK">erstelle
                                     Programmlink ...</a></li>
                             <li class=""><a href="#"><span id="menuExportProg" class="typcn typcn-download" lkey="Blockly.Msg.MENU_EXPORT_PROG">export
-                                    program</span><span class="kbd text-muted">Ctrl+E</span></a></li>
-                            <li class=""><a href="#"><span id="menuImportProg" class="typcn typcn-upload" lkey="Blockly.Msg.MENU_IMPORT_PROG">import program
-                                    ...</span><span class="kbd text-muted">Ctrl+I</span></a></li>
+                                        program</span><span class="kbd text-muted">Ctrl+E</span></a></li>
+                            <li class="login"><a href="#"><span id="menuExportAllProgs" class="typcn typcn-download" lkey="Blockly.Msg.MENU_EXPORT_ALL_PROGS">
+                                        export all my programs</span></span></a></li>
+                            <li class=""><a href="#"><span id="menuImportProg" class="typcn typcn-upload" lkey="Blockly.Msg.MENU_IMPORT_PROG">import
+                                        program ...</span><span class="kbd text-muted">Ctrl+I</span></a></li>
                             <li class="hidden"><a href="#" id="menuAttachProg" class="" lkey="Blockly.Msg.MENU_ATTACH">anhängen ...</a></li>
                             <li class="hidden"><a href="#" id="menuPropertiesProg" class="" lkey="Blockly.Msg.MENU_PROPERTIES">Eigenschaften</a></li>
                             <li class="divider"></li>
@@ -261,7 +268,7 @@ limitations under the License.
                     <li class="divider visible-xs"></li>
                     <li><a href="#" class="visible-xs" id="menuTabProgram" lkey="Blockly.Msg.TAB_PROGRAM">Program</a></li>
                     <li><a href="#" class="visible-xs" id="menuTabConfiguration" lkey="Blockly.Msg.TAB_CONFIGURATION">Configuration</a></li>
-                    <li style="display: none;"><a href="#" class="visible-xs" id="menuTabNN" lkey="Blockly.Msg.TAB_NN">Neural Network</a></li>
+                    <li id="menuTabNNctxt" style="display: none;"><a href="#" class="visible-xs" id="menuTabNN" lkey="Blockly.Msg.TAB_NN">Neural Network</a></li>
                     <!--  only if simulation is active -->
                     <li class="dropdown sim hide hidden-xs sim-nav" id="head-navigation-sim-control"><a href="#" data-toggle="dropdown"
                         class="dropdown-toggle" id="head-navi-tooltip-program" lkey="Blockly.Msg.MENU_EDIT_TOOLTIP" rel="tooltip" data-original-title=""
@@ -296,9 +303,9 @@ limitations under the License.
                 <li><a data-toggle="tab" id="tabConfiguration" href="#configuration"> <span lkey="Blockly.Msg.TAB_CONFIGURATION" class="menuTab">Configuration</span>&nbsp;<span
                         id="tabConfigurationName"></span>
                 </a></li>
-                <li style="display: none;"><a data-toggle="tab" id="tabNN" href="#nn"> <span lkey="Blockly.Msg.TAB_NN" class="menuTab">Neural Network</span>&nbsp;<span
-                        id="tabNnName">NEPOnn</span>
-                </a></li>
+                <li id="tabNNctxt" style="display: none;">
+                    <a data-toggle="tab" id="tabNN" href="#nn"> <span lkey="Blockly.Msg.TAB_NN" class="menuTab">Neural Network</span>&nbsp;<span id="tabNnName">NEPOnn</span></a>
+                </li>
                 <li class="hidden"><a data-toggle="tab" id="tabProgList" href="#progList">Listing of programs</a></li>
                 <li class="hidden"><a data-toggle="tab" id="tabConfList" href="#confList">Listing of configurations</a></li>
                 <li class="hidden"><a data-toggle="tab" id="tabLogList" href="#logList">Logging</a></li>
@@ -687,80 +694,83 @@ limitations under the License.
                 <div id="bricklyDiv"></div>
             </div>
         </div>
-        
-        <!-- NEURAL NETWORK START -->
-        <div id="nn" class="tab-pane fade">
-        <!-- Top Controls -->
-        <div id="top-controls">
-          <div class="container l--page">
-            <div class="control ui-activation">
-              <label for="activations">Activation</label>
-              <div class="select">
-                <select id="activations">
-                  <option value="relu">ReLU</option>
-                  <option value="tanh">Tanh</option>
-                  <option value="sigmoid">Sigmoid</option>
-                  <option value="linear">Linear</option>
-                </select>
-              </div>
-            </div>
-            <div class="control ui-regularization">
-              <label for="regularizations">Regularization</label>
-              <div class="select">
-                <select id="regularizations">
-                  <option value="none">None</option>
-                  <option value="L1">L1</option>
-                  <option value="L2">L2</option>
-                </select>
-              </div>
-            </div>
-          </div>
-        </div>
 
-        <!-- Main Part -->
-        <div id="main-part" class="l--page">
-          <!-- Features Column -->
-          <div class="column features">
-            <h4>Inputs</h4>
-            <div id="network">
-              <svg id="svg" width="510" height="450">
-                <defs>
-                  <marker id="markerArrow" markerWidth="7" markerHeight="13" refX="1" refY="6" orient="auto" markerUnits="userSpaceOnUse">
-                    <path d="M2,11 L7,6 L2,2" />
-                  </marker>
-                </defs>
-              </svg>
-              <!-- Hover card -->
-              <div id="hovercard">
-                <div style="font-size:10px">Click anywhere to edit.</div>
-                <div><span class="type">Weight/Bias</span> is <span class="value">0.2</span><span><input type="number"/></span>.</div>
-              </div>
-              <div class="callout thumbnail">
-                <svg viewBox="0 0 30 30">
-                  <defs>
-                    <marker id="arrow" markerWidth="5" markerHeight="5" refx="5" refy="2.5" orient="auto" markerUnits="userSpaceOnUse">
-                      <path d="M0,0 L5,2.5 L0,5 z"/>
-                    </marker>
-                  </defs>
-                  <path d="M12,30C5,20 2,15 12,0" marker-end="url(#arrow)">
-                </svg>
-                <div class="label">
-                  This is the output from one <b>neuron</b>. Hover to see it larger.
+        <div id="nn" style="display: none;" class="tab-pane fade">
+            <div id="nn-top-controls">
+                <div class="nn-control">
+                    <button id="goto-sim">
+                        <i class="nn-large-size typcn typcn-simulation"></i>
+                    </button>
                 </div>
-              </div>
-              <div class="callout weights">
-                <svg viewBox="0 0 30 30">
-                  <defs>
-                    <marker id="arrow" markerWidth="5" markerHeight="5" refx="5" refy="2.5" orient="auto" markerUnits="userSpaceOnUse">
-                      <path d="M0,0 L5,2.5 L0,5 z"/>
-                    </marker>
-                  </defs>
-                  <path d="M12,30C5,20 2,15 12,0" marker-end="url(#arrow)">
-                </svg>
-                <div class="label">
-                  The outputs are mixed with varying <b>weights</b>, shown by the thickness of the lines.
+                <div class="nn-control">
+                    <span id="nn-focus-label" class="nn-bold"></span>
+                    <div class="select">
+                        <select id="nn-focus">
+                            <option value="CLICK_WEIGHT_BIAS"></option>
+                            <option value="CLICK_NODE"></option>
+                            <option value="SHOW_ALL"></option>
+                        </select>
+                    </div>
                 </div>
-              </div>
+                <div id="nn-show-math-all" class="nn-control">
+                    <span id="nn-show-math-label" class="nn-bold"></span>
+                    <div id="nn-show-math"></div>
+                </div>
+                <div class="nn-control">
+                    <span id="nn-show-precision-label" class="nn-bold"></span>
+                    <div class="select">
+                        <select id="nn-show-precision">
+                            <option value="0">0</option>
+                            <option value="1">1</option>
+                            <option value="2" selected='selected'>2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="*">*</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="nn-control">
+                    <div class="nn-num-layers-group"  class="nn-bold">
+                        <span id="num-layers"></span> <span id="layers-label"></span>
+                    </div>
+                    <button id="nn-add-layers">
+                        <i class="material-icons">add</i>
+                    </button>
+                    <button id="nn-remove-layers">
+                        <i class="material-icons">remove</i>
+                    </button>
+                </div>
+                <div class="nn-control">
+                    <span id="nn-activation-label" class="nn-bold"></span>
+                    <div class="select">
+                        <select id="nn-activations">
+                            <option value="linear">Linear</option>
+                            <option value="relu">ReLU</option>
+                            <option value="tanh">Tanh</option>
+                            <option value="sigmoid">Sigmoid</option>
+                        </select>
+                    </div>
+                </div>
+<!--                <div class="nn-control">
+                    <span id="nn-regularization-label" class="nn-bold"></span>
+                    <div class="select">
+                        <select id="regularizations">
+                            <option value="none">None</option>
+                            <option value="L1">L1</option>
+                            <option value="L2">L2</option>
+                        </select>
+                    </div> -->
+            </div>
+            <div id="nn-main-part">
+                <div id="nn-features">
+                    <div id="nn-network">
+                        <svg id="nn-svg"></svg>
+                        <div id="nn-editCard">
+                                <span class="nn-type"></span><input/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
           </div>
       
@@ -1212,7 +1222,7 @@ limitations under the License.
                     <h3 id="#headMulipleRobots" class="modal-title" lkey="Blockly.Msg.POPUP_MULTIPLE_ROBOTS">Meine Programme</h3>
                 </div>
                 <div class="modal-body">
-                    <table id="multipleRobotsTable"></table>
+                    <table id="multipleRobotsTable" data-maintain-selected="true"></table>
                 </div>
                 <div class="modal-footer">
                     <button type="button" id="loadMultipleSimPrograms" class="btn btn-primary">Ok</button>
@@ -1257,33 +1267,35 @@ limitations under the License.
         </div>
     </div>
     <!-- Popup to show keyboard shortcuts -->
-	<div class="modal fade in" id="shortcut">
-	  <div class="modal-dialog">
-	    <div class="modal-content">
-	      <div class="modal-header">
-	      	<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-	        <h3 class="modal-title" id="exampleModalLabel" lkey="Blockly.Msg.MENU_SHORTCUT">Keyboard Shortcuts</h3>
-	      </div>
-	      <div class="modal-body" id="shortcuts">
-	      	<ol type = "1">
-					 <li lkey="Blockly.Msg.MENU_SHORTCUT_IMPORT"></li>
-					 <li lkey="Blockly.Msg.MENU_SHORTCUT_EXPORT"></li>
-			         <li lkey="Blockly.Msg.MENU_SHORTCUT_SAVE"></li>
-			         <li lkey="Blockly.Msg.MENU_SHORTCUT_SAVEAS"></li>
-			         <li lkey="Blockly.Msg.MENU_SHORTCUT_RUN"></li>
-			         <li lkey="Blockly.Msg.MENU_SHORTCUT_SOURCE_CODE"></li>
-			         <li lkey="Blockly.Msg.MENU_SHORTCUT_EDITOR"></li>
-			         <li lkey="Blockly.Msg.MENU_SHORTCUT_OPEN_SIM"></li>
-			         <li lkey="Blockly.Msg.MENU_SHORTCUT_MULTISIM"></li>
-			         <li lkey="Blockly.Msg.MENU_SHORTCUT_VIEW_PROGRAM"></li>
-			 </ol>
-		  </div>
-	      <div class="modal-footer">
-	        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-	      </div>
-	    </div>
-	  </div>
-	</div>
+    <div class="modal fade in" id="shortcut">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h3 class="modal-title" id="exampleModalLabel" lkey="Blockly.Msg.MENU_SHORTCUT">Keyboard Shortcuts</h3>
+                </div>
+                <div class="modal-body" id="shortcuts">
+                    <dl class="grid">
+                        <dt>Ctrl + E</dt>
+                        <dd lkey="Blockly.Msg.MENU_EXPORT_PROG"></dd>
+                        <dt>Ctrl + I</dt>
+                        <dd lkey="Blockly.Msg.MENU_IMPORT_PROG"></dd>
+                        <dt>Ctrl + M</dt>
+                        <dd lkey="Blockly.Msg.MENU_LIST_PROG"></dd>
+                        <dt>Ctrl + S</dt>
+                        <dd lkey="Blockly.Msg.MENU_SAVE"></dd>
+                        <dt>Ctrl + Shift + S</dt>
+                        <dd lkey="Blockly.Msg.MENU_SAVE_AS"></dd>
+                        <dt>Ctrl + R</dt>
+                        <dd lkey="Blockly.Msg.MENU_SHORTCUT_RUN"></dd>
+                    </dl>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <!-- Popup show state info -->
     <div id="show-state-info" class="modal fade">
         <div class="modal-dialog modal-sm">
@@ -1315,9 +1327,9 @@ limitations under the License.
                 <div class="modal-body left-inner-addon">
                     <span lkey="Blockly.Msg.POPUP_ROBOT_NAME">Name</span>:&nbsp;<span id="robotName"></span> <br /> <span lkey="Blockly.Msg.POPUP_ROBOT_SYSTEM">System</span>:&nbsp;<span
                         id="robotSystem"></span> <br /> <span lkey="Blockly.Msg.POPUP_ROBOT_STATE">Status</span>:&nbsp;<span id="robotStateWait"
-                        lkey="Blockly.Msg.POPUP_ROBOT_STATE_WAIT"></span><span id="robotStateDisconnected" lkey="Blockly.Msg.POPUP_ROBOT_STATE_DISCONNECTED"></span><span
-                        id="robotStateBusy" lkey="Blockly.Msg.POPUP_ROBOT_STATE_BUSY"></span> <br /> <span lkey="Blockly.Msg.POPUP_ROBOT_BATTERY">Batteriespannung</span>:&nbsp;<span
-                        id="robotBattery"></span> <br /> <span lkey="Blockly.Msg.POPUP_ROBOT_WAIT">Wartezeit</span>:&nbsp;<span id="robotWait"></span>
+                        lkey="Blockly.Msg.POPUP_ROBOT_STATE_WAIT"></span><span id="robotStateDisconnected" lkey="Blockly.Msg.POPUP_ROBOT_STATE_DISCONNECTED"></span>
+                    <span id="robotStateBusy" lkey="Blockly.Msg.POPUP_ROBOT_STATE_BUSY"></span> <br /> <span lkey="Blockly.Msg.POPUP_ROBOT_BATTERY">Batteriespannung</span>:&nbsp;<span
+                        id="robotBattery"></span> <br /> <span lkey="Blockly.Msg.POPUP_ROBOT_WAIT">Wartezeit</span>:&nbsp; <span id="robotWait"></span>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn" data-dismiss="modal">OK</button>
@@ -1398,7 +1410,7 @@ limitations under the License.
                         <div id="popup-robot-main">
                             <div id="popup-sim" class="popup-robot robot-container">
                                 <span href="#" class='typcn typcn-open robot-icon'></span><span class="robot-label">Open Roberta Sim</span><img class="img-beta"
-                                    src="/css/img/beta.png" alt="beta" /><a href="#" target="_blank" style="display: inline;"> <span
+                                    src="/css/img/beta.png" alt="beta" /> <a href="#" target="_blank" style="display: inline;"> <span
                                     class='robot-info typcn typcn-info-large'></span>
                                 </a>
                             </div>
@@ -1530,25 +1542,19 @@ limitations under the License.
         </div>
     </div>
     <!-- Popup for simulated robot -> EV3 -->
-    <div id="simRobotModal" class="modal fade simRobotModal" data-backdrop="false">
+    <div id="simRobotWindow" class="simWindow" data-backdrop="false">
         <div class="modal-dialog">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-            </div>
+            <button type="button" class="close">&times;</button>
             <div id="simRobotContent"></div>
         </div>
     </div>
     <!-- Popup for simulation sensor data -->
-    <div id="simValuesModal" class="modal fade simRobotModal" data-backdrop="false">
-        <div class="modal-dialog">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-            </div>
-            <div id="simValuesContent">
-                <div id="valuesContent">
-                    <div id="constantValue"></div>
-                    <div id="notConstantValue"></div>
-                </div>
+    <div id="simValuesWindow" class="simWindow slide-in" data-backdrop="false">
+        <button type="button" class="close">&times;</button>
+        <div id="simValuesContent">
+            <div id="valuesContent">
+                <div id="constantValue"></div>
+                <div id="notConstantValue"></div>
             </div>
         </div>
     </div>
@@ -1742,4 +1748,5 @@ limitations under the License.
         <input type="file" id="fileSelector" display="none"></input> <input type="file" id="backgroundFileSelector" display="none"></input>
     </div>
 </body>
+
 </html>

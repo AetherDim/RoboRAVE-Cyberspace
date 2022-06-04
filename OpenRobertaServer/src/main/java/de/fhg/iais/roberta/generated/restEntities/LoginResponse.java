@@ -9,8 +9,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * the response for the /login REST request<br>
- * <br>
+ * the response for the /login REST request<br><br>
  * Version: 1<br>
  * Datum: 2020-06-15
  */
@@ -109,11 +108,10 @@ public class LoginResponse extends BaseResponse {
     }
 
     /**
-     * merge the properties of a JSON-object into this bean. The bean must be "under construction". The keys of the JSON-Object must be valid. The bean remains
-     * "under construction".<br>
+     * merge the properties of a JSON-object into this bean. The bean must be "under construction".
+     * The keys of the JSON-Object must be valid. The bean remains "under construction".<br>
      * Throws a runtime exception if inconsistencies are detected.
      */
-    @Override
     public LoginResponse merge(JSONObject jsonO) {
         try {
             for ( String key : JSONObject.getNames(jsonO) ) {
@@ -181,7 +179,6 @@ public class LoginResponse extends BaseResponse {
      * Checks whether all required fields are set. All lists are made immutable.<br>
      * Throws a runtime exception if inconsistencies are detected.
      */
-    @Override
     public LoginResponse immutable() {
         if ( this.immutable ) {
             return this;
@@ -199,34 +196,34 @@ public class LoginResponse extends BaseResponse {
         if ( !this.immutable ) {
             _message = "LoginResponse-object is already immutable: " + toString();
         }
-        if ( this.rc == null ) {
+        if ( rc == null ) {
             _message = "required property rc of LoginResponse-object is not set: " + toString();
         }
-        if ( this.initToken == null ) {
+        if ( initToken == null ) {
             _message = "required property initToken of LoginResponse-object is not set: " + toString();
         }
-        if ( !this.serverTimeDefined ) {
+        if ( !serverTimeDefined ) {
             _message = "required property serverTime of LoginResponse-object is not set: " + toString();
         }
-        if ( this.serverVersion == null ) {
+        if ( serverVersion == null ) {
             _message = "required property serverVersion of LoginResponse-object is not set: " + toString();
         }
-        if ( !this.userIdDefined ) {
+        if ( !userIdDefined ) {
             _message = "required property userId of LoginResponse-object is not set: " + toString();
         }
-        if ( this.userRole == null ) {
+        if ( userRole == null ) {
             _message = "required property userRole of LoginResponse-object is not set: " + toString();
         }
-        if ( this.userAccountName == null ) {
+        if ( userAccountName == null ) {
             _message = "required property userAccountName of LoginResponse-object is not set: " + toString();
         }
-        if ( !this.isAccountActivatedDefined ) {
+        if ( !isAccountActivatedDefined ) {
             _message = "required property isAccountActivated of LoginResponse-object is not set: " + toString();
         }
-        if ( this.userGroupOwner == null ) {
+        if ( userGroupOwner == null ) {
             _message = "required property userGroupOwner of LoginResponse-object is not set: " + toString();
         }
-        if ( this.userGroupName == null ) {
+        if ( userGroupName == null ) {
             _message = "required property userGroupName of LoginResponse-object is not set: " + toString();
         }
         if ( _message != null ) {
@@ -398,7 +395,6 @@ public class LoginResponse extends BaseResponse {
      * generates a JSON-object from an immutable bean.<br>
      * Throws a runtime exception if inconsistencies are detected.
      */
-    @Override
     public JSONObject toJson() {
         if ( !this.immutable ) {
             throw new RuntimeException("no JSON from an object under construction: " + toString());
@@ -466,57 +462,7 @@ public class LoginResponse extends BaseResponse {
 
     @Override
     public String toString() {
-        return "LoginResponse [immutable="
-            + this.immutable
-            + ", cmd="
-            + this.cmd
-            + ", rc="
-            + this.rc
-            + ", message="
-            + this.message
-            + ", cause="
-            + this.cause
-            + ", parameters="
-            + this.parameters
-            + ", initToken="
-            + this.initToken
-            + ", serverTime="
-            + this.serverTime
-            + ", serverVersion="
-            + this.serverVersion
-            + ", robotWait="
-            + this.robotWait
-            + ", robotBattery="
-            + this.robotBattery
-            + ", robotName="
-            + this.robotName
-            + ", robotVersion="
-            + this.robotVersion
-            + ", robotFirmwareName="
-            + this.robotFirmwareName
-            + ", robotSensorvalues="
-            + this.robotSensorvalues
-            + ", robotNepoexitvalue="
-            + this.robotNepoexitvalue
-            + ", robotState="
-            + this.robotState
-            + ", notificationsAvailable="
-            + this.notificationsAvailable
-            + ", userId="
-            + this.userId
-            + ", userRole="
-            + this.userRole
-            + ", userAccountName="
-            + this.userAccountName
-            + ", userName="
-            + this.userName
-            + ", isAccountActivated="
-            + this.isAccountActivated
-            + ", userGroupOwner="
-            + this.userGroupOwner
-            + ", userGroupName="
-            + this.userGroupName
-            + " ]";
+        return "LoginResponse [immutable=" + this.immutable + ", cmd=" + this.cmd + ", rc=" + this.rc + ", message=" + this.message + ", cause=" + this.cause + ", parameters=" + this.parameters + ", initToken=" + this.initToken + ", serverTime=" + this.serverTime + ", serverVersion=" + this.serverVersion + ", robotWait=" + this.robotWait + ", robotBattery=" + this.robotBattery + ", robotName=" + this.robotName + ", robotVersion=" + this.robotVersion + ", robotFirmwareName=" + this.robotFirmwareName + ", robotSensorvalues=" + this.robotSensorvalues + ", robotNepoexitvalue=" + this.robotNepoexitvalue + ", robotState=" + this.robotState + ", notificationsAvailable=" + this.notificationsAvailable + ", userId=" + this.userId + ", userRole=" + this.userRole + ", userAccountName=" + this.userAccountName + ", userName=" + this.userName + ", isAccountActivated=" + this.isAccountActivated + ", userGroupOwner=" + this.userGroupOwner + ", userGroupName=" + this.userGroupName + " ]";
     }
 
     @Override

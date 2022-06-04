@@ -14,11 +14,9 @@ import de.fhg.iais.roberta.mode.action.DriveDirection;
 import de.fhg.iais.roberta.mode.action.Language;
 import de.fhg.iais.roberta.mode.action.TurnDirection;
 import de.fhg.iais.roberta.mode.action.nao.Camera;
-import de.fhg.iais.roberta.syntax.BlockType;
-import de.fhg.iais.roberta.syntax.BlockTypeContainer;
-import de.fhg.iais.roberta.syntax.BlocklyConstants;
+import de.fhg.iais.roberta.util.syntax.BlocklyConstants;
 import de.fhg.iais.roberta.syntax.Phrase;
-import de.fhg.iais.roberta.syntax.SC;
+import de.fhg.iais.roberta.util.syntax.SC;
 import de.fhg.iais.roberta.syntax.action.nao.Animation;
 import de.fhg.iais.roberta.syntax.action.nao.ApplyPosture;
 import de.fhg.iais.roberta.syntax.action.nao.Autonomous;
@@ -47,6 +45,7 @@ import de.fhg.iais.roberta.syntax.action.nao.WalkAsync;
 import de.fhg.iais.roberta.syntax.action.nao.WalkDistance;
 import de.fhg.iais.roberta.syntax.action.nao.WalkTo;
 import de.fhg.iais.roberta.syntax.action.speech.SayTextAction;
+import de.fhg.iais.roberta.syntax.action.speech.SayTextWithSpeedAndPitchAction;
 import de.fhg.iais.roberta.syntax.action.speech.SetLanguageAction;
 import de.fhg.iais.roberta.syntax.lang.blocksequence.MainTask;
 import de.fhg.iais.roberta.syntax.lang.expr.ColorConst;
@@ -76,8 +75,8 @@ import de.fhg.iais.roberta.syntax.sensor.nao.FsrSensor;
 import de.fhg.iais.roberta.syntax.sensor.nao.NaoMarkInformation;
 import de.fhg.iais.roberta.syntax.sensor.nao.RecognizeWord;
 import de.fhg.iais.roberta.util.dbc.DbcException;
+import de.fhg.iais.roberta.visitor.INaoVisitor;
 import de.fhg.iais.roberta.visitor.IVisitor;
-import de.fhg.iais.roberta.visitor.hardware.INaoVisitor;
 import de.fhg.iais.roberta.visitor.lang.codegen.prog.AbstractPythonVisitor;
 
 /**
@@ -464,11 +463,11 @@ public final class NaoPythonVisitor extends AbstractPythonVisitor implements INa
         this.sb.append("h.pointLookAt(" + getEnumCode(pointLookAt.getPointLook()));
         this.sb.append(", " + pointLookAt.getFrame().getValues()[0] + ", ");
 
-        pointLookAt.getpointX().accept(this);
+        pointLookAt.getPointX().accept(this);
         this.sb.append(", ");
-        pointLookAt.getpointY().accept(this);
+        pointLookAt.getPointY().accept(this);
         this.sb.append(", ");
-        pointLookAt.getpointZ().accept(this);
+        pointLookAt.getPointZ().accept(this);
         this.sb.append(", ");
         pointLookAt.getSpeed().accept(this);
         this.sb.append(")");
@@ -562,13 +561,24 @@ public final class NaoPythonVisitor extends AbstractPythonVisitor implements INa
         } else {
             sayTextAction.getMsg().accept(this);
         }
-        BlockType emptyBlock = BlockTypeContainer.getByName("EMPTY_EXPR");
-        if ( !(sayTextAction.getSpeed().getKind().equals(emptyBlock) && sayTextAction.getPitch().getKind().equals(emptyBlock)) ) {
-            this.sb.append(",");
-            sayTextAction.getSpeed().accept(this);
-            this.sb.append(",");
-            sayTextAction.getPitch().accept(this);
+        this.sb.append(")");
+        return null;
+    }
+
+    @Override
+    public Void visitSayTextWithSpeedAndPitchAction(SayTextWithSpeedAndPitchAction<Void> sayTextAction) {
+        this.sb.append("h.say(");
+        if ( !sayTextAction.getMsg().getKind().hasName("STRING_CONST") ) {
+            this.sb.append("str(");
+            sayTextAction.getMsg().accept(this);
+            this.sb.append(")");
+        } else {
+            sayTextAction.getMsg().accept(this);
         }
+        this.sb.append(",");
+        sayTextAction.getSpeed().accept(this);
+        this.sb.append(",");
+        sayTextAction.getPitch().accept(this);
         this.sb.append(")");
         return null;
     }
@@ -776,7 +786,7 @@ public final class NaoPythonVisitor extends AbstractPythonVisitor implements INa
     @Override
     public Void visitTouchSensor(TouchSensor<Void> touchSensor) {
         this.sb.append("h.touchsensors(");
-        this.sb.append(getEnumCode(touchSensor.getPort()));
+        this.sb.append(getEnumCode(touchSensor.getUserDefinedPort()));
         this.sb.append(", ");
         this.sb.append(getEnumCode(touchSensor.getSlot()));
         this.sb.append(")");
@@ -792,15 +802,15 @@ public final class NaoPythonVisitor extends AbstractPythonVisitor implements INa
     @Override
     public Void visitGyroSensor(GyroSensor<Void> gyrometer) {
         this.sb.append("h.gyrometer(");
-        this.sb.append(getEnumCode(gyrometer.getPort()));
+        this.sb.append(getEnumCode(gyrometer.getSlot()));
         this.sb.append(")");
         return null;
     }
 
     @Override
-    public Void visitAccelerometer(AccelerometerSensor<Void> accelerometer) {
+    public Void visitAccelerometerSensor(AccelerometerSensor<Void> accelerometer) {
         this.sb.append("h.accelerometer(");
-        this.sb.append(getEnumCode(accelerometer.getPort()));
+        this.sb.append(getEnumCode(accelerometer.getUserDefinedPort()));
         this.sb.append(")");
         return null;
     }
@@ -808,13 +818,13 @@ public final class NaoPythonVisitor extends AbstractPythonVisitor implements INa
     @Override
     public Void visitFsrSensor(FsrSensor<Void> fsr) {
         this.sb.append("h.fsr(");
-        this.sb.append(getEnumCode(fsr.getPort()));
+        this.sb.append(getEnumCode(fsr.getUserDefinedPort()));
         this.sb.append(")");
         return null;
     }
 
     @Override
-    public Void visitNaoMark(DetectMarkSensor<Void> detectedMark) {
+    public Void visitDetectMarkSensor(DetectMarkSensor<Void> detectedMark) {
         this.sb.append("h.getDetectedMark");
         if ( detectedMark.getMode().equals(SC.IDALL) ) {
             this.sb.append("s");
@@ -882,7 +892,7 @@ public final class NaoPythonVisitor extends AbstractPythonVisitor implements INa
     }
 
     @Override
-    public Void visitDetectFace(DetectFaceSensor<Void> detectFace) {
+    public Void visitDetectFaceSensor(DetectFaceSensor<Void> detectFace) {
         this.sb.append("faceRecognitionModule.detectFace");
         if ( detectFace.getMode().equals(SC.NAMEALL) ) {
             this.sb.append("s");
@@ -897,11 +907,11 @@ public final class NaoPythonVisitor extends AbstractPythonVisitor implements INa
     }
 
     @Override
-    public Void visitElectricCurrent(ElectricCurrentSensor<Void> electricCurrent) {
+    public Void visitElectricCurrentSensor(ElectricCurrentSensor<Void> electricCurrent) {
         String side_axis = electricCurrent.getSlot().toString().toLowerCase();
         String[] slots = side_axis.split("_");
 
-        String portType = electricCurrent.getPort();
+        String portType = electricCurrent.getUserDefinedPort();
         String port = portType.toString().toLowerCase();
         port = StringUtils.capitalize(port);
 
@@ -1066,7 +1076,6 @@ public final class NaoPythonVisitor extends AbstractPythonVisitor implements INa
                 case SC.ACCELEROMETER:
                     break;
                 default:
-
                     throw new DbcException("Sensor is not supported!" + usedSensor.getType().toString());
             }
         }
@@ -1112,7 +1121,7 @@ public final class NaoPythonVisitor extends AbstractPythonVisitor implements INa
     @Override
     public Void visitRecognizeWord(RecognizeWord<Void> recognizeWord) {
         this.sb.append("speechRecognitionModule.recognizeWordFromDictionary(");
-        recognizeWord.getVocabulary().accept(this);
+        recognizeWord.vocabulary.accept(this);
         this.sb.append(")");
         return null;
     }
@@ -1126,7 +1135,7 @@ public final class NaoPythonVisitor extends AbstractPythonVisitor implements INa
     }
 
     @Override
-    public Void visitDetecedFaceInformation(DetectedFaceInformation<Void> detectedFaceInformation) {
+    public Void visitDetectedFaceInformation(DetectedFaceInformation<Void> detectedFaceInformation) {
         this.sb.append("faceRecognitionModule.getFaceInformation(");
         detectedFaceInformation.getFaceName().accept(this);
         this.sb.append(")");

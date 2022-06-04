@@ -7,24 +7,23 @@ import java.util.Locale;
 import de.fhg.iais.roberta.blockly.generated.Block;
 import de.fhg.iais.roberta.blockly.generated.Mutation;
 import de.fhg.iais.roberta.blockly.generated.Value;
-import de.fhg.iais.roberta.syntax.BlockTypeContainer;
-import de.fhg.iais.roberta.syntax.BlocklyBlockProperties;
-import de.fhg.iais.roberta.syntax.BlocklyComment;
-import de.fhg.iais.roberta.syntax.BlocklyConstants;
+import de.fhg.iais.roberta.util.syntax.BlockTypeContainer;
+import de.fhg.iais.roberta.util.syntax.BlocklyBlockProperties;
+import de.fhg.iais.roberta.util.syntax.BlocklyComment;
+import de.fhg.iais.roberta.util.syntax.BlocklyConstants;
 import de.fhg.iais.roberta.syntax.Phrase;
-import de.fhg.iais.roberta.syntax.lang.functions.FunctionNames;
+import de.fhg.iais.roberta.util.syntax.FunctionNames;
 import de.fhg.iais.roberta.syntax.lang.functions.MathPowerFunct;
 import de.fhg.iais.roberta.syntax.lang.stmt.ExprStmt;
-import de.fhg.iais.roberta.transformer.AbstractJaxb2Ast;
 import de.fhg.iais.roberta.transformer.Ast2Jaxb;
 import de.fhg.iais.roberta.transformer.ExprParam;
 import de.fhg.iais.roberta.transformer.Jaxb2Ast;
+import de.fhg.iais.roberta.transformer.Jaxb2ProgramAst;
 import de.fhg.iais.roberta.typecheck.BlocklyType;
 import de.fhg.iais.roberta.typecheck.Sig;
 import de.fhg.iais.roberta.util.dbc.Assert;
 import de.fhg.iais.roberta.util.dbc.DbcException;
-import de.fhg.iais.roberta.visitor.IVisitor;
-import de.fhg.iais.roberta.visitor.lang.ILanguageVisitor;
+import de.fhg.iais.roberta.util.syntax.Assoc;
 
 /**
  * This class represents blockly blocks defining binary operations in the AST<br>
@@ -119,11 +118,6 @@ public final class Binary<V> extends Expr<V> {
     @Override
     public String toString() {
         return "Binary [" + this.op + ", " + this.left + ", " + this.right + "]";
-    }
-
-    @Override
-    protected V acceptImpl(IVisitor<V> visitor) {
-        return ((ILanguageVisitor<V>) visitor).visitBinary(this);
     }
 
     /**
@@ -221,7 +215,7 @@ public final class Binary<V> extends Expr<V> {
      * @param helper class for making the transformation
      * @return corresponding AST object
      */
-    public static <V> Phrase<V> jaxbToAst(Block block, AbstractJaxb2Ast<V> helper) {
+    public static <V> Phrase<V> jaxbToAst(Block block, Jaxb2ProgramAst<V> helper) {
 
         List<Value> values;
         Phrase<V> leftt;
@@ -236,8 +230,8 @@ public final class Binary<V> extends Expr<V> {
                         Binary
                             .make(
                                 Binary.Op.TEXT_APPEND,
-                                helper.convertPhraseToExpr(leftt),
-                                helper.convertPhraseToExpr(rightt),
+                                Jaxb2Ast.convertPhraseToExpr(leftt),
+                                Jaxb2Ast.convertPhraseToExpr(rightt),
                                 "",
                                 Jaxb2Ast.extractBlockProperties(block),
                                 Jaxb2Ast.extractComment(block)));
@@ -251,8 +245,8 @@ public final class Binary<V> extends Expr<V> {
                         Binary
                             .make(
                                 Binary.Op.MATH_CHANGE,
-                                helper.convertPhraseToExpr(leftt),
-                                helper.convertPhraseToExpr(rightt),
+                                Jaxb2Ast.convertPhraseToExpr(leftt),
+                                Jaxb2Ast.convertPhraseToExpr(rightt),
                                 "",
                                 Jaxb2Ast.extractBlockProperties(block),
                                 Jaxb2Ast.extractComment(block)));

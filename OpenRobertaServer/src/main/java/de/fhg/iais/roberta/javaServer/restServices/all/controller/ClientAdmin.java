@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
 
-import de.fhg.iais.roberta.factory.IRobotFactory;
+import de.fhg.iais.roberta.factory.RobotFactory;
 import de.fhg.iais.roberta.generated.restEntities.BaseResponse;
 import de.fhg.iais.roberta.generated.restEntities.FullRestRequest;
 import de.fhg.iais.roberta.generated.restEntities.SetRobotRequest;
@@ -176,7 +176,7 @@ public class ClientAdmin {
                         httpSessionState.setToken(RandomUrlPostfix.generate(12, 12, 3, 3, 3));
                     }
                     httpSessionState.setRobotName(robot);
-                    IRobotFactory robotFactory = httpSessionState.getRobotFactory();
+                    RobotFactory robotFactory = httpSessionState.getRobotFactory();
                     response.setRobot(robot);
 
                     JSONObject program = new JSONObject();
@@ -192,6 +192,9 @@ public class ClientAdmin {
                     response.setConfiguration(configuration);
                     response.setSim(robotFactory.hasSim());
                     response.setMultipleSim(robotFactory.hasMultipleSim());
+                    response.setNn(robotFactory.hasNN());
+                    response.setWebotsSim(robotFactory.hasWebotsSim());
+                    response.setWebotsUrl(robotFactory.getWebotsUrl());
                     response.setConnection(robotFactory.getConnectionType());
                     response.setVendor(robotFactory.getVendorId());
                     response.setConfigurationUsed(robotFactory.hasConfiguration());

@@ -7,20 +7,18 @@ import de.fhg.iais.roberta.blockly.generated.Data;
 import de.fhg.iais.roberta.blockly.generated.Field;
 import de.fhg.iais.roberta.blockly.generated.Mutation;
 import de.fhg.iais.roberta.blockly.generated.Value;
-import de.fhg.iais.roberta.syntax.BlockTypeContainer;
-import de.fhg.iais.roberta.syntax.BlocklyBlockProperties;
-import de.fhg.iais.roberta.syntax.BlocklyComment;
-import de.fhg.iais.roberta.syntax.BlocklyConstants;
+import de.fhg.iais.roberta.util.syntax.BlockTypeContainer;
+import de.fhg.iais.roberta.util.syntax.BlocklyBlockProperties;
+import de.fhg.iais.roberta.util.syntax.BlocklyComment;
+import de.fhg.iais.roberta.util.syntax.BlocklyConstants;
 import de.fhg.iais.roberta.syntax.Phrase;
 import de.fhg.iais.roberta.syntax.action.Action;
 import de.fhg.iais.roberta.syntax.lang.expr.Expr;
-import de.fhg.iais.roberta.transformer.AbstractJaxb2Ast;
 import de.fhg.iais.roberta.transformer.Ast2Jaxb;
 import de.fhg.iais.roberta.transformer.ExprParam;
 import de.fhg.iais.roberta.transformer.Jaxb2Ast;
+import de.fhg.iais.roberta.transformer.Jaxb2ProgramAst;
 import de.fhg.iais.roberta.typecheck.BlocklyType;
-import de.fhg.iais.roberta.visitor.IVisitor;
-import de.fhg.iais.roberta.visitor.hardware.actor.IBluetoothVisitor;
 
 public class BluetoothSendAction<V> extends Action<V> {
     private final Expr<V> _connection;
@@ -106,11 +104,6 @@ public class BluetoothSendAction<V> extends Action<V> {
         return "BluetoothSendAction [" + getConnection().toString() + ", " + getMsg().toString() + ", " + getChannel() + "]";
     }
 
-    @Override
-    protected V acceptImpl(IVisitor<V> visitor) {
-        return ((IBluetoothVisitor<V>) visitor).visitBluetoothSendAction(this);
-    }
-
     /**
      * Transformation from JAXB object to corresponding AST object.
      *
@@ -118,21 +111,21 @@ public class BluetoothSendAction<V> extends Action<V> {
      * @param helper class for making the transformation
      * @return corresponding AST object
      */
-    public static <V> Phrase<V> jaxbToAst(Block block, AbstractJaxb2Ast<V> helper) {
+    public static <V> Phrase<V> jaxbToAst(Block block, Jaxb2ProgramAst<V> helper) {
         List<Value> values = Jaxb2Ast.extractValues(block, (short) 2);
         List<Field> fields = Jaxb2Ast.extractFields(block, (short) 3);
         Phrase<V> bluetoothSendMessage = helper.extractValue(values, new ExprParam(BlocklyConstants.MESSAGE, BlocklyType.STRING));
         Phrase<V> bluetoothSendConnection = helper.extractValue(values, new ExprParam(BlocklyConstants.CONNECTION, BlocklyType.NULL));
         Data data = block.getData();
-        String datum = data.getValue();
+        String dataValue = data.getValue();
         if ( fields.size() == 3 ) {
             String bluetoothSendChannel = Jaxb2Ast.extractField(fields, BlocklyConstants.CHANNEL);
             String bluetoothRecieveDataType = Jaxb2Ast.extractField(fields, BlocklyConstants.TYPE);
             return BluetoothSendAction
                 .make(
-                    datum,
-                    helper.convertPhraseToExpr(bluetoothSendConnection),
-                    helper.convertPhraseToExpr(bluetoothSendMessage),
+                    dataValue,
+                    Jaxb2Ast.convertPhraseToExpr(bluetoothSendConnection),
+                    Jaxb2Ast.convertPhraseToExpr(bluetoothSendMessage),
                     bluetoothSendChannel,
                     bluetoothRecieveDataType,
                     Jaxb2Ast.extractBlockProperties(block),
@@ -142,9 +135,9 @@ public class BluetoothSendAction<V> extends Action<V> {
             String bluetoothRecieveDataType = Jaxb2Ast.extractField(fields, BlocklyConstants.TYPE);
             return BluetoothSendAction
                 .make(
-                    datum,
-                    helper.convertPhraseToExpr(bluetoothSendConnection),
-                    helper.convertPhraseToExpr(bluetoothSendMessage),
+                    dataValue,
+                    Jaxb2Ast.convertPhraseToExpr(bluetoothSendConnection),
+                    Jaxb2Ast.convertPhraseToExpr(bluetoothSendMessage),
                     bluetoothSendChannel,
                     bluetoothRecieveDataType,
                     Jaxb2Ast.extractBlockProperties(block),
@@ -152,7 +145,6 @@ public class BluetoothSendAction<V> extends Action<V> {
         }
     }
 
-    //TODO: fix tests for NXT
     @Override
     public Block astToBlock() {
         Block jaxbDestination = new Block();
@@ -161,7 +153,9 @@ public class BluetoothSendAction<V> extends Action<V> {
         jaxbDestination.setMutation(mutation);
         Ast2Jaxb.addField(jaxbDestination, BlocklyConstants.TYPE, this.dataType);
         Ast2Jaxb.addField(jaxbDestination, BlocklyConstants.PROTOCOL, "BLUETOOTH");
-        Ast2Jaxb.addField(jaxbDestination, BlocklyConstants.CHANNEL, getChannel());
+        if ( !getChannel().equals("-1") ) {
+            Ast2Jaxb.addField(jaxbDestination, BlocklyConstants.CHANNEL, getChannel());
+        }
         Ast2Jaxb.setBasicProperties(this, jaxbDestination);
         Ast2Jaxb.addValue(jaxbDestination, BlocklyConstants.MESSAGE, getMsg());
         Ast2Jaxb.addValue(jaxbDestination, BlocklyConstants.CONNECTION, getConnection());

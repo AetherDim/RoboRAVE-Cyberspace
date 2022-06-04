@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import com.google.common.collect.ClassToInstanceMap;
 
@@ -15,11 +16,10 @@ import de.fhg.iais.roberta.components.UsedActor;
 import de.fhg.iais.roberta.components.UsedSensor;
 import de.fhg.iais.roberta.mode.action.DriveDirection;
 import de.fhg.iais.roberta.mode.action.TurnDirection;
-import de.fhg.iais.roberta.syntax.MotorDuration;
+import de.fhg.iais.roberta.util.syntax.MotorDuration;
 import de.fhg.iais.roberta.syntax.Phrase;
-import de.fhg.iais.roberta.syntax.SC;
+import de.fhg.iais.roberta.util.syntax.SC;
 import de.fhg.iais.roberta.syntax.action.display.ClearDisplayAction;
-import de.fhg.iais.roberta.syntax.action.display.ShowTextAction;
 import de.fhg.iais.roberta.syntax.action.light.LightAction;
 import de.fhg.iais.roberta.syntax.action.light.LightStatusAction;
 import de.fhg.iais.roberta.syntax.action.motor.MotorGetPowerAction;
@@ -30,11 +30,8 @@ import de.fhg.iais.roberta.syntax.action.motor.differential.CurveAction;
 import de.fhg.iais.roberta.syntax.action.motor.differential.DriveAction;
 import de.fhg.iais.roberta.syntax.action.motor.differential.MotorDriveStopAction;
 import de.fhg.iais.roberta.syntax.action.motor.differential.TurnAction;
-import de.fhg.iais.roberta.syntax.action.serial.SerialWriteAction;
-import de.fhg.iais.roberta.syntax.action.sound.PlayFileAction;
 import de.fhg.iais.roberta.syntax.action.sound.PlayNoteAction;
 import de.fhg.iais.roberta.syntax.action.sound.ToneAction;
-import de.fhg.iais.roberta.syntax.action.sound.VolumeAction;
 import de.fhg.iais.roberta.syntax.actors.arduino.LEDMatrixImageAction;
 import de.fhg.iais.roberta.syntax.actors.arduino.LEDMatrixSetBrightnessAction;
 import de.fhg.iais.roberta.syntax.actors.arduino.LEDMatrixTextAction;
@@ -167,18 +164,8 @@ public final class MbotCppVisitor extends AbstractCommonArduinoCppVisitor implem
     }
 
     @Override
-    public Void visitShowTextAction(ShowTextAction<Void> showTextAction) {
-        return null;
-    }
-
-    @Override
     public Void visitClearDisplayAction(ClearDisplayAction<Void> clearDisplayAction) {
-        this.sb.append("__meLEDMatrix_").append(clearDisplayAction.getPort()).append(".clearScreen();");
-        return null;
-    }
-
-    @Override
-    public Void visitVolumeAction(VolumeAction<Void> volumeAction) {
+        this.sb.append("__meLEDMatrix_").append(clearDisplayAction.port).append(".clearScreen();");
         return null;
     }
 
@@ -232,15 +219,10 @@ public final class MbotCppVisitor extends AbstractCommonArduinoCppVisitor implem
 
     @Override
     public Void visitLightStatusAction(LightStatusAction<Void> lightStatusAction) {
-        this.sb.append("_meRgbLed.setColor(" + lightStatusAction.getPort());
+        this.sb.append("_meRgbLed.setColor(" + lightStatusAction.getUserDefinedPort());
         this.sb.append(", 0, 0, 0);");
         nlIndent();
         this.sb.append("_meRgbLed.show();");
-        return null;
-    }
-
-    @Override
-    public Void visitPlayFileAction(PlayFileAction<Void> playFileAction) {
         return null;
     }
 
@@ -270,7 +252,7 @@ public final class MbotCppVisitor extends AbstractCommonArduinoCppVisitor implem
     public Void visitMotorOnAction(MotorOnAction<Void> motorOnAction) {
         final MotorDuration<Void> duration = motorOnAction.getParam().getDuration();
         this.sb.append("_meDCmotor").append(motorOnAction.getUserDefinedPort()).append(".run(");
-        if ( !this.configuration.getFirstMotorPort(SC.RIGHT).equals(motorOnAction.getUserDefinedPort()) ) {
+        if ( !Objects.equals(this.configuration.getFirstMotorPort(SC.RIGHT), motorOnAction.getUserDefinedPort()) ) {
             this.sb.append("-1*");
         }
         this.sb.append("(");
@@ -361,7 +343,7 @@ public final class MbotCppVisitor extends AbstractCommonArduinoCppVisitor implem
 
     @Override
     public Void visitLightSensor(LightSensor<Void> lightSensor) {
-        this.sb.append("_meLight" + lightSensor.getPort() + ".read() * ANALOG2PERCENT");
+        this.sb.append("_meLight" + lightSensor.getUserDefinedPort() + ".read() * ANALOG2PERCENT");
         return null;
     }
 
@@ -378,7 +360,7 @@ public final class MbotCppVisitor extends AbstractCommonArduinoCppVisitor implem
 
     @Override
     public Void visitSoundSensor(SoundSensor<Void> soundSensor) {
-        this.sb.append("_meSoundSensor" + soundSensor.getPort() + ".strength()");
+        this.sb.append("_meSoundSensor" + soundSensor.getUserDefinedPort() + ".strength()");
         return null;
     }
 
@@ -395,43 +377,43 @@ public final class MbotCppVisitor extends AbstractCommonArduinoCppVisitor implem
 
     @Override
     public Void visitGyroSensor(GyroSensor<Void> gyroSensor) {
-        this.sb.append("myGyro" + gyroSensor.getPort() + ".getGyro" + gyroSensor.getMode() + "()");
+        this.sb.append("myGyro" + gyroSensor.getUserDefinedPort() + ".getGyro" + gyroSensor.getMode() + "()");
         return null;
     }
 
     @Override
-    public Void visitAccelerometer(AccelerometerSensor<Void> accelerometer) {
-        this.sb.append("myGyro" + accelerometer.getPort() + ".getAngle" + accelerometer.getMode().toString() + "()");
+    public Void visitAccelerometerSensor(AccelerometerSensor<Void> accelerometer) {
+        this.sb.append("myGyro" + accelerometer.getUserDefinedPort() + ".getAngle" + accelerometer.getMode().toString() + "()");
         return null;
     }
 
     @Override
     public Void visitInfraredSensor(InfraredSensor<Void> infraredSensor) {
-        this.sb.append("!__meLineFollower" + infraredSensor.getPort() + ".readSensor" + infraredSensor.getSlot() + "()");
+        this.sb.append("!__meLineFollower" + infraredSensor.getUserDefinedPort() + ".readSensor" + infraredSensor.getSlot() + "()");
         return null;
     }
 
     @Override
     public Void visitTemperatureSensor(TemperatureSensor<Void> temperatureSensor) {
-        this.sb.append("_meTemp" + temperatureSensor.getPort() + ".getTemperature()");
+        this.sb.append("_meTemp" + temperatureSensor.getUserDefinedPort() + ".getTemperature()");
         return null;
     }
 
     @Override
     public Void visitTouchSensor(TouchSensor<Void> touchSensor) {
-        this.sb.append("_meTouch" + touchSensor.getPort() + ".touched()");
+        this.sb.append("_meTouch" + touchSensor.getUserDefinedPort() + ".touched()");
         return null;
     }
 
     @Override
     public Void visitUltrasonicSensor(UltrasonicSensor<Void> ultrasonicSensor) {
-        this.sb.append("_meUltraSensor" + ultrasonicSensor.getPort() + ".distanceCm()");
+        this.sb.append("_meUltraSensor" + ultrasonicSensor.getUserDefinedPort() + ".distanceCm()");
         return null;
     }
 
     @Override
     public Void visitMotionSensor(MotionSensor<Void> motionSensor) {
-        this.sb.append("_mePir" + motionSensor.getPort() + ".isHumanDetected()");
+        this.sb.append("_mePir" + motionSensor.getUserDefinedPort() + ".isHumanDetected()");
         return null;
     }
 
@@ -443,7 +425,7 @@ public final class MbotCppVisitor extends AbstractCommonArduinoCppVisitor implem
 
     @Override
     public Void visitJoystick(Joystick<Void> joystick) {
-        this.sb.append("_meJoystick" + joystick.getPort() + ".read" + joystick.getAxis() + "()");
+        this.sb.append("_meJoystick" + joystick.getUserDefinedPort() + ".read" + joystick.getAxis() + "()");
         return null;
     }
 
@@ -659,6 +641,8 @@ public final class MbotCppVisitor extends AbstractCommonArduinoCppVisitor implem
                     nlIndent();
                     this.sb.append("MeIR _meIr;");
                     break;
+                case SC.SERIAL:
+                    break;
                 default:
                     throw new DbcException("Actor is not supported! " + usedActor.getType());
             }
@@ -669,15 +653,7 @@ public final class MbotCppVisitor extends AbstractCommonArduinoCppVisitor implem
     public Void visitVoltageSensor(VoltageSensor<Void> voltageSensor) {
         //RatedVoltage: 5V
         //Signal type: Analog (range from 0 to 970)
-        this.sb.append("_mePotentiometer" + voltageSensor.getPort() + ".read()*5/970");
-        return null;
-    }
-
-    @Override
-    public Void visitSerialWriteAction(SerialWriteAction<Void> serialWriteAction) {
-        this.sb.append("Serial.println(");
-        serialWriteAction.getValue().accept(this);
-        this.sb.append(");");
+        this.sb.append("_mePotentiometer" + voltageSensor.getUserDefinedPort() + ".read()*5/970");
         return null;
     }
 

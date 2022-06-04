@@ -1,11 +1,11 @@
-BASE_VERSION=''            # the version of the docker base image, FROM which this server image is derived. Read and get the number from the 'Docker/_README.md' file.
+BASE_VERSION=''            # the version of the docker base image, FROM which this server image is derived. Read and get the number from the 'Docker/_README-standalone-1server.md' file.
 TAG_VERSION=''             # OPTIONAL parameter. ONLY for starting container. If defined, take this as the tag to be started. It replaces the default tag 'BASE_VERSION'. BE CAREFUL.
 
 PORT=''                    # port the jetty server will listen to, very often 1999
 LOG_LEVEL=''               # the logging level of the root logger. From DEBUG to ERROR
 LOG_CONFIG_FILE=''         # logback configuration, very often /logback-prod.xml or /logback.xml
 
-REMOTE_DEBUG=false         # prepare the container and the JVM running in the docker container to connect to a debugger on port 8000. Illegal for master for obvious reasons.
+REMOTE_DEBUG=false         # prepare the container and the JVM running in the docker container to connect to a debugger on port 2000. Illegal for master for obvious reasons.
 GC_LOGGING=false           # activate logging for the garbage collector
 
 BRANCH=''                  # the branch to be deployed on this server, e.g. 'develop'

@@ -1,0 +1,694 @@
+{"ops": [
+  {
+    "opc": "expr",
+    "expr": "NUM_CONST",
+    "value": "0"
+  },
+  {
+    "opc": "VarDeclaration",
+    "name": "X",
+    "type": "NUMBER"
+  },
+  {
+    "opc": "comment",
+    "value": "Control Flow Nested Loop --Start"
+  },
+  {
+    "opc": "comment",
+    "type": "start",
+    "target": "RepeatStmt"
+  },
+  {
+    "opc": "comment",
+    "type": "start",
+    "target": "RepeatStmt"
+  },
+  {
+    "opc": "expr",
+    "name": "X",
+    "expr": "Var"
+  },
+  {
+    "opc": "expr",
+    "expr": "NUM_CONST",
+    "value": "20"
+  },
+  {
+    "op": "GTE",
+    "opc": "expr",
+    "expr": "Binary"
+  },
+  {
+    "op": "NOT",
+    "opc": "expr",
+    "expr": "Unary"
+  },
+  {
+    "opc": "jump",
+    "conditional": false,
+    "target": 49
+  },
+  {
+    "opc": "comment",
+    "type": "start",
+    "target": "RepeatStmt"
+  },
+  {
+    "opc": "expr",
+    "expr": "NUM_CONST",
+    "value": "1"
+  },
+  {
+    "opc": "VarDeclaration",
+    "name": "i",
+    "type": "NUMBER"
+  },
+  {
+    "opc": "expr",
+    "name": "i",
+    "expr": "Var"
+  },
+  {
+    "opc": "expr",
+    "expr": "NUM_CONST",
+    "value": "11"
+  },
+  {
+    "op": "LT",
+    "opc": "expr",
+    "expr": "Binary"
+  },
+  {
+    "opc": "jump",
+    "conditional": false,
+    "target": 46
+  },
+  {
+    "opc": "comment",
+    "type": "start",
+    "target": "RepeatStmt"
+  },
+  {
+    "opc": "expr",
+    "expr": "NUM_CONST",
+    "value": "0"
+  },
+  {
+    "opc": "VarDeclaration",
+    "name": "k0",
+    "type": "NUMBER"
+  },
+  {
+    "opc": "expr",
+    "name": "k0",
+    "expr": "Var"
+  },
+  {
+    "opc": "expr",
+    "expr": "NUM_CONST",
+    "value": "2"
+  },
+  {
+    "op": "LT",
+    "opc": "expr",
+    "expr": "Binary"
+  },
+  {
+    "opc": "jump",
+    "conditional": false,
+    "target": 39
+  },
+  {
+    "opc": "comment",
+    "type": "start",
+    "target": "IfStatement"
+  },
+  {
+    "opc": "expr",
+    "name": "i",
+    "expr": "Var"
+  },
+  {
+    "op": "EVEN",
+    "opc": "expr",
+    "expr": "MathPropFunct"
+  },
+  {
+    "opc": "jump",
+    "conditional": false,
+    "target": 30
+  },
+  {
+    "opc": "jump",
+    "conditional": "always",
+    "target": 34
+  },
+  {
+    "opc": "jump",
+    "conditional": "always",
+    "target": 30
+  },
+  {
+    "opc": "comment",
+    "type": "end",
+    "target": "IfStatement"
+  },
+  {
+    "opc": "expr",
+    "name": "X",
+    "expr": "Var"
+  },
+  {
+    "opc": "expr",
+    "expr": "NUM_CONST",
+    "value": "1"
+  },
+  {
+    "opc": "mathChange",
+    "name": "X"
+  },
+  {
+    "opc": "expr",
+    "expr": "NUM_CONST",
+    "value": "1"
+  },
+  {
+    "opc": "expr",
+    "name": "k0",
+    "expr": "Var"
+  },
+  {
+    "op": "ADD",
+    "opc": "expr",
+    "expr": "Binary"
+  },
+  {
+    "opc": "AssignStmt",
+    "name": "k0"
+  },
+  {
+    "opc": "jump",
+    "conditional": "always",
+    "target": 20
+  },
+  {
+    "opc": "unbindVar",
+    "name": "k0"
+  },
+  {
+    "opc": "comment",
+    "type": "end",
+    "target": "RepeatStmt"
+  },
+  {
+    "opc": "expr",
+    "expr": "NUM_CONST",
+    "value": "1"
+  },
+  {
+    "opc": "expr",
+    "name": "i",
+    "expr": "Var"
+  },
+  {
+    "op": "ADD",
+    "opc": "expr",
+    "expr": "Binary"
+  },
+  {
+    "opc": "AssignStmt",
+    "name": "i"
+  },
+  {
+    "opc": "jump",
+    "conditional": "always",
+    "target": 13
+  },
+  {
+    "opc": "unbindVar",
+    "name": "i"
+  },
+  {
+    "opc": "comment",
+    "type": "end",
+    "target": "RepeatStmt"
+  },
+  {
+    "opc": "jump",
+    "conditional": "always",
+    "target": 5
+  },
+  {
+    "opc": "comment",
+    "type": "end",
+    "target": "RepeatStmt"
+  },
+  {
+    "opc": "jump",
+    "conditional": "always",
+    "target": 52
+  },
+  {
+    "opc": "jump",
+    "conditional": "always",
+    "target": 4
+  },
+  {
+    "opc": "comment",
+    "type": "end",
+    "target": "RepeatStmt"
+  },
+  {
+    "opc": "comment",
+    "type": "start",
+    "target": "RepeatStmt"
+  },
+  {
+    "opc": "expr",
+    "expr": "NUM_CONST",
+    "value": "1"
+  },
+  {
+    "opc": "VarDeclaration",
+    "name": "j",
+    "type": "NUMBER"
+  },
+  {
+    "opc": "expr",
+    "name": "j",
+    "expr": "Var"
+  },
+  {
+    "opc": "expr",
+    "expr": "NUM_CONST",
+    "value": "4"
+  },
+  {
+    "op": "LT",
+    "opc": "expr",
+    "expr": "Binary"
+  },
+  {
+    "opc": "jump",
+    "conditional": false,
+    "target": 85
+  },
+  {
+    "opc": "expr",
+    "name": "X",
+    "expr": "Var"
+  },
+  {
+    "opc": "expr",
+    "expr": "NUM_CONST",
+    "value": "1"
+  },
+  {
+    "opc": "mathChange",
+    "name": "X"
+  },
+  {
+    "opc": "comment",
+    "type": "start",
+    "target": "RepeatStmt"
+  },
+  {
+    "opc": "expr",
+    "expr": "NUM_CONST",
+    "value": "1"
+  },
+  {
+    "opc": "VarDeclaration",
+    "name": "k",
+    "type": "NUMBER"
+  },
+  {
+    "opc": "expr",
+    "name": "k",
+    "expr": "Var"
+  },
+  {
+    "opc": "expr",
+    "expr": "NUM_CONST",
+    "value": "5"
+  },
+  {
+    "op": "LT",
+    "opc": "expr",
+    "expr": "Binary"
+  },
+  {
+    "opc": "jump",
+    "conditional": false,
+    "target": 78
+  },
+  {
+    "opc": "expr",
+    "name": "X",
+    "expr": "Var"
+  },
+  {
+    "opc": "expr",
+    "expr": "NUM_CONST",
+    "value": "1"
+  },
+  {
+    "opc": "mathChange",
+    "name": "X"
+  },
+  {
+    "opc": "expr",
+    "expr": "NUM_CONST",
+    "value": "3"
+  },
+  {
+    "opc": "expr",
+    "name": "k",
+    "expr": "Var"
+  },
+  {
+    "op": "ADD",
+    "opc": "expr",
+    "expr": "Binary"
+  },
+  {
+    "opc": "AssignStmt",
+    "name": "k"
+  },
+  {
+    "opc": "jump",
+    "conditional": "always",
+    "target": 66
+  },
+  {
+    "opc": "unbindVar",
+    "name": "k"
+  },
+  {
+    "opc": "comment",
+    "type": "end",
+    "target": "RepeatStmt"
+  },
+  {
+    "opc": "expr",
+    "expr": "NUM_CONST",
+    "value": "3"
+  },
+  {
+    "opc": "expr",
+    "name": "j",
+    "expr": "Var"
+  },
+  {
+    "op": "ADD",
+    "opc": "expr",
+    "expr": "Binary"
+  },
+  {
+    "opc": "AssignStmt",
+    "name": "j"
+  },
+  {
+    "opc": "jump",
+    "conditional": "always",
+    "target": 56
+  },
+  {
+    "opc": "unbindVar",
+    "name": "j"
+  },
+  {
+    "opc": "comment",
+    "type": "end",
+    "target": "RepeatStmt"
+  },
+  {
+    "opc": "comment",
+    "type": "start",
+    "target": "RepeatStmt"
+  },
+  {
+    "opc": "comment",
+    "type": "start",
+    "target": "RepeatStmt"
+  },
+  {
+    "opc": "comment",
+    "type": "start",
+    "target": "IfStatement"
+  },
+  {
+    "opc": "expr",
+    "expr": "NUM_CONST",
+    "value": "23"
+  },
+  {
+    "opc": "expr",
+    "name": "X",
+    "expr": "Var"
+  },
+  {
+    "op": "EQ",
+    "opc": "expr",
+    "expr": "Binary"
+  },
+  {
+    "opc": "jump",
+    "conditional": false,
+    "target": 119
+  },
+  {
+    "opc": "comment",
+    "type": "start",
+    "target": "RepeatStmt"
+  },
+  {
+    "opc": "comment",
+    "type": "start",
+    "target": "IfStatement"
+  },
+  {
+    "opc": "expr",
+    "name": "X",
+    "expr": "Var"
+  },
+  {
+    "op": "EVEN",
+    "opc": "expr",
+    "expr": "MathPropFunct"
+  },
+  {
+    "opc": "jump",
+    "conditional": false,
+    "target": 101
+  },
+  {
+    "opc": "jump",
+    "conditional": "always",
+    "target": 95
+  },
+  {
+    "opc": "jump",
+    "conditional": "always",
+    "target": 101
+  },
+  {
+    "opc": "comment",
+    "type": "end",
+    "target": "IfStatement"
+  },
+  {
+    "opc": "expr",
+    "name": "X",
+    "expr": "Var"
+  },
+  {
+    "opc": "expr",
+    "expr": "NUM_CONST",
+    "value": "1"
+  },
+  {
+    "opc": "mathChange",
+    "name": "X"
+  },
+  {
+    "opc": "jump",
+    "conditional": "always",
+    "target": 107
+  },
+  {
+    "opc": "jump",
+    "conditional": "always",
+    "target": 95
+  },
+  {
+    "opc": "comment",
+    "type": "end",
+    "target": "RepeatStmt"
+  },
+  {
+    "opc": "comment",
+    "type": "start",
+    "target": "IfStatement"
+  },
+  {
+    "opc": "expr",
+    "name": "X",
+    "expr": "Var"
+  },
+  {
+    "op": "EVEN",
+    "opc": "expr",
+    "expr": "MathPropFunct"
+  },
+  {
+    "opc": "jump",
+    "conditional": false,
+    "target": 114
+  },
+  {
+    "opc": "jump",
+    "conditional": "always",
+    "target": 122
+  },
+  {
+    "opc": "jump",
+    "conditional": "always",
+    "target": 114
+  },
+  {
+    "opc": "comment",
+    "type": "end",
+    "target": "IfStatement"
+  },
+  {
+    "opc": "expr",
+    "name": "X",
+    "expr": "Var"
+  },
+  {
+    "opc": "expr",
+    "expr": "NUM_CONST",
+    "value": "1000"
+  },
+  {
+    "opc": "mathChange",
+    "name": "X"
+  },
+  {
+    "opc": "jump",
+    "conditional": "always",
+    "target": 119
+  },
+  {
+    "opc": "comment",
+    "type": "end",
+    "target": "IfStatement"
+  },
+  {
+    "opc": "jump",
+    "conditional": "always",
+    "target": 122
+  },
+  {
+    "opc": "jump",
+    "conditional": "always",
+    "target": 89
+  },
+  {
+    "opc": "comment",
+    "type": "end",
+    "target": "RepeatStmt"
+  },
+  {
+    "opc": "jump",
+    "conditional": "always",
+    "target": 125
+  },
+  {
+    "opc": "jump",
+    "conditional": "always",
+    "target": 88
+  },
+  {
+    "opc": "comment",
+    "type": "end",
+    "target": "RepeatStmt"
+  },
+  {
+    "opc": "comment",
+    "type": "start",
+    "target": "RepeatStmt"
+  },
+  {
+    "opc": "comment",
+    "type": "start",
+    "target": "WaitStmt"
+  },
+  {
+    "opc": "expr",
+    "expr": "BOOL_CONST",
+    "value": true
+  },
+  {
+    "opc": "jump",
+    "conditional": false,
+    "target": 132
+  },
+  {
+    "opc": "jump",
+    "conditional": "always",
+    "target": 140
+  },
+  {
+    "opc": "jump",
+    "conditional": "always",
+    "target": 138
+  },
+  {
+    "opc": "expr",
+    "expr": "BOOL_CONST",
+    "value": true
+  },
+  {
+    "opc": "jump",
+    "conditional": false,
+    "target": 135
+  },
+  {
+    "opc": "jump",
+    "conditional": "always",
+    "target": 138
+  },
+  {
+    "opc": "expr",
+    "expr": "NUM_CONST",
+    "value": 1
+  },
+  {"opc": "WaitTimeSTMT"},
+  {
+    "opc": "jump",
+    "conditional": "always",
+    "target": 128
+  },
+  {
+    "opc": "comment",
+    "type": "end",
+    "target": "WaitStmt"
+  },
+  {
+    "opc": "jump",
+    "conditional": "always",
+    "target": 127
+  },
+  {
+    "opc": "comment",
+    "type": "end",
+    "target": "RepeatStmt"
+  },
+  {
+    "opc": "comment",
+    "value": "Control Flow Nested Loop -- End"
+  },
+  {"opc": "stop"}
+]}

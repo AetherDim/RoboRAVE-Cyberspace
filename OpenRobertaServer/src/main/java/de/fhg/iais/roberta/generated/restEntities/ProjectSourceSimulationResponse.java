@@ -14,8 +14,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * the response for the /projectWorkflow/sourceSimulation REST request<br>
- * <br>
+ * the response for the /projectWorkflow/sourceSimulation REST request<br><br>
  * Version: 1<br>
  * Datum: 2020-06-15
  */
@@ -24,7 +23,7 @@ public class ProjectSourceSimulationResponse extends BaseResponse {
     protected String fileExtension;
     protected String progXML;
     protected Map<String, JSONObject> confAnnos;
-    protected JSONObject javaScriptConfiguration;
+    protected JSONObject configuration;
 
     /**
      * the response for the /projectWorkflow/sourceSimulation REST request
@@ -70,7 +69,7 @@ public class ProjectSourceSimulationResponse extends BaseResponse {
         String fileExtension,
         String progXML,
         Map<String, JSONObject> confAnnos,
-        JSONObject javaScriptConfiguration) {
+        JSONObject configuration) {
         ProjectSourceSimulationResponse entity = new ProjectSourceSimulationResponse();
         entity.setCmd(cmd);
         entity.setRc(rc);
@@ -93,7 +92,7 @@ public class ProjectSourceSimulationResponse extends BaseResponse {
         entity.setFileExtension(fileExtension);
         entity.setProgXML(progXML);
         entity.setConfAnnos(confAnnos);
-        entity.setJavaScriptConfiguration(javaScriptConfiguration);
+        entity.setConfiguration(configuration);
         entity.immutable();
         return entity;
     }
@@ -106,11 +105,10 @@ public class ProjectSourceSimulationResponse extends BaseResponse {
     }
 
     /**
-     * merge the properties of a JSON-object into this bean. The bean must be "under construction". The keys of the JSON-Object must be valid. The bean remains
-     * "under construction".<br>
+     * merge the properties of a JSON-object into this bean. The bean must be "under construction".
+     * The keys of the JSON-Object must be valid. The bean remains "under construction".<br>
      * Throws a runtime exception if inconsistencies are detected.
      */
-    @Override
     public ProjectSourceSimulationResponse merge(JSONObject jsonO) {
         try {
             for ( String key : JSONObject.getNames(jsonO) ) {
@@ -164,8 +162,8 @@ public class ProjectSourceSimulationResponse extends BaseResponse {
                             putConfAnnos(subKey, map.getJSONObject(subKey));
                         }
                     }
-                } else if ( "javaScriptConfiguration".equals(key) ) {
-                    setJavaScriptConfiguration(jsonO.getJSONObject(key));
+                } else if ( "configuration".equals(key) ) {
+                    setConfiguration(jsonO.getJSONObject(key));
                 } else {
                     throw new RuntimeException("JSON parse error. Found invalid key: " + key + " in " + jsonO);
                 }
@@ -181,7 +179,6 @@ public class ProjectSourceSimulationResponse extends BaseResponse {
      * Checks whether all required fields are set. All lists are made immutable.<br>
      * Throws a runtime exception if inconsistencies are detected.
      */
-    @Override
     public ProjectSourceSimulationResponse immutable() {
         if ( this.immutable ) {
             return this;
@@ -199,32 +196,32 @@ public class ProjectSourceSimulationResponse extends BaseResponse {
         if ( !this.immutable ) {
             _message = "ProjectSourceSimulationResponse-object is already immutable: " + toString();
         }
-        if ( this.rc == null ) {
+        if ( rc == null ) {
             _message = "required property rc of ProjectSourceSimulationResponse-object is not set: " + toString();
         }
-        if ( this.initToken == null ) {
+        if ( initToken == null ) {
             _message = "required property initToken of ProjectSourceSimulationResponse-object is not set: " + toString();
         }
-        if ( !this.serverTimeDefined ) {
+        if ( !serverTimeDefined ) {
             _message = "required property serverTime of ProjectSourceSimulationResponse-object is not set: " + toString();
         }
-        if ( this.serverVersion == null ) {
+        if ( serverVersion == null ) {
             _message = "required property serverVersion of ProjectSourceSimulationResponse-object is not set: " + toString();
         }
-        if ( this.javaScriptProgram == null ) {
+        if ( javaScriptProgram == null ) {
             _message = "required property javaScriptProgram of ProjectSourceSimulationResponse-object is not set: " + toString();
         }
-        if ( this.fileExtension == null ) {
+        if ( fileExtension == null ) {
             _message = "required property fileExtension of ProjectSourceSimulationResponse-object is not set: " + toString();
         }
-        if ( this.progXML == null ) {
+        if ( progXML == null ) {
             _message = "required property progXML of ProjectSourceSimulationResponse-object is not set: " + toString();
         }
-        if ( this.confAnnos == null ) {
+        if ( confAnnos == null ) {
             _message = "required property confAnnos of ProjectSourceSimulationResponse-object is not set: " + toString();
         }
-        if ( this.javaScriptConfiguration == null ) {
-            _message = "required property javaScriptConfiguration of ProjectSourceSimulationResponse-object is not set: " + toString();
+        if ( configuration == null ) {
+            _message = "required property configuration of ProjectSourceSimulationResponse-object is not set: " + toString();
         }
         if ( _message != null ) {
             this.immutable = false;
@@ -339,23 +336,23 @@ public class ProjectSourceSimulationResponse extends BaseResponse {
     }
 
     /**
-     * GET javaScriptConfiguration. Object must be immutable. Never return null or an undefined/default value.
+     * GET configuration. Object must be immutable. Never return null or an undefined/default value.
      */
-    public JSONObject getJavaScriptConfiguration() {
+    public JSONObject getConfiguration() {
         if ( !this.immutable ) {
-            throw new RuntimeException("no javaScriptConfiguration from an object under construction: " + toString());
+            throw new RuntimeException("no configuration from an object under construction: " + toString());
         }
-        return this.javaScriptConfiguration;
+        return this.configuration;
     }
 
     /**
-     * SET javaScriptConfiguration. Object must be mutable.
+     * SET configuration. Object must be mutable.
      */
-    public ProjectSourceSimulationResponse setJavaScriptConfiguration(JSONObject javaScriptConfiguration) {
+    public ProjectSourceSimulationResponse setConfiguration(JSONObject configuration) {
         if ( this.immutable ) {
-            throw new RuntimeException("javaScriptConfiguration assigned to an immutable object: " + toString());
+            throw new RuntimeException("configuration assigned to an immutable object: " + toString());
         }
-        this.javaScriptConfiguration = javaScriptConfiguration;
+        this.configuration = configuration;
         return this;
     }
 
@@ -363,7 +360,6 @@ public class ProjectSourceSimulationResponse extends BaseResponse {
      * generates a JSON-object from an immutable bean.<br>
      * Throws a runtime exception if inconsistencies are detected.
      */
-    @Override
     public JSONObject toJson() {
         if ( !this.immutable ) {
             throw new RuntimeException("no JSON from an object under construction: " + toString());
@@ -419,12 +415,12 @@ public class ProjectSourceSimulationResponse extends BaseResponse {
             jsonO.put("progXML", this.progXML);
             {
                 JSONObject map = new JSONObject();
-                for ( Entry<String, JSONObject> entry : this.confAnnos.entrySet() ) {
+                for ( Entry<String, JSONObject> entry : confAnnos.entrySet() ) {
                     map.put(entry.getKey(), entry.getValue());
                 }
                 jsonO.put("confAnnos", map);
             }
-            jsonO.put("javaScriptConfiguration", this.javaScriptConfiguration);
+            jsonO.put("configuration", this.configuration);
         } catch ( JSONException e ) {
             throw new RuntimeException("JSON unparse error when unparsing: " + this, e);
         }
@@ -433,53 +429,7 @@ public class ProjectSourceSimulationResponse extends BaseResponse {
 
     @Override
     public String toString() {
-        return "ProjectSourceSimulationResponse [immutable="
-            + this.immutable
-            + ", cmd="
-            + this.cmd
-            + ", rc="
-            + this.rc
-            + ", message="
-            + this.message
-            + ", cause="
-            + this.cause
-            + ", parameters="
-            + this.parameters
-            + ", initToken="
-            + this.initToken
-            + ", serverTime="
-            + this.serverTime
-            + ", serverVersion="
-            + this.serverVersion
-            + ", robotWait="
-            + this.robotWait
-            + ", robotBattery="
-            + this.robotBattery
-            + ", robotName="
-            + this.robotName
-            + ", robotVersion="
-            + this.robotVersion
-            + ", robotFirmwareName="
-            + this.robotFirmwareName
-            + ", robotSensorvalues="
-            + this.robotSensorvalues
-            + ", robotNepoexitvalue="
-            + this.robotNepoexitvalue
-            + ", robotState="
-            + this.robotState
-            + ", notificationsAvailable="
-            + this.notificationsAvailable
-            + ", javaScriptProgram="
-            + this.javaScriptProgram
-            + ", fileExtension="
-            + this.fileExtension
-            + ", progXML="
-            + this.progXML
-            + ", confAnnos="
-            + this.confAnnos
-            + ", javaScriptConfiguration="
-            + this.javaScriptConfiguration
-            + " ]";
+        return "ProjectSourceSimulationResponse [immutable=" + this.immutable + ", cmd=" + this.cmd + ", rc=" + this.rc + ", message=" + this.message + ", cause=" + this.cause + ", parameters=" + this.parameters + ", initToken=" + this.initToken + ", serverTime=" + this.serverTime + ", serverVersion=" + this.serverVersion + ", robotWait=" + this.robotWait + ", robotBattery=" + this.robotBattery + ", robotName=" + this.robotName + ", robotVersion=" + this.robotVersion + ", robotFirmwareName=" + this.robotFirmwareName + ", robotSensorvalues=" + this.robotSensorvalues + ", robotNepoexitvalue=" + this.robotNepoexitvalue + ", robotState=" + this.robotState + ", notificationsAvailable=" + this.notificationsAvailable + ", javaScriptProgram=" + this.javaScriptProgram + ", fileExtension=" + this.fileExtension + ", progXML=" + this.progXML + ", confAnnos=" + this.confAnnos + ", configuration=" + this.configuration + " ]";
     }
 
     @Override

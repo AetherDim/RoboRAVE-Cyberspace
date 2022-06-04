@@ -1,5 +1,6 @@
 package de.fhg.iais.roberta.persistence;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,22 +15,24 @@ import de.fhg.iais.roberta.persistence.dao.UserGroupDao;
 import de.fhg.iais.roberta.persistence.util.DbSession;
 import de.fhg.iais.roberta.persistence.util.HttpSessionState;
 import de.fhg.iais.roberta.util.Key;
+import de.fhg.iais.roberta.util.Util;
+import de.fhg.iais.roberta.util.dbc.Assert;
 
 public class UserProcessor extends AbstractProcessor {
 
-    public static final String ILLEGAL_USER_NAME_CHARACTER_PATTERN = "[^a-zA-Z0-9=+!?.,%#+&^@_\\- ]";
+    private static final String ILLEGAL_USER_NAME_CHARACTER_PATTERN_DEFINITION = "[^a-zA-Z0-9=+!?.,%#+&^@_\\- ]";
+    public static Pattern ILLEGAL_USER_NAME_CHARACTER_PATTERN = Pattern.compile(ILLEGAL_USER_NAME_CHARACTER_PATTERN_DEFINITION, Pattern.CASE_INSENSITIVE);
 
     public UserProcessor(DbSession dbSession, HttpSessionState httpSessionState) {
         super(dbSession, httpSessionState.getUserId());
     }
 
-    public User getUser(String account) {
-        return getMemberOfUserGroup(null, account);
+    public User getStandardUser(String account) {
+        return getUser(null, account);
     }
 
-    public User getMemberOfUserGroup(UserGroup userGroup, String account) {
+    public User getUser(UserGroup userGroup, String account) {
         UserDao userDao = new UserDao(this.dbSession);
-
         User user = userDao.loadUser(userGroup, account);
         if ( user != null ) {
             setStatus(ProcessorStatus.SUCCEEDED, Key.USER_GET_ONE_SUCCESS, new HashMap<>());
@@ -40,25 +43,13 @@ public class UserProcessor extends AbstractProcessor {
     }
 
     /**
-     * Returns a user with the given account name and password. This can not be used to get group members, because you need to know who the user group owner is,
-     * in order to clearly identify a user group and therefore its members.
+     * Returns a user with the given account name and password. Not for group members.
      *
      * @param account
      * @param password
-     * @return
-     * @throws Exception
+     * @return the user matching the parameters; null, if errors occurred or user not found
      */
-    public User getUser(String account, String password) throws Exception {
-        Pattern p = Pattern.compile(ILLEGAL_USER_NAME_CHARACTER_PATTERN, Pattern.CASE_INSENSITIVE);
-        Matcher acc_symbols = p.matcher(account);
-
-        if ( acc_symbols.find() ) {
-            Map<String, String> processorParameters = new HashMap<>();
-            processorParameters.put("ACCOUNT", account);
-            setStatus(ProcessorStatus.FAILED, Key.USER_CREATE_ERROR_CONTAINS_SPECIAL_CHARACTERS, processorParameters);
-            return null;
-        }
-
+    public User getStandardUserForLogin(String account, String password) throws Exception {
         UserDao userDao = new UserDao(this.dbSession);
         User user = userDao.loadUser(null, account);
         if ( user != null && user.isPasswordCorrect(password) ) {
@@ -70,12 +61,11 @@ public class UserProcessor extends AbstractProcessor {
         }
     }
 
-    public User getUser(UserGroup userGroup, String account, String password) throws Exception {
+    public User getGroupUserForLogin(UserGroup userGroup, String account, String password) throws Exception {
         if ( userGroup == null ) {
             setStatus(ProcessorStatus.FAILED, Key.GROUP_GET_ONE_ERROR_NOT_FOUND, new HashMap<>());
             return null;
         }
-
         UserDao userDao = new UserDao(this.dbSession);
         User user = userDao.loadUser(userGroup, account);
         if ( user != null && user.isPasswordCorrect(password) ) {
@@ -112,48 +102,61 @@ public class UserProcessor extends AbstractProcessor {
     }
 
     /**
-     * Creates a new user. Is not used to create user group members. Take a look in the UserGroupProcessor for that.
+     * Create a new user. If data is invalid or the email is already used, set error status.<br><br>
+     * Not used to create user group members. The UserGroupProcessor is used for that.
      *
-     * @param account
-     * @param password
-     * @param userName
-     * @param role
-     * @param email
-     * @param tags
-     * @param youngerThen14
-     * @throws Exception
+     * @param account not null, not empty
+     * @param password not null, not empty
+     * @param userName may be null
+     * @param role not null, not empty
+     * @param email not null, may be empty
+     * @param tags may be null
+     * @param youngerThen14 boolean flag
+     * @return the user; maybe null, if the creation failed
      */
-    public void createUser(String account, String password, String userName, String role, String email, String tags, boolean youngerThen14) throws Exception {
-        Pattern p = Pattern.compile(ILLEGAL_USER_NAME_CHARACTER_PATTERN, Pattern.CASE_INSENSITIVE);
-        Matcher acc_symbols = p.matcher(account);
-        boolean account_check = acc_symbols.find();
-        Matcher userName_symbols = p.matcher(userName);
-        boolean userName_check = userName_symbols.find();
+    public User createUser(String account, String password, String userName, String role, String email, String tags, boolean youngerThen14) throws Exception {
         Map<String, String> processorParameters = new HashMap<>();
         processorParameters.put("ACCOUNT", account);
         processorParameters.put("USER_NAME", userName);
+
         if ( account == null || account.equals("") || password == null || password.equals("") ) {
             setStatus(ProcessorStatus.FAILED, Key.USER_CREATE_ERROR_MISSING_REQ_FIELDS, processorParameters);
-        } else if ( account_check || userName_check ) {
+            return null;
+        }
+        Matcher acc_symbols = ILLEGAL_USER_NAME_CHARACTER_PATTERN.matcher(account);
+        boolean account_check = acc_symbols.find();
+        Matcher userName_symbols = ILLEGAL_USER_NAME_CHARACTER_PATTERN.matcher(userName);
+        boolean userName_check = userName_symbols.find();
+        if ( account_check || userName_check ) {
             setStatus(ProcessorStatus.FAILED, Key.USER_CREATE_ERROR_CONTAINS_SPECIAL_CHARACTERS, processorParameters);
+            return null;
         } else if ( account.length() > 25 || userName.length() > 25 ) {
             setStatus(ProcessorStatus.FAILED, Key.USER_CREATE_ERROR_ACCOUNT_LENGTH, processorParameters);
-        } else {
-            UserDao userDao = new UserDao(this.dbSession);
-            userDao.lockTable();
-            if ( !isMailUsed(userDao, account, email) ) {
-                User user = userDao.persistUser(null, account, password, role);
-                if ( user != null ) {
-                    setStatus(ProcessorStatus.SUCCEEDED, Key.USER_CREATE_SUCCESS, new HashMap<>());
-                    user.setUserName(userName);
-                    user.setEmail(email);
-                    user.setTags(tags);
-                    user.setYoungerThen14(youngerThen14);
-                } else {
-                    setStatus(ProcessorStatus.FAILED, Key.USER_CREATE_ERROR_NOT_SAVED_TO_DB, processorParameters);
-                }
+            return null;
+        } else if ( email != null && !email.equals("") && !Util.isValidEmailAddress(email) ) {
+            setStatus(ProcessorStatus.FAILED, Key.USER_ERROR_EMAIL_INVALID, processorParameters);
+            return null;
+        }
+        UserDao userDao = new UserDao(this.dbSession);
+        if ( email != null && !email.equals("") ) {
+            User user = userDao.loadUserByEmail(email);
+            if ( user != null ) {
+                setStatus(ProcessorStatus.FAILED, Key.USER_ERROR_EMAIL_USED, processorParameters);
+                return null;
             }
         }
+
+        User user = userDao.persistNewUser(null, account, password, role);
+        if ( user == null ) {
+            setStatus(ProcessorStatus.FAILED, Key.USER_CREATE_ERROR_NOT_SAVED_TO_DB, processorParameters);
+            return null;
+        }
+        setStatus(ProcessorStatus.SUCCEEDED, Key.USER_CREATE_SUCCESS, new HashMap<>());
+        user.setUserName(userName);
+        user.setEmail(email);
+        user.setTags(tags);
+        user.setYoungerThen14(youngerThen14);
+        return user;
     }
 
     public void updatePassword(String account, String oldPassword, String newPassword) throws Exception {
@@ -206,68 +209,49 @@ public class UserProcessor extends AbstractProcessor {
         }
     }
 
-    public void deactivateAccount(int userID) throws Exception {
-        Map<String, String> processorParameters = new HashMap<>();
-        processorParameters.put("USER_ID", String.valueOf(userID));
-        if ( userID <= 0 ) {
-            setStatus(ProcessorStatus.FAILED, Key.USER_ACTIVATION_WRONG_ACCOUNT, processorParameters);
-        } else {
-            User user = getUser(userID);
-            if ( user != null ) {
-                user.setActivated(false);
-                setStatus(ProcessorStatus.SUCCEEDED, Key.USER_DEACTIVATION_SUCCESS, new HashMap<>());
-            } else {
-                setStatus(ProcessorStatus.FAILED, Key.USER_UPDATE_ERROR_NOT_SAVED_TO_DB, processorParameters);
-            }
-        }
-    }
-
     /**
      * Updates the information of a user. Is not used to update user group members, since they are not able to update their accounts.
      *
-     * @param account
-     * @param userName
-     * @param roleAsString
-     * @param email
-     * @param tags
-     * @param youngerThen14
+     * @param user user to be uodated, not null
+     * @param userName to be set in the data base
+     * @param roleAsString to be set in the data base
+     * @param email to be set in the data base
+     * @param tags to be set in the data base
+     * @param youngerThen14 to be set in the data base
+     * @param deactivateAccount true, if the account has to be deactivated (until confirmation email will arrives in the future)
      * @throws Exception
      */
-    public void updateUser(String account, String userName, String roleAsString, String email, String tags, boolean youngerThen14) throws Exception {
-        Map<String, String> processorParameters = new HashMap<>();
-        processorParameters.put("ACCOUNT", account);
-        if ( account == null || account.equals("") ) {
-            setStatus(ProcessorStatus.FAILED, Key.USER_UPDATE_ERROR_ACCOUNT_WRONG, processorParameters);
-        } else {
-            UserDao userDao = new UserDao(this.dbSession);
-            userDao.lockTable();
-            User user = userDao.loadUser(null, account);
-            if ( user != null && getIdOfLoggedInUser() == user.getId() ) {
-                if ( !isMailUsed(userDao, account, email) ) {
-                    user.setUserName(userName);
-                    user.setRole(Role.valueOf(roleAsString));
-                    user.setEmail(email);
-                    user.setTags(tags);
-                    user.setYoungerThen14(youngerThen14);
-                    setStatus(ProcessorStatus.SUCCEEDED, Key.USER_UPDATE_SUCCESS, new HashMap<>());
-                }
-            } else {
-                setStatus(ProcessorStatus.FAILED, Key.USER_UPDATE_ERROR_NOT_SAVED_TO_DB, processorParameters);
-            }
+    public void updateUser(
+        User user,
+        String userName,
+        String roleAsString,
+        String email,
+        String tags,
+        boolean youngerThen14,
+        boolean deactivateAccount) throws Exception //
+    {
+        Assert.isTrue(user != null && getIdOfLoggedInUser() == user.getId(), "user or userid invalid");
+        user.setUserName(userName);
+        user.setRole(Role.valueOf(roleAsString));
+        user.setEmail(email);
+        user.setTags(tags);
+        user.setYoungerThen14(youngerThen14);
+        if ( deactivateAccount ) {
+            user.setActivated(false);
         }
+        setStatus(ProcessorStatus.SUCCEEDED, Key.USER_UPDATE_SUCCESS, new HashMap<>());
     }
 
     /**
-     * Deletes a user. Does not work with user group members
+     * Deletes a user. Do not use for user group members
      *
-     * @param account
-     * @param password
+     * @param account to be deleted
+     * @param password of the account to be deleted
      * @throws Exception
      */
     public void deleteUser(String account, String password) throws Exception {
         UserDao userDao = new UserDao(this.dbSession);
         UserGroupDao userGroupDao = new UserGroupDao(this.dbSession);
-        userDao.lockTable();
         User user = userDao.loadUser(null, account);
         Map<String, String> processorParameters = new HashMap<>();
         processorParameters.put("ACCOUNT", account);
@@ -299,54 +283,31 @@ public class UserProcessor extends AbstractProcessor {
      */
     public void deleteUserGroupMembers(UserGroup userGroup, List<String> memberAccounts) {
         UserDao userDao = new UserDao(this.dbSession);
-        User user;
-        int rowCount;
-
         if ( userGroup == null ) {
             //Necessary to not use this end point to delete global users
             setStatus(ProcessorStatus.FAILED, Key.GROUP_GET_ONE_ERROR_NOT_FOUND, new HashMap<>());
             return;
         }
-
-        userDao.lockTable();
-
+        List<User> usersToDelete = new ArrayList<>();
         for ( String memberAccount : memberAccounts ) {
-            user = userDao.loadUser(userGroup, memberAccount);
+            User user = userDao.loadUser(userGroup, memberAccount);
             if ( user == null ) {
                 continue;
             }
-            rowCount = userDao.deleteUser(user);
+            usersToDelete.add(user);
+        }
+        for ( User user : usersToDelete ) {
+            int rowCount = userDao.deleteUser(user);
             if ( rowCount == 0 ) {
                 //Show an error, because there is most likely a database problem.
                 Map<String, String> processorParameters = new HashMap<>();
                 processorParameters.put("OWNER", userGroup.getOwner().getAccount());
                 processorParameters.put("USERGROUP", userGroup.getName());
-                processorParameters.put("MEMBER", memberAccount);
+                processorParameters.put("MEMBER", user.getAccount());
                 setStatus(ProcessorStatus.FAILED, Key.USER_DELETE_ERROR_NOT_DELETED_IN_DB, processorParameters);
                 return;
             }
         }
         setStatus(ProcessorStatus.SUCCEEDED, Key.USER_DELETE_SUCCESS, new HashMap<>());
-    }
-
-    /**
-     * is the mail address used? NOTE: this accesses the database
-     *
-     * @param userDao dao to access the database
-     * @param account whose mail address is checked
-     * @param email the mail address to ckeck
-     * @return true, if the mail address either is not used or used by the account given as parameter; otherwise false
-     */
-    private boolean isMailUsed(UserDao userDao, String account, String email) {
-        if ( !email.equals("") ) {
-            User user = userDao.loadUserByEmail(email);
-            if ( user != null && !user.getAccount().equals(account) ) {
-                Map<String, String> processorParameters = new HashMap<>();
-                processorParameters.put("ACCOUNT", account);
-                setStatus(ProcessorStatus.FAILED, Key.USER_ERROR_EMAIL_USED, processorParameters);
-                return true;
-            }
-        }
-        return false;
     }
 }

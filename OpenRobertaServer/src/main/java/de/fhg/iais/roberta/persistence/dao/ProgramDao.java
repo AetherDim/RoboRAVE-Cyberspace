@@ -19,7 +19,7 @@ import de.fhg.iais.roberta.persistence.bo.UserGroupProgramShare;
 import de.fhg.iais.roberta.persistence.bo.UserProgramShare;
 import de.fhg.iais.roberta.persistence.util.DbSession;
 import de.fhg.iais.roberta.util.Key;
-import de.fhg.iais.roberta.util.Pair;
+import de.fhg.iais.roberta.util.basic.Pair;
 import de.fhg.iais.roberta.util.dbc.Assert;
 
 /**
@@ -79,8 +79,8 @@ public class ProgramDao extends AbstractDao<Program> {
             }
         } else {
             if ( timestamp == null ) {
-                // save as && the program exists.
-                return Pair.of(Key.PROGRAM_SAVE_AS_ERROR_PROGRAM_EXISTS, null);
+                // save as && the program exists and is not supposed to be replaced
+                return Pair.of(Key.PROGRAM_SAVE_AS_ERROR_PROGRAM_EXISTS, program);
             } else if ( timestamp.equals(program.getLastChanged()) ) {
                 program.setProgramText(programText);
                 program.setConfigData(confName, confHash);
@@ -114,8 +114,7 @@ public class ProgramDao extends AbstractDao<Program> {
         Robot robot,
         User author,
         User sharedUser,
-        Timestamp timestamp)
-    {
+        Timestamp timestamp) {
         checkProgramValidity(name, owner, robot, author, programText);
         Program program = loadSharedForUpdate(name, sharedUser, robot, owner, author);
         if ( program == null ) {
@@ -240,6 +239,19 @@ public class ProgramDao extends AbstractDao<Program> {
     }
 
     /**
+     * load all programs persisted in the database which are owned by a given user
+     *
+     * @return the list of all programs, may be an empty list, but never null
+     */
+    public List<Program> loadAll(User owner) {
+        Query hql = this.session.createQuery("from Program where owner=:owner");
+        hql.setEntity("owner", owner);
+        @SuppressWarnings("unchecked")
+        List<Program> il = hql.list();
+        return Collections.unmodifiableList(il);
+    }
+
+    /**
      * load all programs persisted in the database
      *
      * @return the list of all programs, may be an empty list, but never null
@@ -285,13 +297,4 @@ public class ProgramDao extends AbstractDao<Program> {
         }
         return programs;
     }
-
-    /**
-     * create a write lock for the table PROGRAM to avoid deadlocks. This is a no op if concurrency control is not 2PL, but MVCC
-     */
-    public void lockTable() {
-        this.session.createSqlQuery("lock table PROGRAM write").executeUpdate();
-        this.session.addToLog("lock", "is now aquired");
-    }
-
 }

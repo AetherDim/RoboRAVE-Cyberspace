@@ -9,20 +9,19 @@ import de.fhg.iais.roberta.blockly.generated.Mutation;
 import de.fhg.iais.roberta.blockly.generated.Repetitions;
 import de.fhg.iais.roberta.blockly.generated.Statement;
 import de.fhg.iais.roberta.blockly.generated.Value;
-import de.fhg.iais.roberta.syntax.BlockTypeContainer;
-import de.fhg.iais.roberta.syntax.BlocklyBlockProperties;
-import de.fhg.iais.roberta.syntax.BlocklyComment;
-import de.fhg.iais.roberta.syntax.BlocklyConstants;
+import de.fhg.iais.roberta.util.syntax.BlockTypeContainer;
+import de.fhg.iais.roberta.util.syntax.BlocklyBlockProperties;
+import de.fhg.iais.roberta.util.syntax.BlocklyComment;
+import de.fhg.iais.roberta.util.syntax.BlocklyConstants;
 import de.fhg.iais.roberta.syntax.Phrase;
 import de.fhg.iais.roberta.syntax.lang.stmt.RepeatStmt.Mode;
-import de.fhg.iais.roberta.transformer.AbstractJaxb2Ast;
 import de.fhg.iais.roberta.transformer.Ast2Jaxb;
 import de.fhg.iais.roberta.transformer.ExprParam;
 import de.fhg.iais.roberta.transformer.Jaxb2Ast;
+import de.fhg.iais.roberta.transformer.Jaxb2ProgramAst;
 import de.fhg.iais.roberta.typecheck.BlocklyType;
+import de.fhg.iais.roberta.typecheck.NepoInfos;
 import de.fhg.iais.roberta.util.dbc.Assert;
-import de.fhg.iais.roberta.visitor.IVisitor;
-import de.fhg.iais.roberta.visitor.lang.ILanguageVisitor;
 
 /**
  * This class represents the <b>robControls_wait_for</b> and <b>robControls_wait</b> blocks from Blockly into the AST (abstract syntax tree). Object from this
@@ -64,11 +63,6 @@ public class WaitStmt<V> extends Stmt<V> {
         return "WaitStmt [" + this.statements + "]";
     }
 
-    @Override
-    protected V acceptImpl(IVisitor<V> visitor) {
-        return ((ILanguageVisitor<V>) visitor).visitWaitStmt(this);
-    }
-
     /**
      * Transformation from JAXB object to corresponding AST object.
      *
@@ -76,7 +70,7 @@ public class WaitStmt<V> extends Stmt<V> {
      * @param helper class for making the transformation
      * @return corresponding AST object
      */
-    public static <V> Phrase<V> jaxbToAst(Block block, AbstractJaxb2Ast<V> helper) {
+    public static <V> Phrase<V> jaxbToAst(Block block, Jaxb2ProgramAst<V> helper) {
         List<Value> values;
         StmtList<V> statement;
         StmtList<V> list = StmtList.make();
@@ -97,7 +91,7 @@ public class WaitStmt<V> extends Stmt<V> {
             list
                 .addStmt(
                     RepeatStmt
-                        .make(Mode.WAIT, helper.convertPhraseToExpr(expr), statement, Jaxb2Ast.extractBlockProperties(block), Jaxb2Ast.extractComment(block)));
+                        .make(Mode.WAIT, Jaxb2Ast.convertPhraseToExpr(expr), statement, Jaxb2Ast.extractBlockProperties(block), Jaxb2Ast.extractComment(block)));
         }
         list.setReadOnly();
         return WaitStmt.make(list, Jaxb2Ast.extractBlockProperties(block), Jaxb2Ast.extractComment(block));
@@ -112,8 +106,13 @@ public class WaitStmt<V> extends Stmt<V> {
         StmtList<?> waitStmtList = getStatements();
         int numOfWait = waitStmtList.get().size();
         if ( numOfWait == 1 ) {
-            Ast2Jaxb.addValue(jaxbDestination, BlocklyConstants.WAIT + "0", ((RepeatStmt<?>) waitStmtList.get().get(0)).getExpr());
-            Ast2Jaxb.addStatement(jaxbDestination, BlocklyConstants.DO + "0", ((RepeatStmt<?>) waitStmtList.get().get(0)).getList());
+            RepeatStmt<?> generatedRepeatStmt = (RepeatStmt<?>) waitStmtList.get().get(0);
+            NepoInfos infos = generatedRepeatStmt.getInfos();
+            if (infos.getErrorCount() > 0) {
+                Ast2Jaxb.addError(generatedRepeatStmt, jaxbDestination);
+            }
+            Ast2Jaxb.addValue(jaxbDestination, BlocklyConstants.WAIT + "0", generatedRepeatStmt.getExpr());
+            Ast2Jaxb.addStatement(jaxbDestination, BlocklyConstants.DO + "0", generatedRepeatStmt.getList());
             return jaxbDestination;
         }
         mutation = new Mutation();
@@ -121,8 +120,13 @@ public class WaitStmt<V> extends Stmt<V> {
         jaxbDestination.setMutation(mutation);
         Repetitions repetitions = new Repetitions();
         for ( int i = 0; i < numOfWait; i++ ) {
-            Ast2Jaxb.addValue(repetitions, BlocklyConstants.WAIT + i, ((RepeatStmt<?>) waitStmtList.get().get(i)).getExpr());
-            Ast2Jaxb.addStatement(repetitions, BlocklyConstants.DO + i, ((RepeatStmt<?>) waitStmtList.get().get(i)).getList());
+            RepeatStmt<?> generatedRepeatStmt = (RepeatStmt<?>) waitStmtList.get().get(i);
+            NepoInfos infos = generatedRepeatStmt.getInfos();
+            if (infos.getErrorCount() > 0) {
+                Ast2Jaxb.addError(generatedRepeatStmt, jaxbDestination);
+            }
+            Ast2Jaxb.addValue(repetitions, BlocklyConstants.WAIT + i, generatedRepeatStmt.getExpr());
+            Ast2Jaxb.addStatement(repetitions, BlocklyConstants.DO + i, generatedRepeatStmt.getList());
         }
         jaxbDestination.setRepetitions(repetitions);
         return jaxbDestination;

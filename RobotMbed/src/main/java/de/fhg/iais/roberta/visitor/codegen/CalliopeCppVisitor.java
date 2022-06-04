@@ -15,13 +15,13 @@ import de.fhg.iais.roberta.bean.CodeGeneratorSetupBean;
 import de.fhg.iais.roberta.bean.IProjectBean;
 import de.fhg.iais.roberta.bean.UsedHardwareBean;
 import de.fhg.iais.roberta.components.ConfigurationAst;
-import de.fhg.iais.roberta.components.ConfigurationComponent;
+import de.fhg.iais.roberta.syntax.configuration.ConfigurationComponent;
 import de.fhg.iais.roberta.mode.action.MotorStopMode;
 import de.fhg.iais.roberta.mode.action.mbed.DisplayTextMode;
 import de.fhg.iais.roberta.mode.general.ListElementOperations;
-import de.fhg.iais.roberta.syntax.BlocklyConstants;
+import de.fhg.iais.roberta.util.syntax.BlocklyConstants;
 import de.fhg.iais.roberta.syntax.Phrase;
-import de.fhg.iais.roberta.syntax.SC;
+import de.fhg.iais.roberta.util.syntax.SC;
 import de.fhg.iais.roberta.syntax.action.display.ClearDisplayAction;
 import de.fhg.iais.roberta.syntax.action.generic.PinWriteValueAction;
 import de.fhg.iais.roberta.syntax.action.light.LightAction;
@@ -40,7 +40,6 @@ import de.fhg.iais.roberta.syntax.action.mbed.LedBarSetAction;
 import de.fhg.iais.roberta.syntax.action.mbed.LedOnAction;
 import de.fhg.iais.roberta.syntax.action.mbed.MotionKitDualSetAction;
 import de.fhg.iais.roberta.syntax.action.mbed.MotionKitSingleSetAction;
-import de.fhg.iais.roberta.syntax.action.mbed.PinSetPullAction;
 import de.fhg.iais.roberta.syntax.action.mbed.RadioReceiveAction;
 import de.fhg.iais.roberta.syntax.action.mbed.RadioSendAction;
 import de.fhg.iais.roberta.syntax.action.mbed.RadioSetChannelAction;
@@ -101,9 +100,9 @@ import de.fhg.iais.roberta.syntax.sensor.generic.UltrasonicSensor;
 import de.fhg.iais.roberta.syntax.sensor.mbed.RadioRssiSensor;
 import de.fhg.iais.roberta.typecheck.BlocklyType;
 import de.fhg.iais.roberta.util.dbc.DbcException;
+import de.fhg.iais.roberta.visitor.CalliopeMethods;
+import de.fhg.iais.roberta.visitor.IMbedVisitor;
 import de.fhg.iais.roberta.visitor.IVisitor;
-import de.fhg.iais.roberta.visitor.collect.CalliopeMethods;
-import de.fhg.iais.roberta.visitor.hardware.IMbedVisitor;
 import de.fhg.iais.roberta.visitor.lang.codegen.prog.AbstractCppVisitor;
 
 /**
@@ -196,7 +195,7 @@ public final class CalliopeCppVisitor extends AbstractCppVisitor implements IMbe
         return null;
     }
 
-    protected Void generateUsedVars() {
+    private Void generateUsedVars() {
         for ( final VarDeclaration<Void> var : this.getBean(UsedHardwareBean.class).getVisitedVars() ) {
             nlIndent();
             if ( !var.getValue().getKind().hasName("EMPTY_EXPR") ) {
@@ -377,7 +376,7 @@ public final class CalliopeCppVisitor extends AbstractCppVisitor implements IMbe
 
     @Override
     public Void visitLightStatusAction(LightStatusAction<Void> lightStatusAction) {
-        String port = lightStatusAction.getPort();
+        String port = lightStatusAction.getUserDefinedPort();
         ConfigurationComponent confComp = this.robotConfiguration.getConfigurationComponent(port);
         String pin1 = confComp.getComponentType().equals("CALLIBOT") ? getCallibotPin(confComp, port) : "0";
         switch ( pin1 ) {
@@ -469,6 +468,7 @@ public final class CalliopeCppVisitor extends AbstractCppVisitor implements IMbe
             case "B":
                 if ( isDualMode() ) {
                     this.sb.append("_uBit.soundmotor.motor").append(pin1).append("Off();"); // Coast vs OFF
+                    this.sb.append("//float, break and sleep doesn't work with more than one motor connected");
                 } else {
                     this.sb.append("_uBit.soundmotor.motor");
                     switch ( (MotorStopMode) motorStopAction.getMode() ) {
@@ -500,7 +500,7 @@ public final class CalliopeCppVisitor extends AbstractCppVisitor implements IMbe
 
     @Override
     public Void visitKeysSensor(KeysSensor<Void> keysSensor) {
-        String port = keysSensor.getPort();
+        String port = keysSensor.getUserDefinedPort();
         ConfigurationComponent configurationComponent = this.robotConfiguration.getConfigurationComponent(port);
         String pin1 = configurationComponent.getProperty("PIN1");
         this.sb.append("_uBit.button").append(pin1).append(".isPressed()");
@@ -543,25 +543,20 @@ public final class CalliopeCppVisitor extends AbstractCppVisitor implements IMbe
 
     @Override
     public Void visitUltrasonicSensor(UltrasonicSensor<Void> ultrasonicSensor) {
-        String port = ultrasonicSensor.getPort();
+        String port = ultrasonicSensor.getUserDefinedPort();
         ConfigurationComponent confComp = this.robotConfiguration.getConfigurationComponent(port);
-        String pin1 = confComp.getComponentType().equals("CALLIBOT") ? getCallibotPin(confComp, port) : confComp.getProperty("PIN1");
-        switch ( pin1 ) {
-            case "1":
-                this.sb.append("(_uBit.io.P2.readPulseHigh() * 0.017)");
-                break;
-            case "2":
-                this.sb.append("_cbGetSampleUltrasonic(_buf, &_i2c)");
-                break;
-            default:
-                throw new DbcException("UltrasonicSensor; Invalid ultrasonic port: " + pin1);
+        boolean isCallibot = confComp.getComponentType().equals("CALLIBOT");
+        if ( isCallibot ) {
+            this.sb.append("_cbGetSampleUltrasonic(_buf, &_i2c)");
+        } else {
+            this.sb.append("(_uBit.io.P2.readPulseHigh() * 0.017)");
         }
         return null;
     }
 
     @Override
     public Void visitInfraredSensor(InfraredSensor<Void> infraredSensor) {
-        String port = infraredSensor.getPort();
+        String port = infraredSensor.getUserDefinedPort();
         ConfigurationComponent confComp = this.robotConfiguration.getConfigurationComponent(port);
         String pin1 = confComp.getComponentType().equals("CALLIBOT") ? getCallibotPin(confComp, port) : confComp.getProperty("PIN1");
         if ( pin1.equals("1") || pin1.contentEquals("2") ) {
@@ -603,13 +598,13 @@ public final class CalliopeCppVisitor extends AbstractCppVisitor implements IMbe
 
     @Override
     public Void visitPinTouchSensor(PinTouchSensor<Void> pinTouchSensor) {
-        this.sb.append("_uBit.io." + PIN_MAP.get(pinTouchSensor.getPort()) + ".isTouched()");
+        this.sb.append("_uBit.io." + PIN_MAP.get(pinTouchSensor.getUserDefinedPort()) + ".isTouched()");
         return null;
     }
 
     @Override
     public Void visitPinGetValueSensor(PinGetValueSensor<Void> pinValueSensor) {
-        String port = pinValueSensor.getPort();
+        String port = pinValueSensor.getUserDefinedPort();
         ConfigurationComponent configurationComponent = this.robotConfiguration.getConfigurationComponent(port);
         String pin1 = configurationComponent.getProperty("PIN1");
         String mode = pinValueSensor.getMode();
@@ -646,16 +641,6 @@ public final class CalliopeCppVisitor extends AbstractCppVisitor implements IMbe
     }
 
     @Override
-    public Void visitPinSetPullAction(PinSetPullAction<Void> pinSetPullAction) {
-        String port = pinSetPullAction.getPort();
-        ConfigurationComponent configurationComponent = this.robotConfiguration.getConfigurationComponent(port);
-        String pin1 = configurationComponent.getProperty("PIN1");
-        String mode = pinSetPullAction.getMode();
-        this.sb.append("_uBit.io." + PIN_MAP.get(pin1) + ".setPull(Pull").append(WordUtils.capitalizeFully(mode)).append(");");
-        return null;
-    }
-
-    @Override
     public Void visitMainTask(MainTask<Void> mainTask) {
         if ( this.getBean(UsedHardwareBean.class).isSensorUsed(SC.TIMER) ) {
             this.sb.append("int _initTime = _uBit.systemTime();");
@@ -673,6 +658,23 @@ public final class CalliopeCppVisitor extends AbstractCppVisitor implements IMbe
         if ( this.getBean(UsedHardwareBean.class).isActorUsed(SC.CALLIBOT) ) {
             nlIndent();
             this.sb.append("_cbInit(_buf, &_i2c, &_uBit);");
+        }
+        if ( this.robotConfiguration.isComponentTypePresent(SC.DIGITAL_PIN) ) {
+            for ( ConfigurationComponent usedConfigurationBlock : this.robotConfiguration.getConfigurationComponentsValues() ) {
+                if ( usedConfigurationBlock.getComponentType().equals(SC.DIGITAL_PIN) ) {
+                    String pin1 = usedConfigurationBlock.getProperty("PIN1");
+                    String mode = usedConfigurationBlock.getProperty("PIN_PULL");
+                    if ( mode.equals("PIN_PULL_UP") ) {
+                        mode = "UP";
+                    } else if ( mode.equals("PIN_PULL_DOWN") ) {
+                        mode = "DOWN";
+                    } else {
+                        continue;
+                    }
+                    nlIndent();
+                    this.sb.append("_uBit.io." + PIN_MAP.get(pin1) + ".setPull(Pull").append(WordUtils.capitalizeFully(mode)).append(");");
+                }
+            }
         }
         if ( this.getBean(UsedHardwareBean.class).isSensorUsed(SC.COLOR) ) {
             String integrationTime = "2_4MS";
@@ -701,7 +703,7 @@ public final class CalliopeCppVisitor extends AbstractCppVisitor implements IMbe
             nlIndent();
             this.sb.append("_uBit.radio.enable();");
         }
-        if ( this.getBean(UsedHardwareBean.class).isSensorUsed(SC.ACCELEROMETER) ) {
+        if ( this.getBean(UsedHardwareBean.class).isSensorUsed(SC.ACCELEROMETER) || this.getBean(UsedHardwareBean.class).isSensorUsed(SC.COMPASS) ) {
             nlIndent();
             this.sb.append("_uBit.accelerometer.updateSample();");
         }
@@ -877,7 +879,7 @@ public final class CalliopeCppVisitor extends AbstractCppVisitor implements IMbe
 
     @Override
     public Void visitLedOnAction(LedOnAction<Void> ledOnAction) {
-        String port = ledOnAction.getPort();
+        String port = ledOnAction.getUserDefinedPort();
         ConfigurationComponent confComp = this.robotConfiguration.getConfigurationComponent(port);
         String pin1 = confComp.getComponentType().equals("CALLIBOT") ? getCallibotPin(confComp, port) : "0";
         switch ( pin1 ) {
@@ -977,7 +979,7 @@ public final class CalliopeCppVisitor extends AbstractCppVisitor implements IMbe
     }
 
     @Override
-    public Void visitAccelerometer(AccelerometerSensor<Void> accelerometerSensor) {
+    public Void visitAccelerometerSensor(AccelerometerSensor<Void> accelerometerSensor) {
         this.sb.append("_uBit.accelerometer.get");
         if ( accelerometerSensor.getSlot().equals("STRENGTH") ) {
             this.sb.append("Strength");
@@ -1233,48 +1235,49 @@ public final class CalliopeCppVisitor extends AbstractCppVisitor implements IMbe
         String portB = bothMotorsOnAction.getPortB();
         ConfigurationComponent confCompA = this.robotConfiguration.getConfigurationComponent(portA);
         ConfigurationComponent confCompB = this.robotConfiguration.getConfigurationComponent(portB);
-        String pin1A = confCompA.getComponentType().equals("CALLIBOT") ? getCallibotPin(confCompA, portA) : confCompA.getProperty("PIN1");
-        String pin1B = confCompB.getComponentType().equals("CALLIBOT") ? getCallibotPin(confCompB, portB) : confCompB.getProperty("PIN1");
-        if ( pin1A.equals("A") && pin1B.equals("B") ) {
-            this.sb.append("_uBit.soundmotor.motorAOn(");
-            bothMotorsOnAction.getSpeedA().accept(this);
-            this.sb.append(");");
-            nlIndent();
-            this.sb.append("_uBit.soundmotor.motorBOn(");
-            bothMotorsOnAction.getSpeedB().accept(this);
-            this.sb.append(");");
-        } else if ( pin1A.equals("B") && pin1B.equals("A") ) {
-            this.sb.append("_uBit.soundmotor.motorBOn(");
-            bothMotorsOnAction.getSpeedA().accept(this);
-            this.sb.append(");");
-            nlIndent();
-            this.sb.append("_uBit.soundmotor.motorAOn(");
-            bothMotorsOnAction.getSpeedB().accept(this);
-            this.sb.append(");");
-        }
-        if ( pin1A.equals("0") ) {
-            this.sb.append("_cbSetMotors(_buf, &_i2c, ");
-            bothMotorsOnAction.getSpeedA().accept(this);
-            this.sb.append(", ");
-            bothMotorsOnAction.getSpeedB().accept(this);
-            this.sb.append(");");
-        }
 
+        if ( confCompA.getComponentType().equals("CALLIBOT") ) {
+            this.sb.append("_cbSetMotors(_buf, &_i2c, ");
+            if ( confCompA.getProperty("MOTOR_L").equals(portA) ) {
+                bothMotorsOnAction.getSpeedA().accept(this);
+                this.sb.append(", ");
+                bothMotorsOnAction.getSpeedB().accept(this);
+            } else {
+                bothMotorsOnAction.getSpeedB().accept(this);
+                this.sb.append(", ");
+                bothMotorsOnAction.getSpeedA().accept(this);
+            }
+            this.sb.append(");");
+        } else {
+            this.sb.append("_uBit.soundmotor.motor").append(confCompA.getProperty("PIN1")).append("On(");
+            bothMotorsOnAction.getSpeedA().accept(this);
+            this.sb.append(");");
+            nlIndent();
+            this.sb.append("_uBit.soundmotor.motor").append(confCompB.getProperty("PIN1")).append("On(");
+            bothMotorsOnAction.getSpeedB().accept(this);
+            this.sb.append(");");
+        }
         return null;
     }
 
     @Override
     public Void visitBothMotorsStopAction(BothMotorsStopAction<Void> bothMotorsStopAction) {
         Set<String> motorPorts = getMotorPins();
-        boolean both = false;
-        if ( motorPorts.contains("A") || motorPorts.contains("B") ) { // Internal motors
+        boolean newLine = false;
+        if ( motorPorts.contains("A") ) { // Internal motors
             this.sb.append("_uBit.soundmotor.motorAOff();");
-            nlIndent();
-            this.sb.append("_uBit.soundmotor.motorBOff();");
-            both = true;
+            newLine = true;
         }
-        if ( motorPorts.contains("0") || motorPorts.contains("2") ) { // Calli:bot motors
-            if ( both ) {
+        if ( motorPorts.contains("B") ) {
+            if ( newLine ) {
+                nlIndent();
+            } else {
+                newLine = true;
+            }
+            this.sb.append("_uBit.soundmotor.motorBOff();");
+        }
+        if ( motorPorts.contains("0") ) { // Calli:bot motors
+            if ( newLine ) {
                 nlIndent();
             }
             this.sb.append("_cbSetMotors(_buf, &_i2c, 0, 0);");
@@ -1298,7 +1301,7 @@ public final class CalliopeCppVisitor extends AbstractCppVisitor implements IMbe
     @Override
     public Void visitListGetIndex(ListGetIndex<Void> listGetIndex) {
         super.visitListGetIndex(listGetIndex);
-        if ( ((ListElementOperations) listGetIndex.getElementOperation()).equals(ListElementOperations.REMOVE) ) {
+        if ( listGetIndex.getElementOperation().equals(ListElementOperations.REMOVE) ) {
             this.sb.append(";");
         }
         return null;
@@ -1313,7 +1316,7 @@ public final class CalliopeCppVisitor extends AbstractCppVisitor implements IMbe
     private void writeToSerial(Expr<Void> valueToWrite) {
         if ( valueToWrite instanceof RgbColor<?>
             || valueToWrite instanceof ColorConst<?>
-            || valueToWrite instanceof Var && ((Var<Void>) valueToWrite).getVarType().equals(BlocklyType.COLOR) ) {
+            || valueToWrite instanceof Var && valueToWrite.getVarType().equals(BlocklyType.COLOR) ) {
             this.sb.append("_uBit.serial.setTxBufferSize(ManagedString(_castColorToString(");
             valueToWrite.accept(this);
             this.sb.append(")).length() + 2);");
@@ -1384,19 +1387,19 @@ public final class CalliopeCppVisitor extends AbstractCppVisitor implements IMbe
 
     @Override
     public Void visitServoSetAction(ServoSetAction<Void> servoSetAction) {
-        String port = servoSetAction.getPort();
+        String port = servoSetAction.getUserDefinedPort();
         ConfigurationComponent confComp = this.robotConfiguration.getConfigurationComponent(port);
-        String pin1 = confComp.getComponentType().equals("CALLIBOT") ? getCallibotPin(confComp, port) : confComp.getProperty("PIN1");
-        if ( pin1.equals("0x14") || pin1.equals("0x15") ) {
+        if ( confComp.getComponentType().equals("CALLIBOT") ) {
             this.sb.append("_cbSetServo(_buf, &_i2c, ");
-            this.sb.append(pin1);
+            String i2cAddress = getCallibotPin(confComp, port);
+            this.sb.append(i2cAddress);
             this.sb.append(", ");
         } else {
-            this.sb.append("_uBit.io.").append(PIN_MAP.get(pin1)).append(".setServoValue(");
+            String pin = PIN_MAP.get(confComp.getProperty("PIN1"));
+            this.sb.append("_uBit.io.").append(pin).append(".setServoValue(");
         }
         servoSetAction.getValue().accept(this);
         this.sb.append(");");
-
         return null;
     }
 

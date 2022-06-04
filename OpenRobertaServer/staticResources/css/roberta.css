@@ -13,6 +13,24 @@ ol {
     margin: 0;
 }
 
+dl.grid {
+    display: grid;
+    grid-template-columns: 1fr 100%;
+}
+
+dd {
+    margin: 0;
+    padding-left: 1em;
+}
+
+dl.grid dd {
+    margin-bottom: 1em;
+}
+
+dl.grid dt {
+    min-width: 100px;
+}
+
 @font-face {
     font-family: 'Roboto';
     src: url('fonts/Roboto-Regular.ttf') format('truetype');
@@ -297,6 +315,15 @@ body.blocklyMinimalBody * {
 
 canvas.border {
 	border: 2px solid grey;
+}
+
+#webotsDiv {
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
 }
 
 #canvasDiv {
@@ -1124,24 +1151,40 @@ button#simCustomObstacle.typcn:before {
     clear: both;
 }
 
-.modal.simRobotModal {
+.simWindow {
+    position: absolute;
     left: 50px;
     top: 100px;
-    right: inherit;
-    bottom: inherit;
+    z-index: 99;
+    display: none;
 }
 
-.modal#simRobotModal button.close {
-    margin-right: -10px;
-    margin-top: -14px;
+.simWindow#simValuesWindow button.close {
+    top: 4px;
+    right: 14px;
+    color: #bbb;
+    position: absolute;
+}
+
+.simWindow#simValuesWindow button.close:hover {
+    top: 4px;
+    right: 14px;
+    color: #333;
+}
+
+.simWindow#simRobotWindow button.close {
+    top: 4px;
+    right: 24px;
     color: #f1f1f1;
+    position: absolute;
 }
 
-.modal#simValuesModal button.close {
-    margin-right: -10px;
-    margin-top: -14px;
+.simWindow#simRobotWindow button.close:hover {
+    top: 4px;
+    right: 24px;
     color: #bbb;
 }
+
 
 #VariablesContent {
     height: 300px;
@@ -1162,6 +1205,8 @@ button#simCustomObstacle.typcn:before {
     white-space: nowrap;
     overflow: hidden;
     min-width: 250px;
+    max-height: 70vh;
+    overflow-y: auto;
 }
 
 #simValuesContent span {
@@ -1171,36 +1216,18 @@ button#simCustomObstacle.typcn:before {
     width: 60px;
 }
 
-
-.modal#simRobotModal button.close:hover {
-    margin-right: -10px;
-    margin-top: -14px;
-    color: #ffffff;
-}
-
-.modal#simValuesModal button.close:hover {
-    margin-right: -10px;
-    margin-top: -14px;
-    color: #333;
-}
-
 .bigNumber {
     color: #8fa402;
     font-size: large;
     font-weight: bold;
 }
 
-.simRobotModal .modal-header {
-    position: fixed;
-    right: 16;
-}
-
-.simRobotModal .modal-dialog {
+.simWindow .modal-dialog {
     width: inherit;
     margin: 0;
 }
 
-.simRobotModal text {
+.simWindow text {
     -webkit-touch-callout: none;
     -webkit-user-select: none;
     -khtml-user-select: none;
@@ -1949,46 +1976,42 @@ div.galleryDescription, div.tutorialOverview {
 }
 
 .galleryDescription.color2:after, .tutorialOverview.color2:after {
-    background: #39378B;
-}
-
-.galleryDescription.color3:after, .tutorialOverview.color3:after {
     background: #005A94;
 }
 
-.galleryDescription.color4:after, .tutorialOverview.color4:after {
+.galleryDescription.color3:after, .tutorialOverview.color3:after {
     background: #179C7D;
 }
 
-.galleryDescription.color5:after, .tutorialOverview.color5:after {
+.galleryDescription.color4:after, .tutorialOverview.color4:after {
     background: #F29400;
 }
 
-.galleryDescription.color6:after, .tutorialOverview.color6:after {
+.galleryDescription.color5:after, .tutorialOverview.color5:after {
     background: #E2001A;
 }
 
-.galleryDescription.color7:after, .tutorialOverview.color7:after {
+.galleryDescription.color6:after, .tutorialOverview.color6:after {
     background: #EB6A0A;
 }
 
-.galleryDescription.color8:after, .tutorialOverview.color8:after {
+.galleryDescription.color7:after, .tutorialOverview.color7:after {
     background: #8FA402;
 }
 
-.galleryDescription.color9:after, .tutorialOverview.color9:after {
+.galleryDescription.color8:after, .tutorialOverview.color8:after {
     background: #BACC1E;
 }
 
-.galleryDescription.color10:after, .tutorialOverview.color10:after {
+.galleryDescription.color9:after, .tutorialOverview.color9:after {
     background: #9085BA;
 }
 
-.galleryDescription.color11:after, .tutorialOverview.color11:after {
+.galleryDescription.color10:after, .tutorialOverview.color10:after {
     background: #FF69B4;
 }
 
-.galleryDescription.color12:after, .tutorialOverview.color12:after {
+.galleryDescription.color11:after, .tutorialOverview.color11:after {
     background: #DF01D7;
 }
 
@@ -2466,7 +2489,7 @@ input[type=range]:focus::-ms-fill-upper {
         margin-bottom: 0;
     }
 
-    .modal.simRobotModal {
+    .simWindow {
         left: 6px;
         top: 60px;
     }
@@ -2638,7 +2661,6 @@ li.L0, li.L1, li.L2, li.L3, li.L5, li.L6, li.L7, li.L8 {
 
 .tutorialLevelStars {
     position: relative;
-    left: 116px;
 }
 
 .tutorialLevel.typcn::before {
@@ -2647,6 +2669,7 @@ li.L0, li.L1, li.L2, li.L3, li.L5, li.L6, li.L7, li.L8 {
     font-size: 24px;
     top: 4px;
     color: #333;
+    display: table-cell;
 }
 
 #tutorialOverview .modal-dialog {

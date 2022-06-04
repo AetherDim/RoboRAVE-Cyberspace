@@ -16,13 +16,15 @@ import de.fhg.iais.roberta.blockly.generated.Block;
 import de.fhg.iais.roberta.blockly.generated.BlockSet;
 import de.fhg.iais.roberta.blockly.generated.Field;
 import de.fhg.iais.roberta.blockly.generated.Instance;
+import de.fhg.iais.roberta.blockly.generated.Statement;
 import de.fhg.iais.roberta.blockly.generated.Value;
 import de.fhg.iais.roberta.components.ConfigurationAst;
-import de.fhg.iais.roberta.components.ConfigurationComponent;
+import de.fhg.iais.roberta.syntax.configuration.ConfigurationComponent;
+import de.fhg.iais.roberta.syntax.configuration.ConfigurationComponentLeaf;
+import de.fhg.iais.roberta.syntax.configuration.ConfigurationComponentNode;
 import de.fhg.iais.roberta.factory.BlocklyDropdownFactory;
-import de.fhg.iais.roberta.syntax.BlocklyBlockProperties;
-import de.fhg.iais.roberta.syntax.BlocklyComment;
-import de.fhg.iais.roberta.util.Callback;
+import de.fhg.iais.roberta.util.syntax.BlocklyBlockProperties;
+import de.fhg.iais.roberta.util.syntax.BlocklyComment;
 import de.fhg.iais.roberta.util.dbc.DbcException;
 
 public final class Jaxb2ConfigurationAst {
@@ -65,6 +67,11 @@ public final class Jaxb2ConfigurationAst {
         return builder.addComponents(allComponents).build();
     }
 
+    @FunctionalInterface
+    public interface Callback<V> {
+        void call(V value);
+    }
+
     private static void setWithOptField(List<Field> fields, String name, Callback<? super String> callback) {
         String val = Jaxb2Ast.optField(fields, name);
         if ( val != null ) {
@@ -87,7 +94,7 @@ public final class Jaxb2ConfigurationAst {
                 properties.put(fKey, fValue);
             }
             ConfigurationComponent configComp =
-                new ConfigurationComponent(
+                new ConfigurationComponentLeaf(
                     factory.getConfigurationComponentTypeByBlocklyName(blocklyName),
                     isActor,
                     portName,
@@ -106,7 +113,11 @@ public final class Jaxb2ConfigurationAst {
         List<Instance> instances = set.getInstance();
         List<ConfigurationComponent> allComponents = new ArrayList<>();
         for ( Instance instance : instances ) {
-            allComponents.add(Jaxb2ConfigurationAst.instance2NewConfigComp(instance, factory));
+            if ( instance.getBlock().size() != 0 && instance.getBlock().get(0).getStatement().size() != 0 ) {
+                allComponents.add(Jaxb2ConfigurationAst.block2NewConfigComp(instance.getBlock().get(0), factory, instance.getX(), instance.getY()));
+            } else {
+                allComponents.add(Jaxb2ConfigurationAst.instance2NewConfigComp(instance, factory));
+            }
         }
 
         return new ConfigurationAst.Builder()
@@ -116,6 +127,48 @@ public final class Jaxb2ConfigurationAst {
             .setTags(set.getTags())
             .addComponents(allComponents)
             .build();
+    }
+
+    private static ConfigurationComponent block2NewConfigComp(Block block, BlocklyDropdownFactory factory, String x, String y) {
+        String componentType = factory.getConfigurationComponentTypeByBlocklyName(block.getType());
+        String userDefinedName = block.getField().get(0).getValue();
+        Map<String, String> map = new LinkedHashMap<>();
+        for ( int i = 1; i < block.getField().size(); i++ ) {
+            map.put(block.getField().get(i).getName(), block.getField().get(i).getValue());
+        }
+        LinkedHashMap<String, List<ConfigurationComponent>> subcomponents = new LinkedHashMap<>();
+        List<Statement> statements = block.getStatement();
+        if ( statements.size() == 0 ) {
+            return new ConfigurationComponentLeaf(
+                componentType,
+                true,
+                userDefinedName,
+                userDefinedName,
+                map,
+                Jaxb2Ast.extractBlockProperties(block),
+                Jaxb2Ast.extractComment(block),
+                Integer.parseInt(x),
+                Integer.parseInt(y));
+        }
+
+        for ( Statement statement : statements ) {
+            List<ConfigurationComponent> subBlocks = new ArrayList<>();
+            for ( Block subBlock : statement.getBlock() ) {
+                subBlocks.add(block2NewConfigComp(subBlock, factory, x, y));
+            }
+            subcomponents.put(statement.getName(), subBlocks);
+        }
+
+        return new ConfigurationComponentNode(
+            componentType,
+            true,
+            userDefinedName,
+            userDefinedName,
+            map,
+            Jaxb2Ast.extractBlockProperties(block),
+            Jaxb2Ast.extractComment(block),
+            Integer.parseInt(x),
+            Integer.parseInt(y), subcomponents);
     }
 
     @SuppressWarnings("unchecked")
@@ -166,7 +219,7 @@ public final class Jaxb2ConfigurationAst {
                 throw new DbcException("Could not find matching constructor for " + className, e);
             }
         } else {
-            return new ConfigurationComponent(
+            return new ConfigurationComponentLeaf(
                 componentType,
                 true,
                 userDefinedName,

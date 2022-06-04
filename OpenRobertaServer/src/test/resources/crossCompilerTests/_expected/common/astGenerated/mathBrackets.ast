@@ -1,0 +1,34 @@
+StmtTextComment[textComment: Grundrechenarten Basics  --START--]
+
+Var [ergebnis] := Binary [ADD, NumConst[value: 2], Binary [DIVIDE, Binary [MULTIPLY, NumConst[value: 3], NumConst[value: 4]], NumConst[value: 5]]]
+
+AssertStmt[asserts: Binary [EQ, NumConst[value: 4.4], Var [ergebnis]], msg: POS-1]
+
+Var [ergebnis] := Binary [ADD, Var [ergebnis], Binary [MULTIPLY, NumConst[value: 2], Binary [MULTIPLY, Binary [ADD, NumConst[value: 3], NumConst[value: 4]], NumConst[value: 5]]]]
+
+AssertStmt[asserts: Binary [EQ, NumConst[value: 74.4], Var [ergebnis]], msg: POS-2]
+
+Var [ergebnis] := Binary [ADD, Var [ergebnis], Binary [MULTIPLY, NumConst[value: 2], Binary [MULTIPLY, NumConst[value: 3], Binary [ADD, NumConst[value: 4], NumConst[value: 5]]]]]
+
+AssertStmt[asserts: Binary [EQ, NumConst[value: 128.4], Var [ergebnis]], msg: POS-3]
+
+Var [ergebnis] := Binary [ADD, Var [ergebnis], Binary [ADD, NumConst[value: 2], Binary [MULTIPLY, Binary [MINUS, Binary [MULTIPLY, NumConst[value: 3], NumConst[value: 4]], NumConst[value: 5]], NumConst[value: 6]]]]
+
+AssertStmt[asserts: Binary [EQ, NumConst[value: 172.4], Var [ergebnis]], msg: POS-4]
+
+Var [ergebnis] := Binary [ADD, Var [ergebnis], Binary [MULTIPLY, NumConst[value: 2], Binary [MULTIPLY, Binary [MULTIPLY, Binary [ADD, NumConst[value: 3], NumConst[value: 4]], NumConst[value: 5]], NumConst[value: 6]]]]
+
+AssertStmt[asserts: Binary [EQ, NumConst[value: 592.4], Var [ergebnis]], msg: POS-5]
+
+Var [ergebnis] := Binary [ADD, Var [ergebnis], Binary [MULTIPLY, NumConst[value: 2], Binary [MULTIPLY, NumConst[value: 6], Binary [MULTIPLY, Binary [ADD, NumConst[value: 3], NumConst[value: 4]], NumConst[value: 5]]]]]
+
+AssertStmt[asserts: Binary [EQ, NumConst[value: 1012.4], Var [ergebnis]], msg: POS-7]
+
+Var [ergebnis] := Binary [ADD, Var [ergebnis], Binary [ADD, NumConst[value: 2], Binary [MINUS, Binary [DIVIDE, Binary [ADD, NumConst[value: 3], NumConst[value: 4]], Binary [MINUS, NumConst[value: 5], NumConst[value: 6]]], Binary [ADD, Binary [MULTIPLY, NumConst[value: 7], NumConst[value: 8]], Binary [ADD, NumConst[value: 9], NumConst[value: 10]]]]]]
+
+AssertStmt[asserts: Binary [EQ, NumConst[value: 932.4], Var [ergebnis]], msg: POS-13]
+
+Var [ergebnis] := Binary [ADD, Var [ergebnis], Binary [MULTIPLY, NumConst[value: 2], Binary [MULTIPLY, Binary [ADD, Binary [ADD, NumConst[value: 3], NumConst[value: 4]], Binary [MULTIPLY, NumConst[value: 5], NumConst[value: 6]]], Binary [ADD, Binary [MULTIPLY, NumConst[value: 7], NumConst[value: 8]], Binary [MINUS, NumConst[value: 9], NumConst[value: 10]]]]]]
+
+DebugAction[value: TernaryExpr[condition: Binary [EQ, Var [ergebnis], NumConst[value: 5002.4]], thenPart: StringConst[value: SUCCESS], elsePart: StringConst[value: FAIL]]]
+StmtTextComment[textComment: Grundrechenarten Basics  --END--]

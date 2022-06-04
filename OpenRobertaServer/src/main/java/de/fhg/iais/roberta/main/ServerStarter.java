@@ -36,7 +36,7 @@ import com.sun.jersey.spi.container.servlet.ServletContainer;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.joran.JoranConfigurator;
 import ch.qos.logback.core.joran.spi.JoranException;
-import de.fhg.iais.roberta.factory.IRobotFactory;
+import de.fhg.iais.roberta.factory.RobotFactory;
 import de.fhg.iais.roberta.guice.RobertaGuiceServletConfig;
 import de.fhg.iais.roberta.javaServer.websocket.Ev3SensorLoggingWS;
 import de.fhg.iais.roberta.persistence.bo.Robot;
@@ -45,6 +45,9 @@ import de.fhg.iais.roberta.persistence.util.DbSession;
 import de.fhg.iais.roberta.persistence.util.HttpSessionState;
 import de.fhg.iais.roberta.persistence.util.SessionFactoryWrapper;
 import de.fhg.iais.roberta.robotCommunication.RobotCommunicator;
+import de.fhg.iais.roberta.util.syntax.BlockTypeContainer;
+import de.fhg.iais.roberta.transformer.AnnotationHelper;
+import de.fhg.iais.roberta.transformer.NepoAnnotationException;
 import de.fhg.iais.roberta.util.ServerProperties;
 import de.fhg.iais.roberta.util.Statistics;
 import de.fhg.iais.roberta.util.Util;
@@ -158,7 +161,7 @@ public class ServerStarter {
 
         // configure robot plugins
         RobotCommunicator robotCommunicator = new RobotCommunicator();
-        Map<String, IRobotFactory> robotPluginMap = configureRobotPlugins(robotCommunicator, this.serverProperties, pluginDefines);
+        Map<String, RobotFactory> robotPluginMap = configureRobotPlugins(robotCommunicator, this.serverProperties, pluginDefines);
 
         // setup services and threads to run the services
         IIpToCountry ipToCountry = configureIpToCountryDb();
@@ -233,7 +236,9 @@ public class ServerStarter {
         this.injector = robertaGuiceServletConfig.getCreatedInjector();
         Ev3SensorLoggingWS.setGuiceInjector(this.injector);
 
-        checkRobotPluginsDB(robotPluginMap.values());
+        DbSession dbSession = this.injector.getInstance(SessionFactoryWrapper.class).getSession();  // session is closed in the method called below
+        checkRobotPluginsDB(dbSession, robotPluginMap.values());
+        checkAstClassAnnotations();
         Runtime.getRuntime().addShutdownHook(new ShutdownHook("embedded".equals(this.serverProperties.getStringProperty("database.mode")), this.injector));
         LOG.info("Shutdown hook added. If the server is gracefully stopped in the future, a shutdown message is logged");
         logTheNumberOfStoredPrograms();
@@ -251,7 +256,7 @@ public class ServerStarter {
     public static void initLoggingBeforeFirstUse(String[] args) throws JoranException {
         String configFile = "/logback.xml";
         String adminDir = ".";
-        String logLevel = "INFO";
+        String logLevel = "ERROR";
         for ( String serverDefine : args ) {
             if ( serverDefine.startsWith(LOG_CONFIGFILE) ) {
                 configFile = extractValue(serverDefine.substring(LOG_CONFIGFILE.length()));
@@ -281,7 +286,7 @@ public class ServerStarter {
      * @param pluginDefines modifications of plugin properties as a list of "<pluginName>:<key>=<value>"
      * @return the mapping from robot names to the factory, that supplies all robot-specific data
      */
-    public static Map<String, IRobotFactory> configureRobotPlugins(
+    public static Map<String, RobotFactory> configureRobotPlugins(
         RobotCommunicator robotCommunicator,
         ServerProperties serverProperties,
         List<String> pluginDefines) {
@@ -289,14 +294,18 @@ public class ServerStarter {
             throw new DbcException("the robot communicator object is missing - Server does NOT start");
         }
         List<String> robotWhitelist = serverProperties.getRobotWhitelist();
-        Map<String, IRobotFactory> robotPlugins = new HashMap<>();
+        Map<String, RobotFactory> robotPlugins = new HashMap<>();
         String resourceDir = serverProperties.getCrosscompilerResourceDir();
         String tempDir = serverProperties.getTempDir();
         for ( String robotName : robotWhitelist ) {
+            robotName = robotName.trim();
+            if ( robotName.equals("") ) {
+                throw new DbcException("invalid robot name in white list - Server does NOT start");
+            }
             if ( robotName.equals("sim") ) {
                 continue;
             }
-            IRobotFactory factory = Util.configureRobotPlugin(robotName, resourceDir, tempDir, pluginDefines);
+            RobotFactory factory = Util.configureRobotPlugin(robotName, resourceDir, tempDir, pluginDefines);
             robotPlugins.put(robotName, factory);
         }
         StringBuilder sb = new StringBuilder();
@@ -374,8 +383,7 @@ public class ServerStarter {
     }
 
     /**
-     * setup the hibernate.connection.url<br>
-     * <b>Note:</b> the "hibernate.connection.url" property is added to the properties!
+     * setup the hibernate.connection.url and add it to the properties. From there it is retrieved later by GUICE.
      *
      * @param properties for configuring OpenRoberta, merged from property file and runtime arguments.
      */
@@ -386,9 +394,9 @@ public class ServerStarter {
         String databaseMode = properties.getProperty("database.mode");
         String dbUrl;
         if ( "embedded".equals(databaseMode) ) {
-            dbUrl = "jdbc:hsqldb:file:" + databaseParentDir + "/" + databaseName + ";ifexists=true;hsqldb.tx=mvcc";
+            dbUrl = "jdbc:hsqldb:file:" + databaseParentDir + "/" + databaseName + ";ifexists=true";
         } else if ( "server".equals(databaseMode) ) {
-            dbUrl = "jdbc:hsqldb:hsql://" + databaseUri + "/" + databaseName + ";hsqldb.tx=mvcc";
+            dbUrl = "jdbc:hsqldb:hsql://" + databaseUri + "/" + databaseName;
         } else {
             throw new DbcException("invalid database mode (use either embedded or server): " + databaseMode);
         }
@@ -409,27 +417,37 @@ public class ServerStarter {
     }
 
     /**
+     * Checks all AST classes if the Nepo Annotations where used correctly.
+     * Throws a {@link NepoAnnotationException} if an AST class is invalid.
+     */
+    private void checkAstClassAnnotations() {
+        BlockTypeContainer.getAstClasses().stream()
+            .filter(AnnotationHelper::isNepoAnnotatedClass)
+            .forEach(AnnotationHelper::checkNepoAnnotatedClass);
+    }
+
+    /**
      * step through all configured robot factories and make sure, that the group name of each robot (or its name, if no group is configured) is in the
      * database.<br>
-     * This is required, because the robot (group) name is used as foreign key in some tables
+     * This is required, because the robot (group) name is used as foreign key in some tables. The method is public and static because it is used
+     * in class {@link RestInterfaceTest}
      *
      * @param robotFactories collection of all configured robot factories
      */
-    private void checkRobotPluginsDB(Collection<IRobotFactory> robotFactories) {
+    public static void checkRobotPluginsDB(DbSession dbSession, Collection<RobotFactory> robotFactories) {
         try {
-            DbSession session = this.injector.getInstance(SessionFactoryWrapper.class).getSession();
-            RobotDao robotDao = new RobotDao(session);
-            for ( IRobotFactory robotFactory : robotFactories ) {
+            RobotDao robotDao = new RobotDao(dbSession);
+            for ( RobotFactory robotFactory : robotFactories ) {
                 String robotForDb = robotFactory.getGroup();
                 Robot pluginRobot = robotDao.loadRobot(robotForDb);
                 if ( pluginRobot == null ) {
                     // add missing robot type to database
                     Robot robot = new Robot(robotForDb);
-                    session.save(robot);
+                    dbSession.save(robot);
                     ServerStarter.LOG.info(robot.getName() + " added to the database");
                 }
             }
-            session.close();
+            dbSession.close();
         } catch ( Exception e ) {
             LOG.error("Server could not check robot names in the database (exit 20)", e);
             System.exit(20);

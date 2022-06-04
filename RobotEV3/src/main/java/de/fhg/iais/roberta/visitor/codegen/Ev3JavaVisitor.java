@@ -1,13 +1,5 @@
 package de.fhg.iais.roberta.visitor.codegen;
 
-import static de.fhg.iais.roberta.mode.general.IndexLocation.FROM_END;
-import static de.fhg.iais.roberta.mode.general.IndexLocation.FROM_START;
-import static de.fhg.iais.roberta.mode.general.ListElementOperations.GET;
-import static de.fhg.iais.roberta.mode.general.ListElementOperations.GET_REMOVE;
-import static de.fhg.iais.roberta.mode.general.ListElementOperations.INSERT;
-import static de.fhg.iais.roberta.mode.general.ListElementOperations.REMOVE;
-import static de.fhg.iais.roberta.mode.general.ListElementOperations.SET;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,17 +12,22 @@ import com.google.common.collect.ClassToInstanceMap;
 import de.fhg.iais.roberta.bean.IProjectBean;
 import de.fhg.iais.roberta.bean.UsedHardwareBean;
 import de.fhg.iais.roberta.components.ConfigurationAst;
-import de.fhg.iais.roberta.components.ConfigurationComponent;
+import de.fhg.iais.roberta.syntax.configuration.ConfigurationComponent;
 import de.fhg.iais.roberta.components.UsedActor;
 import de.fhg.iais.roberta.components.UsedSensor;
 import de.fhg.iais.roberta.inter.mode.action.ILanguage;
 import de.fhg.iais.roberta.mode.general.IndexLocation;
+import static de.fhg.iais.roberta.mode.general.IndexLocation.FROM_END;
+import static de.fhg.iais.roberta.mode.general.IndexLocation.FROM_START;
 import de.fhg.iais.roberta.mode.general.ListElementOperations;
-import de.fhg.iais.roberta.syntax.BlockType;
-import de.fhg.iais.roberta.syntax.BlockTypeContainer;
-import de.fhg.iais.roberta.syntax.MotorDuration;
+import static de.fhg.iais.roberta.mode.general.ListElementOperations.GET;
+import static de.fhg.iais.roberta.mode.general.ListElementOperations.GET_REMOVE;
+import static de.fhg.iais.roberta.mode.general.ListElementOperations.INSERT;
+import static de.fhg.iais.roberta.mode.general.ListElementOperations.REMOVE;
+import static de.fhg.iais.roberta.mode.general.ListElementOperations.SET;
+import de.fhg.iais.roberta.util.syntax.MotorDuration;
 import de.fhg.iais.roberta.syntax.Phrase;
-import de.fhg.iais.roberta.syntax.SC;
+import de.fhg.iais.roberta.util.syntax.SC;
 import de.fhg.iais.roberta.syntax.action.communication.BluetoothCheckConnectAction;
 import de.fhg.iais.roberta.syntax.action.communication.BluetoothConnectAction;
 import de.fhg.iais.roberta.syntax.action.communication.BluetoothReceiveAction;
@@ -54,6 +51,7 @@ import de.fhg.iais.roberta.syntax.action.sound.PlayNoteAction;
 import de.fhg.iais.roberta.syntax.action.sound.ToneAction;
 import de.fhg.iais.roberta.syntax.action.sound.VolumeAction;
 import de.fhg.iais.roberta.syntax.action.speech.SayTextAction;
+import de.fhg.iais.roberta.syntax.action.speech.SayTextWithSpeedAndPitchAction;
 import de.fhg.iais.roberta.syntax.action.speech.SetLanguageAction;
 import de.fhg.iais.roberta.syntax.lang.blocksequence.MainTask;
 import de.fhg.iais.roberta.syntax.lang.expr.ColorConst;
@@ -82,9 +80,9 @@ import de.fhg.iais.roberta.syntax.sensor.generic.TouchSensor;
 import de.fhg.iais.roberta.syntax.sensor.generic.UltrasonicSensor;
 import de.fhg.iais.roberta.typecheck.BlocklyType;
 import de.fhg.iais.roberta.util.dbc.DbcException;
+import de.fhg.iais.roberta.visitor.IEv3Visitor;
 import de.fhg.iais.roberta.visitor.IVisitor;
 import de.fhg.iais.roberta.visitor.codegen.utilities.TTSLanguageMapper;
-import de.fhg.iais.roberta.visitor.hardware.IEv3Visitor;
 import de.fhg.iais.roberta.visitor.lang.codegen.prog.AbstractJavaVisitor;
 
 /**
@@ -145,6 +143,7 @@ public final class Ev3JavaVisitor extends AbstractJavaVisitor implements IEv3Vis
         this.sb.append("private Hal hal = new Hal(brickConfiguration, usedSensors);");
         nlIndent();
         generateUserDefinedMethods();
+        generateNNStuff();
         nlIndent();
         this.sb.append("public static void main(String[] args) {");
         incrIndentation();
@@ -259,13 +258,26 @@ public final class Ev3JavaVisitor extends AbstractJavaVisitor implements IEv3Vis
             } else {
                 sayTextAction.getMsg().accept(this);
             }
-            BlockType emptyBlock = BlockTypeContainer.getByName("EMPTY_EXPR");
-            if ( !(sayTextAction.getSpeed().getKind().equals(emptyBlock) && sayTextAction.getPitch().getKind().equals(emptyBlock)) ) {
-                this.sb.append(",");
-                sayTextAction.getSpeed().accept(this);
-                this.sb.append(",");
-                sayTextAction.getPitch().accept(this);
+            this.sb.append(");");
+        }
+        return null;
+    }
+
+    @Override
+    public Void visitSayTextWithSpeedAndPitchAction(SayTextWithSpeedAndPitchAction<Void> sayTextAction) {
+        if ( !this.brickConfiguration.getRobotName().equals("ev3lejosv0") ) {
+            this.sb.append("hal.sayText(");
+            if ( !sayTextAction.getMsg().getKind().hasName("STRING_CONST") ) {
+                this.sb.append("String.valueOf(");
+                sayTextAction.getMsg().accept(this);
+                this.sb.append(")");
+            } else {
+                sayTextAction.getMsg().accept(this);
             }
+            this.sb.append(",");
+            sayTextAction.getSpeed().accept(this);
+            this.sb.append(",");
+            sayTextAction.getPitch().accept(this);
             this.sb.append(");");
         }
         return null;
@@ -311,17 +323,17 @@ public final class Ev3JavaVisitor extends AbstractJavaVisitor implements IEv3Vis
     @Override
     public Void visitShowTextAction(ShowTextAction<Void> showTextAction) {
         this.sb.append("hal.drawText(");
-        if ( !showTextAction.getMsg().getKind().hasName("STRING_CONST") ) {
+        if ( !showTextAction.msg.getKind().hasName("STRING_CONST") ) {
             this.sb.append("String.valueOf(");
-            showTextAction.getMsg().accept(this);
+            showTextAction.msg.accept(this);
             this.sb.append(")");
         } else {
-            showTextAction.getMsg().accept(this);
+            showTextAction.msg.accept(this);
         }
         this.sb.append(", ");
-        showTextAction.getX().accept(this);
+        showTextAction.x.accept(this);
         this.sb.append(", ");
-        showTextAction.getY().accept(this);
+        showTextAction.y.accept(this);
         this.sb.append(");");
         return null;
     }
@@ -468,7 +480,7 @@ public final class Ev3JavaVisitor extends AbstractJavaVisitor implements IEv3Vis
 
     @Override
     public Void visitKeysSensor(KeysSensor<Void> keysSensor) {
-        String brickSensorPort = "BrickKey." + keysSensor.getPort();
+        String brickSensorPort = "BrickKey." + keysSensor.getUserDefinedPort();
         switch ( keysSensor.getMode() ) {
             case SC.PRESSED:
                 this.sb.append("hal.isPressed(" + brickSensorPort + ")");
@@ -484,7 +496,7 @@ public final class Ev3JavaVisitor extends AbstractJavaVisitor implements IEv3Vis
 
     @Override
     public Void visitColorSensor(ColorSensor<Void> colorSensor) {
-        String port = "SensorPort.S" + colorSensor.getPort();
+        String port = "SensorPort.S" + colorSensor.getUserDefinedPort();
         String mode = colorSensor.getMode();
         String methodName;
         switch ( mode ) {
@@ -509,7 +521,7 @@ public final class Ev3JavaVisitor extends AbstractJavaVisitor implements IEv3Vis
 
     @Override
     public Void visitHTColorSensor(HTColorSensor<Void> htColorSensor) {
-        String port = "SensorPort.S" + htColorSensor.getPort();
+        String port = "SensorPort.S" + htColorSensor.getUserDefinedPort();
         String mode = htColorSensor.getMode();
         String methodName;
         switch ( mode ) {
@@ -534,7 +546,7 @@ public final class Ev3JavaVisitor extends AbstractJavaVisitor implements IEv3Vis
 
     @Override
     public Void visitEncoderSensor(EncoderSensor<Void> encoderSensor) {
-        String encoderMotorPort = encoderSensor.getPort();
+        String encoderMotorPort = encoderSensor.getUserDefinedPort();
         boolean isRegulated = this.brickConfiguration.isMotorRegulated(encoderMotorPort);
         if ( encoderSensor.getMode().equals(SC.RESET) ) {
             String methodName = isRegulated ? "hal.resetRegulatedMotorTacho(" : "hal.resetUnregulatedMotorTacho(";
@@ -548,7 +560,7 @@ public final class Ev3JavaVisitor extends AbstractJavaVisitor implements IEv3Vis
 
     @Override
     public Void visitGyroSensor(GyroSensor<Void> gyroSensor) {
-        String gyroSensorPort = "SensorPort.S" + gyroSensor.getPort();
+        String gyroSensorPort = "SensorPort.S" + gyroSensor.getUserDefinedPort();
         switch ( gyroSensor.getMode() ) {
             case SC.ANGLE:
                 this.sb.append("hal.getGyroSensorAngle(" + gyroSensorPort + ")");
@@ -567,7 +579,7 @@ public final class Ev3JavaVisitor extends AbstractJavaVisitor implements IEv3Vis
 
     @Override
     public Void visitInfraredSensor(InfraredSensor<Void> infraredSensor) {
-        String infraredSensorPort = "SensorPort.S" + infraredSensor.getPort();
+        String infraredSensorPort = "SensorPort.S" + infraredSensor.getUserDefinedPort();
         switch ( infraredSensor.getMode() ) {
             case SC.DISTANCE:
                 this.sb.append("hal.getInfraredSensorDistance(" + infraredSensorPort + ")");
@@ -583,7 +595,7 @@ public final class Ev3JavaVisitor extends AbstractJavaVisitor implements IEv3Vis
 
     @Override
     public Void visitTimerSensor(TimerSensor<Void> timerSensor) {
-        String timerNumber = timerSensor.getPort();
+        String timerNumber = timerSensor.getUserDefinedPort();
         switch ( timerSensor.getMode() ) {
             case SC.DEFAULT:
             case SC.VALUE:
@@ -600,13 +612,13 @@ public final class Ev3JavaVisitor extends AbstractJavaVisitor implements IEv3Vis
 
     @Override
     public Void visitTouchSensor(TouchSensor<Void> touchSensor) {
-        this.sb.append("hal.isPressed(" + "SensorPort.S" + touchSensor.getPort() + ")");
+        this.sb.append("hal.isPressed(" + "SensorPort.S" + touchSensor.getUserDefinedPort() + ")");
         return null;
     }
 
     @Override
     public Void visitUltrasonicSensor(UltrasonicSensor<Void> ultrasonicSensor) {
-        String ultrasonicSensorPort = "SensorPort.S" + ultrasonicSensor.getPort();
+        String ultrasonicSensorPort = "SensorPort.S" + ultrasonicSensor.getUserDefinedPort();
         if ( ultrasonicSensor.getMode().equals(SC.DISTANCE) ) {
             this.sb.append("hal.getUltraSonicSensorDistance(" + ultrasonicSensorPort + ")");
         } else {
@@ -617,13 +629,13 @@ public final class Ev3JavaVisitor extends AbstractJavaVisitor implements IEv3Vis
 
     @Override
     public Void visitSoundSensor(SoundSensor<Void> soundSensor) {
-        this.sb.append("hal.getSoundLevel(" + "SensorPort.S" + soundSensor.getPort() + ")");
+        this.sb.append("hal.getSoundLevel(" + "SensorPort.S" + soundSensor.getUserDefinedPort() + ")");
         return null;
     }
 
     @Override
     public Void visitCompassSensor(CompassSensor<Void> compassSensor) {
-        String compassSensorPort = "SensorPort.S" + compassSensor.getPort();
+        String compassSensorPort = "SensorPort.S" + compassSensor.getUserDefinedPort();
         switch ( compassSensor.getMode() ) {
             case SC.CALIBRATE:
                 this.sb.append("hal.hiTecCompassStartCalibration(" + compassSensorPort + ");");
@@ -646,7 +658,7 @@ public final class Ev3JavaVisitor extends AbstractJavaVisitor implements IEv3Vis
 
     @Override
     public Void visitIRSeekerSensor(IRSeekerSensor<Void> irSeekerSensor) {
-        String irSeekerSensorPort = "SensorPort.S" + irSeekerSensor.getPort();
+        String irSeekerSensorPort = "SensorPort.S" + irSeekerSensor.getUserDefinedPort();
         switch ( irSeekerSensor.getMode() ) {
             case SC.MODULATED:
                 this.sb.append("hal.getHiTecIRSeekerModulated(" + irSeekerSensorPort + ")");

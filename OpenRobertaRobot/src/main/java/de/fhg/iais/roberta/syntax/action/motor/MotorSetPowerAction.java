@@ -1,26 +1,17 @@
 package de.fhg.iais.roberta.syntax.action.motor;
 
-import java.util.List;
-
-import de.fhg.iais.roberta.blockly.generated.Block;
-import de.fhg.iais.roberta.blockly.generated.Field;
-import de.fhg.iais.roberta.blockly.generated.Value;
-import de.fhg.iais.roberta.factory.BlocklyDropdownFactory;
-import de.fhg.iais.roberta.syntax.BlockTypeContainer;
-import de.fhg.iais.roberta.syntax.BlocklyBlockProperties;
-import de.fhg.iais.roberta.syntax.BlocklyComment;
-import de.fhg.iais.roberta.syntax.BlocklyConstants;
-import de.fhg.iais.roberta.syntax.Phrase;
+import de.fhg.iais.roberta.util.syntax.BlockType;
+import de.fhg.iais.roberta.util.syntax.BlockTypeContainer;
+import de.fhg.iais.roberta.util.syntax.BlocklyBlockProperties;
+import de.fhg.iais.roberta.util.syntax.BlocklyComment;
+import de.fhg.iais.roberta.util.syntax.BlocklyConstants;
 import de.fhg.iais.roberta.syntax.action.MoveAction;
 import de.fhg.iais.roberta.syntax.lang.expr.Expr;
-import de.fhg.iais.roberta.transformer.AbstractJaxb2Ast;
-import de.fhg.iais.roberta.transformer.Ast2Jaxb;
-import de.fhg.iais.roberta.transformer.ExprParam;
-import de.fhg.iais.roberta.transformer.Jaxb2Ast;
+import de.fhg.iais.roberta.transformer.NepoField;
+import de.fhg.iais.roberta.transformer.NepoPhrase;
+import de.fhg.iais.roberta.transformer.NepoValue;
 import de.fhg.iais.roberta.typecheck.BlocklyType;
 import de.fhg.iais.roberta.util.dbc.Assert;
-import de.fhg.iais.roberta.visitor.IVisitor;
-import de.fhg.iais.roberta.visitor.hardware.actor.IMotorVisitor;
 
 /**
  * This class represents the <b>robActions_motor_setPower</b> block from Blockly into the AST (abstract syntax tree). Object from this class will generate code
@@ -28,12 +19,17 @@ import de.fhg.iais.roberta.visitor.hardware.actor.IMotorVisitor;
  * <br/>
  * The client must provide the {@link ActorPort} on which the motor is connected.
  */
+@NepoPhrase(containerType = "MOTOR_SET_POWER_ACTION")
 public class MotorSetPowerAction<V> extends MoveAction<V> {
-    private final Expr<V> power;
+    @NepoValue(name = BlocklyConstants.POWER, type = BlocklyType.NUMBER_INT)
+    public final Expr<V> power;
+    @NepoField(name = BlocklyConstants.MOTORPORT)
+    public final String port;
 
-    private MotorSetPowerAction(String port, Expr<V> power, BlocklyBlockProperties properties, BlocklyComment comment) {
-        super(port, BlockTypeContainer.getByName("MOTOR_SET_POWER_ACTION"), properties, comment);
+    public MotorSetPowerAction(BlockType kind, BlocklyBlockProperties properties, BlocklyComment comment, Expr<V> power, String port) {
+        super(port, kind, properties, comment);
         Assert.isTrue(port != null && power.isReadOnly());
+        this.port = port;
         this.power = power;
         setReadOnly();
     }
@@ -48,7 +44,7 @@ public class MotorSetPowerAction<V> extends MoveAction<V> {
      * @return read only object of class {@link MotorSetPowerAction}
      */
     public static <V> MotorSetPowerAction<V> make(String port, Expr<V> power, BlocklyBlockProperties properties, BlocklyComment comment) {
-        return new MotorSetPowerAction<V>(port, power, properties, comment);
+        return new MotorSetPowerAction<V>(BlockTypeContainer.getByName("MOTOR_SET_POWER_ACTION"), properties, comment, power, port);
     }
 
     /**
@@ -58,41 +54,4 @@ public class MotorSetPowerAction<V> extends MoveAction<V> {
         return this.power;
     }
 
-    @Override
-    public String toString() {
-        return "MotorSetPowerAction [port=" + getUserDefinedPort() + ", power=" + this.power + "]";
-    }
-
-    @Override
-    protected V acceptImpl(IVisitor<V> visitor) {
-        return ((IMotorVisitor<V>) visitor).visitMotorSetPowerAction(this);
-    }
-
-    /**
-     * Transformation from JAXB object to corresponding AST object.
-     *
-     * @param block for transformation
-     * @param helper class for making the transformation
-     * @return corresponding AST object
-     */
-    public static <V> Phrase<V> jaxbToAst(Block block, AbstractJaxb2Ast<V> helper) {
-        BlocklyDropdownFactory factory = helper.getDropdownFactory();
-        List<Field> fields = Jaxb2Ast.extractFields(block, (short) 1);
-        List<Value> values = Jaxb2Ast.extractValues(block, (short) 1);
-        String portName = Jaxb2Ast.extractField(fields, BlocklyConstants.MOTORPORT);
-        Phrase<V> left = helper.extractValue(values, new ExprParam(BlocklyConstants.POWER, BlocklyType.NUMBER_INT));
-        return MotorSetPowerAction
-            .make(factory.sanitizePort(portName), helper.convertPhraseToExpr(left), Jaxb2Ast.extractBlockProperties(block), Jaxb2Ast.extractComment(block));
-    }
-
-    @Override
-    public Block astToBlock() {
-        Block jaxbDestination = new Block();
-        Ast2Jaxb.setBasicProperties(this, jaxbDestination);
-
-        Ast2Jaxb.addField(jaxbDestination, BlocklyConstants.MOTORPORT, getUserDefinedPort().toString());
-        Ast2Jaxb.addValue(jaxbDestination, BlocklyConstants.POWER, getPower());
-
-        return jaxbDestination;
-    }
 }

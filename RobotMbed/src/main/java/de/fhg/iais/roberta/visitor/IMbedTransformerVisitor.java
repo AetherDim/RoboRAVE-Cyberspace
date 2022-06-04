@@ -30,9 +30,7 @@ import de.fhg.iais.roberta.syntax.functions.mbed.ImageInvertFunction;
 import de.fhg.iais.roberta.syntax.functions.mbed.ImageShiftFunction;
 import de.fhg.iais.roberta.syntax.lang.expr.Expr;
 import de.fhg.iais.roberta.syntax.sensor.mbed.RadioRssiSensor;
-import de.fhg.iais.roberta.visitor.hardware.IMbedVisitor;
 
-@SuppressWarnings("unchecked")
 public interface IMbedTransformerVisitor<V> extends ITransformerVisitor<V>, IMbedVisitor<Phrase<V>> {
 
     @Override
@@ -47,7 +45,7 @@ public interface IMbedTransformerVisitor<V> extends ITransformerVisitor<V>, IMbe
 
     @Override
     default Phrase<V> visitPredefinedImage(PredefinedImage<Phrase<V>> predefinedImage) {
-        return PredefinedImage.make(predefinedImage.getImageName(), predefinedImage.getProperty(), predefinedImage.getComment());
+        return PredefinedImage.make(predefinedImage.getImageNameString(), predefinedImage.getProperty(), predefinedImage.getComment());
     }
 
     @Override
@@ -84,7 +82,7 @@ public interface IMbedTransformerVisitor<V> extends ITransformerVisitor<V>, IMbe
 
     @Override
     default Phrase<V> visitLedOnAction(LedOnAction<Phrase<V>> ledOnAction) {
-        return LedOnAction.make(ledOnAction.getPort(), (Expr<V>) ledOnAction.getLedColor().modify(this), ledOnAction.getProperty(), ledOnAction.getComment());
+        return LedOnAction.make(ledOnAction.getProperty(), ledOnAction.getComment(), (Expr<V>) ledOnAction.getLedColor().modify(this), ledOnAction.getUserDefinedPort(), ledOnAction.hide);
     }
 
     @Override
@@ -184,7 +182,7 @@ public interface IMbedTransformerVisitor<V> extends ITransformerVisitor<V>, IMbe
 
     @Override
     default Phrase<V> visitRadioRssiSensor(RadioRssiSensor<Phrase<V>> radioRssiSensor) {
-        return RadioRssiSensor.make(radioRssiSensor.getProperty(), radioRssiSensor.getComment());
+        return RadioRssiSensor.make(radioRssiSensor.getSensorMetaDataBean(), radioRssiSensor.getProperty(), radioRssiSensor.getComment());
     }
 
     @Override
@@ -205,7 +203,7 @@ public interface IMbedTransformerVisitor<V> extends ITransformerVisitor<V>, IMbe
     @Override
     default Phrase<V> visitServoSetAction(ServoSetAction<Phrase<V>> servoSetAction) {
         return ServoSetAction
-            .make(servoSetAction.getPort(), (Expr<V>) servoSetAction.getValue().modify(this), servoSetAction.getProperty(), servoSetAction.getComment());
+            .make(servoSetAction.getUserDefinedPort(), (Expr<V>) servoSetAction.getValue().modify(this), servoSetAction.getProperty(), servoSetAction.getComment());
     }
 
     @Override

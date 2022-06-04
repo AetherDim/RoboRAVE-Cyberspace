@@ -45,55 +45,21 @@ public class ClientConfiguration {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/saveC")
     public Response saveConfig(@OraData DbSession dbSession, FullRestRequest fullRequest) throws Exception {
-        HttpSessionState httpSessionState = UtilForREST.handleRequestInit(LOG, fullRequest, true);
+        HttpSessionState httpSessionState = UtilForREST.handleRequestInit(dbSession, LOG, fullRequest, true);
         try {
             BaseResponse response = BaseResponse.make();
             int userId = httpSessionState.getUserId();
-            String robotGroup = httpSessionState.getRobotFactory(httpSessionState.getRobotName()).getGroup();
-            final String robotName = robotGroup != "" ? robotGroup : httpSessionState.getRobotName();
+            String robotName = httpSessionState.getRobotFactory(httpSessionState.getRobotName()).getGroup();
             SaveConfRequest request = SaveConfRequest.make(fullRequest.getData());
-            String cmd = "saveC";
+            String cmd = request.getCmd();
             LOG.info("command is: " + cmd);
             response.setCmd(cmd);
+            boolean mayExist = cmd.equals("saveC");
 
             ConfigurationProcessor cp = new ConfigurationProcessor(dbSession, httpSessionState);
             String configurationName = request.getName();
             String configurationXml = request.getConfiguration();
-            cp.updateConfiguration(configurationName, userId, robotName, configurationXml, true);
-            UtilForREST.addResultInfo(response, cp);
-            return UtilForREST.responseWithFrontendInfo(response, httpSessionState, this.brickCommunicator);
-        } catch ( Exception e ) {
-            dbSession.rollback();
-            String errorTicketId = Util.getErrorTicketId();
-            LOG.error("Exception. Error ticket: " + errorTicketId, e);
-            return UtilForREST.makeBaseResponseForError(Key.SERVER_ERROR, httpSessionState, null); // TODO: redesign error ticker number and add then: append("parameters", errorTicketId);
-        } finally {
-            if ( dbSession != null ) {
-                dbSession.close();
-            }
-        }
-    }
-
-    @POST
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("/saveAsC")
-    public Response saveAsConfig(@OraData DbSession dbSession, FullRestRequest fullRequest) throws Exception {
-        HttpSessionState httpSessionState = UtilForREST.handleRequestInit(LOG, fullRequest, true);
-        try {
-            BaseResponse response = BaseResponse.make();
-            int userId = httpSessionState.getUserId();
-            String robotGroup = httpSessionState.getRobotFactory(httpSessionState.getRobotName()).getGroup();
-            final String robotName = robotGroup != "" ? robotGroup : httpSessionState.getRobotName();
-            SaveConfRequest request = SaveConfRequest.make(fullRequest.getData());
-            String cmd = "saveAsC";
-            LOG.info("command is: " + cmd);
-            response.setCmd(cmd);
-            ConfigurationProcessor cp = new ConfigurationProcessor(dbSession, httpSessionState);
-
-            String configurationName = request.getName();
-            String configurationXml = request.getConfiguration();
-            cp.updateConfiguration(configurationName, userId, robotName, configurationXml, false);
+            cp.updateConfiguration(configurationName, userId, robotName, configurationXml, mayExist);
             UtilForREST.addResultInfo(response, cp);
             return UtilForREST.responseWithFrontendInfo(response, httpSessionState, this.brickCommunicator);
         } catch ( Exception e ) {
@@ -113,12 +79,11 @@ public class ClientConfiguration {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/loadC")
     public Response loadConfig(@OraData DbSession dbSession, FullRestRequest fullRequest) throws Exception {
-        HttpSessionState httpSessionState = UtilForREST.handleRequestInit(LOG, fullRequest, true);
+        HttpSessionState httpSessionState = UtilForREST.handleRequestInit(dbSession, LOG, fullRequest, true);
         try {
             ConfResponse response = ConfResponse.make();
             int userId = httpSessionState.getUserId();
-            String robotGroup = httpSessionState.getRobotFactory(httpSessionState.getRobotName()).getGroup();
-            final String robotName = robotGroup != "" ? robotGroup : httpSessionState.getRobotName();
+            String robotName = httpSessionState.getRobotFactory(httpSessionState.getRobotName()).getGroup();
             ConfRequest request = ConfRequest.make(fullRequest.getData());
             String cmd = "loadC";
             LOG.info("command is: " + cmd);
@@ -129,7 +94,7 @@ public class ClientConfiguration {
             String configurationName = request.getName();
             String ownerName = request.getOwner().trim();
             if ( !ownerName.isEmpty() ) {
-                User user = up.getUser(ownerName);
+                User user = up.getStandardUser(ownerName);
                 if ( user != null ) {
                     userId = user.getId();
                 }
@@ -155,12 +120,12 @@ public class ClientConfiguration {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/deleteC")
     public Response deleteConfig(@OraData DbSession dbSession, FullRestRequest fullRequest) throws Exception {
-        HttpSessionState httpSessionState = UtilForREST.handleRequestInit(LOG, fullRequest, true);
+        HttpSessionState httpSessionState = UtilForREST.handleRequestInit(dbSession, LOG, fullRequest, true);
         try {
             BaseResponse response = BaseResponse.make();
             int userId = httpSessionState.getUserId();
-            String robotGroup = httpSessionState.getRobotFactory(httpSessionState.getRobotName()).getGroup();
-            final String robotName = robotGroup != "" ? robotGroup : httpSessionState.getRobotName();
+            String robotName = httpSessionState.getRobotFactory(httpSessionState.getRobotName()).getGroup();
+            // TODO: remove final String robotName = robotGroup.equals("") ? httpSessionState.getRobotName() : robotGroup;
             ConfRequest request = ConfRequest.make(fullRequest.getData());
             String cmd = "deleteC";
             LOG.info("command is: " + cmd);
@@ -188,12 +153,11 @@ public class ClientConfiguration {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/loadCN")
     public Response loadConfigNames(@OraData DbSession dbSession, FullRestRequest fullRequest) throws Exception {
-        HttpSessionState httpSessionState = UtilForREST.handleRequestInit(LOG, fullRequest, true);
+        HttpSessionState httpSessionState = UtilForREST.handleRequestInit(dbSession, LOG, fullRequest, true);
         try {
             ConfResponse response = ConfResponse.make();
             int userId = httpSessionState.getUserId();
-            String robotGroup = httpSessionState.getRobotFactory(httpSessionState.getRobotName()).getGroup();
-            final String robotName = robotGroup != "" ? robotGroup : httpSessionState.getRobotName();
+            String robotName = httpSessionState.getRobotFactory(httpSessionState.getRobotName()).getGroup();
             String cmd = "loadCN";
             LOG.info("command is: " + cmd);
             response.setCmd(cmd);

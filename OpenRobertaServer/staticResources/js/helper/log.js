@@ -1,12 +1,12 @@
-define([ 'exports', 'jquery', 'bootstrap-table', 'GlobalDebug' ], function(exports, $, bootstrapTable, GlobalDebug) {
-
+define(["require", "exports", "jquery", "bootstrap-table", 'GlobalDebug' ], function (require, exports, $, GlobalDebug) {
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.toggleVisibility = exports.reportToComm = exports.length = exports.enableComm = exports.enableHtml = exports.error = exports.info = exports.text = void 0;
     // switches for logging:
     var logToLog = true; // log to HTML-list with id #log
     var logToComm = true; // log to server along with the next ajax call
-
+    var logToConsole = true; // log ERROR to console for DEBUGGING
     var markerINFO = '[[INFO]] ';
     var markerERROR = '[[ERR ]] ';
-
     /**
      * log text to a HTML-list with id #log or prepare it to be sent to the
      * server or do both or do nothing, depending on switches. A marker is
@@ -19,9 +19,9 @@ define([ 'exports', 'jquery', 'bootstrap-table', 'GlobalDebug' ], function(expor
         /* jshint expr : true */
         logToLog && logLog(obj, marker);
         logToComm && logComm(obj, marker);
+        logToConsole && marker === markerERROR && logConsole(obj, marker);
     }
     exports.text = text;
-
     /**
      * log info text to a HTML-list with id #log or prepare it to be sent to the
      * server or do both or do nothing, depending on switches
@@ -30,7 +30,6 @@ define([ 'exports', 'jquery', 'bootstrap-table', 'GlobalDebug' ], function(expor
         text(obj, markerINFO);
     }
     exports.info = info;
-
     /**
      * log error text to a HTML-list with id #log or prepare it to be sent to
      * the server or do both or do nothing, depending on switches
@@ -39,7 +38,6 @@ define([ 'exports', 'jquery', 'bootstrap-table', 'GlobalDebug' ], function(expor
         text(obj, markerERROR);
     }
     exports.error = error;
-
     /**
      * set switch for logging to a HTML-list to either true or false
      */
@@ -47,7 +45,6 @@ define([ 'exports', 'jquery', 'bootstrap-table', 'GlobalDebug' ], function(expor
         logToLog = bool;
     }
     exports.enableHtml = enableHtml;
-
     /**
      * set switch for logging to server along with the next ajax call to either
      * true or false
@@ -56,10 +53,8 @@ define([ 'exports', 'jquery', 'bootstrap-table', 'GlobalDebug' ], function(expor
         logToComm = bool;
     }
     exports.enableComm = enableComm;
-
     // IMPLEMENTATION OF logging to server along with the next ajax call
     var logQueue = [];
-
     /**
      * log to a queue
      */
@@ -75,7 +70,6 @@ define([ 'exports', 'jquery', 'bootstrap-table', 'GlobalDebug' ], function(expor
             console.log(marker + obj)
         }
     }
-
     /**
      * to be used by COMM only: retrieve the number of entries in the log queue
      */
@@ -83,7 +77,6 @@ define([ 'exports', 'jquery', 'bootstrap-table', 'GlobalDebug' ], function(expor
         return logQueue.length;
     }
     exports.length = length;
-
     /**
      * to be used by COMM only: retrieve logging data, because an ajax request
      * has to be prepared
@@ -94,9 +87,7 @@ define([ 'exports', 'jquery', 'bootstrap-table', 'GlobalDebug' ], function(expor
         return _logQueue;
     }
     exports.reportToComm = reportToComm;
-
     var logToggle = 'log0'; // for alternating css-classes
-
     /**
      * IMPLEMENTATION OF logging to a HTML-list with id #log. expect: HTML-list
      * with id #log expect: css-classes 'log0' and 'log1' and 'lERR'
@@ -107,15 +98,24 @@ define([ 'exports', 'jquery', 'bootstrap-table', 'GlobalDebug' ], function(expor
         }
         var data = $('#logTable').bootstrapTable('getData');
         $('#logTable').bootstrapTable('insertRow', {
-            index : 0,
-            row : {
-                0 : data.length + 1,
-                1 : marker,
-                2 : obj,
-            }
+            index: 0,
+            row: {
+                0: data.length + 1,
+                1: marker,
+                2: obj,
+            },
         });
     }
-
+    /**
+     * IMPLEMENTATION OF logging to a HTML-list with id #log. expect: HTML-list
+     * with id #log expect: css-classes 'log0' and 'log1' and 'lERR'
+     */
+    function logConsole(obj, marker) {
+        if (typeof obj === 'object') {
+            obj = JSON.stringify(obj);
+        }
+        console.log(markerERROR + obj);
+    }
     /**
      * toggle the visibility of the HTML-list with id #log
      */
@@ -123,10 +123,10 @@ define([ 'exports', 'jquery', 'bootstrap-table', 'GlobalDebug' ], function(expor
         var $log = $('#log');
         if ($log.is(':visible')) {
             $log.hide();
-        } else {
+        }
+        else {
             $log.show();
         }
     }
     exports.toggleVisibility = toggleVisibility;
-
 });

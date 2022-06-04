@@ -1,0 +1,6 @@
+Sensors: 
+[UsedSensor [- EMPTY_PORT -, ULTRASONIC, DISTANCE], UsedSensor [null, DETECT_MARK, null], UsedSensor [null, NAO_FACE, null], UsedSensor [null, NAO_SPEECH, null], UsedSensor [NO PORT, ULTRASONIC, DISTANCE]]
+Actors: 
+[]
+Methods: 
+[]

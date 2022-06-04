@@ -9,8 +9,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * for future use! Replaces the bad dottet names. Data about the state of the robot<br>
- * <br>
+ * for future use! Replaces the bad dottet names. Data about the state of the robot<br><br>
  * Version: 1<br>
  * Datum: 2020-06-15
  */
@@ -76,8 +75,8 @@ public class RobotInfo {
     }
 
     /**
-     * merge the properties of a JSON-object into this bean. The bean must be "under construction". The keys of the JSON-Object must be valid. The bean remains
-     * "under construction".<br>
+     * merge the properties of a JSON-object into this bean. The bean must be "under construction".
+     * The keys of the JSON-Object must be valid. The bean remains "under construction".<br>
      * Throws a runtime exception if inconsistencies are detected.
      */
     public RobotInfo merge(JSONObject jsonO) {
@@ -130,25 +129,25 @@ public class RobotInfo {
         if ( !this.immutable ) {
             _message = "RobotInfo-object is already immutable: " + toString();
         }
-        if ( !this.waitDefined ) {
+        if ( !waitDefined ) {
             _message = "required property wait of RobotInfo-object is not set: " + toString();
         }
-        if ( this.battery == null ) {
+        if ( battery == null ) {
             _message = "required property battery of RobotInfo-object is not set: " + toString();
         }
-        if ( this.name == null ) {
+        if ( name == null ) {
             _message = "required property name of RobotInfo-object is not set: " + toString();
         }
-        if ( this.version == null ) {
+        if ( version == null ) {
             _message = "required property version of RobotInfo-object is not set: " + toString();
         }
-        if ( this.firmwareName == null ) {
+        if ( firmwareName == null ) {
             _message = "required property firmwareName of RobotInfo-object is not set: " + toString();
         }
-        if ( this.sensorvalues == null ) {
+        if ( sensorvalues == null ) {
             _message = "required property sensorvalues of RobotInfo-object is not set: " + toString();
         }
-        if ( !this.nepoexitvalueDefined ) {
+        if ( !nepoexitvalueDefined ) {
             _message = "required property nepoexitvalue of RobotInfo-object is not set: " + toString();
         }
         if ( _message != null ) {
@@ -333,23 +332,7 @@ public class RobotInfo {
 
     @Override
     public String toString() {
-        return "RobotInfo [immutable="
-            + this.immutable
-            + ", wait="
-            + this.wait
-            + ", battery="
-            + this.battery
-            + ", name="
-            + this.name
-            + ", version="
-            + this.version
-            + ", firmwareName="
-            + this.firmwareName
-            + ", sensorvalues="
-            + this.sensorvalues
-            + ", nepoexitvalue="
-            + this.nepoexitvalue
-            + " ]";
+        return "RobotInfo [immutable=" + this.immutable + ", wait=" + this.wait + ", battery=" + this.battery + ", name=" + this.name + ", version=" + this.version + ", firmwareName=" + this.firmwareName + ", sensorvalues=" + this.sensorvalues + ", nepoexitvalue=" + this.nepoexitvalue + " ]";
     }
 
     @Override

@@ -1,30 +1,25 @@
 package de.fhg.iais.roberta.syntax.lang.stmt;
 
-import java.util.List;
-
-import de.fhg.iais.roberta.blockly.generated.Block;
-import de.fhg.iais.roberta.blockly.generated.Field;
-import de.fhg.iais.roberta.syntax.BlockTypeContainer;
-import de.fhg.iais.roberta.syntax.BlocklyBlockProperties;
-import de.fhg.iais.roberta.syntax.BlocklyComment;
-import de.fhg.iais.roberta.syntax.BlocklyConstants;
-import de.fhg.iais.roberta.syntax.Phrase;
-import de.fhg.iais.roberta.transformer.AbstractJaxb2Ast;
-import de.fhg.iais.roberta.transformer.Ast2Jaxb;
-import de.fhg.iais.roberta.transformer.Jaxb2Ast;
+import de.fhg.iais.roberta.util.syntax.BlockType;
+import de.fhg.iais.roberta.util.syntax.BlockTypeContainer;
+import de.fhg.iais.roberta.util.syntax.BlocklyBlockProperties;
+import de.fhg.iais.roberta.util.syntax.BlocklyComment;
+import de.fhg.iais.roberta.util.syntax.BlocklyConstants;
+import de.fhg.iais.roberta.transformer.NepoField;
+import de.fhg.iais.roberta.transformer.NepoPhrase;
 import de.fhg.iais.roberta.util.dbc.Assert;
-import de.fhg.iais.roberta.visitor.IVisitor;
-import de.fhg.iais.roberta.visitor.lang.ILanguageVisitor;
 
 /**
  * This class represents the <b>text_comment</b> blocks from Blockly into the AST (abstract syntax tree). Object from this class will generate code for an
  * inline comment.
  */
+@NepoPhrase(containerType = "TEXT_COMMENT")
 public class StmtTextComment<V> extends Stmt<V> {
-    private final String textComment;
+    @NepoField(name = BlocklyConstants.TEXT)
+    public final String textComment;
 
-    private StmtTextComment(String textComment, BlocklyBlockProperties properties, BlocklyComment comment) {
-        super(BlockTypeContainer.getByName("TEXT_COMMENT"), properties, comment);
+    public StmtTextComment(BlockType kind, BlocklyBlockProperties properties, BlocklyComment comment, String textComment) {
+        super(kind, properties, comment);
         Assert.isTrue(textComment != null);
         this.textComment = textComment;
         setReadOnly();
@@ -38,7 +33,7 @@ public class StmtTextComment<V> extends Stmt<V> {
      * @return read only object of class {@link StmtTextComment}
      */
     public static <V> StmtTextComment<V> make(String textComment, BlocklyBlockProperties properties, BlocklyComment comment) {
-        return new StmtTextComment<V>(textComment, properties, comment);
+        return new StmtTextComment<V>(BlockTypeContainer.getByName("TEXT_COMMENT"), properties, comment, textComment);
     }
 
     /**
@@ -48,36 +43,4 @@ public class StmtTextComment<V> extends Stmt<V> {
         return this.textComment;
     }
 
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        appendNewLine(sb, 0, "StmtTextComment [" + this.textComment + "]");
-        return sb.toString();
-    }
-
-    @Override
-    protected V acceptImpl(IVisitor<V> visitor) {
-        return ((ILanguageVisitor<V>) visitor).visitStmtTextComment(this);
-    }
-
-    /**
-     * Transformation from JAXB object to corresponding AST object.
-     *
-     * @param block for transformation
-     * @param helper class for making the transformation
-     * @return corresponding AST object
-     */
-    public static <V> Phrase<V> jaxbToAst(Block block, AbstractJaxb2Ast<V> helper) {
-        List<Field> fields = Jaxb2Ast.extractFields(block, (short) 1);
-        String comment = Jaxb2Ast.extractField(fields, BlocklyConstants.TEXT);
-        return StmtTextComment.make(comment, Jaxb2Ast.extractBlockProperties(block), Jaxb2Ast.extractComment(block));
-    }
-
-    @Override
-    public Block astToBlock() {
-        Block jaxbDestination = new Block();
-        Ast2Jaxb.setBasicProperties(this, jaxbDestination);
-        Ast2Jaxb.addField(jaxbDestination, BlocklyConstants.TEXT, this.textComment);
-        return jaxbDestination;
-    }
 }

@@ -1,6 +1,7 @@
 package de.fhg.iais.roberta.persistence;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,7 +33,7 @@ import de.fhg.iais.roberta.persistence.dao.UserProgramShareDao;
 import de.fhg.iais.roberta.persistence.util.DbSession;
 import de.fhg.iais.roberta.persistence.util.HttpSessionState;
 import de.fhg.iais.roberta.util.Key;
-import de.fhg.iais.roberta.util.Pair;
+import de.fhg.iais.roberta.util.basic.Pair;
 import de.fhg.iais.roberta.util.Util;
 
 public class ProgramProcessor extends AbstractProcessor {
@@ -44,7 +45,6 @@ public class ProgramProcessor extends AbstractProcessor {
 
     public Program getProgramAndLockTable(String programName, String ownerName, String robotName, String authorName) {
         ProgramDao programDao = new ProgramDao(this.dbSession);
-        programDao.lockTable();
         return getProgram(programName, ownerName, robotName, authorName);
     }
 
@@ -230,6 +230,52 @@ public class ProgramProcessor extends AbstractProcessor {
         } else {
             return null; // null to indicate, that the default configuration has to be used.
         }
+    }
+
+    /**
+     * Get programs owned by an user and his groups for every robot
+     *
+     * @param ownerId the owner of the programs
+     * @return all programs by a given user and his groups
+     */
+    public List<Program> getProgramsByUserAndHisGroups(int ownerId) {
+        UserDao userDao = new UserDao(this.dbSession);
+        ProgramDao programDao = new ProgramDao(this.dbSession);
+        User owner = userDao.get(ownerId);
+
+        if ( owner == null ) {
+            setStatus(ProcessorStatus.FAILED, Key.PROGRAM_GET_ALL_ERROR_USER_NOT_FOUND, new HashMap<>());
+            return new ArrayList<Program>();
+        }
+        List<Program> userPrograms = programDao.loadAll(owner);
+        List<Program> groupPrograms = getProgrammsOfGroupsOwnedByUser(ownerId);
+        //connecting user programs and group programs
+        List<Program> allPrograms = new ArrayList<>(userPrograms);
+        allPrograms.addAll(groupPrograms);
+
+        return allPrograms;
+    }
+
+    /**
+     * Get all groups that the given user owns and their programs
+     *
+     * @param ownerId the owner of the groups
+     * @return the Programs by the groups of the owner
+     */
+    public List<Program> getProgrammsOfGroupsOwnedByUser(int ownerId) {
+        UserGroupDao userGroupDao = new UserGroupDao(this.dbSession);
+        ProgramDao programDao = new ProgramDao(this.dbSession);
+        UserDao userDao = new UserDao(this.dbSession);
+        User owner = userDao.get(ownerId);
+        List<UserGroup> ownersGroups = userGroupDao.loadAll(owner);
+        List<Program> membersPrograms = new ArrayList<>(); //Programs of every group the user owns
+
+        for ( UserGroup userGroup : ownersGroups ) {
+            for ( User member : userGroup.getMembers() ) {  //for all members of the group
+                membersPrograms.addAll(programDao.loadAll(member));
+            }
+        }
+        return membersPrograms;
     }
 
     /**
@@ -561,7 +607,7 @@ public class ProgramProcessor extends AbstractProcessor {
     }
 
     /**
-     * insert or update a given program owned by a given user. Overwrites an existing program if mayExist == true.
+     * insert or update a given program owned by a given user.
      *
      * @param programName the name of the program. Never null.
      * @param programText the program text. Never null.
@@ -600,8 +646,6 @@ public class ProgramProcessor extends AbstractProcessor {
         RobotDao robotDao = new RobotDao(this.dbSession);
         ProgramDao programDao = new ProgramDao(this.dbSession);
         ConfigurationDao confDao = new ConfigurationDao(this.dbSession);
-
-        programDao.lockTable();
 
         Robot robot = robotDao.loadRobot(robotName);
         User owner, author;

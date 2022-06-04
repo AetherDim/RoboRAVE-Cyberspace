@@ -9,8 +9,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * the request description for the /resetPassword REST request<br>
- * <br>
+ * the request description for the /resetPassword REST request<br><br>
  * Version: 1<br>
  * Datum: 2020-06-15
  */
@@ -57,11 +56,10 @@ public class PasswordRecoveryRequest extends BaseRequest {
     }
 
     /**
-     * merge the properties of a JSON-object into this bean. The bean must be "under construction". The keys of the JSON-Object must be valid. The bean remains
-     * "under construction".<br>
+     * merge the properties of a JSON-object into this bean. The bean must be "under construction".
+     * The keys of the JSON-Object must be valid. The bean remains "under construction".<br>
      * Throws a runtime exception if inconsistencies are detected.
      */
-    @Override
     public PasswordRecoveryRequest merge(JSONObject jsonO) {
         try {
             for ( String key : JSONObject.getNames(jsonO) ) {
@@ -87,7 +85,6 @@ public class PasswordRecoveryRequest extends BaseRequest {
      * Checks whether all required fields are set. All lists are made immutable.<br>
      * Throws a runtime exception if inconsistencies are detected.
      */
-    @Override
     public PasswordRecoveryRequest immutable() {
         if ( this.immutable ) {
             return this;
@@ -105,10 +102,10 @@ public class PasswordRecoveryRequest extends BaseRequest {
         if ( !this.immutable ) {
             _message = "PasswordRecoveryRequest-object is already immutable: " + toString();
         }
-        if ( this.lostEmail == null ) {
+        if ( lostEmail == null ) {
             _message = "required property lostEmail of PasswordRecoveryRequest-object is not set: " + toString();
         }
-        if ( this.language == null ) {
+        if ( language == null ) {
             _message = "required property language of PasswordRecoveryRequest-object is not set: " + toString();
         }
         if ( _message != null ) {
@@ -164,7 +161,6 @@ public class PasswordRecoveryRequest extends BaseRequest {
      * generates a JSON-object from an immutable bean.<br>
      * Throws a runtime exception if inconsistencies are detected.
      */
-    @Override
     public JSONObject toJson() {
         if ( !this.immutable ) {
             throw new RuntimeException("no JSON from an object under construction: " + toString());
@@ -185,15 +181,7 @@ public class PasswordRecoveryRequest extends BaseRequest {
 
     @Override
     public String toString() {
-        return "PasswordRecoveryRequest [immutable="
-            + this.immutable
-            + ", cmd="
-            + this.cmd
-            + ", lostEmail="
-            + this.lostEmail
-            + ", language="
-            + this.language
-            + " ]";
+        return "PasswordRecoveryRequest [immutable=" + this.immutable + ", cmd=" + this.cmd + ", lostEmail=" + this.lostEmail + ", language=" + this.language + " ]";
     }
 
     @Override

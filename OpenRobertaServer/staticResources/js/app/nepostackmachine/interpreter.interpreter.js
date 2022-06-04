@@ -14,8 +14,8 @@ var __read = (this && this.__read) || function (o, n) {
     }
     return ar;
 };
-define(["require", "exports", "./interpreter.state", "./interpreter.constants", "./interpreter.util", "./neuralnetwork.playground"], function (require, exports, interpreter_state_1, C, U, PG) {
-    "use strict";
+
+define(["require", "exports", "./interpreter.state", "./interpreter.constants", "./interpreter.util", "neuralnetwork.ui"], function (require, exports, interpreter_state_1, C, U, UI) {
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.Interpreter = void 0;
     var Interpreter = /** @class */ (function () {
@@ -24,10 +24,11 @@ define(["require", "exports", "./interpreter.state", "./interpreter.constants", 
          * . @param generatedCode argument contains the operations and the function definitions
          * . @param robotBehaviour implementation of the ARobotBehaviour class
          * . @param cbOnTermination is called when the program has terminated
-        */
+         */
         function Interpreter(generatedCode, r, cbOnTermination, simBreakpoints) {
             this.terminated = false;
             this.callbackOnTermination = undefined;
+            this.debugDelay = 2;
             this.terminated = false;
             this.callbackOnTermination = cbOnTermination;
             var stmts = generatedCode[C.OPS];
@@ -37,6 +38,7 @@ define(["require", "exports", "./interpreter.state", "./interpreter.constants", 
             this.events[C.DEBUG_STEP_INTO] = false;
             this.events[C.DEBUG_BREAKPOINT] = false;
             this.events[C.DEBUG_STEP_OVER] = false;
+            this.lastBlock = null;
             this.lastStoppedBlock = null;
             this.stepOverBlock = null;
             this.state = new interpreter_state_1.State(stmts);
@@ -82,12 +84,12 @@ define(["require", "exports", "./interpreter.state", "./interpreter.constants", 
         Interpreter.prototype.setDebugMode = function (mode) {
             this.state.setDebugMode(mode);
             if (mode) {
-                stackmachineJsHelper.getJqueryObject("#blockly").addClass("debug");
+                stackmachineJsHelper.getJqueryObject('#blockly').addClass('debug');
                 this.state.addHighlights(this.breakpoints);
             }
             else {
                 this.state.removeHighlights(this.breakpoints);
-                stackmachineJsHelper.getJqueryObject("#blockly").removeClass("debug");
+                stackmachineJsHelper.getJqueryObject('#blockly').removeClass('debug');
             }
         };
         /** sets relevant event value to true */
@@ -126,8 +128,7 @@ define(["require", "exports", "./interpreter.state", "./interpreter.constants", 
         Interpreter.prototype.evalOperation = function (maxRunTime) {
             while (maxRunTime >= new Date().getTime() && !this.robotBehaviour.getBlocking()) {
                 var op = this.state.getOp();
-                this.state.evalTerminations(op);
-                this.state.evalInitiations(op);
+                this.state.evalHighlightings(op, this.lastBlock);
                 if (this.state.getDebugMode()) {
                     var canContinue = this.calculateDebugBehaviour(op);
                     if (!canContinue)
@@ -135,6 +136,7 @@ define(["require", "exports", "./interpreter.state", "./interpreter.constants", 
                 }
                 var _a = __read(this.evalSingleOperation(op), 2), result = _a[0], stop_1 = _a[1];
                 this.lastStoppedBlock = null;
+                this.lastBlock = op;
                 if (result > 0 || stop_1) {
                     return result;
                 }
@@ -143,6 +145,9 @@ define(["require", "exports", "./interpreter.state", "./interpreter.constants", 
                     this.robotBehaviour.close();
                     this.callbackOnTermination();
                     return 0;
+                }
+                if (this.state.getDebugMode()) {
+                    return this.debugDelay;
                 }
             }
             return 0;
@@ -245,6 +250,10 @@ define(["require", "exports", "./interpreter.state", "./interpreter.constants", 
                         this.state.setVar(name_1, this.state.pop());
                         break;
                     }
+                    case C.POP: {
+                        this.state.pop();
+                        break;
+                    }
                     case C.CLEAR_DISPLAY_ACTION: {
                         this.robotBehaviour.clearDisplay();
                         return [0, true];
@@ -260,8 +269,14 @@ define(["require", "exports", "./interpreter.state", "./interpreter.constants", 
                         this.robotBehaviour.getSample(this.state, stmt[C.NAME], stmt[C.GET_SAMPLE], stmt[C.PORT], stmt[C.MODE]);
                         break;
                     }
-                    case C.NNSTEP_STMT:
-                        this.evalNNStep();
+                    case C.NN_STEP_STMT:
+                        this.evalNNStep(stmt[C.ARG1], stmt[C.ARG2]);
+                        break;
+                    case C.NN_CHANGEWEIGHT_STMT:
+                        UI.getNetwork().changeWeight(stmt[C.FROM], stmt[C.TO], stmt[C.CHANGE], this.state.pop());
+                        break;
+                    case C.NN_CHANGEBIAS_STMT:
+                        UI.getNetwork().changeBias(stmt[C.NAME], stmt[C.CHANGE], this.state.pop());
                         break;
                     case C.LED_ON_ACTION: {
                         var color_1 = this.state.pop();
@@ -286,8 +301,8 @@ define(["require", "exports", "./interpreter.state", "./interpreter.constants", 
                         var durationType = stmt[C.MOTOR_DURATION];
                         if (durationType === C.DEGREE || durationType === C.DISTANCE || durationType === C.ROTATIONS) {
                             // if durationType is defined, then duration must be defined, too. Thus, it is never 'undefined' :-)
-                            var rotationPerSecond = C.MAX_ROTATION * Math.abs(speed) / 100.0;
-                            duration = duration / rotationPerSecond * 1000;
+                            var rotationPerSecond = (C.MAX_ROTATION * Math.abs(speed)) / 100.0;
+                            duration = (duration / rotationPerSecond) * 1000;
                             if (durationType === C.DEGREE) {
                                 duration /= 360.0;
                             }
@@ -386,7 +401,7 @@ define(["require", "exports", "./interpreter.state", "./interpreter.constants", 
                     case C.SHOW_TEXT_ACTION: {
                         var text = this.state.pop();
                         var name_8 = stmt[C.NAME];
-                        if (name_8 === "ev3") {
+                        if (name_8 === 'ev3') {
                             var x = this.state.pop();
                             var y = this.state.pop();
                             this.robotBehaviour.showTextActionPosition(text, x, y);
@@ -396,7 +411,7 @@ define(["require", "exports", "./interpreter.state", "./interpreter.constants", 
                     }
                     case C.SHOW_IMAGE_ACTION: {
                         var image = void 0;
-                        if (stmt[C.NAME] == "ev3") {
+                        if (stmt[C.NAME] == 'ev3') {
                             image = stmt[C.IMAGE];
                         }
                         else {
@@ -411,7 +426,7 @@ define(["require", "exports", "./interpreter.state", "./interpreter.constants", 
                     case C.IMAGE_SHIFT_ACTION: {
                         var nShift = this.state.pop();
                         var image = this.state.pop();
-                        if (stmt[C.NAME] === "mbot") {
+                        if (stmt[C.NAME] === 'mbot') {
                             this.state.push(this.shiftImageActionMbot(image, stmt[C.DIRECTION], nShift));
                         }
                         else {
@@ -433,9 +448,9 @@ define(["require", "exports", "./interpreter.state", "./interpreter.constants", 
                     }
                     case C.LIGHT_ACTION:
                         var color = void 0;
-                        if (stmt[C.NAME] === "mbot") {
+                        if (stmt[C.NAME] === 'mbot') {
                             var rgb = this.state.pop();
-                            color = "rgb(" + rgb[0] + "," + rgb[1] + "," + rgb[2] + ")";
+                            color = 'rgb(' + rgb[0] + ',' + rgb[1] + ',' + rgb[2] + ')';
                         }
                         else {
                             color = stmt[C.COLOR];
@@ -446,7 +461,7 @@ define(["require", "exports", "./interpreter.state", "./interpreter.constants", 
                         this.robotBehaviour.statusLightOffAction(stmt[C.NAME], stmt[C.PORT]);
                         return [0, true];
                     case C.STOP:
-                        U.debug("PROGRAM TERMINATED. stop op");
+                        U.debug('PROGRAM TERMINATED. stop op');
                         this.terminated = true;
                         break;
                     case C.TEXT_JOIN: {
@@ -456,7 +471,7 @@ define(["require", "exports", "./interpreter.state", "./interpreter.constants", 
                             var e = this.state.pop();
                             result[n - i - 1] = e;
                         }
-                        this.state.push(result.join(""));
+                        this.state.push(result.join(''));
                         break;
                     }
                     case C.TIMER_SENSOR_RESET:
@@ -556,7 +571,7 @@ define(["require", "exports", "./interpreter.state", "./interpreter.constants", 
                         break;
                     }
                     default:
-                        U.dbcException("invalid stmt op: " + opCode);
+                        U.dbcException('invalid stmt op: ' + opCode);
                 }
             }
             return [0, false];
@@ -637,7 +652,7 @@ define(["require", "exports", "./interpreter.state", "./interpreter.constants", 
                             this.state.push(-value_1);
                             break;
                         default:
-                            U.dbcException("invalid unary expr subOp: " + subOp);
+                            U.dbcException('invalid unary expr subOp: ' + subOp);
                     }
                     break;
                 }
@@ -663,8 +678,12 @@ define(["require", "exports", "./interpreter.state", "./interpreter.constants", 
                             this.state.push(Infinity);
                             break;
                         default:
-                            throw "Invalid Math Constant Name";
+                            throw 'Invalid Math Constant Name';
                     }
+                    break;
+                }
+                case C.NN_GETOUTPUTNEURON_VAL: {
+                    this.state.push(UI.getNetwork().getOutputNeuronVal(expr[C.NAME]));
                     break;
                 }
                 case C.SINGLE_FUNCTION: {
@@ -724,7 +743,7 @@ define(["require", "exports", "./interpreter.state", "./interpreter.constants", 
                             this.state.push(this.invertImage(value_3));
                             break;
                         default:
-                            throw "Invalid Function Name";
+                            throw 'Invalid Function Name';
                     }
                     break;
                 }
@@ -774,7 +793,7 @@ define(["require", "exports", "./interpreter.state", "./interpreter.constants", 
                             this.state.push(first % value_5 === 0);
                             break;
                         default:
-                            throw "Invalid Math Property Function Name";
+                            throw 'Invalid Math Property Function Name';
                     }
                     break;
                 }
@@ -804,7 +823,7 @@ define(["require", "exports", "./interpreter.state", "./interpreter.constants", 
                             this.state.push(value_6[this.getRandomInt(value_6.length)]);
                             break;
                         default:
-                            throw "Invalid Math on List Function Name";
+                            throw 'Invalid Math on List Function Name';
                     }
                     break;
                 }
@@ -888,7 +907,7 @@ define(["require", "exports", "./interpreter.state", "./interpreter.constants", 
                             }
                             break;
                         default:
-                            throw "Invalid Op on List Function Name";
+                            throw 'Invalid Op on List Function Name';
                     }
                     break;
                 }
@@ -900,7 +919,7 @@ define(["require", "exports", "./interpreter.state", "./interpreter.constants", 
                     break;
                 }
                 default:
-                    U.dbcException("invalid expr op: " + kind);
+                    U.dbcException('invalid expr op: ' + kind);
             }
         };
         Interpreter.prototype.evalBinary = function (subOp, left, right) {
@@ -935,7 +954,7 @@ define(["require", "exports", "./interpreter.state", "./interpreter.constants", 
                             return true;
                         }
                     default:
-                        U.dbcException("invalid binary expr supOp for array-like structures: " + subOp);
+                        U.dbcException('invalid binary expr supOp for array-like structures: ' + subOp);
                 }
             }
             else if (leftIsArray || rightIsArray) {
@@ -972,18 +991,21 @@ define(["require", "exports", "./interpreter.state", "./interpreter.constants", 
                     case C.MOD:
                         return left % right;
                     default:
-                        U.dbcException("invalid binary expr supOp: " + subOp);
+                        U.dbcException('invalid binary expr supOp: ' + subOp);
                 }
             }
         };
-        Interpreter.prototype.evalNNStep = function () {
-            console.log('NNStep encountered');
+        Interpreter.prototype.evalNNStep = function (numberInputNeurons, numberOutputNeurons) {
             var s = this.state;
-            var i2 = s.pop();
-            var i1 = s.pop();
-            var i0 = s.pop();
-            var inputData = [i0, i1, i2];
-            var outputData = PG.oneStep(inputData);
+            var inputData = [];
+            for (var i = 0; i < numberInputNeurons; i++) {
+                inputData.push(s.pop());
+            }
+            inputData = inputData.reverse();
+            var outputData = UI.getNetwork().oneStep(inputData);
+            if (outputData.length != numberOutputNeurons) {
+                U.dbcException('NN returned wrong number of outputs: ' + outputData.length.toString + ' !=' + numberOutputNeurons.toString);
+            }
             for (var i = outputData.length - 1; i >= 0; i--) {
                 s.push(outputData[i]);
             }
@@ -1097,21 +1119,21 @@ define(["require", "exports", "./interpreter.state", "./interpreter.constants", 
                         array.shift();
                         array.push(0);
                     });
-                }
+                },
             };
             if (nShift < 0) {
                 nShift *= -1;
-                if (direction === "up") {
-                    direction = "down";
+                if (direction === 'up') {
+                    direction = 'down';
                 }
-                else if (direction === "down") {
-                    direction = "up";
+                else if (direction === 'down') {
+                    direction = 'up';
                 }
-                else if (direction === "left") {
-                    direction = "right";
+                else if (direction === 'left') {
+                    direction = 'right';
                 }
-                else if (direction === "right") {
-                    direction = "left";
+                else if (direction === 'right') {
+                    direction = 'left';
                 }
             }
             for (var i = 0; i < nShift; i++) {
@@ -1141,21 +1163,21 @@ define(["require", "exports", "./interpreter.state", "./interpreter.constants", 
                         array.shift();
                         array.push(0);
                     });
-                }
+                },
             };
             if (nShift < 0) {
                 nShift *= -1;
-                if (direction === "up") {
-                    direction = "down";
+                if (direction === 'up') {
+                    direction = 'down';
                 }
-                else if (direction === "down") {
-                    direction = "up";
+                else if (direction === 'down') {
+                    direction = 'up';
                 }
-                else if (direction === "left") {
-                    direction = "right";
+                else if (direction === 'left') {
+                    direction = 'right';
                 }
-                else if (direction === "right") {
-                    direction = "left";
+                else if (direction === 'right') {
+                    direction = 'left';
                 }
             }
             for (var i = 0; i < nShift; i++) {
@@ -1163,30 +1185,27 @@ define(["require", "exports", "./interpreter.state", "./interpreter.constants", 
             }
             return image;
         };
-        /** Returns true if the operation is a possible block where stepInto should stop*/
         Interpreter.isPossibleStepInto = function (op) {
-            if (op.hasOwnProperty(C.HIGHTLIGHT_PLUS)) {
-                if (op[C.OPCODE] === C.COMMENT && this.COMMENTS_STEP_INTO.includes(op[C.TARGET])) {
-                    return true;
-                }
-                if (this.DO_NOT_STEP_INTO.includes(op[C.OPCODE])) {
-                    return false;
-                }
+            var _a;
+            if (((_a = op[C.POSSIBLE_DEBUG_STOP]) === null || _a === void 0 ? void 0 : _a.length) > 0) {
                 return true;
             }
             return false;
         };
-        /** Returns true if the operation is a possible block where stepOver should stop*/
         Interpreter.isPossibleStepOver = function (op) {
             var isMethodCall = op[C.OPCODE] === C.COMMENT && op[C.TARGET] === C.METHOD_CALL;
             return op.hasOwnProperty(C.HIGHTLIGHT_PLUS) && isMethodCall;
         };
         Interpreter.isBreakPoint = function (op, breakpoints) {
-            var _a;
-            return (_a = op[C.HIGHTLIGHT_PLUS]) === null || _a === void 0 ? void 0 : _a.some(function (blockId) { return breakpoints.includes(blockId); });
+            var _a, _b;
+            if ((_a = op[C.POSSIBLE_DEBUG_STOP]) === null || _a === void 0 ? void 0 : _a.some(function (blockId) { return breakpoints.indexOf(blockId) >= 0; })) {
+                return true;
+            }
+            if ((_b = op[C.HIGHTLIGHT_PLUS]) === null || _b === void 0 ? void 0 : _b.some(function (blockId) { return breakpoints.indexOf(blockId) >= 0; })) {
+                return true;
+            }
+            return false;
         };
-        Interpreter.DO_NOT_STEP_INTO = [C.EXPR, C.GET_SAMPLE, C.VAR_DECLARATION];
-        Interpreter.COMMENTS_STEP_INTO = [C.IF_STMT, C.REPEAT_STMT, C.WAIT_STMT, C.METHOD_CALL];
         return Interpreter;
     }());
     exports.Interpreter = Interpreter;

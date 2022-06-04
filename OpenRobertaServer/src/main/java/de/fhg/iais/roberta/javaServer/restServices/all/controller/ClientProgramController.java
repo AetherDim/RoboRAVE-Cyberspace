@@ -1,16 +1,21 @@
 package de.fhg.iais.roberta.javaServer.restServices.all.controller;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.xml.bind.UnmarshalException;
 
 import org.json.JSONArray;
@@ -22,7 +27,7 @@ import com.google.inject.Inject;
 
 import de.fhg.iais.roberta.blockly.generated.Export;
 import de.fhg.iais.roberta.components.Project;
-import de.fhg.iais.roberta.factory.IRobotFactory;
+import de.fhg.iais.roberta.factory.RobotFactory;
 import de.fhg.iais.roberta.generated.restEntities.BaseResponse;
 import de.fhg.iais.roberta.generated.restEntities.EntityResponse;
 import de.fhg.iais.roberta.generated.restEntities.FullRestRequest;
@@ -56,13 +61,14 @@ import de.fhg.iais.roberta.persistence.dao.ConfigurationDao;
 import de.fhg.iais.roberta.persistence.util.DbSession;
 import de.fhg.iais.roberta.persistence.util.HttpSessionState;
 import de.fhg.iais.roberta.util.Key;
-import de.fhg.iais.roberta.util.Pair;
+import de.fhg.iais.roberta.util.basic.Pair;
 import de.fhg.iais.roberta.util.ServerProperties;
 import de.fhg.iais.roberta.util.Statistics;
 import de.fhg.iais.roberta.util.Util;
 import de.fhg.iais.roberta.util.UtilForHtmlXml;
 import de.fhg.iais.roberta.util.UtilForREST;
 import de.fhg.iais.roberta.util.XsltTransformer;
+import de.fhg.iais.roberta.util.archiver.UserProgramsArchiver;
 import de.fhg.iais.roberta.util.dbc.DbcException;
 import de.fhg.iais.roberta.util.jaxb.JaxbHelper;
 
@@ -82,7 +88,7 @@ public class ClientProgramController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response saveProgram(@OraData DbSession dbSession, FullRestRequest request) {
-        HttpSessionState httpSessionState = UtilForREST.handleRequestInit(LOG, request, true);
+        HttpSessionState httpSessionState = UtilForREST.handleRequestInit(dbSession, LOG, request, true);
         try {
             SaveResponse response = SaveResponse.make();
             SaveRequest saveRequest = SaveRequest.make(request.getData());
@@ -124,7 +130,7 @@ public class ClientProgramController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response deleteProgram(@OraData DbSession dbSession, FullRestRequest request) {
-        HttpSessionState httpSessionState = UtilForREST.handleRequestInit(LOG, request, true);
+        HttpSessionState httpSessionState = UtilForREST.handleRequestInit(dbSession, LOG, request, true);
         try {
             BaseResponse response = BaseResponse.make();
             JSONObject dataPart = request.getData();
@@ -162,7 +168,7 @@ public class ClientProgramController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response getProgram(@OraData DbSession dbSession, @XsltTrans XsltTransformer xsltTransformer, FullRestRequest request) {
-        HttpSessionState httpSessionState = UtilForREST.handleRequestInit(LOG, request, true);
+        HttpSessionState httpSessionState = UtilForREST.handleRequestInit(dbSession, LOG, request, true);
         try {
             ListingResponse response = ListingResponse.make();
             JSONObject dataPart = request.getData();
@@ -219,7 +225,7 @@ public class ClientProgramController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response getProgramEntity(@OraData DbSession dbSession, FullRestRequest request) {
-        HttpSessionState httpSessionState = UtilForREST.handleRequestInit(LOG, request, true);
+        HttpSessionState httpSessionState = UtilForREST.handleRequestInit(dbSession, LOG, request, true);
         try {
             EntityResponse response = EntityResponse.make();
             JSONObject dataPart = request.getData();
@@ -233,9 +239,9 @@ public class ClientProgramController {
                 String programName = dataPart.getString("programName");
                 String ownerName = dataPart.getString("owner");
                 String author = dataPart.getString("author");
-                User owner = up.getUser(ownerName);
+                User owner = up.getStandardUser(ownerName);
                 int ownerID = owner.getId();
-                int authorId = up.getUser(author).getId();
+                int authorId = up.getStandardUser(author).getId();
                 JSONArray program = programProcessor.getProgramEntity(programName, ownerID, robot, authorId);
                 if ( program != null ) {
                     response.setProgram(program);
@@ -260,7 +266,7 @@ public class ClientProgramController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response getInfosOfProgramsOfLoggedInUser(@OraData DbSession dbSession, FullRestRequest request) {
-        HttpSessionState httpSessionState = UtilForREST.handleRequestInit(LOG, request, true);
+        HttpSessionState httpSessionState = UtilForREST.handleRequestInit(dbSession, LOG, request, true);
         try {
             ListingNamesResponse response = ListingNamesResponse.make();
             ProgramProcessor programProcessor = new ProgramProcessor(dbSession, httpSessionState);
@@ -301,7 +307,7 @@ public class ClientProgramController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response getProgramInfoOfProgramsOwnedByUserGroupMembers(@OraData DbSession dbSession, FullRestRequest fullRequest) {
-        HttpSessionState httpSessionState = UtilForREST.handleRequestInit(LOG, fullRequest, true);
+        HttpSessionState httpSessionState = UtilForREST.handleRequestInit(dbSession, LOG, fullRequest, true);
         try {
             ListingNamesResponse response = ListingNamesResponse.make();
             UserGroupProgramListRequest request = UserGroupProgramListRequest.make(fullRequest.getData());
@@ -357,7 +363,7 @@ public class ClientProgramController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response getInfosOfExamplePrograms(@OraData DbSession dbSession, FullRestRequest request) {
-        HttpSessionState httpSessionState = UtilForREST.handleRequestInit(LOG, request, true);
+        HttpSessionState httpSessionState = UtilForREST.handleRequestInit(dbSession, LOG, request, true);
         try {
             ListingNamesResponse response = ListingNamesResponse.make();
             ProgramProcessor programProcessor = new ProgramProcessor(dbSession, httpSessionState);
@@ -422,8 +428,8 @@ public class ClientProgramController {
                     Statistics.info("ProgramImport", "success", true);
                     return UtilForREST.responseWithFrontendInfo(response, httpSessionState, null);
                 } else {
-                    List<IRobotFactory> members = httpSessionState.getRobotFactoriesOfGroup(robotType1);
-                    List<String> realNames = members.stream().map(IRobotFactory::getRealName).collect(Collectors.toList());
+                    List<RobotFactory> members = httpSessionState.getRobotFactoriesOfGroup(robotType1);
+                    List<String> realNames = members.stream().map(RobotFactory::getRealName).collect(Collectors.toList());
                     Statistics.info("ProgramImport", "success", false);
                     ImportErrorResponse error = ImportErrorResponse.make();
                     error.setRobotTypes(String.join(", ", realNames));
@@ -441,12 +447,56 @@ public class ClientProgramController {
         }
     }
 
+    /**
+     * used to export all Programs of every robot of the current user.
+     * To get give appropriate feedback logincheck from ClientUser.java should be called before this.
+     *
+     * @param initToken requires an initToken to creates a valid httpSessionState
+     * @return zip file sorted in an directory structure including all Programs by the user as an xml file
+     */
+    @GET
+    @Path("/exportAllPrograms")
+    public Response exportAllProgrammsOfUser(@OraData DbSession dbSession, @QueryParam("initToken") String initToken) throws IOException {
+        HttpSessionState httpSessionState;
+        try {
+            httpSessionState = UtilForREST.validateInitToken(initToken);
+        } catch ( Exception e ) {
+            if ( dbSession != null ) {
+                dbSession.close();
+            }
+            throw e;
+        }
+        try {
+            if ( !httpSessionState.isUserLoggedIn() ) {
+                LOG.error("Unauthorized export request");
+                return null;
+            }
+
+            ProgramProcessor programProcessor = new ProgramProcessor(dbSession, httpSessionState);
+            InputStream zip = new UserProgramsArchiver(httpSessionState, programProcessor).getArchive();
+            ResponseBuilder response = Response.ok(zip, "application/zip");
+            zip.close();
+            return response.header("Content-Disposition", "attachment; filename=\"NEPO_Programs.zip\"").build();
+        } catch ( Exception e ) {
+            dbSession.rollback();
+            String errorTicketId = Util.getErrorTicketId();
+            LOG.error("Exception in ExportAll. Error ticket: {}", errorTicketId, e);
+            return null;
+        } finally {
+            if ( dbSession != null ) {
+                dbSession.close();
+            }
+        }
+
+    }
+
+
     @POST
     @Path("/share")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response shareProgram(@OraData DbSession dbSession, FullRestRequest request) {
-        HttpSessionState httpSessionState = UtilForREST.handleRequestInit(LOG, request, true);
+        HttpSessionState httpSessionState = UtilForREST.handleRequestInit(dbSession, LOG, request, true);
         try {
             ShareResponse response = ShareResponse.make();
             ShareRequest shareRequest = ShareRequest.make(request.getData());
@@ -507,7 +557,7 @@ public class ClientProgramController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response likeProgram(@OraData DbSession dbSession, FullRestRequest request) {
-        HttpSessionState httpSessionState = UtilForREST.handleRequestInit(LOG, request, true);
+        HttpSessionState httpSessionState = UtilForREST.handleRequestInit(dbSession, LOG, request, true);
         try {
             BaseResponse response = BaseResponse.make();
             LikeRequest likeRequest = LikeRequest.make(request.getData());
@@ -554,7 +604,7 @@ public class ClientProgramController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response shareProgramInGallery(@OraData DbSession dbSession, FullRestRequest request) {
-        HttpSessionState httpSessionState = UtilForREST.handleRequestInit(LOG, request, true);
+        HttpSessionState httpSessionState = UtilForREST.handleRequestInit(dbSession, LOG, request, true);
         try {
             SaveResponse response = SaveResponse.make();
             ShareCreateRequest shareCreateRequest = ShareCreateRequest.make(request.getData());
@@ -571,7 +621,7 @@ public class ClientProgramController {
                 return UtilForREST.makeBaseResponseForError(Key.USER_ERROR_NOT_LOGGED_IN, httpSessionState, null);
             } else {
                 String programName = shareCreateRequest.getProgramName();
-                User galleryUser = userProcessor.getUser("Gallery");
+                User galleryUser = userProcessor.getStandardUser("Gallery");
                 // generating a unique name for the program owned by the gallery.
                 User user = userProcessor.getUser(userId);
                 String userAccount = user.getAccount();
@@ -635,7 +685,7 @@ public class ClientProgramController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response deleteSharedProgram(@OraData DbSession dbSession, FullRestRequest request) {
-        HttpSessionState httpSessionState = UtilForREST.handleRequestInit(LOG, request, true);
+        HttpSessionState httpSessionState = UtilForREST.handleRequestInit(dbSession, LOG, request, true);
         try {
             BaseResponse response = BaseResponse.make();
             ShareDeleteRequest shareDeleteRequest = ShareDeleteRequest.make(request.getData());
@@ -656,7 +706,7 @@ public class ClientProgramController {
                 UtilForREST.addResultInfo(response, accessRightProcessor);
                 // if this program was shared from the gallery, we need to delete the copy of it as well
                 if ( owner.equals("Gallery") ) {
-                    int galleryId = userProcessor.getUser(owner).getId();
+                    int galleryId = userProcessor.getStandardUser(owner).getId();
                     programProcessor.deleteByName(programName, galleryId, robot, userId);
                     Statistics.info("ProgramShareDelete", "success", true);
                     UtilForREST.addResultInfo(response, programProcessor);
@@ -680,7 +730,7 @@ public class ClientProgramController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response getProgramsFromGallery(@OraData DbSession dbSession, FullRestRequest request) {
-        HttpSessionState httpSessionState = UtilForREST.handleRequestInit(LOG, request, true);
+        HttpSessionState httpSessionState = UtilForREST.handleRequestInit(dbSession, LOG, request, true);
         try {
             ListingNamesResponse response = ListingNamesResponse.make();
             ProgramProcessor programProcessor = new ProgramProcessor(dbSession, httpSessionState);
@@ -711,7 +761,7 @@ public class ClientProgramController {
     }
 
     // Transform programs with old xml versions to new xml versions
-    private static Pair<String, String> transformBetweenVersions(IRobotFactory robotFactory, String programText, String configText) {
+    private static Pair<String, String> transformBetweenVersions(RobotFactory robotFactory, String programText, String configText) {
         if ( robotFactory.hasWorkflow("transform") ) {
             if ( configText == null ) {
                 // programs that do not have any configuration modifications are saved into the database without an associated configuration
