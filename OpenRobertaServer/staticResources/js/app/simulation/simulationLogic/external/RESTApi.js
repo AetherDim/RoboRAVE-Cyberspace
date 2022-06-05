@@ -27,8 +27,13 @@ define(["require", "exports"], function (require, exports) {
     }
     function sendRESTRequest(url, programRequest, callback) {
         function transferComplete() {
-            var response = JSON.parse(this.responseText);
-            callback(response);
+            try {
+                var response = JSON.parse(this.responseText);
+                callback(response);
+            }
+            catch (_a) {
+                callback(undefined);
+            }
         }
         function onError() {
             callback();
@@ -42,8 +47,13 @@ define(["require", "exports"], function (require, exports) {
     exports.sendProgramRequest = sendProgramRequest;
     function sendStateRequest(callback) {
         function transferComplete() {
-            var response = JSON.parse(this.responseText);
-            callback(response);
+            try {
+                var response = JSON.parse(this.responseText);
+                callback(response);
+            }
+            catch (_a) {
+                callback(undefined);
+            }
         }
         function onError() {
             callback();

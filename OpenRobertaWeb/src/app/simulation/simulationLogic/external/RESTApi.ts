@@ -59,8 +59,12 @@ export interface ProgramSQLEntry {
 
 export function sendRESTRequest(url: string, programRequest: ProgramsRequest|SetScoreRequest, callback: (programsResult?: ProgramsRequestResult) => void) {
 	function transferComplete(this: XMLHttpRequest) {
-		const response = JSON.parse(this.responseText) as ProgramsRequestResult
-		callback(response)
+		try {
+			const response = JSON.parse(this.responseText) as ProgramsRequestResult
+			callback(response)
+		} catch {
+			callback(undefined)
+		}
 	}
 	function onError(this: XMLHttpRequest) {
 		callback()
@@ -74,8 +78,12 @@ export function sendProgramRequest(programRequest: ProgramsRequest, callback: (p
 
 export function sendStateRequest(callback: (programsResult?: ProgramsRequestResult) => void) {
 	function transferComplete(this: XMLHttpRequest) {
-		const response = JSON.parse(this.responseText) as ProgramsRequestResult
-		callback(response)
+		try {
+			const response = JSON.parse(this.responseText) as ProgramsRequestResult
+			callback(response)
+		} catch {
+			callback(undefined)
+		}
 	}
 	function onError(this: XMLHttpRequest) {
 		callback()
