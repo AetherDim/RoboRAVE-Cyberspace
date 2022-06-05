@@ -10,7 +10,7 @@ define(["require", "exports", "matter-js", "../../Entity", "../../Util", "../../
     }());
     var RobotConfigurationManager = /** @class */ (function () {
         function RobotConfigurationManager(robots) {
-            this.robotConfigurations = [];
+            this.portToSensorMapList = [];
             this.robots = robots;
         }
         RobotConfigurationManager.getMaxNumberOfSensors = function (portMap, sensor) {
@@ -89,17 +89,17 @@ define(["require", "exports", "matter-js", "../../Entity", "../../Util", "../../
             //RobotConfigurationManager.addSensors(robot, portMap, "SOUND", this.add)
         };
         RobotConfigurationManager.prototype.setRobotConfigurations = function (robotConfigurations) {
-            this.robotConfigurations = robotConfigurations;
+            this.portToSensorMapList = robotConfigurations.map(function (config) { return config.SENSORS; });
         };
         /**
          * Update all robots with the current configurations array where only the robots are
          * updated which are at an index lower than `this.robotConfigurations.length`.
          */
         RobotConfigurationManager.prototype.safeUpdateAllRobots = function () {
-            var count = Math.min(this.robots.length, this.robotConfigurations.length);
+            var count = Math.min(this.robots.length, this.portToSensorMapList.length);
             for (var i = 0; i < count; i++) {
                 this.robots[i].removeAllSensors();
-                RobotConfigurationManager.configureRobot(this.robots[i], this.robotConfigurations[i]);
+                RobotConfigurationManager.configureRobot(this.robots[i], this.portToSensorMapList[i]);
             }
         };
         /**
@@ -107,11 +107,11 @@ define(["require", "exports", "matter-js", "../../Entity", "../../Util", "../../
          * the robot will not be updated.
          */
         RobotConfigurationManager.prototype.safeUpdateLastRobot = function () {
-            var configCount = this.robotConfigurations.length;
+            var configCount = this.portToSensorMapList.length;
             var robotIndex = this.robots.length - 1;
             if (0 <= robotIndex && robotIndex < configCount) {
                 this.robots[robotIndex].removeAllSensors();
-                RobotConfigurationManager.configureRobot(this.robots[robotIndex], this.robotConfigurations[robotIndex]);
+                RobotConfigurationManager.configureRobot(this.robots[robotIndex], this.portToSensorMapList[robotIndex]);
             }
         };
         RobotConfigurationManager.colorSensorRadius = 0.01;

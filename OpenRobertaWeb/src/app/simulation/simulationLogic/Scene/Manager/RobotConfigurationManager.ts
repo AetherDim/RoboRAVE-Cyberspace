@@ -6,9 +6,10 @@ import { Robot, SensorType } from "../../Robot/Robot";
 import { TouchSensor } from "../../Robot/Sensors/TouchSensor";
 import { UltrasonicSensor } from "../../Robot/Sensors/UltrasonicSensor";
 import { GyroSensor } from "../../Robot/Sensors/GyroSensor";
-import { RobotConfiguration } from "../../Robot/RobotConfiguration";
+import { PortToSensorMap } from "../../Robot/PortToSensorMap";
 import "../../pixijs"
 import { ColorSensor } from "../../Robot/Sensors/ColorSensor";
+import { RobotConfiguration } from "../../Robot/RobotConfiguration";
 
 class MaxSensorCount {
 	readonly maxCount: number
@@ -54,7 +55,7 @@ export class RobotConfigurationManager {
 	private static readonly ultrasonicSensorOffset = 0.02
 
 	private robots: Robot[]
-	private robotConfigurations: RobotConfiguration[] = [] 
+	private portToSensorMapList: PortToSensorMap[] = [] 
 
 	constructor(robots: Robot[]) {
 		this.robots = robots
@@ -180,7 +181,7 @@ export class RobotConfigurationManager {
 	}
 
 
-	private static configureRobot(robot: Robot, configuration: RobotConfiguration) {
+	private static configureRobot(robot: Robot, configuration: PortToSensorMap) {
 
 		const portMap: SensorPortMap = new Map()
 		for(const port in configuration) {
@@ -205,7 +206,7 @@ export class RobotConfigurationManager {
 	}
 
 	setRobotConfigurations(robotConfigurations: RobotConfiguration[]) {
-		this.robotConfigurations = robotConfigurations
+		this.portToSensorMapList = robotConfigurations.map(config => config.SENSORS)
 	}
 
 	/**
@@ -213,10 +214,10 @@ export class RobotConfigurationManager {
 	 * updated which are at an index lower than `this.robotConfigurations.length`.
 	 */
 	safeUpdateAllRobots() {
-		const count = Math.min(this.robots.length, this.robotConfigurations.length)
+		const count = Math.min(this.robots.length, this.portToSensorMapList.length)
 		for (let i = 0; i < count; i++) {
 			this.robots[i].removeAllSensors()
-			RobotConfigurationManager.configureRobot(this.robots[i], this.robotConfigurations[i])
+			RobotConfigurationManager.configureRobot(this.robots[i], this.portToSensorMapList[i])
 		}
 	}
 
@@ -225,11 +226,11 @@ export class RobotConfigurationManager {
 	 * the robot will not be updated.
 	 */
 	safeUpdateLastRobot() {
-		const configCount = this.robotConfigurations.length
+		const configCount = this.portToSensorMapList.length
 		const robotIndex = this.robots.length - 1
 		if (0 <= robotIndex && robotIndex < configCount) {
 			this.robots[robotIndex].removeAllSensors()
-			RobotConfigurationManager.configureRobot(this.robots[robotIndex], this.robotConfigurations[robotIndex])
+			RobotConfigurationManager.configureRobot(this.robots[robotIndex], this.portToSensorMapList[robotIndex])
 		}
 	}
 

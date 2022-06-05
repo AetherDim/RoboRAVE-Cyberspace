@@ -164,7 +164,13 @@ define(["require", "exports", "../GlobalDebug", "../Robot/Robot", "../Robot/Robo
         };
         TestScene3.prototype.onInit = function (asyncChain) {
             this.getRobotManager().configurationManager.setRobotConfigurations([
-                { 1: "TOUCH" }
+                {
+                    TRACKWIDTH: 18,
+                    WHEELDIAMETER: 5.6,
+                    SENSORS: {
+                        1: "TOUCH"
+                    }
+                }
             ]);
             this.shouldWait = false;
             this.testTime = Date.now() / 1000 - this.startWallTime;

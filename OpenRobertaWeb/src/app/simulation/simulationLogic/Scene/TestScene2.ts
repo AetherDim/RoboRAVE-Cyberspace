@@ -91,8 +91,14 @@ export class TestScene2 extends RRCScene {
 		// create dynamic debug gui
 		this.initDynamicDebugGui()
 
-		const robotConfiguration = this.allSensorConfigurations[this.configurationIndex]
-		this.robotManager.configurationManager.setRobotConfigurations([robotConfiguration])
+		const portToSensorMapping = this.allSensorConfigurations[this.configurationIndex]
+		this.robotManager.configurationManager.setRobotConfigurations([
+			{
+				TRACKWIDTH: 18,
+				WHEELDIAMETER: 5.6,
+				SENSORS: portToSensorMapping
+			}
+		])
 
 		const textures = this.assets.map(asset => this.loader.get(asset).texture)
 		

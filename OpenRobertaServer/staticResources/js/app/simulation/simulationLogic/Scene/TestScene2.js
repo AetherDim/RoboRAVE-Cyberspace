@@ -109,8 +109,14 @@ define(["require", "exports", "../RRC/Scene/RRCScene", "../Unit", "../RRC/RRAsse
             var _this = this;
             // create dynamic debug gui
             this.initDynamicDebugGui();
-            var robotConfiguration = this.allSensorConfigurations[this.configurationIndex];
-            this.robotManager.configurationManager.setRobotConfigurations([robotConfiguration]);
+            var portToSensorMapping = this.allSensorConfigurations[this.configurationIndex];
+            this.robotManager.configurationManager.setRobotConfigurations([
+                {
+                    TRACKWIDTH: 18,
+                    WHEELDIAMETER: 5.6,
+                    SENSORS: portToSensorMapping
+                }
+            ]);
             var textures = this.assets.map(function (asset) { return _this.loader.get(asset).texture; });
             textures.forEach(function (texture) {
                 var sprite = new PIXI.Sprite(texture);

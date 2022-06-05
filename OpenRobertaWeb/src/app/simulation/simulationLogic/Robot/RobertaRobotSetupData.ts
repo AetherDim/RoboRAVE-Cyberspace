@@ -1,11 +1,10 @@
-import { StringMap } from "../Util";
-import { SensorType } from "./Robot";
+import { RobotConfiguration } from "./RobotConfiguration";
 
 export interface RobertaRobotSetupData {
 	/**
 	 * key: `string` which is the port.
 	 * value: `SensorType`
 	 */
-	 javaScriptConfiguration: StringMap<SensorType>
+	 configuration: RobotConfiguration
 	 javaScriptProgram: string
 }

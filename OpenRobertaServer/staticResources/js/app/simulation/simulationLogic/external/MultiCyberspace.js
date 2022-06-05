@@ -180,9 +180,13 @@ define(["require", "exports", "../Cyberspace/Cyberspace", "../GlobalDebug", "../
     function generateDebugRobertaRobotSetupData(count) {
         return Util_1.Util.range(0, count).map(function (index) {
             return {
-                javaScriptConfiguration: {
-                    "1": "TOUCH",
-                    "3": "COLOR"
+                configuration: {
+                    TRACKWIDTH: 18,
+                    WHEELDIAMETER: 5.6,
+                    SENSORS: {
+                        "1": "TOUCH",
+                        "3": "COLOR"
+                    }
                 },
                 javaScriptProgram: RobotProgramGenerator_1.RobotProgramGenerator.generateProgram([
                     RobotProgramGenerator_1.RobotProgramGenerator.driveForwardOpCodes(100, 0.1 * index + 0.1)

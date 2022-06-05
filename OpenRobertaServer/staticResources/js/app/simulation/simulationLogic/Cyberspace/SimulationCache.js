@@ -22,12 +22,12 @@ define(["require", "exports", "../Util", "../Robot/Robot"], function (require, e
                 // check that the configuration values ("TOUCH", "GYRO", ...) are also in `sensorTypeStrings`
                 for (var robertaRobotSetupDataList_1 = __values(robertaRobotSetupDataList), robertaRobotSetupDataList_1_1 = robertaRobotSetupDataList_1.next(); !robertaRobotSetupDataList_1_1.done; robertaRobotSetupDataList_1_1 = robertaRobotSetupDataList_1.next()) {
                     var setupData = robertaRobotSetupDataList_1_1.value;
-                    var configuration = setupData.javaScriptConfiguration;
-                    var allKeys = Object.keys(configuration);
-                    var allValues = Util_1.Util.nonNullObjectValues(configuration);
+                    var portToSensorMapping = setupData.configuration.SENSORS;
+                    var allKeys = Object.keys(portToSensorMapping);
+                    var allValues = Util_1.Util.nonNullObjectValues(portToSensorMapping);
                     var wrongValueCount = (_c = (_b = allValues.find(function (e) { return !Robot_1.sensorTypeStrings.includes(e); })) === null || _b === void 0 ? void 0 : _b.length) !== null && _c !== void 0 ? _c : 0;
                     if (wrongValueCount > 0 || allKeys.filter(function (e) { return typeof e === "number"; }).length > 0) {
-                        console.error("The 'configuration' has not the expected type. Configuration: ".concat(configuration));
+                        console.error("The 'configuration' has not the expected type. Configuration: ".concat(portToSensorMapping));
                     }
                 }
             }
@@ -44,7 +44,7 @@ define(["require", "exports", "../Util", "../Robot/Robot"], function (require, e
         SimulationCache.prototype.toRobotSetupData = function () {
             return this.storedRobertaRobotSetupDataList.map(function (setup) {
                 return {
-                    sensorConfiguration: setup.javaScriptConfiguration,
+                    configuration: setup.configuration,
                     program: {
                         javaScriptProgram: setup.javaScriptProgram
                     }
@@ -54,7 +54,7 @@ define(["require", "exports", "../Util", "../Robot/Robot"], function (require, e
         SimulationCache.prototype.hasEqualConfiguration = function (cache) {
             function toProgramEqualityObject(data) {
                 return {
-                    javaScriptConfiguration: data.javaScriptConfiguration
+                    configuration: data.configuration
                 };
             }
             return Util_1.Util.deepEqual(this.storedRobertaRobotSetupDataList.map(toProgramEqualityObject), cache.storedRobertaRobotSetupDataList.map(toProgramEqualityObject));

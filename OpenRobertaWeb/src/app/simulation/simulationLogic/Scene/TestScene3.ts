@@ -230,7 +230,13 @@ export class TestScene3 extends Scene {
 	onInit(asyncChain: AsyncChain) {
 
 		this.getRobotManager().configurationManager.setRobotConfigurations([
-			{ 1: "TOUCH" }
+			{
+				TRACKWIDTH: 18,
+				WHEELDIAMETER: 5.6,
+				SENSORS: {
+					1: "TOUCH"
+				}
+			}
 		])
 
 		this.shouldWait = false

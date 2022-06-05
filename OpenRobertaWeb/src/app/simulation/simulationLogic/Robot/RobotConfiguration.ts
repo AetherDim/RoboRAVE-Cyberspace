@@ -1,4 +1,9 @@
-import { StringMap } from "../Util";
-import { SensorType } from "./Robot";
+import { PortToSensorMap } from "./PortToSensorMap"
 
-export interface RobotConfiguration extends StringMap<SensorType> {}
+export interface RobotConfiguration {
+    TRACKWIDTH: number
+    WHEELDIAMETER: number
+    // TODO: Implement
+    // ACTUATORS: PortToSensorMap // type PortToSensorMap = StringMap<RobertaMotorConfiguration>
+    SENSORS: PortToSensorMap
+}

@@ -286,7 +286,7 @@ export class Scene {
 		}
 
 		this.getRobotManager().configurationManager.setRobotConfigurations(
-			robotSetupData.map(setup => setup.sensorConfiguration)
+			robotSetupData.map(setup => setup.configuration)
 		)
 		this.getProgramManager().setPrograms(robotSetupData.map(setup => setup.program))
 

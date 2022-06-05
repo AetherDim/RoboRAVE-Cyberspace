@@ -1,9 +1,0 @@
-{
-	"extends": "../../../../../TypeScriptSources/tsconfig.json",
-	"compilerOptions": {
-		"strict": true,
-		"strictNullChecks": true,
-		"alwaysStrict": true
-	},
-	"include": ["./**/*"]
-}

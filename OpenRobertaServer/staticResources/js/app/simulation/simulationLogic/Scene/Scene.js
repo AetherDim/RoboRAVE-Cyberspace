@@ -298,7 +298,7 @@ define(["require", "exports", "matter-js", "../Timer", "../ScrollView", "../Unit
                 console.warn('Already loading scene... !');
                 return;
             }
-            this.getRobotManager().configurationManager.setRobotConfigurations(robotSetupData.map(function (setup) { return setup.sensorConfiguration; }));
+            this.getRobotManager().configurationManager.setRobotConfigurations(robotSetupData.map(function (setup) { return setup.configuration; }));
             this.getProgramManager().setPrograms(robotSetupData.map(function (setup) { return setup.program; }));
             // stop the simulation
             this.pauseSim();

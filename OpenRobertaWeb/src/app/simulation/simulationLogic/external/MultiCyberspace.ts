@@ -184,9 +184,13 @@ if (debug != undefined) {
 function generateDebugRobertaRobotSetupData(count: number): RobertaRobotSetupData[] {
 	return Util.range(0, count).map(index => {
 		return {
-			javaScriptConfiguration: {
-				"1": "TOUCH",
-				"3": "COLOR"
+			configuration: {
+				TRACKWIDTH: 18,
+				WHEELDIAMETER: 5.6,
+				SENSORS: {
+					"1": "TOUCH",
+					"3": "COLOR"
+				}
 			},
 			javaScriptProgram: RobotProgramGenerator.generateProgram([
 				RobotProgramGenerator.driveForwardOpCodes(100, 0.1 * index + 0.1)

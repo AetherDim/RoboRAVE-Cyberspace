@@ -3,6 +3,6 @@ import { RobotProgram } from "./RobotProgram";
 
 
 export interface RobotSetupData {
-	sensorConfiguration: RobotConfiguration
+	configuration: RobotConfiguration
 	program: RobotProgram
 }
