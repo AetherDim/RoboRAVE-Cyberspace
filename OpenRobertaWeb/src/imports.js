@@ -3,40 +3,42 @@ function extendArray(array0, array1) {
         array0.push(array1[i]);
     }
 }
+
 function convertArray(array, defaultPath) {
-    var result = [];
-    array.forEach(function (element) {
+    var result = []
+    array.forEach(function(element) {
         if (typeof element == "string") {
-            result.push(defaultPath + element);
-        }
-        else {
+            result.push(defaultPath + element)
+        } else {
             // element is a dictionary
-            extendArray(result, convertDictionary(element, defaultPath));
+            extendArray(result, convertDictionary(element, defaultPath))
         }
-    });
-    return result;
+    })
+    return result
 }
+
 function convertDictionary(dict, defaultPath) {
-    var result = [];
+    var result = []
     for (var key in dict) {
-        var subFiles = dict[key];
+        var subFiles = dict[key]
         if (typeof subFiles == "string") {
-            result.push(defaultPath + key + "/" + subFiles);
-        }
-        else {
+            result.push(defaultPath + key + "/" + subFiles)
+        } else {
             // subFiles is an array
-            extendArray(result, convertArray(dict[key], defaultPath + key + "/"));
+            extendArray(result, convertArray(dict[key], defaultPath + key + "/"))
         }
     }
-    return result;
+    return result
 }
+
 function addPaths(defaultPaths, simulationDirectoryStructure) {
-    var simulationFilePaths = convertArray(simulationDirectoryStructure, "");
-    simulationFilePaths.forEach(function (path) {
-        defaultPaths[path] = 'app/simulation/simulationLogic/' + path;
-    });
+    var simulationFilePaths = convertArray(simulationDirectoryStructure, "")
+    simulationFilePaths.forEach(function(path) {
+        defaultPaths[path] = 'app/simulation/simulationLogic/'+path;
+    })
     return defaultPaths;
 }
+
 function initRequireJS(version) {
     require.config({
         urlArgs: "bust=" + version,
@@ -59,14 +61,16 @@ function initRequireJS(version) {
             'volume-meter': 'libs/sound/volume-meter',
             'neuralnetwork-lib': 'libs/neuralnetwork/lib',
             'd3': 'libs/neuralnetwork/d3.min',
-            'pixijs': 'libs/pixi.js/pixi.min',
+            'pixijs': 'libs/pixi.js/pixi.min', // workaround with fake module for pixi.js due to reqirejs not supporting .js within the name
             'matter-js': 'libs/matterjs/matter.min',
             'webfontloader': 'libs/webfontloader/webfontloader',
+
             'webots': 'libs/webots/webots.min',
             'glm': 'libs/webots/glm-js.min',
             'webots.enum': 'libs/webots/enum',
             'webots.wren': 'libs/webots/wrenjs',
             'webots.simulation': 'app/webotsSimulation/webots.simulation',
+
             'confDelete.controller': 'app/roberta/controller/confDelete.controller',
             'configuration.controller': 'app/roberta/controller/configuration.controller',
             'configuration.model': 'app/roberta/models/configuration.model',
@@ -109,11 +113,13 @@ function initRequireJS(version) {
             'socket.controller': 'app/roberta/controller/socket.controller',
             'webview.controller': 'app/roberta/controller/webview.controller',
             'sourceCodeEditor.controller': 'app/roberta/controller/sourceCodeEditor.controller',
+
             'comm': 'helper/comm',
             'log': 'helper/log',
             'message': 'helper/msg',
             'util': 'helper/util',
             'wrap': 'helper/wrap',
+
             'interpreter.constants': 'app/nepostackmachine/interpreter.constants',
             'interpreter.interpreter': 'app/nepostackmachine/interpreter.interpreter',
             'interpreter.aRobotBehaviour': 'app/nepostackmachine/interpreter.aRobotBehaviour',
@@ -122,23 +128,31 @@ function initRequireJS(version) {
             'interpreter.state': 'app/nepostackmachine/interpreter.state',
             'interpreter.util': 'app/nepostackmachine/interpreter.util',
             'interpreter.jsHelper': 'app/nepostackmachine/interpreter.jsHelper',
+
             'neuralnetwork.nn': 'app/neuralnetwork/neuralnetwork.nn',
             'neuralnetwork.uistate': 'app/neuralnetwork/neuralnetwork.uistate',
             'neuralnetwork.ui': 'app/neuralnetwork/neuralnetwork.ui',
             'neuralnetwork.helper': 'app/neuralnetwork/neuralnetwork.helper',
             'neuralnetwork.msg': 'app/neuralnetwork/neuralnetwork.msg',
+
             'confVisualization': 'app/configVisualization/confVisualization',
             'const.robots': 'app/configVisualization/const.robots',
             'port': 'app/configVisualization/port',
             'robotBlock': 'app/configVisualization/robotBlock',
             'wires': 'app/configVisualization/wires',
+
+
             'simulation.constants': 'app/simulation/simulationLogic/constants',
             'simulation.simulation': 'app/simulation/simulationLogic/simulation',
+
             'main': 'main',
             'mainSim': 'mainSim',
+
             'dat.gui': 'libs/datgui/dat.gui.min',
             'GlobalDebug': 'helper/GlobalDebug',
-        }, [
+
+
+        },[
             'SceneRenderer',
             'Timer',
             'ExtendedMatter',
@@ -158,28 +172,28 @@ function initRequireJS(version) {
                     'TestScene2',
                     'TestScene3',
                     'AsyncChain',
-                    { 'Manager': [
+                    { 'Manager' : [
                             'ContainerManager',
                             'EntityManager',
                             'ProgramManager',
                             'RobotManager',
                             'RobotConfigurationManager',
-                        ] }
-                ] },
+                        ]}
+                ]},
             { 'Geometry': [
                     'Line',
                     'LineBaseClass',
                     'LineSegment',
                     'Ray',
                     'Polygon',
-                ] },
+                ]},
             { 'Robot': [
                     { 'Sensors': [
                             'ColorSensor',
                             'UltrasonicSensor',
                             'TouchSensor',
                             'GyroSensor',
-                        ] },
+                    ]},
                     'Robot',
                     'RobertaRobotSetupData',
                     'RobotConfiguration',
@@ -192,11 +206,11 @@ function initRequireJS(version) {
                     'RobotHardwareStateSensors',
                     'BodyHelper',
                     'RobotProgramGenerator',
-                ] },
-            { 'EventManager': [
-                    'EventHandlerList',
-                    'EventManager',
-                ] },
+                ]},
+            { 'EventManager' : [
+                'EventHandlerList',
+                'EventManager',
+            ]},
             { 'RRC': [
                     'RRAssetLoader',
                     'AgeGroup',
@@ -206,24 +220,24 @@ function initRequireJS(version) {
                             'RRCLineFollowingScene',
                             'RRCRainbowScene',
                             'RRCLabyrinthScene',
-                        ] }
-                ] },
+                        ]}
+                ]},
             { "Waypoints": [
                     "Waypoint",
                     "WaypointList",
                     "WaypointsManager",
                     "ScoreWaypoint",
-                ] },
+                ]},
             { "Cyberspace": [
-                    "Cyberspace",
-                    "SceneManager",
-                    "SimulationCache",
-                ] },
+                            "Cyberspace",
+                            "SceneManager",
+                            "SimulationCache",
+                        ]},
             { "external": [
-                    "MultiCyberspace",
-                    "SceneDesciptorList",
-                    "RESTApi",
-                ] }
+                "MultiCyberspace",
+                "SceneDesciptorList",
+                "RESTApi",
+            ]}
         ]),
         shim: {
             'bootstrap': {
@@ -243,7 +257,7 @@ function initRequireJS(version) {
             },
             'volume-meter': {
                 exports: "Volume",
-                init: function () {
+                init: function() {
                     return {
                         createAudioMeter: createAudioMeter
                     };
@@ -254,5 +268,6 @@ function initRequireJS(version) {
             }
         }
     });
-    console.log("Init imports ...");
+
+    console.log("Init imports ...")
 }
