@@ -1,6 +1,6 @@
 define(["require", "exports", "dat.gui", "./Timer"], function (require, exports, dat, Timer_1) {
     Object.defineProperty(exports, "__esModule", { value: true });
-    exports.downloadJSONFile = exports.downloadFile = exports.createReflectionGetter = exports.SceneDebug = exports.initGlobalSceneDebug = exports.createDebugGuiRoot = exports.clearDebugGuiRoot = exports.DebugGuiRoot = exports.registerDebugUpdatable = exports.DEBUG_UPDATE_TIMER = exports.PRINT_NON_WRAPPED_ERROR = exports.SEND_LOG = exports.DEBUG = void 0;
+    exports.downloadJSONFile = exports.downloadFile = exports.createReflectionGetter = exports.SceneDebug = exports.initGlobalSceneDebug = exports.createDebugGuiRoot = exports.clearDebugGuiRoot = exports.DebugGuiRoot = exports.registerDebugUpdatable = exports.DEBUG_UPDATE_TIMER = exports.DISABLE_WRAP = exports.PRINT_NON_WRAPPED_ERROR = exports.SEND_LOG = exports.DEBUG = void 0;
     exports.DEBUG = true;
     /**
      * Used in log.js
@@ -10,6 +10,7 @@ define(["require", "exports", "dat.gui", "./Timer"], function (require, exports,
      * Used in 'wrap.js' to print the error before it is wrapped
      */
     exports.PRINT_NON_WRAPPED_ERROR = true;
+    exports.DISABLE_WRAP = false;
     var updatableList = [];
     exports.DEBUG_UPDATE_TIMER = new Timer_1.Timer(0.5, function () { return updateDebugDisplay(); });
     exports.DEBUG_UPDATE_TIMER.start();

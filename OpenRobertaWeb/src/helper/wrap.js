@@ -1,6 +1,7 @@
 import * as COMM from 'comm';
 import * as LOG from 'log';
 import * as $ from 'jquery';
+import * as DEBUG from 'GlobalDebug';
 
 /**
  * we want to guarantee, that only ONE thread of work is active. A thread of work is usually started by a UI-callback attached to
@@ -27,6 +28,15 @@ function functionName(func) {
     var result = /^function\s+([\w\$]+)\s*\(/.exec(func.toString());
     return result ? result[1] : '<anonymous>'; // for an anonymous function there won't be a match
 }
+
+
+function printErrorIfDebugMode(e) {
+    if(DEBUG.PRINT_NON_WRAPPED_ERROR) {
+        console.error(e);
+    }
+}
+
+
 /**
  * wrap a function to catch and display errors. Calling wrapTotal with an arbitrary function with NEVER terminate with an exception.
  * An not undefined 2nd parameter is a messages that activates logging with time measuring
@@ -45,6 +55,7 @@ function wrapTotal(fnToBeWrapped, message) {
             }
             return result;
         } catch (e) {
+            printErrorIfDebugMode(e);
             var err = new Error();
             var elapsed = new Date() - start;
             if (message !== undefined) {
@@ -67,7 +78,7 @@ function wrapTotal(fnToBeWrapped, message) {
             }
         }
     };
-    return wrap;
+    return DEBUG.DISABLE_WRAP ? fnToBeWrapped : wrap;
 }
 
 /**
@@ -93,6 +104,7 @@ function wrapUI(fnToBeWrapped, message) {
             numberOfActiveActions--;
             return result;
         } catch (e) {
+            printErrorIfDebugMode(e);
             numberOfActiveActions--;
             var err = new Error();
             LOG.error(
@@ -106,7 +118,7 @@ function wrapUI(fnToBeWrapped, message) {
             COMM.ping(); // transfer data to the server
         }
     };
-    return wrap;
+    return DEBUG.DISABLE_WRAP ? fnToBeWrapped : wrap;
 }
 
 /**
@@ -124,6 +136,7 @@ function wrapREST(fnToBeWrapped, message) {
             fn.apply(that, arguments);
             numberOfActiveActions--;
         } catch (e) {
+            printErrorIfDebugMode(e);
             numberOfActiveActions--;
             var err = new Error();
             LOG.error(
@@ -137,7 +150,7 @@ function wrapREST(fnToBeWrapped, message) {
             COMM.ping(); // transfer data to the server
         }
     };
-    return rest;
+    return DEBUG.DISABLE_WRAP ? fnToBeWrapped : rest;
 }
 
 function wrapErrorFn(errorFnToBeWrapped) {
@@ -148,6 +161,7 @@ function wrapErrorFn(errorFnToBeWrapped) {
             fn.apply(that, arguments);
             numberOfActiveActions--;
         } catch (e) {
+            printErrorIfDebugMode(e);
             numberOfActiveActions--;
             var err = new Error();
             LOG.error(
@@ -159,9 +173,11 @@ function wrapErrorFn(errorFnToBeWrapped) {
                     err.stack
             );
             COMM.ping(); // transfer data to the server
+
+
         }
     };
-    return wrap;
+    return DEBUG.DISABLE_WRAP ? errorFnToBeWrapped : wrap;
 }
 export { wrapTotal, wrapUI, wrapREST, wrapErrorFn };
 

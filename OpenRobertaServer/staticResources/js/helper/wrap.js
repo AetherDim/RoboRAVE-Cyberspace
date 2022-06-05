@@ -1,4 +1,4 @@
-define(["require", "exports", "comm", "log", "jquery"], function (require, exports, COMM, LOG, $) {
+define(["require", "exports", "comm", "log", "jquery", "GlobalDebug"], function (require, exports, COMM, LOG, $, DEBUG) {
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.wrapErrorFn = exports.wrapREST = exports.wrapUI = exports.wrapTotal = void 0;
     /**
@@ -25,6 +25,11 @@ define(["require", "exports", "comm", "log", "jquery"], function (require, expor
         var result = /^function\s+([\w\$]+)\s*\(/.exec(func.toString());
         return result ? result[1] : '<anonymous>'; // for an anonymous function there won't be a match
     }
+    function printErrorIfDebugMode(e) {
+        if (DEBUG.PRINT_NON_WRAPPED_ERROR) {
+            console.error(e);
+        }
+    }
     /**
      * wrap a function to catch and display errors. Calling wrapTotal with an arbitrary function with NEVER terminate with an exception.
      * An not undefined 2nd parameter is a messages that activates logging with time measuring
@@ -44,6 +49,7 @@ define(["require", "exports", "comm", "log", "jquery"], function (require, expor
                 return result;
             }
             catch (e) {
+                printErrorIfDebugMode(e);
                 var err = new Error();
                 var elapsed = new Date() - start;
                 if (message !== undefined) {
@@ -65,7 +71,7 @@ define(["require", "exports", "comm", "log", "jquery"], function (require, expor
                 }
             }
         };
-        return wrap;
+        return DEBUG.DISABLE_WRAP ? fnToBeWrapped : wrap;
     }
     exports.wrapTotal = wrapTotal;
     /**
@@ -93,6 +99,7 @@ define(["require", "exports", "comm", "log", "jquery"], function (require, expor
                 return result;
             }
             catch (e) {
+                printErrorIfDebugMode(e);
                 numberOfActiveActions--;
                 var err = new Error();
                 LOG.error('wrapUI/wrapTotal CRASHED UNEXPECTED AND SEVERELY in function ' +
@@ -104,7 +111,7 @@ define(["require", "exports", "comm", "log", "jquery"], function (require, expor
                 COMM.ping(); // transfer data to the server
             }
         };
-        return wrap;
+        return DEBUG.DISABLE_WRAP ? fnToBeWrapped : wrap;
     }
     exports.wrapUI = wrapUI;
     /**
@@ -123,6 +130,7 @@ define(["require", "exports", "comm", "log", "jquery"], function (require, expor
                 numberOfActiveActions--;
             }
             catch (e) {
+                printErrorIfDebugMode(e);
                 numberOfActiveActions--;
                 var err = new Error();
                 LOG.error('wrapREST/wrapTotal CRASHED UNEXPECTED AND SEVERELY in function ' +
@@ -134,7 +142,7 @@ define(["require", "exports", "comm", "log", "jquery"], function (require, expor
                 COMM.ping(); // transfer data to the server
             }
         };
-        return rest;
+        return DEBUG.DISABLE_WRAP ? fnToBeWrapped : rest;
     }
     exports.wrapREST = wrapREST;
     function wrapErrorFn(errorFnToBeWrapped) {
@@ -146,6 +154,7 @@ define(["require", "exports", "comm", "log", "jquery"], function (require, expor
                 numberOfActiveActions--;
             }
             catch (e) {
+                printErrorIfDebugMode(e);
                 numberOfActiveActions--;
                 var err = new Error();
                 LOG.error('wrapErrorFn/wrapTotal CRASHED UNEXPECTED AND SEVERELY in function ' +
@@ -157,7 +166,7 @@ define(["require", "exports", "comm", "log", "jquery"], function (require, expor
                 COMM.ping(); // transfer data to the server
             }
         };
-        return wrap;
+        return DEBUG.DISABLE_WRAP ? errorFnToBeWrapped : wrap;
     }
     exports.wrapErrorFn = wrapErrorFn;
     $.fn.onWrap = function (event, callbackOrFilter, callbackOrMessage, optMessage) {
