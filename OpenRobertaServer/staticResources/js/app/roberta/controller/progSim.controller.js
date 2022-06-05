@@ -9,13 +9,6 @@ define(["require", "exports", "message", "util", "webots.simulation", "simulatio
         initEvents();
     }
     exports.init = init;
-
-    function getConfigurationXML() {
-        // TODO: Why does the configuration has to be an anonymous one?
-        // return GUISTATE_C.isConfigurationAnonymous() ? GUISTATE_C.getConfigurationXML() : undefined;
-        return GUISTATE_C.getConfigurationXML();
-    }
-
     function initEvents() {
         $('#simButton').off('click touchend');
         $('#simButton').onWrap('click touchend', function (event) {
@@ -27,7 +20,6 @@ define(["require", "exports", "message", "util", "webots.simulation", "simulatio
             toggleSim();
             return false;
         });
-
         $('#simDebugButton').off('click touchend');
         $('#simDebugButton').onWrap('click touchend', function (event) {
             debug = true;
@@ -38,13 +30,11 @@ define(["require", "exports", "message", "util", "webots.simulation", "simulatio
             toggleSim();
             return false;
         });
-
         $('#simStop').onWrap('click', function (event) {
             $('#simStop').addClass('disabled');
             $('#simControl').addClass('typcn-media-play-outline').removeClass('typcn-media-play');
             SIM.stopProgram();
         }, 'sim stop clicked');
-
         $('#simControl').onWrap('click', function (event) {
             event.stopPropagation();
             if (SIM.getNumRobots() <= 1) {
@@ -75,8 +65,10 @@ define(["require", "exports", "message", "util", "webots.simulation", "simulatio
                                     NAOSIM.run(result.javaScriptProgram);
                                 }
                                 else {
+                                    setTimeout(function () {
+                                        SIM.setPause(false);
+                                    }, 500);
                                     SIM.init([result], false, GUISTATE_C.getRobotGroup());
-                                    SIM.setPause(false);
                                 }
                             }
                             else {
@@ -103,7 +95,9 @@ define(["require", "exports", "message", "util", "webots.simulation", "simulatio
                     $('#simControl').addClass('typcn-media-stop').removeClass('typcn-media-play-outline');
                     $('#simControl').attr('data-original-title', Blockly.Msg.MENU_SIM_STOP_TOOLTIP);
                     SIM.run(false, GUISTATE_C.getRobotGroup());
-                    SIM.setPause(false);
+                    setTimeout(function () {
+                        SIM.setPause(false);
+                    }, 500);
                 }
                 else {
                     $('#simControl').addClass('typcn-media-play-outline').removeClass('typcn-media-stop');
@@ -112,37 +106,9 @@ define(["require", "exports", "message", "util", "webots.simulation", "simulatio
                 }
             }
         }, 'sim start clicked');
-
-        $('#simScore').onWrap('click', function(event) {
-            if ($('#simScore').hasClass('typcn-star')) {
-                $('#simScore').addClass('typcn-star-outline').removeClass('typcn-star');
-                SIM.score(true);
-            } else {
-                $('#simScore').addClass('typcn-star').removeClass('typcn-star-outline');
-                SIM.score(false);
-            }
+        $('#simImport').onWrap('click', function (event) {
+            SIM.importImage();
         }, 'simImport clicked');
-
-        $('#simFLowControl').onWrap('click', function(event) {
-            if ($('#simFLowControl').hasClass('typcn-flash')) {
-                $('#simFLowControl').addClass('typcn-flash-outline').removeClass('typcn-flash');
-                SIM.sim(false);
-            } else {
-                $('#simFLowControl').addClass('typcn-flash').removeClass('typcn-flash-outline');
-                SIM.sim(true);
-            }
-        }, 'simImport clicked');
-
-        $('#simSpeedUp').onWrap('click', function(event) {
-            if ($('#simSpeedUp').hasClass('typcn-media-fast-forward')) {
-                $('#simSpeedUp').addClass('typcn-media-fast-forward-outline').removeClass('typcn-media-fast-forward');
-                SIM.setSimSpeed(1);
-            } else {
-                $('#simSpeedUp').addClass('typcn-media-fast-forward').removeClass('typcn-media-fast-forward-outline');
-                SIM.setSimSpeed(10);
-            }
-        }, 'simImport clicked');
-
         $('.simInfo').onWrap('click', function (event) {
             SIM.setInfo();
         }, 'sim info clicked');
@@ -190,46 +156,55 @@ define(["require", "exports", "message", "util", "webots.simulation", "simulatio
             }
             SIM.resetPose();
         }, 'sim reset pose clicked');
-
-        $('#zoomIn').onWrap('click', function(event) {
-            SIM.zoomIn();
-        }, 'zoomIn clicked');
-
-        $('#zoomOut').onWrap('click', function(event) {
-            SIM.zoomOut();
-        }, 'zoomOut clicked');
-
-        $('#zoomReset').onWrap('click', function(event) {
-            SIM.zoomReset();
-        }, 'zoomOut clicked');
-
-        /*
-        $('#debugMode').onWrap('click', function(event) {
-                if ($('#debugMode').hasClass('typcn-spanner')) {
-                    $('#simControlBreakPoint,#simControlStepOver,#simControlStepInto,#simVariables').show();
-                    $('#debugMode').addClass('typcn-spanner-outline').removeClass('typcn-spanner');
-                    SIM.updateDebugMode(true);
-                } else {
-                    $('#simControlBreakPoint,#simControlStepOver,#simControlStepInto,#simVariables').hide();
-                    $('#debugMode').addClass('typcn-spanner').removeClass('typcn-spanner-outline');
-                    SIM.endDebugging();
-                }
-
-            }, 'debugMode clicked');*/
-
-
-
         $('#simControlStepInto').onWrap('click', function (event) {
             toggleSimEvent(simulation_constants_1.default.DEBUG_STEP_INTO);
         }, 'sim step into clicked');
         $('#simControlStepOver').onWrap('click', function (event) {
             toggleSimEvent(simulation_constants_1.default.DEBUG_STEP_OVER);
         }, 'sim step over clicked');
-        
-        
+        $('#simAddObstacleRectangle').onWrap('click', function (event) {
+            SIM.addObstacle('rectangle');
+            event.stopPropagation();
+        }, 'sim add rectangle obstacle clicked');
+        $('#simAddObstacleTriangle').onWrap('click', function (event) {
+            SIM.addObstacle('triangle');
+        }, 'sim add triangle obstacle clicked');
+        $('#simAddObstacleCircle').onWrap('click', function (event) {
+            SIM.addObstacle('circle');
+            event.stopPropagation();
+        }, 'sim add circle obstacle clicked');
+        $('#simAddAreaRectangle').onWrap('click', function (event) {
+            SIM.addColorArea('rectangle');
+            event.stopPropagation();
+        }, 'sim add rectangle area clicked');
+        $('#simAddAreaTriangle').onWrap('click', function (event) {
+            SIM.addColorArea('triangle');
+            event.stopPropagation();
+        }, 'sim add triangle area clicked');
+        $('#simAddAreaCircle').onWrap('click', function (event) {
+            SIM.addColorArea('circle');
+            event.stopPropagation();
+        }, 'sim add circle area clicked');
+        $('#simChangeObjectColor').onWrap('click', function (event) {
+            if (!$('#simChangeObjectColor').hasClass('disabled')) {
+                SIM.toggleColorPicker();
+            }
+        }, 'sim edit object clicked');
+        $('#simDeleteObject').onWrap('click', function (event) {
+            if (!$('#simDeleteObject').hasClass('disabled')) {
+                SIM.deleteSelectedObject();
+            }
+        }, 'sim delete object clicked');
+        $('#simDownloadConfig').onWrap('click', function (event) {
+            var filename = GUISTATE_C.getProgramName() + '-sim_configuration.json';
+            UTIL.download(filename, JSON.stringify(SIM.exportConfigData()));
+            MSG.displayMessage('MENU_MESSAGE_DOWNLOAD', 'TOAST', filename);
+        }, 'sim download config clicked');
+        $('#simUploadConfig').onWrap('click', function (event) {
+            SIM.importConfigData();
+        }, 'sim upload config clicked');
         $('#simScene').onWrap('click', function (event) {
-            // TODO!
-            //SIM.setBackground(-1, SIM.setBackground);
+            SIM.setBackground(-1, SIM.setBackground);
         }, 'sim toggle background clicked');
     }
     function initSimulation(result) {
@@ -283,7 +258,7 @@ define(["require", "exports", "message", "util", "webots.simulation", "simulatio
             var xmlTextProgram = Blockly.Xml.domToText(xmlProgram);
             var isNamedConfig = !GUISTATE_C.isConfigurationStandard() && !GUISTATE_C.isConfigurationAnonymous();
             var configName = isNamedConfig ? GUISTATE_C.getConfigurationName() : undefined;
-            var xmlConfigText = GUISTATE_C.isConfigurationAnonymous() ? GUISTATE_C.getConfigurationXML() : undefined; // TODO: Fix?
+            var xmlConfigText = GUISTATE_C.isConfigurationAnonymous() ? GUISTATE_C.getConfigurationXML() : undefined;
             var language = GUISTATE_C.getLanguage();
             PROGRAM.runInSim(GUISTATE_C.getProgramName(), configName, xmlTextProgram, xmlConfigText, language, function (result) {
                 if (result.rc == 'ok') {
@@ -308,13 +283,15 @@ define(["require", "exports", "message", "util", "webots.simulation", "simulatio
             var xmlTextProgram = Blockly.Xml.domToText(xmlProgram);
             var isNamedConfig = !GUISTATE_C.isConfigurationStandard() && !GUISTATE_C.isConfigurationAnonymous();
             var configName = isNamedConfig ? GUISTATE_C.getConfigurationName() : undefined;
-            var xmlConfigText = GUISTATE_C.isConfigurationAnonymous() ? GUISTATE_C.getConfigurationXML() : undefined; // TODO: FIX?
+            var xmlConfigText = GUISTATE_C.isConfigurationAnonymous() ? GUISTATE_C.getConfigurationXML() : undefined;
             var language = GUISTATE_C.getLanguage();
             PROGRAM.runInSim(GUISTATE_C.getProgramName(), configName, xmlTextProgram, xmlConfigText, language, function (result) {
                 if (result.rc == 'ok') {
+                    setTimeout(function () {
+                        SIM.setPause(false);
+                        SIM.interpreterAddEvent(event);
+                    }, 500);
                     SIM.init([result], false, GUISTATE_C.getRobotGroup());
-                    SIM.setPause(false);
-                    SIM.interpreterAddEvent(event);
                 }
                 $('#simControl').removeClass('typcn-media-play-outline').addClass('typcn-media-play');
                 $('#simStop').removeClass('disabled');

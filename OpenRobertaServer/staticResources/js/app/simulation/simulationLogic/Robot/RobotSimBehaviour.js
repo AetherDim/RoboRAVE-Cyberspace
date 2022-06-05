@@ -14,7 +14,6 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 define(["require", "exports", "../interpreter.aRobotBehaviour", "../interpreter.constants", "../interpreter.util"], function (require, exports, interpreter_aRobotBehaviour_1, C, U) {
-    "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.RobotSimBehaviour = void 0;
     var RobotSimBehaviour = /** @class */ (function (_super) {

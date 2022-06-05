@@ -1,5 +1,4 @@
-define(["require", "exports", "./simulation.constants"], function (require, exports, CONSTANTS) {
-    "use strict";
+define(["require", "exports", "./constants"], function (require, exports, CONSTANTS) {
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.rgbToHsv = exports.hsvToColorName = exports.COLOR_MAP_XKCD = exports.ColorPalette = exports.Color = exports.rgbToNumber = void 0;
     // https://stackoverflow.com/questions/13070054/convert-rgb-strings-to-hex-in-javascript

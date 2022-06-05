@@ -30,7 +30,6 @@ var __read = (this && this.__read) || function (o, n) {
     return ar;
 };
 define(["require", "exports", "matter-js", "./Util"], function (require, exports, matter_js_1, Util_1) {
-    "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.DrawableEntity = exports.PhysicsRectEntity = exports.RectEntityOptions = exports.RectOptions = exports.DrawSettings = exports.DrawablePhysicsEntity = exports.Type = exports.Meta = void 0;
     var Meta = /** @class */ (function () {

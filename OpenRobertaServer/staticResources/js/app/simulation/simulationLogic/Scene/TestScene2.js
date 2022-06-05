@@ -29,13 +29,16 @@ var __read = (this && this.__read) || function (o, n) {
     }
     return ar;
 };
-var __spreadArray = (this && this.__spreadArray) || function (to, from) {
-    for (var i = 0, il = from.length, j = to.length; i < il; i++, j++)
-        to[j] = from[i];
-    return to;
+var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
 };
 define(["require", "exports", "../RRC/Scene/RRCScene", "../Unit", "../RRC/RRAssetLoader", "../Random", "../Waypoints/WaypointList", "../Util"], function (require, exports, RRCScene_1, Unit_1, RRC, Random_1, WaypointList_1, Util_1) {
-    "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.TestScene2 = void 0;
     var TestScene2 = /** @class */ (function (_super) {
@@ -49,7 +52,7 @@ define(["require", "exports", "../RRC/Scene/RRCScene", "../Unit", "../RRC/RRAsse
                 RRC.RAINBOW_BACKGROUND_HS_SPACE_INVADERS.getAsset(4)
             ].filter(function (asset) { return asset != undefined; });
             _this.testSensorTypes = ["COLOR", "ULTRASONIC", "TOUCH"];
-            _this._sensorTypes = __spreadArray(__spreadArray([], __read(_this.testSensorTypes)), [undefined]);
+            _this._sensorTypes = __spreadArray(__spreadArray([], __read(_this.testSensorTypes), false), [undefined], false);
             _this.useMultiSetCombinations = true;
             _this.allSensorConfigurations = _this.useMultiSetCombinations ?
                 Util_1.Util.generateMultiSetTuples(_this._sensorTypes, 4).map(function (multiSet) {
@@ -100,7 +103,7 @@ define(["require", "exports", "../RRC/Scene/RRCScene", "../Unit", "../RRC/RRAsse
         };
         TestScene2.prototype.onLoadAssets = function (chain) {
             var _a;
-            (_a = this.loader).load.apply(_a, __spreadArray(__spreadArray([function () { return chain.next(); }], __read(this.assets)), [RRC.GOAL_BACKGROUND]));
+            (_a = this.loader).load.apply(_a, __spreadArray(__spreadArray([function () { return chain.next(); }], __read(this.assets), false), [RRC.GOAL_BACKGROUND], false));
         };
         TestScene2.prototype.onInit = function (chain) {
             var _this = this;
@@ -111,7 +114,7 @@ define(["require", "exports", "../RRC/Scene/RRCScene", "../Unit", "../RRC/RRAsse
             var textures = this.assets.map(function (asset) { return _this.loader.get(asset).texture; });
             textures.forEach(function (texture) {
                 var sprite = new PIXI.Sprite(texture);
-                sprite.position.set(Random_1.randomIntBetween(0, 300), Random_1.randomIntBetween(0, 300));
+                sprite.position.set((0, Random_1.randomIntBetween)(0, 300), (0, Random_1.randomIntBetween)(0, 300));
                 _this.getContainers().groundContainer.addChild(sprite);
             });
             var waypointList = new WaypointList_1.WaypointList([

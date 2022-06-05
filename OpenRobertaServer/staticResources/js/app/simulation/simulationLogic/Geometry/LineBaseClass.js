@@ -10,7 +10,6 @@ var __values = (this && this.__values) || function(o) {
     throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
 };
 define(["require", "exports", "matter-js", "../Util"], function (require, exports, matter_js_1, Util_1) {
-    "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.LineBaseClass = void 0;
     // import { Line } from "./Line"

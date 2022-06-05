@@ -30,7 +30,6 @@ var __read = (this && this.__read) || function (o, n) {
     return ar;
 };
 define(["require", "exports", "d3", "matter-js", "../Entity", "../Util"], function (require, exports, d3_1, matter_js_1, Entity_1, Util_1) {
-    "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.Wheel = void 0;
     var Wheel = /** @class */ (function (_super) {
@@ -86,7 +85,7 @@ define(["require", "exports", "d3", "matter-js", "../Entity", "../Util"], functi
             var container = _this.physicsEntity.getDrawable();
             var wheelProfileWidth = width * 0.3;
             _this.wheelProfileWidth = wheelProfileWidth;
-            _this.wheelProfile = d3_1.range(4).map(function () {
+            _this.wheelProfile = (0, d3_1.range)(4).map(function () {
                 var graphics = new PIXI.Graphics();
                 graphics.beginFill(0xFF0000);
                 graphics.drawRect(0, -height / 2, wheelProfileWidth, height);

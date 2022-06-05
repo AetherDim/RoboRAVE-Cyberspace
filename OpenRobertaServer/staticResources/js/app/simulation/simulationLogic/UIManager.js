@@ -14,7 +14,6 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 define(["require", "exports", "blockly"], function (require, exports, Blockly) {
-    "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.UIManager = exports.UIRobertaToggleStateButton = exports.UIRobertaStateButton = exports.UIRobertaButton = void 0;
     var UIRobertaButton = /** @class */ (function () {

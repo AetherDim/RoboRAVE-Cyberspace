@@ -1,4 +1,15 @@
-define(["require", "exports", "./neuralnetwork.helper", "util"], function (require, exports, H, U) {
+var __values = (this && this.__values) || function(o) {
+    var s = typeof Symbol === "function" && Symbol.iterator, m = s && o[s], i = 0;
+    if (m) return m.call(o);
+    if (o && typeof o.length === "number") return {
+        next: function () {
+            if (o && i >= o.length) o = void 0;
+            return { value: o && o[i++], done: !o };
+        }
+    };
+    throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
+};
+define(["require", "exports", "./neuralnetwork.helper", "./util"], function (require, exports, H, U) {
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.Network = exports.Link = exports.Node = exports.NNumber = void 0;
     var NNumber = /** @class */ (function () {
@@ -84,7 +95,12 @@ define(["require", "exports", "./neuralnetwork.helper", "util"], function (requi
             return this.asNumber;
         };
         NNumber.prototype.getWoOp = function () {
-            return this.normalizedUserInput;
+            if (this.separator === ',') {
+                return this.normalizedUserInput.replace(NNumber.pointGlobal, ',');
+            }
+            else {
+                return this.normalizedUserInput;
+            }
         };
         NNumber.prototype.hasFraction = function () {
             return this.isFraction;
@@ -458,36 +474,83 @@ define(["require", "exports", "./neuralnetwork.helper", "util"], function (requi
             return this.network;
         };
         Network.prototype.getWeightArray = function () {
+            var e_1, _a, e_2, _b, e_3, _c;
             var weightsAllLayers = [];
             if (this.network != null && this.network.length > 0) {
-                for (var _i = 0, _a = this.network; _i < _a.length; _i++) {
-                    var layer = _a[_i];
-                    var weightsOneLayer = [];
-                    for (var _b = 0, layer_1 = layer; _b < layer_1.length; _b++) {
-                        var node = layer_1[_b];
-                        var weightsOneNode = [];
-                        for (var _c = 0, _d = node.outputs; _c < _d.length; _c++) {
-                            var link = _d[_c];
-                            weightsOneNode.push(link.weight.getOp() + link.weight.getWoOp());
+                try {
+                    for (var _d = __values(this.network), _e = _d.next(); !_e.done; _e = _d.next()) {
+                        var layer = _e.value;
+                        var weightsOneLayer = [];
+                        try {
+                            for (var layer_1 = (e_2 = void 0, __values(layer)), layer_1_1 = layer_1.next(); !layer_1_1.done; layer_1_1 = layer_1.next()) {
+                                var node = layer_1_1.value;
+                                var weightsOneNode = [];
+                                try {
+                                    for (var _f = (e_3 = void 0, __values(node.outputs)), _g = _f.next(); !_g.done; _g = _f.next()) {
+                                        var link = _g.value;
+                                        weightsOneNode.push(link.weight.getOp() + link.weight.getWoOp());
+                                    }
+                                }
+                                catch (e_3_1) { e_3 = { error: e_3_1 }; }
+                                finally {
+                                    try {
+                                        if (_g && !_g.done && (_c = _f.return)) _c.call(_f);
+                                    }
+                                    finally { if (e_3) throw e_3.error; }
+                                }
+                                weightsOneLayer.push(weightsOneNode);
+                            }
                         }
-                        weightsOneLayer.push(weightsOneNode);
+                        catch (e_2_1) { e_2 = { error: e_2_1 }; }
+                        finally {
+                            try {
+                                if (layer_1_1 && !layer_1_1.done && (_b = layer_1.return)) _b.call(layer_1);
+                            }
+                            finally { if (e_2) throw e_2.error; }
+                        }
+                        weightsAllLayers.push(weightsOneLayer);
                     }
-                    weightsAllLayers.push(weightsOneLayer);
+                }
+                catch (e_1_1) { e_1 = { error: e_1_1 }; }
+                finally {
+                    try {
+                        if (_e && !_e.done && (_a = _d.return)) _a.call(_d);
+                    }
+                    finally { if (e_1) throw e_1.error; }
                 }
             }
             return weightsAllLayers;
         };
         Network.prototype.getBiasArray = function () {
+            var e_4, _a, e_5, _b;
             var biasesAllLayers = [];
             if (this.network != null && this.network.length > 0) {
-                for (var _i = 0, _a = this.network; _i < _a.length; _i++) {
-                    var layer = _a[_i];
-                    var biasesOneLayer = [];
-                    for (var _b = 0, layer_2 = layer; _b < layer_2.length; _b++) {
-                        var node = layer_2[_b];
-                        biasesOneLayer.push(node.bias.getOp() + node.bias.getWoOp());
+                try {
+                    for (var _c = __values(this.network), _d = _c.next(); !_d.done; _d = _c.next()) {
+                        var layer = _d.value;
+                        var biasesOneLayer = [];
+                        try {
+                            for (var layer_2 = (e_5 = void 0, __values(layer)), layer_2_1 = layer_2.next(); !layer_2_1.done; layer_2_1 = layer_2.next()) {
+                                var node = layer_2_1.value;
+                                biasesOneLayer.push(node.bias.getOp() + node.bias.getWoOp());
+                            }
+                        }
+                        catch (e_5_1) { e_5 = { error: e_5_1 }; }
+                        finally {
+                            try {
+                                if (layer_2_1 && !layer_2_1.done && (_b = layer_2.return)) _b.call(layer_2);
+                            }
+                            finally { if (e_5) throw e_5.error; }
+                        }
+                        biasesAllLayers.push(biasesOneLayer);
                     }
-                    biasesAllLayers.push(biasesOneLayer);
+                }
+                catch (e_4_1) { e_4 = { error: e_4_1 }; }
+                finally {
+                    try {
+                        if (_d && !_d.done && (_a = _c.return)) _a.call(_c);
+                    }
+                    finally { if (e_4) throw e_4.error; }
                 }
             }
             return biasesAllLayers;

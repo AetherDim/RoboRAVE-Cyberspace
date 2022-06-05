@@ -1,5 +1,4 @@
 define(["require", "exports", "matter-js", "../../Entity", "../../Util", "../../Robot/Sensors/TouchSensor", "../../Robot/Sensors/UltrasonicSensor", "../../Robot/Sensors/GyroSensor", "../../Robot/Sensors/ColorSensor", "../../pixijs"], function (require, exports, matter_js_1, Entity_1, Util_1, TouchSensor_1, UltrasonicSensor_1, GyroSensor_1, ColorSensor_1) {
-    "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.RobotConfigurationManager = void 0;
     var MaxSensorCount = /** @class */ (function () {

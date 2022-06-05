@@ -14,7 +14,6 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 define(["require", "exports", "../AgeGroup", "./RRCScene", "../RRAssetLoader", "../../Entity", "matter-js", "../../Waypoints/WaypointList"], function (require, exports, AgeGroup_1, RRCScene_1, RRC, Entity_1, matter_js_1, WaypointList_1) {
-    "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.RRCLabyrinthScene = void 0;
     var LabyrinthRect = /** @class */ (function () {

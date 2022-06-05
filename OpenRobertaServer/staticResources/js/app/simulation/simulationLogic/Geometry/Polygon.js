@@ -1,5 +1,4 @@
 define(["require", "exports", "matter-js", "../Util", "./Line", "./LineSegment"], function (require, exports, matter_js_1, Util_1, Line_1, LineSegment_1) {
-    "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.Polygon = void 0;
     var Polygon = /** @class */ (function () {

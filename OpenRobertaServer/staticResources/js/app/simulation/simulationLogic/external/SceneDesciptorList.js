@@ -1,7 +1,6 @@
 //
 // register scenes
 define(["require", "exports", "../Cyberspace/SceneManager", "../GlobalDebug", "../RRC/AgeGroup", "../RRC/Scene/RRCLabyrinthScene", "../RRC/Scene/RRCLineFollowingScene", "../RRC/Scene/RRCRainbowScene", "../RRC/Scene/RRCScene", "../Scene/Scene", "../Scene/TestScene", "../Scene/TestScene2", "../Scene/TestScene3"], function (require, exports, SceneManager_1, GlobalDebug_1, AgeGroup_1, RRCLabyrinthScene_1, RRCLineFollowingScene_1, RRCRainbowScene_1, RRCScene_1, Scene_1, TestScene_1, TestScene2_1, TestScene3_1) {
-    "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.cyberspaceScenes = exports.sceneIDMap = void 0;
     var scenes = [];

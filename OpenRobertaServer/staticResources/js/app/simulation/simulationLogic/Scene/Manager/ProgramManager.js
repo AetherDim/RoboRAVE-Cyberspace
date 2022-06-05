@@ -1,5 +1,4 @@
 define(["require", "exports", "../../EventManager/EventManager"], function (require, exports, EventManager_1) {
-    "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.ProgramManager = void 0;
     var ProgramManager = /** @class */ (function () {

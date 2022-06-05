@@ -14,13 +14,16 @@ var __read = (this && this.__read) || function (o, n) {
     }
     return ar;
 };
-var __spreadArray = (this && this.__spreadArray) || function (to, from) {
-    for (var i = 0, il = from.length, j = to.length; i < il; i++, j++)
-        to[j] = from[i];
-    return to;
+var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
 };
 define(["require", "exports", "./SimulationCache", "../Scene/Scene", "../RRC/Scene/RRCScoreScene", "../SceneRenderer", "./SceneManager", "../EventManager/EventManager"], function (require, exports, SimulationCache_1, Scene_1, RRCScoreScene_1, SceneRenderer_1, SceneManager_1, EventManager_1) {
-    "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.Cyberspace = void 0;
     var Cyberspace = /** @class */ (function () {
@@ -68,7 +71,7 @@ define(["require", "exports", "./SimulationCache", "../Scene/Scene", "../RRC/Sce
                 };
                 return SpecializedEventManager;
             }());
-            (_a = this.sceneManager).registerScene.apply(_a, __spreadArray([], __read(scenes)));
+            (_a = this.sceneManager).registerScene.apply(_a, __spreadArray([], __read(scenes), false));
             // empty scene as default
             var emptyScene = new Scene_1.Scene("");
             this.renderer = new SceneRenderer_1.SceneRender(emptyScene, canvas, this.simulationCache.toRobotSetupData(), autoResizeTo);

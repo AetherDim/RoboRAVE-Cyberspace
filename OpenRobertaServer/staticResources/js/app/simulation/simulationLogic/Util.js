@@ -26,7 +26,6 @@ var __values = (this && this.__values) || function(o) {
     throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
 };
 define(["require", "exports", "./Random"], function (require, exports, Random_1) {
-    "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.Util = exports.asUniqueArray = void 0;
     var asUniqueArray = function (a) { return a; };
@@ -117,7 +116,7 @@ define(["require", "exports", "./Random"], function (require, exports, Random_1)
          * @param value the value which is switched over
          */
         Util.exhaustiveSwitch = function (value) {
-            throw new Error("The value " + value + " was not exhaustively switched over");
+            throw new Error("The value ".concat(value, " was not exhaustively switched over"));
         };
         /**
          * Returns `list.includes(value)` and narrows the type of 'value'.
@@ -540,7 +539,7 @@ define(["require", "exports", "./Random"], function (require, exports, Random_1)
                 return undefined;
             }
             else {
-                return array[Random_1.randomIntBetween(0, array.length - 1)];
+                return array[(0, Random_1.randomIntBetween)(0, array.length - 1)];
             }
         };
         Util.getRootURL = function (ignorePort) {

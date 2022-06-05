@@ -14,7 +14,6 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 define(["require", "exports", "../Entity"], function (require, exports, Entity_1) {
-    "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.Waypoint = void 0;
     /**

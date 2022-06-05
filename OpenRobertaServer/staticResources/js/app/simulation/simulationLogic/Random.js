@@ -1,5 +1,4 @@
 define(["require", "exports"], function (require, exports) {
-    "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.randomWeightedBool = exports.randomBool = exports.randomIntBetween = void 0;
     function randomIntBetween(start, stop) {

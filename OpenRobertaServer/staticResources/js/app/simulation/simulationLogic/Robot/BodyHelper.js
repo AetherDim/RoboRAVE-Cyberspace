@@ -1,5 +1,4 @@
 define(["require", "exports", "matter-js", "../Geometry/Polygon", "../Util"], function (require, exports, matter_js_1, Polygon_1, Util_1) {
-    "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.BodyHelper = void 0;
     var BodyHelper = /** @class */ (function () {

@@ -1,5 +1,4 @@
 define(["require", "exports", "../Util", "./WaypointList"], function (require, exports, Util_1, WaypointList_1) {
-    "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.WaypointsManager = void 0;
     /**

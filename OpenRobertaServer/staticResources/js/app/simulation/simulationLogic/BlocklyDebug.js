@@ -1,5 +1,4 @@
 define(["require", "exports", "blockly", "./Timer"], function (require, exports, Blockly, Timer_1) {
-    "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.BlocklyDebug = void 0;
     var BlocklyDebug = /** @class */ (function () {

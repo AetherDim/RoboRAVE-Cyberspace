@@ -10,7 +10,6 @@ var __assign = (this && this.__assign) || function () {
     return __assign.apply(this, arguments);
 };
 define(["require", "exports", "matter-js", "./Util"], function (require, exports, matter_js_1, Util_1) {
-    "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     // === Composite ===
     function addRigidBodyConstraints(bodyA, bodyB, rotationStiffnessA, rotationStiffnessB, offsetA, offsetB) {

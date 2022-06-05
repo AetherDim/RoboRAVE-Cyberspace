@@ -1,5 +1,4 @@
 define(["require", "exports", "matter-js", "./Color", "./Util"], function (require, exports, matter_js_1, Color_1, Util_1) {
-    "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.createPolygon = exports.createCircle = exports.createDisplayableFromBody = exports.DisplaySettings = exports.Displayable = void 0;
     var Displayable = /** @class */ (function () {

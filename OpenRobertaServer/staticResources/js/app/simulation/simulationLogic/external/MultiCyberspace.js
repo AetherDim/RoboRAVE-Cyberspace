@@ -14,13 +14,16 @@ var __read = (this && this.__read) || function (o, n) {
     }
     return ar;
 };
-var __spreadArray = (this && this.__spreadArray) || function (to, from) {
-    for (var i = 0, il = from.length, j = to.length; i < il; i++, j++)
-        to[j] = from[i];
-    return to;
+var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
 };
 define(["require", "exports", "../Cyberspace/Cyberspace", "../GlobalDebug", "../Robot/RobotProgramGenerator", "../UIManager", "../Util", "./SceneDesciptorList", "./RESTApi", "../program.model", "../guiState.model", "../RRC/Scene/RRCScoreScene"], function (require, exports, Cyberspace_1, GlobalDebug_1, RobotProgramGenerator_1, UIManager_1, Util_1, SceneDesciptorList_1, RESTApi_1, PROGRAM_MODEL, GUISTATE_MODEL, RRCScoreScene_1) {
-    "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.initEvents = exports.init = void 0;
     var cyberspaces = [];
@@ -106,7 +109,7 @@ define(["require", "exports", "../Cyberspace/Cyberspace", "../GlobalDebug", "../
                         return;
                     }
                     didSendSetScoreRequest = true;
-                    RESTApi_1.sendSetScoreRequest({
+                    (0, RESTApi_1.sendSetScoreRequest)({
                         secret: { secret: secretKey },
                         programID: programID,
                         score: Math.round(scoreScene.score * 1000),
@@ -129,7 +132,7 @@ define(["require", "exports", "../Cyberspace/Cyberspace", "../GlobalDebug", "../
                             return;
                         }
                         paragraphStyle.backgroundColor = "rgb(0, 200, 0)";
-                        console.log("Score for team " + groupName + " [ID: " + programID + "] successfully sent");
+                        console.log("Score for team ".concat(groupName, " [ID: ").concat(programID, "] successfully sent"));
                     });
                 }
             });
@@ -305,7 +308,7 @@ define(["require", "exports", "../Cyberspace/Cyberspace", "../GlobalDebug", "../
     function loadScenes(setupDataList, secretKey) {
         var _a;
         // clear complete debug
-        GlobalDebug_1.clearDebugGuiRoot();
+        (0, GlobalDebug_1.clearDebugGuiRoot)();
         // add my debug
         var debug = GlobalDebug_1.DebugGuiRoot;
         if (debug != undefined) {
@@ -349,7 +352,7 @@ define(["require", "exports", "../Cyberspace/Cyberspace", "../GlobalDebug", "../
             cyberspace.destroy();
         });
         cyberspaces.length = 0;
-        cyberspaces.push.apply(cyberspaces, __spreadArray([], __read(cyberspaceDataList.map(function (data) { return data.cyberspace; }))));
+        cyberspaces.push.apply(cyberspaces, __spreadArray([], __read(cyberspaceDataList.map(function (data) { return data.cyberspace; })), false));
         var windowAspectRatio = aspectRatio.window;
         var sceneAspectRatio = aspectRatio.scene;
         // given
@@ -380,7 +383,7 @@ define(["require", "exports", "../Cyberspace/Cyberspace", "../GlobalDebug", "../
     //loadScenes(generateRandomMultiSetupData(sceneCount))
     // called only once
     function init(robotSetupDataIDs, secretKey) {
-        RESTApi_1.sendProgramRequest({
+        (0, RESTApi_1.sendProgramRequest)({
             secret: { secret: secretKey },
             programs: robotSetupDataIDs
         }, function (request) { return loadScenesFromRequest(request, secretKey); });

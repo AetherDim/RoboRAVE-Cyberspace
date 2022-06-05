@@ -1,3 +1,14 @@
+var __values = (this && this.__values) || function(o) {
+    var s = typeof Symbol === "function" && Symbol.iterator, m = s && o[s], i = 0;
+    if (m) return m.call(o);
+    if (o && typeof o.length === "number") return {
+        next: function () {
+            if (o && i >= o.length) o = void 0;
+            return { value: o && o[i++], done: !o };
+        }
+    };
+    throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
+};
 define(["require", "exports", "log", "guiState.controller", "neuralnetwork.ui", "jquery", "blockly", "jquery-validate"], function (require, exports, LOG, GUISTATE_C, NN_UI, $, Blockly) {
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.mkNNfromNNStepDataAndRunNNEditor = exports.mkNNfromNNStepData = exports.saveNN2Blockly = exports.init = void 0;
@@ -65,15 +76,25 @@ define(["require", "exports", "log", "guiState.controller", "neuralnetwork.ui", 
      * @return the NNStep block from the program (blocks). Return null, if no block found.
      */
     function getTheNNstepBlock() {
+        var e_1, _a;
         var nnstepBlock = null;
-        for (var _i = 0, _a = Blockly.Workspace.getByContainer('blocklyDiv').getAllBlocks(); _i < _a.length; _i++) {
-            var block = _a[_i];
-            if (block.type === 'robActions_NNstep') {
-                if (nnstepBlock) {
-                    LOG.error('more than one NNstep block is invalid');
+        try {
+            for (var _b = __values(Blockly.Workspace.getByContainer('blocklyDiv').getAllBlocks()), _c = _b.next(); !_c.done; _c = _b.next()) {
+                var block = _c.value;
+                if (block.type === 'robActions_NNstep') {
+                    if (nnstepBlock) {
+                        LOG.error('more than one NNstep block is invalid');
+                    }
+                    nnstepBlock = block;
                 }
-                nnstepBlock = block;
             }
+        }
+        catch (e_1_1) { e_1 = { error: e_1_1 }; }
+        finally {
+            try {
+                if (_c && !_c.done && (_a = _b.return)) _a.call(_b);
+            }
+            finally { if (e_1) throw e_1.error; }
         }
         return nnstepBlock;
     }
@@ -85,18 +106,28 @@ define(["require", "exports", "log", "guiState.controller", "neuralnetwork.ui", 
      * @param neurons the sub-block list found in the NNStep block
      */
     function extractInputOutputNeurons(inputNeurons, outputNeurons, neurons) {
-        for (var _i = 0, neurons_1 = neurons; _i < neurons_1.length; _i++) {
-            var block = neurons_1[_i];
-            if (block.type === 'robActions_inputneuron') {
-                inputNeurons.push(block.getFieldValue('NAME'));
+        var e_2, _a;
+        try {
+            for (var neurons_1 = __values(neurons), neurons_1_1 = neurons_1.next(); !neurons_1_1.done; neurons_1_1 = neurons_1.next()) {
+                var block = neurons_1_1.value;
+                if (block.type === 'robActions_inputneuron') {
+                    inputNeurons.push(block.getFieldValue('NAME'));
+                }
+                else if (block.type === 'robActions_outputneuron' || block.type === 'robActions_outputneuron_wo_var') {
+                    outputNeurons.push(block.getFieldValue('NAME'));
+                }
+                var next = block.getChildren();
+                if (next) {
+                    extractInputOutputNeurons(inputNeurons, outputNeurons, next);
+                }
             }
-            else if (block.type === 'robActions_outputneuron' || block.type === 'robActions_outputneuron_wo_var') {
-                outputNeurons.push(block.getFieldValue('NAME'));
+        }
+        catch (e_2_1) { e_2 = { error: e_2_1 }; }
+        finally {
+            try {
+                if (neurons_1_1 && !neurons_1_1.done && (_a = neurons_1.return)) _a.call(neurons_1);
             }
-            var next = block.getChildren();
-            if (next) {
-                extractInputOutputNeurons(inputNeurons, outputNeurons, next);
-            }
+            finally { if (e_2) throw e_2.error; }
         }
     }
 });

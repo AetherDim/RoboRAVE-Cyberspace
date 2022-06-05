@@ -14,7 +14,6 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 define(["require", "exports", "./pixijs"], function (require, exports) {
-    "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.ScrollView = exports.EventData = exports.ScrollViewEvent = exports.cloneVectorOrUndefined = exports.cloneVector = exports.MouseButton = exports.EventType = exports.getBrowser = exports.Browser = void 0;
     var Browser = /** @class */ (function () {

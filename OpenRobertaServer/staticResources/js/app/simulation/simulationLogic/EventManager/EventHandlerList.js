@@ -14,13 +14,16 @@ var __read = (this && this.__read) || function (o, n) {
     }
     return ar;
 };
-var __spreadArray = (this && this.__spreadArray) || function (to, from) {
-    for (var i = 0, il = from.length, j = to.length; i < il; i++, j++)
-        to[j] = from[i];
-    return to;
+var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
 };
 define(["require", "exports"], function (require, exports) {
-    "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.EventHandlerList = void 0;
     var EventHandlerList = /** @class */ (function () {
@@ -41,7 +44,7 @@ define(["require", "exports"], function (require, exports) {
             for (var _i = 0; _i < arguments.length; _i++) {
                 arg[_i] = arguments[_i];
             }
-            this.eventHandlers.forEach(function (func) { return func.apply(void 0, __spreadArray([], __read(arg))); });
+            this.eventHandlers.forEach(function (func) { return func.apply(void 0, __spreadArray([], __read(arg), false)); });
         };
         EventHandlerList.prototype.removeAllEventHandlers = function () {
             this.eventHandlers.length = 0;

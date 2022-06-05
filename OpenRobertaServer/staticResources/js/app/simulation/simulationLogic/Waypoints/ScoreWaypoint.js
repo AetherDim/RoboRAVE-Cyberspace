@@ -14,7 +14,6 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 define(["require", "exports", "./Waypoint"], function (require, exports, Waypoint_1) {
-    "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.ScoreWaypoint = void 0;
     /**

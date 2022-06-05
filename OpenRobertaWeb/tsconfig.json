@@ -6,15 +6,17 @@
         "rootDirs": [
             "src/app/nepostackmachine",
             "src/app/neuralnetwork",
-            "ts/app/helper",
-            "src/app/simulation/simulationLogic/"
+            "src/helper",
+            "src/app/simulation/simulationLogic"
         ],
         "typeRoots" : ["./node_modules/@types"],
         "module": "amd",
+        "moduleResolution": "node",
         "noUnusedLocals": false,
         "noUnusedParameters": false,
 		"allowJs": true,
         "noImplicitUseStrict": true,
+        "downlevelIteration": true, // iterator iteration with 'for of' loop
         "lib": [
             "ES6",
             "DOM"

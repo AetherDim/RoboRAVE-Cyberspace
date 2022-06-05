@@ -1,5 +1,4 @@
 define(["require", "exports", "../../Util"], function (require, exports, Util_1) {
-    "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.ContainerManager = void 0;
     var ContainerManager = /** @class */ (function () {

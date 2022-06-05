@@ -14,13 +14,16 @@ var __read = (this && this.__read) || function (o, n) {
     }
     return ar;
 };
-var __spreadArray = (this && this.__spreadArray) || function (to, from) {
-    for (var i = 0, il = from.length, j = to.length; i < il; i++, j++)
-        to[j] = from[i];
-    return to;
+var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
 };
 define(["require", "exports", "matter-js", "../Timer", "../ScrollView", "../Unit", "../Util", "./AsyncChain", "../Waypoints/WaypointsManager", "./../GlobalDebug", "./Manager/EntityManager", "./Manager/ContainerManager", "./Manager/RobotManager", "../EventManager/EventManager"], function (require, exports, matter_js_1, Timer_1, ScrollView_1, Unit_1, Util_1, AsyncChain_1, WaypointsManager_1, GlobalDebug_1, EntityManager_1, ContainerManager_1, RobotManager_1, EventManager_1) {
-    "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.Scene = void 0;
     var Scene = /** @class */ (function () {
@@ -146,7 +149,7 @@ define(["require", "exports", "matter-js", "../Timer", "../ScrollView", "../Unit
             for (var _i = 0; _i < arguments.length; _i++) {
                 entities[_i] = arguments[_i];
             }
-            (_a = this.getEntityManager()).addEntities.apply(_a, __spreadArray([], __read(entities)));
+            (_a = this.getEntityManager()).addEntities.apply(_a, __spreadArray([], __read(entities), false));
         };
         Scene.prototype.addEntity = function (entity) {
             this.getEntityManager().addEntity(entity);
@@ -467,7 +470,7 @@ define(["require", "exports", "matter-js", "../Timer", "../ScrollView", "../Unit
                     var mousePosition = ev.data.getCurrentLocalPosition();
                     var bodies = this.getBodiesAt(mousePosition);
                     if (GlobalDebug_1.DEBUG) {
-                        console.log("Mouse position: " + JSON.stringify(mousePosition));
+                        console.log("Mouse position: ".concat(JSON.stringify(mousePosition)));
                     }
                     if (bodies.length >= 1) {
                         var body = bodies[0];

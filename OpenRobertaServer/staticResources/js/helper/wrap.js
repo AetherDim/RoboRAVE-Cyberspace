@@ -1,4 +1,4 @@
-define(["require", "exports", "comm", "log", "jquery", 'GlobalDebug'], function (require, exports, COMM, LOG, $, GlobalDebug) {
+define(["require", "exports", "comm", "log", "jquery"], function (require, exports, COMM, LOG, $) {
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.wrapErrorFn = exports.wrapREST = exports.wrapUI = exports.wrapTotal = void 0;
     /**
@@ -42,10 +42,8 @@ define(["require", "exports", "comm", "log", "jquery", 'GlobalDebug'], function 
                     LOG.text(elapsed + ' msec: ' + message, '[[TIME]] ');
                 }
                 return result;
-            } catch (e) {
-                if (GlobalDebug.PRINT_NON_WRAPPED_ERROR) {
-		            console.error("Error to server:", e)
-                }
+            }
+            catch (e) {
                 var err = new Error();
                 var elapsed = new Date() - start;
                 if (message !== undefined) {

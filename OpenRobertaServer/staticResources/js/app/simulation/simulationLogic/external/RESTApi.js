@@ -1,5 +1,4 @@
 define(["require", "exports"], function (require, exports) {
-    "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.ResultErrorType = exports.sendSetScoreRequest = exports.sendStateRequest = exports.sendProgramRequest = exports.sendRESTRequest = void 0;
     function httpAsync(req, url, data, transferComplete, error, abort) {

@@ -14,7 +14,6 @@ var __read = (this && this.__read) || function (o, n) {
     }
     return ar;
 };
-
 define(["require", "exports", "./interpreter.state", "./interpreter.constants", "./interpreter.util", "neuralnetwork.ui"], function (require, exports, interpreter_state_1, C, U, UI) {
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.Interpreter = void 0;

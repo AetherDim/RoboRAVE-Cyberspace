@@ -2,7 +2,7 @@ import { ARobotBehaviour } from './interpreter.aRobotBehaviour';
 import { State } from './interpreter.state';
 import * as C from './interpreter.constants';
 import * as U from './interpreter.util';
-import * as UTIL from 'util';
+import * as UTIL from './util';
 
 export class RobotMbedBehaviour extends ARobotBehaviour {
     constructor() {

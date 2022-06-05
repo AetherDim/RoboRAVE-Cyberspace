@@ -1,5 +1,4 @@
 define(["require", "exports", "../../Entity", "matter-js", "../../Util"], function (require, exports, Entity_1, matter_js_1, Util_1) {
-    "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.EntityManager = void 0;
     var EntityManager = /** @class */ (function () {
@@ -23,7 +22,7 @@ define(["require", "exports", "../../Entity", "matter-js", "../../Util"], functi
         EntityManager.prototype.addEntity = function (entity) {
             var _a, _b;
             if (entity.getScene() != this.scene) {
-                console.warn("Entity " + entity + " is not in this (" + this + ") scene");
+                console.warn("Entity ".concat(entity, " is not in this (").concat(this, ") scene"));
             }
             if (!this.entities.includes(entity)) {
                 this.entities.push(entity);
@@ -53,7 +52,7 @@ define(["require", "exports", "../../Entity", "matter-js", "../../Util"], functi
         EntityManager.prototype.removeEntity = function (entity) {
             var _a;
             if (entity.getScene() != this.scene) {
-                console.warn("Entity " + entity + " is not in this (" + this + ") scene");
+                console.warn("Entity ".concat(entity, " is not in this (").concat(this, ") scene"));
             }
             if (Util_1.Util.removeFromArray(this.entities, entity)) {
                 // remove from parent

@@ -134,8 +134,6 @@ define(["require", "exports", "message", "util", "user.model", "guiState.control
             });
         }
     }
-    exports.login = login;
-
     /**
      * Login member of user-group
      */

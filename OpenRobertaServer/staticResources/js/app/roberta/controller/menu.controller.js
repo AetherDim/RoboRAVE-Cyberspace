@@ -1,6 +1,4 @@
-define(["require", "exports", "message", "comm", "wrap", "robot.controller", "socket.controller", "user.controller", "notification.controller", "userGroup.controller", "guiState.controller",
-"program.controller", "multSim.controller", "progRun.controller", "configuration.controller", "import.controller", "tour.controller", "sourceCodeEditor.controller", "jquery", "blockly", "progTutorial.controller", "slick", 'GlobalDebug'],
-function (require, exports, MSG, COMM, WRAP, ROBOT_C, SOCKET_C, USER_C, NOTIFICATION_C, USERGROUP_C, GUISTATE_C, PROGRAM_C, MULT_SIM, RUN_C, CONFIGURATION_C, IMPORT_C, TOUR_C, SOURCECODE_C, $, Blockly, TUTORIAL_C, GlobalDebug) {
+define(["require", "exports", "message", "comm", "wrap", "robot.controller", "socket.controller", "user.controller", "notification.controller", "userGroup.controller", "guiState.controller", "program.controller", "multSim.controller", "progRun.controller", "configuration.controller", "import.controller", "tour.controller", "sourceCodeEditor.controller", "jquery", "blockly", "progTutorial.controller", "slick"], function (require, exports, MSG, COMM, WRAP, ROBOT_C, SOCKET_C, USER_C, NOTIFICATION_C, USERGROUP_C, GUISTATE_C, PROGRAM_C, MULT_SIM, RUN_C, CONFIGURATION_C, IMPORT_C, TOUR_C, SOURCECODE_C, $, Blockly, TUTORIAL_C) {
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.init = void 0;
     var n = 0;
@@ -45,14 +43,8 @@ function (require, exports, MSG, COMM, WRAP, ROBOT_C, SOCKET_C, USER_C, NOTIFICA
         else if (target[0] === '#gallery') {
             GUISTATE_C.setStartWithoutPopup();
             $('#tabGalleryList').clickWrap();
-        } else if (target[0] === "#login") {
-            GUISTATE_C.setStartWithoutPopup();
-            $("#loginAccountName").val(target[1]);
-            $('#loginPassword').val(target[2]);
-            USER_C.login();
-        } else if (target[0] === "#enableRegistration") {
-            $("#login_register_btn").prop('hidden', false); 
-        } else if (target[0] === "#tutorial") {
+        }
+        else if (target[0] === '#tutorial') {
             GUISTATE_C.setStartWithoutPopup();
             $('#tabTutorialList').clickWrap();
         }
@@ -232,7 +224,7 @@ function (require, exports, MSG, COMM, WRAP, ROBOT_C, SOCKET_C, USER_C, NOTIFICA
             }
             addPair(robots[i].group, robots[i].name);
         }
-        for ( var key in groupsDict) {
+        for (var key in groupsDict) {
             if (groupsDict.hasOwnProperty(key)) {
                 if (groupsDict[key].length == 1 || key === 'calliope') {
                     //this means that a robot has no subgroup
@@ -335,15 +327,6 @@ function (require, exports, MSG, COMM, WRAP, ROBOT_C, SOCKET_C, USER_C, NOTIFICA
         $('#head-navigation-gallery').on('click', 'a,.visible-xs', function (event) {
             $('#navbarCollapse').collapse('hide');
         });
-        $('#simButtonsCollapse').onWrap('click', 'a', function(event) {
-            $('#simButtonsCollapse').collapse('hide');
-        });
-        $('#navbarButtonsHead').onWrap('click', '', function(event) {
-            $('#simButtonsCollapse').collapse('hide');
-        });
-        $('#simButtonsHead').onWrap('click', '', function(event) {
-            $('#navbarCollapse').collapse('hide');
-        });
         if (GUISTATE_C.isPublicServerVersion()) {
             var feedbackButton = '<div href="#" id="feedbackButton" class="rightMenuButton" rel="tooltip" data-original-title="" title="">' +
                 '<span id="" class="feedbackButton typcn typcn-feedback"></span>' +
@@ -372,7 +355,7 @@ function (require, exports, MSG, COMM, WRAP, ROBOT_C, SOCKET_C, USER_C, NOTIFICA
                         $('#feedbackIframe').attr('src', 'https://www.roberta-home.de/en/lab/feedback/');
                     }
                 });
-                $('#feedbackModal').modal({show:true});
+                $('#feedbackModal').modal({ show: true });
             });
         }
         // EDIT Menu  --- don't use onWrap here, because the export xml target must be enabled always
@@ -444,44 +427,6 @@ function (require, exports, MSG, COMM, WRAP, ROBOT_C, SOCKET_C, USER_C, NOTIFICA
             };
             WRAP.wrapUI(fn, 'edit menu click')(event);
         });
-
-        // UPLOAD Menu
-        $('#head-navigation-upload').onWrap('click', '.dropdown-menu li:not(.disabled) a', function(event) {
-            switch (event.target.id) {
-            case 'menuSubmitSolution':
-
-                if(!GUISTATE_C.isUserLoggedIn()) {
-                    alert("Please login")
-                    return;
-                }
-
-                var form = document.createElement("form");
-                form.setAttribute("method", "post");
-                form.setAttribute("action",
-                    GlobalDebug.DEBUG ?
-                        "https://my-dev.roborave.de/submitSolution.php" :
-                        "https://my.roborave.de/submitSolution.php");
-                form.setAttribute("target", "view");
-                var hiddenField = document.createElement("input");
-                hiddenField.setAttribute("type", "hidden");
-                hiddenField.setAttribute("name", "link");
-                hiddenField.setAttribute("value", PROGRAM_C.getLink());
-                var hiddenField2 = document.createElement("input");
-                hiddenField2.setAttribute("type", "hidden");
-                hiddenField2.setAttribute("name", "account");
-                hiddenField2.setAttribute("value", GUISTATE_C.getUserAccountName());
-                form.appendChild(hiddenField);
-                form.appendChild(hiddenField2);
-                document.body.appendChild(form);
-                window.open('', 'view');
-                form.submit();
-                break;
-            default:
-                break;
-            }
-        }, 'upload edit clicked');
-
-
         // CONF Menu
         $('#head-navigation-configuration-edit').onWrap('click', '.dropdown-menu li:not(.disabled) a', function (event) {
             $('.modal').modal('hide'); // close all opened popups
@@ -568,32 +513,32 @@ function (require, exports, MSG, COMM, WRAP, ROBOT_C, SOCKET_C, USER_C, NOTIFICA
         $('#head-navigation-user').onWrap('click', '.dropdown-menu li:not(.disabled) a', function (event) {
             $('.modal').modal('hide'); // close all opened popups
             switch (event.target.id) {
-            case 'menuLogin':
-                USER_C.showLoginForm();
-                break;
-            case 'menuUserGroupLogin':
-                USER_C.showUserGroupLoginForm();	
-                break;
-            case 'menuLogout':
-                USER_C.logout();
-                break;
-            case 'menuGroupPanel':	
-                USERGROUP_C.showPanel();	
-                break;
-            case 'menuChangeUser':
-                USER_C.showUserDataForm();
-                break;
-            case 'menuDeleteUser':
-                USER_C.showDeleteUserModal();
-                break;
-            case 'menuStateInfo':
-                USER_C.showUserInfo();
-                break;
-            case 'menuNotification':
-                NOTIFICATION_C.showNotificationModal();
-                break;
-            default:
-                break;
+                case 'menuLogin':
+                    USER_C.showLoginForm();
+                    break;
+                case 'menuUserGroupLogin':
+                    USER_C.showUserGroupLoginForm();
+                    break;
+                case 'menuLogout':
+                    USER_C.logout();
+                    break;
+                case 'menuGroupPanel':
+                    USERGROUP_C.showPanel();
+                    break;
+                case 'menuChangeUser':
+                    USER_C.showUserDataForm();
+                    break;
+                case 'menuDeleteUser':
+                    USER_C.showDeleteUserModal();
+                    break;
+                case 'menuStateInfo':
+                    USER_C.showUserInfo();
+                    break;
+                case 'menuNotification':
+                    NOTIFICATION_C.showNotificationModal();
+                    break;
+                default:
+                    break;
             }
             return false;
         }, 'user clicked');
@@ -605,41 +550,7 @@ function (require, exports, MSG, COMM, WRAP, ROBOT_C, SOCKET_C, USER_C, NOTIFICA
             $('#tabTutorialList').clickWrap();
             return false;
         }, 'tutorial clicked');
-
-        // TODO: Should we remove this?
-        $('.sim-nav').onWrap('click', 'li:not(.disabled) a', function(event) {
-            $('.modal').modal('hide'); // head-navigation-sim-control
-            $('.menuSim').parent().removeClass('disabled'); //these two were in all cases
-            $("#simButtonsCollapse").collapse('hide'); //so I extracted them here
-
-            name = event.target.id.replace('_small_Menu_', '');
-            SIM.selectScene(name);
-            $('#'+name).parent().addClass('disabled');
-            $('#'+name+'_small_Menu_').parent().addClass('disabled');
-
-        }, 'sim clicked');
-
-
-        function buildSceneMenu(menu, addString) {
-            // TODO: clear #simSelectionMenuContent??
-            // seems to work without clear
-            const scenes = SIM.getScenes();
-
-            for (i = 0; i < scenes.length; i++) {
-                const scene = scenes[i];
-                $(menu).append('<li><a href="#" id="' + scene.ID + addString + '" class="menuSim typcn typcn-image " title="' + scene.description + '">' + scene.name + '</a></li>');
-                if(i === 0) {
-                    $('#'+scene.ID + addString).parent().addClass('disabled');
-                }
-            }
-        }
-
-        buildSceneMenu('#simSelectionMenuContentSmall', '_small_Menu_');
-        buildSceneMenu('#simSelectionMenuContent', '');
-
-
-
-        $('#menuTabProgram').onWrap('click', '', function(event) {
+        $('#menuTabProgram').onWrap('click', '', function (event) {
             if ($('#tabSimulation').hasClass('tabClicked')) {
                 $('.scroller-left').clickWrap();
             }
@@ -674,42 +585,11 @@ function (require, exports, MSG, COMM, WRAP, ROBOT_C, SOCKET_C, USER_C, NOTIFICA
         $('.menuAboutProject').onWrap('click', function (event) {
             if (GUISTATE_C.getLanguage() == 'de') {
                 window.open('https://www.roberta-home.de/index.php?id=135');
-            } else {
+            }
+            else {
                 window.open('https://www.roberta-home.de/index.php?id=135&L=1');
             }
         }, 'head navigation menu item about clicked');
-
-
-        function resetButton(name, stateDefault, state2) {
-            $('#' + name).removeClass(stateDefault).removeClass(state2).addClass(stateDefault);
-        }
-
-        function resetAllButtons() {
-            resetButton('simControl', 'typcn-media-play', 'typcn-media-play-outline');
-            resetButton('debugMode', 'typcn-spanner', 'typcn-spanner-outline');
-            resetButton('simScore', 'typcn-star', 'typcn-star-outline');
-            resetButton('simFLowControl', 'typcn-flash', 'typcn-flash-outline');
-
-            $('#simControlBreakPoint,#simControlStepOver,#simControlStepInto,#simVariables').hide();
-            $('#debugMode').attr('data-original-title', Blockly.Msg.MENU_DEBUG_START_TOOLTIP);
-        }
-
-
-
-        $('.simScene').onWrap('click', function(event) {
-            var scene = $("#simButtonsCollapse").collapse('hide');
-            $('.menuSim').parent().removeClass('disabled');
-
-            const handle = SIM.nextScene();
-            resetAllButtons();
-
-            if(handle) {
-                $('#'+handle.ID).parent().addClass('disabled');
-            }
-
-        }, 'simScene clicked');
-
-
         $('#startPopupBack').on('click', function (event) {
             $('#popup-robot-main').removeClass('hidden', 1000);
             $('.popup-robot.robotSubGroup').addClass('hidden', 1000);
@@ -800,15 +680,15 @@ function (require, exports, MSG, COMM, WRAP, ROBOT_C, SOCKET_C, USER_C, NOTIFICA
         $(window).on('beforeunload', function (e) {
             return Blockly.Msg.POPUP_BEFOREUNLOAD;
             // the following code doesn't work anymore, TODO check for a better solution.
-//            if (!GUISTATE_C.isProgramSaved || !GUISTATE_C.isConfigurationSaved) {
-//                if (GUISTATE_C.isUserLoggedIn()) {
-//                    // Maybe a Firefox-Problem?                alert(Blockly.Msg['POPUP_BEFOREUNLOAD_LOGGEDIN']);
-//                    return Blockly.Msg.POPUP_BEFOREUNLOAD_LOGGEDIN;
-//                } else {
-//                    // Maybe a Firefox-Problem?                alert(Blockly.Msg['POPUP_BEFOREUNLOAD']);
-//                    return Blockly.Msg.POPUP_BEFOREUNLOAD;
-//                }
-//            }
+            //            if (!GUISTATE_C.isProgramSaved || !GUISTATE_C.isConfigurationSaved) {
+            //                if (GUISTATE_C.isUserLoggedIn()) {
+            //                    // Maybe a Firefox-Problem?                alert(Blockly.Msg['POPUP_BEFOREUNLOAD_LOGGEDIN']);
+            //                    return Blockly.Msg.POPUP_BEFOREUNLOAD_LOGGEDIN;
+            //                } else {
+            //                    // Maybe a Firefox-Problem?                alert(Blockly.Msg['POPUP_BEFOREUNLOAD']);
+            //                    return Blockly.Msg.POPUP_BEFOREUNLOAD;
+            //                }
+            //            }
         });
         // help Bootstrap to calculate the correct size for the collapse element when the screen height is smaller than the elements height.
         $('#navbarCollapse').on('shown.bs.collapse', function () {

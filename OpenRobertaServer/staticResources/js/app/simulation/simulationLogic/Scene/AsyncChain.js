@@ -18,13 +18,16 @@ var __read = (this && this.__read) || function (o, n) {
     }
     return ar;
 };
-var __spreadArray = (this && this.__spreadArray) || function (to, from) {
-    for (var i = 0, il = from.length, j = to.length; i < il; i++, j++)
-        to[j] = from[i];
-    return to;
+var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
 };
 define(["require", "exports"], function (require, exports) {
-    "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.AsyncChain = exports.AsyncListener = void 0;
     var AsyncListener = /** @class */ (function () {
@@ -37,11 +40,11 @@ define(["require", "exports"], function (require, exports) {
     exports.AsyncListener = AsyncListener;
     var AsyncChain = /** @class */ (function () {
         function AsyncChain() {
-            var _this = this;
             var listeners = [];
             for (var _i = 0; _i < arguments.length; _i++) {
                 listeners[_i] = arguments[_i];
             }
+            var _this = this;
             this.index = 0;
             this.listeners = listeners;
             this.listenerFunctions = [];
@@ -98,7 +101,7 @@ define(["require", "exports"], function (require, exports) {
                 listeners[_i - 1] = arguments[_i];
             }
             var idx = this.listenerFunctions.indexOf(fnc);
-            this.addAtIndex.apply(this, __spreadArray([idx], __read(listeners)));
+            this.addAtIndex.apply(this, __spreadArray([idx], __read(listeners), false));
         };
         AsyncChain.prototype.addAfter = function (fnc) {
             var listeners = [];
@@ -107,7 +110,7 @@ define(["require", "exports"], function (require, exports) {
             }
             var idx = this.listenerFunctions.lastIndexOf(fnc);
             if (idx >= 0) {
-                this.addAtIndex.apply(this, __spreadArray([idx + 1], __read(listeners)));
+                this.addAtIndex.apply(this, __spreadArray([idx + 1], __read(listeners), false));
             }
         };
         return AsyncChain;

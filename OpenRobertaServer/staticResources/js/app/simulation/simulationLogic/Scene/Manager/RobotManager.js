@@ -1,5 +1,4 @@
 define(["require", "exports", "./ProgramManager", "./RobotConfigurationManager"], function (require, exports, ProgramManager_1, RobotConfigurationManager_1) {
-    "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.RobotManager = void 0;
     var RobotManager = /** @class */ (function () {
@@ -52,7 +51,7 @@ define(["require", "exports", "./ProgramManager", "./RobotConfigurationManager"]
             }
         };
         RobotManager.prototype.htmlSensorValues = function (label, value) {
-            return "<div><label>" + label + "</label><span>" + value + "</span></div>";
+            return "<div><label>".concat(label, "</label><span>").concat(value, "</span></div>");
         };
         /**
          * remove all robots

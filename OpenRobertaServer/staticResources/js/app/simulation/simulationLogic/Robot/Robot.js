@@ -26,7 +26,6 @@ var __read = (this && this.__read) || function (o, n) {
     return ar;
 };
 define(["require", "exports", "matter-js", "./ElectricMotor", "../interpreter.constants", "../interpreter.interpreter", "./RobotSimBehaviour", "./Wheel", "./Sensors/ColorSensor", "../Geometry/Ray", "../Entity", "../Util", "./../GlobalDebug", "./BodyHelper", "../Color", "./RobotLED", "../ExtendedMatter"], function (require, exports, matter_js_1, ElectricMotor_1, interpreter_constants_1, interpreter_interpreter_1, RobotSimBehaviour_1, Wheel_1, ColorSensor_1, Ray_1, Entity_1, Util_1, GlobalDebug_1, BodyHelper_1, Color_1, RobotLED_1) {
-    "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.Robot = exports.sensorTypeStrings = void 0;
     exports.sensorTypeStrings = ["TOUCH", "GYRO", "COLOR", "ULTRASONIC", "INFRARED", "SOUND", "COMPASS",
@@ -188,7 +187,7 @@ define(["require", "exports", "matter-js", "./ElectricMotor", "../interpreter.co
                 this.wheelsList[1]._addDebugGui(wheelFolder_1.addFolder('Wheel Right'));
                 this.wheelsList[2]._addDebugGui(wheelFolder_1.addFolder('Wheel Back'));
                 DebugGui.addButton("Download Program (JSON)", function () {
-                    return GlobalDebug_1.downloadFile("program.json", [JSON.stringify(_this_1.programCode, undefined, "\t")]);
+                    return (0, GlobalDebug_1.downloadFile)("program.json", [JSON.stringify(_this_1.programCode, undefined, "\t")]);
                 });
             }
         };
@@ -442,7 +441,7 @@ define(["require", "exports", "matter-js", "./ElectricMotor", "../interpreter.co
                             return color;
                         }
                         else {
-                            console.warn("The robot LED color ('" + color + "') is not typed as 'RobotLEDColor'");
+                            console.warn("The robot LED color ('".concat(color, "') is not typed as 'RobotLEDColor'"));
                             return undefined;
                         }
                     }),
@@ -890,8 +889,8 @@ define(["require", "exports", "matter-js", "./ElectricMotor", "../interpreter.co
                     var color = this.scene.getContainers().getGroundImageData(colorSensorPosition.x, colorSensorPosition.y, 1, 1);
                     var r = color[0], g = color[1], b = color[2];
                     colorSensor.setDetectedColor(r, g, b, this.updateSensorGraphics);
-                    var hsv = Color_1.rgbToHsv(r, g, b);
-                    var colour = Color_1.hsvToColorName(hsv);
+                    var hsv = (0, Color_1.rgbToHsv)(r, g, b);
+                    var colour = (0, Color_1.hsvToColorName)(hsv);
                     sensors.color[port] = {
                         ambientlight: 0,
                         colorValue: colour,

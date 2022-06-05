@@ -1,4 +1,4 @@
-define(["require", "exports", "jquery", "bootstrap-table", 'GlobalDebug' ], function (require, exports, $, GlobalDebug) {
+define(["require", "exports", "jquery", "bootstrap-table"], function (require, exports, $) {
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.toggleVisibility = exports.reportToComm = exports.length = exports.enableComm = exports.enableHtml = exports.error = exports.info = exports.text = void 0;
     // switches for logging:
@@ -62,13 +62,7 @@ define(["require", "exports", "jquery", "bootstrap-table", 'GlobalDebug' ], func
         if (typeof obj === 'object') {
             obj = JSON.stringify(obj);
         }
-        if (GlobalDebug.SEND_LOG) {
-            logQueue.push(marker + obj);
-        } else if (marker == markerERROR) {
-            console.error(marker + obj)
-        } else {
-            console.log(marker + obj)
-        }
+        logQueue.push(marker + obj);
     }
     /**
      * to be used by COMM only: retrieve the number of entries in the log queue

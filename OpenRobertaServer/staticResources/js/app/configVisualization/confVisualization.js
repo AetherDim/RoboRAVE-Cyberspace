@@ -36,10 +36,14 @@ var __read = (this && this.__read) || function (o, n) {
     }
     return ar;
 };
-var __spreadArray = (this && this.__spreadArray) || function (to, from) {
-    for (var i = 0, il = from.length, j = to.length; i < il; i++, j++)
-        to[j] = from[i];
-    return to;
+var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
 };
 define(["require", "exports", "./wires", "./const.robots", "./robotBlock", "./port", "jquery"], function (require, exports, wires_1, const_robots_1, robotBlock_1, port_1, $) {
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -163,7 +167,7 @@ define(["require", "exports", "./wires", "./const.robots", "./robotBlock", "./po
                             : block.getFieldValue(name) || others.connectedTo }));
                 });
                 _this.connections = _this.connections.filter(function (connection) { return connection.blockId !== block.id; });
-                _this.connections = __spreadArray(__spreadArray([], __read(_this.connections)), __read(connections));
+                _this.connections = __spreadArray(__spreadArray([], __read(_this.connections), false), __read(connections), false);
             };
             this.deleteConnections = function (blockId) {
                 _this.connections = _this.connections.filter(function (connection) {
@@ -224,7 +228,7 @@ define(["require", "exports", "./wires", "./const.robots", "./robotBlock", "./po
             return window.Blockly.Xml.workspaceToDom(this.workspace);
         };
         CircuitVisualization.prototype.injectRobotBoard = function () {
-            window.Blockly.Blocks['robConf_robot'] = robotBlock_1.createRobotBlock(this.currentRobot);
+            window.Blockly.Blocks['robConf_robot'] = (0, robotBlock_1.createRobotBlock)(this.currentRobot);
             if (!this.dom.querySelector('block[type=robConf_robot]')) {
                 var robotXml = "<instance x='250' y='250'><block type='robConf_robot' id='robot'></block></instance>";
                 var oParser = new DOMParser();

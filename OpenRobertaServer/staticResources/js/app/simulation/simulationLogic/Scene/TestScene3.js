@@ -14,7 +14,6 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 define(["require", "exports", "../GlobalDebug", "../Robot/Robot", "../Robot/RobotProgramGenerator", "../Robot/RobotTester", "../Unit", "../Util", "./Scene"], function (require, exports, GlobalDebug_1, Robot_1, RobotProgramGenerator_1, RobotTester_1, Unit_1, Util_1, Scene_1) {
-    "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.TestScene3 = void 0;
     var KeyData = /** @class */ (function () {
@@ -139,7 +138,7 @@ define(["require", "exports", "../GlobalDebug", "../Robot/Robot", "../Robot/Robo
                 Util_1.Util.shuffle(_this.keyValues);
             }
             var DebugGui = _this.getDebugGuiStatic();
-            DebugGui === null || DebugGui === void 0 ? void 0 : DebugGui.addButton("Download data", function () { return GlobalDebug_1.downloadJSONFile("data.json", _this.data); });
+            DebugGui === null || DebugGui === void 0 ? void 0 : DebugGui.addButton("Download data", function () { return (0, GlobalDebug_1.downloadJSONFile)("data.json", _this.data); });
             DebugGui === null || DebugGui === void 0 ? void 0 : DebugGui.addUpdatable("progress", function () { return _this.keyIndex + "/" + _this.keyValues.length; });
             DebugGui === null || DebugGui === void 0 ? void 0 : DebugGui.addUpdatable("ETA", function () { return Util_1.Util.toTimeString(_this.testTime / _this.keyIndex * (_this.keyValues.length - _this.keyIndex)); });
             DebugGui === null || DebugGui === void 0 ? void 0 : DebugGui.addUpdatable("test timing", function () { return String(_this.testTime); });

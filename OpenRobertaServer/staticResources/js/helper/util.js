@@ -1,7 +1,18 @@
+var __values = (this && this.__values) || function(o) {
+    var s = typeof Symbol === "function" && Symbol.iterator, m = s && o[s], i = 0;
+    if (m) return m.call(o);
+    if (o && typeof o.length === "number") return {
+        next: function () {
+            if (o && i >= o.length) o = void 0;
+            return { value: o && o[i++], done: !o };
+        }
+    };
+    throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
+};
 define(["require", "exports", "message", "log", "jquery", "blockly", "simulation.constants", "guiState.controller", "webots.simulation", "jquery-validate", "bootstrap"], function (require, exports, MSG, LOG, $, Blockly, simulation_constants_1, GUISTATE_C, WEBOTSIM) {
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.toFixedPrecision = exports.closeSimRobotWindow = exports.openSimRobotWindow = exports.removeLinks = exports.annotateBlocks = exports.clearAnnotations = exports.clearTabAlert = exports.alertTab = exports.isLocalStorageAvailable = exports.countBlocks = exports.getHashFrom = exports.download = exports.getBasename = exports.sgn = exports.roundUltraSound = exports.round = exports.response = exports.showMsgOnTop = exports.showSingleListModal = exports.showSingleModal = exports.setFocusOnElement = exports.checkVisibility = exports.calcDataTableHeight = exports.formatResultLog = exports.parseDate = exports.formatDate = exports.setObjectProperty = exports.getPropertyFromObject = exports.isEmpty = exports.clone = exports.base64decode = void 0;
-    var ANIMATION_DURATION = simulation_constants_1.default.ANIMATION_DURATION; // will break?
+    var ANIMATION_DURATION = simulation_constants_1.default.ANIMATION_DURATION;
     var ratioWorkspace = 1;
     var simRobotWindowPositions = [];
     /**
@@ -643,6 +654,7 @@ define(["require", "exports", "message", "log", "jquery", "blockly", "simulation
         });
     };
     $(window).resize(function () {
+        var e_1, _a;
         var parentWidth = $('#main-section').outerWidth();
         var height = Math.max($('#blockly').outerHeight(), $('#brickly').outerHeight());
         var rightWidth = (1 - ratioWorkspace) * parentWidth;
@@ -666,18 +678,27 @@ define(["require", "exports", "message", "log", "jquery", "blockly", "simulation
             $('#bricklyDiv').width(parentWidth);
             $('#bricklyDiv').height(height);
         }
-        for (var _i = 0, _a = $('.simWindow:visible'); _i < _a.length; _i++) {
-            var robotWindowElement = _a[_i];
-            if (robotWindowElement.offsetLeft >= $(window).width() - 20) {
-                $('#' + robotWindowElement.id).css({
-                    left: '' + $(window).width() - 20,
-                });
+        try {
+            for (var _b = __values($('.simWindow:visible')), _c = _b.next(); !_c.done; _c = _b.next()) {
+                var robotWindowElement = _c.value;
+                if (robotWindowElement.offsetLeft >= $(window).width() - 20) {
+                    $('#' + robotWindowElement.id).css({
+                        left: '' + $(window).width() - 20,
+                    });
+                }
+                if (robotWindowElement.offsetTop >= $(window).height() - 20) {
+                    $('#' + robotWindowElement.id).css({
+                        top: '' + $(window).height() - 20,
+                    });
+                }
             }
-            if (robotWindowElement.offsetTop >= $(window).height() - 20) {
-                $('#' + robotWindowElement.id).css({
-                    top: '' + $(window).height() - 20,
-                });
+        }
+        catch (e_1_1) { e_1 = { error: e_1_1 }; }
+        finally {
+            try {
+                if (_c && !_c.done && (_a = _b.return)) _a.call(_b);
             }
+            finally { if (e_1) throw e_1.error; }
         }
         // here comes a fix for a strange browser behavior while zoom is not 100%. It is just in case (e.g. chrome 125% works fine, 110% not).
         // Seems that either the returned sizes from the browser sometimes include margins/borders and sometimes not or that the assigned sizes behave
@@ -767,16 +788,26 @@ define(["require", "exports", "message", "log", "jquery", "blockly", "simulation
      *            {Number} - duration (optional) how long the simRobotWindow should take to show
      */
     function openSimRobotWindow(duration) {
+        var e_2, _a;
         if (!duration) {
             duration = 0;
         }
-        for (var _i = 0, _a = $('.simWindow-openedButHidden'); _i < _a.length; _i++) {
-            var robotWindowElement = _a[_i];
-            var position = $(window).width() * simRobotWindowPositions[robotWindowElement.id];
-            $('#' + robotWindowElement.id).animate({
-                opacity: 'show',
-                left: '' + position,
-            }, duration);
+        try {
+            for (var _b = __values($('.simWindow-openedButHidden')), _c = _b.next(); !_c.done; _c = _b.next()) {
+                var robotWindowElement = _c.value;
+                var position = $(window).width() * simRobotWindowPositions[robotWindowElement.id];
+                $('#' + robotWindowElement.id).animate({
+                    opacity: 'show',
+                    left: '' + position,
+                }, duration);
+            }
+        }
+        catch (e_2_1) { e_2 = { error: e_2_1 }; }
+        finally {
+            try {
+                if (_c && !_c.done && (_a = _b.return)) _a.call(_b);
+            }
+            finally { if (e_2) throw e_2.error; }
         }
         $('.simWindow').removeClass('simWindow-openedButHidden');
     }
@@ -788,20 +819,30 @@ define(["require", "exports", "message", "log", "jquery", "blockly", "simulation
      *            {Number} - duration (optional) how long the simRobotWindow should take to hide
      */
     function closeSimRobotWindow(duration) {
+        var e_3, _a;
         if (!duration) {
             duration = 0;
         }
         var SimWindows = $('.simWindow:visible');
-        for (var _i = 0, SimWindows_1 = SimWindows; _i < SimWindows_1.length; _i++) {
-            var robotWindowElement = SimWindows_1[_i];
-            var relativePosition;
-            if ($(window).width() !== 0) {
-                relativePosition = Math.abs((robotWindowElement.offsetLeft / $(window).width()) % 1);
+        try {
+            for (var SimWindows_1 = __values(SimWindows), SimWindows_1_1 = SimWindows_1.next(); !SimWindows_1_1.done; SimWindows_1_1 = SimWindows_1.next()) {
+                var robotWindowElement = SimWindows_1_1.value;
+                var relativePosition;
+                if ($(window).width() !== 0) {
+                    relativePosition = Math.abs((robotWindowElement.offsetLeft / $(window).width()) % 1);
+                }
+                else {
+                    relativePosition = 0;
+                }
+                simRobotWindowPositions[robotWindowElement.id] = relativePosition;
             }
-            else {
-                relativePosition = 0;
+        }
+        catch (e_3_1) { e_3 = { error: e_3_1 }; }
+        finally {
+            try {
+                if (SimWindows_1_1 && !SimWindows_1_1.done && (_a = SimWindows_1.return)) _a.call(SimWindows_1);
             }
-            simRobotWindowPositions[robotWindowElement.id] = relativePosition;
+            finally { if (e_3) throw e_3.error; }
         }
         SimWindows.addClass('simWindow-openedButHidden').animate({
             opacity: 'hide',

@@ -14,7 +14,6 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 define(["require", "exports", "./LineBaseClass"], function (require, exports, LineBaseClass_1) {
-    "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.Ray = void 0;
     var Ray = /** @class */ (function (_super) {

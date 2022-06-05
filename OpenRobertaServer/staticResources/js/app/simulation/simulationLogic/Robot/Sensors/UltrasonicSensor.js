@@ -1,5 +1,4 @@
 define(["require", "exports", "matter-js"], function (require, exports, matter_js_1) {
-    "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.UltrasonicSensor = void 0;
     var UltrasonicSensor = /** @class */ (function () {

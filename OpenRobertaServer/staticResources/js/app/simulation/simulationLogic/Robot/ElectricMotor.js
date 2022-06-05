@@ -1,5 +1,4 @@
 define(["require", "exports"], function (require, exports) {
-    "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.ElectricMotor = void 0;
     var ElectricMotor = /** @class */ (function () {

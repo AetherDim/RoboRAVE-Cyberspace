@@ -14,7 +14,6 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 define(["require", "exports", "../Util", "./LineBaseClass"], function (require, exports, Util_1, LineBaseClass_1) {
-    "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.LineSegment = void 0;
     var LineSegment = /** @class */ (function (_super) {

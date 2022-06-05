@@ -14,7 +14,6 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 define(["require", "exports", "../../Scene/AsyncChain", "../../Scene/Scene", "../../SharedAssetLoader", "../RRAssetLoader", "../../EventManager/EventManager"], function (require, exports, AsyncChain_1, Scene_1, SharedAssetLoader_1, RRAssetLoader_1, EventManager_1) {
-    "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.RRCScoreScene = void 0;
     var RRCScoreScene = /** @class */ (function (_super) {

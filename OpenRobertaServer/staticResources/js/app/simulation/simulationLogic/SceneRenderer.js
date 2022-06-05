@@ -1,5 +1,4 @@
 define(["require", "exports", "jquery", "./Color", "./ScrollView", "./Util", "./GlobalDebug", "./pixijs"], function (require, exports, $, Color_1, ScrollView_1, Util_1, GlobalDebug_1) {
-    "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.SceneRender = void 0;
     // physics and graphics
@@ -30,7 +29,7 @@ define(["require", "exports", "jquery", "./Color", "./ScrollView", "./Util", "./
             // and the root stage PIXI.Container
             this.app = new PIXI.Application({
                 view: htmlCanvas,
-                backgroundColor: Color_1.rgbToNumber(backgroundColor),
+                backgroundColor: (0, Color_1.rgbToNumber)(backgroundColor),
                 antialias: true,
                 resizeTo: resizeTo || undefined,
                 autoDensity: true,
@@ -65,7 +64,7 @@ define(["require", "exports", "jquery", "./Color", "./ScrollView", "./Util", "./
                     }
                 }
             }, this);
-            GlobalDebug_1.initGlobalSceneDebug(this);
+            (0, GlobalDebug_1.initGlobalSceneDebug)(this);
         }
         SceneRender.prototype.rendererPlugins = function () {
             return this.app.renderer.plugins;

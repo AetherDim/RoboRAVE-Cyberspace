@@ -14,13 +14,16 @@ var __read = (this && this.__read) || function (o, n) {
     }
     return ar;
 };
-var __spreadArray = (this && this.__spreadArray) || function (to, from) {
-    for (var i = 0, il = from.length, j = to.length; i < il; i++, j++)
-        to[j] = from[i];
-    return to;
+var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
 };
 define(["require", "exports", "./external/SceneDesciptorList", "./Cyberspace/Cyberspace", "./BlocklyDebug", "./UIManager", "interpreter.jsHelper", "./RRC/Scene/RRCScoreScene", "./external/RESTApi", "./pixijs", "./ExtendedMatter"], function (require, exports, SceneDesciptorList_1, Cyberspace_1, BlocklyDebug_1, UIManager_1, interpreter_jsHelper_1, RRCScoreScene_1, RESTApi_1) {
-    "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.setSimSpeed = exports.zoomReset = exports.zoomOut = exports.zoomIn = exports.score = exports.sim = exports.nextScene = exports.selectScene = exports.getScenes = exports.cancel = exports.interpreterAddEvent = exports.endDebugging = exports.updateDebugMode = exports.resetPose = exports.setInfo = exports.importImage = exports.stopProgram = exports.run = exports.setPause = exports.getNumRobots = exports.init = void 0;
     //
@@ -31,7 +34,7 @@ define(["require", "exports", "./external/SceneDesciptorList", "./Cyberspace/Cyb
     var blocklyDebugManager = new BlocklyDebug_1.BlocklyDebug(cyberspace);
     UIManager_1.UIManager.simSpeedUpButton.setState("fastForward");
     UIManager_1.UIManager.showScoreButton.setState("showScore");
-    RESTApi_1.sendStateRequest(function (res) {
+    (0, RESTApi_1.sendStateRequest)(function (res) {
         if (res && res.error == RESTApi_1.ResultErrorType.NONE) {
             var result = (res.result);
             if (result.uploadEnabled) {
@@ -53,7 +56,7 @@ define(["require", "exports", "./external/SceneDesciptorList", "./Cyberspace/Cyb
     interpreter_jsHelper_1.interpreterSimBreakEventHandlers.push(function () {
         cyberspace.pausePrograms();
     });
-    sceneManager.registerScene.apply(sceneManager, __spreadArray([], __read(SceneDesciptorList_1.cyberspaceScenes)));
+    sceneManager.registerScene.apply(sceneManager, __spreadArray([], __read(SceneDesciptorList_1.cyberspaceScenes), false));
     // switch to first scene
     cyberspace.switchToNextScene(true);
     /**
