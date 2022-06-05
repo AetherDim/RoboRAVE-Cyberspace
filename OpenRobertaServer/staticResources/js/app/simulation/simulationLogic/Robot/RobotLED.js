@@ -1,6 +1,7 @@
-define(["require", "exports", "../constants", "../Util"], function (require, exports, C, Util_1) {
+define(["require", "exports", "../simulation.constants", "../Util"], function (require, exports, CONSTANTS, Util_1) {
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.RobotLED = exports.robotLEDColors = void 0;
+    var C = CONSTANTS.default;
     exports.robotLEDColors = ["LIGHTGRAY", "GREEN", "ORANGE", "RED"];
     var RobotLED = /** @class */ (function () {
         /**

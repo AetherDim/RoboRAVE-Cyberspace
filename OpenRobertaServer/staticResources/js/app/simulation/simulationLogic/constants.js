@@ -1,275 +1,282 @@
 define(["require", "exports"], function (require, exports) {
     Object.defineProperty(exports, "__esModule", { value: true });
-    exports.DEBUG_STEP_OVER = exports.DEBUG_STEP_INTO = exports.DEBUG_BREAKPOINT = exports.WAVE_LENGTH = exports.MAX_HEIGHT = exports.MAX_WIDTH = exports.ENC = exports.MAXPOWER = exports.MAXDIAG = exports.WHEEL_DIAMETER = exports.TURN_RATIO = exports.TRACKWIDTH = exports.MATH_ON_LIST = exports.TIMER = exports.COLOR_ENUM = exports.CONSOLE_DEBUG = exports.TEST = exports.ASSERT_STMT = exports.PIN = exports.NOOP_STMT = exports.PIN_WRITE_VALUE_SENSOR = exports.PIN_GET_VALUE_SENSOR = exports.PIN_TOUCH_SENSOR = exports.DIGITAL = exports.ANALOG = exports.TEMPERATURE = exports.GESTURE = exports.COMPASS = exports.COMMENT = exports.BUTTON_B = exports.BUTTON_A = exports.LIGHT = exports.INSERT = exports.VALUES = exports.RETURN = exports.AT2 = exports.AT1 = exports.WHERE2 = exports.WHERE1 = exports.LIGHT_ACTION = exports.TEXT_JOIN = exports.METHOD_CALL_RETURN = exports.METHOD_CALL_VOID = exports.RETURN_TYPE = exports.IF_RETURN = exports.METHOD_RETURN = exports.METHOD_VOID = exports.TIMER_SENSOR_RESET = exports.GYRO_SENSOR_RESET = exports.CREATE_LISTS_GET_SUBLIST = exports.CREATE_LISTS_GET_INDEX_STMT = exports.CREATE_LISTS_GET_INDEX = exports.CREATE_LISTS_SET_INDEX = exports.ITEM = exports.GET_REMOVE = exports.REMOVE = exports.SET = exports.GET = exports.FROM_END = exports.FROM_START = exports.LAST = exports.FIRST = exports.POSITION = exports.DEGREE = exports.ROTATION = exports.ROTATIONS = exports.MOTOR_DURATION_VALUE = exports.MOTOR_DURATION = exports.MOTOR_MOVE_MODE = exports.MOTOR_STOP = exports.GET_GYRO_SENSOR_SAMPLE = exports.ENCODER_SENSOR_SAMPLE = exports.ENCODER_SENSOR_RESET = exports.MOTOR_SET_POWER = exports.MOTOR_GET_POWER = exports.MOTOR_ON_ACTION = exports.MOTOR_SIDE = exports.MOTOR_XAB = exports.MOTOR_XB = exports.MOTOR_XA = exports.MOTOR_RIGHT = exports.MOTOR_LEFT = exports.PILOT = exports.COLOR_CONST = exports.CREATE_LIST_FIND_ITEM = exports.CREATE_LIST_WITH_ITEM = exports.CREATE_LIST_LENGTH = exports.CREATE_LIST_IS_EMPTY = exports.SIZE = exports.TIMES = exports.DISPLAY_GET_PIXEL_ACTION = exports.DISPLAY_GET_BRIGHTNESS_ACTION = exports.DISPLAY_SET_PIXEL_ACTION = exports.DISPLAY_SET_BRIGHTNESS_ACTION = exports.PIXEL = exports.BRIGHTNESS = exports.DISPLAY_TEXT_ACTION = exports.AMBIENTLIGHT = exports.STATUS_LIGHT_ACTION = exports.DOUBLE_FLASH = exports.FLASH = exports.OFF = exports.ON = exports.ORANGE = exports.RGB = exports.SUM = exports.RED = exports.GREEN = exports.LED_ON_ACTION = exports.RGB_COLOR_CONST = exports.LED_COLOR_CONST = exports.COLOUR = exports.COLOR = exports.ANGLE = exports.NOT = exports.MATH_CHANGE = exports.FOR_EACH = exports.FOR = exports.FOREVER = exports.UNTIL = exports.WHILE = exports.BACKWARD = exports.FOREWARD = exports.STD_DEV = exports.MODE = exports.MEDIAN = exports.AVERAGE = exports.MAX = exports.MIN = exports.MOD = exports.NEG = exports.AND = exports.OR = exports.LTE = exports.GTE = exports.IN = exports.NEQ = exports.EQ = exports.GT = exports.LT = exports.MULTIPLY = exports.DIVIDE = exports.POWER = exports.MINUS = exports.ADD = exports.FLOW_CONTROL = exports.BREAK = exports.CONTINUE = exports.ARRAY_IMAGE = exports.ARRAY_COLOR = exports.ARRAY_BOOLEAN = exports.ARRAY_STRING = exports.ARRAY_NUMBER = exports.NUMERIC = exports.TERNARY_EXPR = exports.LOOP_NUMBER = exports.NULL_CONST = exports.NUMBER = exports.BOOLEAN = exports.STRING = exports.ANIMATION = exports.IMAGE_CONST = exports.STRING_CONST = exports.BOOL_CONST = exports.NUM_CONST = exports.RATE = exports.BUTTONS = exports.SOUND = exports.GYRO = exports.ULTRASONIC = exports.INFRARED = exports.TOUCH = exports.STATEMENTS = exports.EXPR_LIST = exports.ELSE_STMTS = exports.THEN_LIST = exports.SENSOR_MODE = exports.SENSOR_TYPE = exports.GET_SAMPLE = exports.RESET = exports.SEEK = exports.PRESENCE = exports.DISTANCE = exports.SPEED_R = exports.SPEED_L = exports.SPEED = exports.TURN_DIRECTION = exports.DRIVE_DIRECTION = exports.STOP_DRIVE = exports.TURN_ACTION = exports.TURN_LIGHT = exports.CURVE_ACTION = exports.DRIVE_ACTION = exports.STMT_LIST = exports.LIST = exports.TIME = exports.WAIT_TIME_STMT = exports.MATH_PROP_FUNCT = exports.N = exports.Y = exports.X = exports.PICTURE = exports.TEXT_APPEND = exports.CHARACTER = exports.TEXT = exports.FILE = exports.PITCH = exports.LANGUAGE = exports.SAY_TEXT_ACTION = exports.SET_LANGUAGE_ACTION = exports.PLAY_FILE_ACTION = exports.DIRECTION = exports.IMAGE_INVERT_ACTION = exports.IMAGE_SHIFT_ACTION = exports.IMAGE = exports.VOLUME = exports.SET_VOLUME_ACTION = exports.GET_VOLUME = exports.DURATION = exports.FREQUENCY = exports.TONE_ACTION = exports.CREATE_DEBUG_ACTION = exports.CLEAR_DISPLAY_ACTION = exports.DISPLAY_IMAGE_ACTION = exports.SHOW_PICTURE_ACTION = exports.SHOW_TEXT_ACTION = exports.MATH_CONST = exports.WAIT_STMT = exports.IF_STMT = exports.REPEAT_STMT = exports.ASSIGN_METHOD_PARAMETER_STMT = exports.ASSIGN_STMT = exports.RANDOM = exports.RANDOM_DOUBLE = exports.RANDOM_INT = exports.MATH_RAIN_FUNCTION = exports.SINGLE_FUNCTION = exports.VAR_DECLARATION = exports.FUNCTION_DECLARATION = exports.PARAMETERS = exports.STMT = exports.NAME = exports.TYPE = exports.VAR = exports.UNARY = exports.BINARY = exports.FACE_DOWN = exports.FACE_UP = exports.FREEFALL = exports.SHAKE = exports.ESCAPE = exports.ANY = exports.UP = exports.DOWN = exports.ENTER = exports.RIGHT = exports.LEFT = exports.OP = exports.VALUE = exports.EXPR = exports.ARG2 = exports.ARG1 = void 0;
-    exports.ARG1 = "arg1";
-    exports.ARG2 = "arg2";
-    exports.EXPR = "expr";
-    exports.VALUE = "value";
-    exports.OP = "op";
-    exports.LEFT = "left";
-    exports.RIGHT = "right";
-    exports.ENTER = "enter";
-    exports.DOWN = "down";
-    exports.UP = "up";
-    exports.ANY = "any";
-    exports.ESCAPE = "escape";
-    exports.SHAKE = "shake";
-    exports.FREEFALL = "freefall";
-    exports.FACE_UP = "face_up";
-    exports.FACE_DOWN = "face_down";
-    exports.BINARY = "Binary";
-    exports.UNARY = "Unary";
-    exports.VAR = "Var";
-    exports.TYPE = "type";
-    exports.NAME = "name";
-    exports.STMT = "stmt";
-    exports.PARAMETERS = "parameters";
-    exports.FUNCTION_DECLARATION = "functionDeclaration";
-    exports.VAR_DECLARATION = "VarDeclaration";
-    exports.SINGLE_FUNCTION = "SingleFunction";
-    exports.MATH_RAIN_FUNCTION = "MathrainFunct";
-    exports.RANDOM_INT = "randInt";
-    exports.RANDOM_DOUBLE = "randDouble";
-    exports.RANDOM = "random";
-    exports.ASSIGN_STMT = "AssignStmt";
-    exports.ASSIGN_METHOD_PARAMETER_STMT = "AssignMethodParameter";
-    exports.REPEAT_STMT = "RepeatStmt";
-    exports.IF_STMT = "IfStatement";
-    exports.WAIT_STMT = "WaitStmt";
-    exports.MATH_CONST = "createMathConstant";
-    exports.SHOW_TEXT_ACTION = "ShowTextAction";
-    exports.SHOW_PICTURE_ACTION = "ShowPictureAction";
-    exports.DISPLAY_IMAGE_ACTION = "DisplayImageAction";
-    exports.CLEAR_DISPLAY_ACTION = "ClearDisplay";
-    exports.CREATE_DEBUG_ACTION = "CreateDebugAction";
-    exports.TONE_ACTION = "ToneAction";
-    exports.FREQUENCY = "frequency";
-    exports.DURATION = "duration";
-    exports.GET_VOLUME = "GetVolume";
-    exports.SET_VOLUME_ACTION = "SetVolumeAction";
-    exports.VOLUME = "volume";
-    exports.IMAGE = "image";
-    exports.IMAGE_SHIFT_ACTION = "ImageShiftAction";
-    exports.IMAGE_INVERT_ACTION = "ImageInvertAction";
-    exports.DIRECTION = "direction";
-    exports.PLAY_FILE_ACTION = "PlayFileAction";
-    exports.SET_LANGUAGE_ACTION = "SetLanguageAction";
-    exports.SAY_TEXT_ACTION = "SayTextAction";
-    exports.LANGUAGE = "language";
-    exports.PITCH = "pitch";
-    exports.FILE = "file";
-    exports.TEXT = "text";
-    exports.CHARACTER = "character";
-    exports.TEXT_APPEND = "textAppend";
-    exports.PICTURE = "picture";
-    exports.X = "x";
-    exports.Y = "y";
-    exports.N = "n";
-    exports.MATH_PROP_FUNCT = "MathPropFunct";
-    exports.WAIT_TIME_STMT = "WaitTimeSTMT";
-    exports.TIME = "time";
-    exports.LIST = "list";
-    exports.STMT_LIST = "stmtList";
-    exports.DRIVE_ACTION = "DriveAction";
-    exports.CURVE_ACTION = "CurveAction";
-    exports.TURN_LIGHT = "turnLight";
-    exports.TURN_ACTION = "TurnAction";
-    exports.STOP_DRIVE = "stopDrive";
-    exports.DRIVE_DIRECTION = "driveDirection";
-    exports.TURN_DIRECTION = "turnDirection";
-    exports.SPEED = "speed";
-    exports.SPEED_L = "speedL";
-    exports.SPEED_R = "speedR";
-    exports.DISTANCE = "distance";
-    exports.PRESENCE = "presence";
-    exports.SEEK = "presence";
-    exports.RESET = "reset";
-    exports.GET_SAMPLE = "GetSample";
-    exports.SENSOR_TYPE = "sensorType";
-    exports.SENSOR_MODE = "sensorMode";
-    exports.THEN_LIST = "thenList";
-    exports.ELSE_STMTS = "elseStmts";
-    exports.EXPR_LIST = "exprList";
-    exports.STATEMENTS = "statements";
-    exports.TOUCH = "touch";
-    exports.INFRARED = "infrared";
-    exports.ULTRASONIC = "ultrasonic";
-    exports.GYRO = "gyro";
-    exports.SOUND = "sound";
-    exports.BUTTONS = "buttons";
-    exports.RATE = "rate";
-    exports.NUM_CONST = "NumConst";
-    exports.BOOL_CONST = "BoolConst";
-    exports.STRING_CONST = "StringConst";
-    exports.IMAGE_CONST = "image";
-    exports.ANIMATION = "animation";
-    exports.STRING = "STRING";
-    exports.BOOLEAN = "BOOLEAN";
-    exports.NUMBER = "NUMBER";
-    exports.NULL_CONST = "null";
-    exports.LOOP_NUMBER = "loopNumber";
-    exports.TERNARY_EXPR = "createTernaryExpr";
-    exports.NUMERIC = "Numeric";
-    exports.ARRAY_NUMBER = "Array_Number";
-    exports.ARRAY_STRING = "Array_String";
-    exports.ARRAY_BOOLEAN = "Array_Boolean";
-    exports.ARRAY_COLOR = "Array_Colour";
-    exports.ARRAY_IMAGE = "Array_Image";
-    exports.CONTINUE = "continue";
-    exports.BREAK = "break";
-    exports.FLOW_CONTROL = "flowControl";
-    exports.ADD = "ADD";
-    exports.MINUS = "MINUS";
-    exports.POWER = "POWER";
-    exports.DIVIDE = "DIVIDE";
-    exports.MULTIPLY = "MULTIPLY";
-    exports.LT = "LT";
-    exports.GT = "GT";
-    exports.EQ = "EQ";
-    exports.NEQ = "NEQ";
-    exports.IN = "in";
-    exports.GTE = "GTE";
-    exports.LTE = "LTE";
-    exports.OR = "OR";
-    exports.AND = "AND";
-    exports.NEG = "NEG";
-    exports.MOD = "MOD";
-    exports.MIN = "min";
-    exports.MAX = "max";
-    exports.AVERAGE = "average";
-    exports.MEDIAN = "median";
-    exports.MODE = "mode";
-    exports.STD_DEV = "stdDev";
-    exports.FOREWARD = "FOREWARD";
-    exports.BACKWARD = "BACKWARD";
-    exports.WHILE = "WHILE";
-    exports.UNTIL = "UNTIL";
-    exports.FOREVER = "FOREVER";
-    exports.FOR = "FOR";
-    exports.FOR_EACH = "forEach";
-    exports.MATH_CHANGE = "mathChange";
-    exports.NOT = "NOT";
-    exports.ANGLE = "angle";
-    exports.COLOR = "color";
-    exports.COLOUR = "colorValue";
-    exports.LED_COLOR_CONST = "ledColor";
-    exports.RGB_COLOR_CONST = "rgbColor";
-    exports.LED_ON_ACTION = "ledOnAction";
-    exports.GREEN = "GREEN";
-    exports.RED = "red";
-    exports.SUM = "sum";
-    exports.RGB = "rgb";
-    exports.ORANGE = "ORANGE";
-    exports.ON = "ON";
-    exports.OFF = "OFF";
-    exports.FLASH = "FLASH";
-    exports.DOUBLE_FLASH = "DOUBLE_FLASH";
-    exports.STATUS_LIGHT_ACTION = "statusLightAction";
-    exports.AMBIENTLIGHT = "ambientlight";
-    exports.DISPLAY_TEXT_ACTION = "displayTextAction";
-    exports.BRIGHTNESS = "brightness";
-    exports.PIXEL = "pixel";
-    exports.DISPLAY_SET_BRIGHTNESS_ACTION = "displaySetBrightnessAction";
-    exports.DISPLAY_SET_PIXEL_ACTION = "displaySetPixelAction";
-    exports.DISPLAY_GET_BRIGHTNESS_ACTION = "displayGetBrightnessAction";
-    exports.DISPLAY_GET_PIXEL_ACTION = "displayGetPixelAction";
-    exports.TIMES = "TIMES";
-    exports.SIZE = "size";
-    exports.CREATE_LIST_IS_EMPTY = "isListEmpty";
-    exports.CREATE_LIST_LENGTH = "listLength";
-    exports.CREATE_LIST_WITH_ITEM = "createCreateListWithItem";
-    exports.CREATE_LIST_FIND_ITEM = "createListFindItem";
-    exports.COLOR_CONST = "COLOR_CONST";
-    exports.PILOT = "pilot";
-    exports.MOTOR_LEFT = "C";
-    exports.MOTOR_RIGHT = "B";
-    exports.MOTOR_XA = "XA";
-    exports.MOTOR_XB = "XB";
-    exports.MOTOR_XAB = "XAB";
-    exports.MOTOR_SIDE = "motorSide";
-    exports.MOTOR_ON_ACTION = "motorOnAction";
-    exports.MOTOR_GET_POWER = "motorGetPowerAction";
-    exports.MOTOR_SET_POWER = "motorSetPowerAction";
-    exports.ENCODER_SENSOR_RESET = "encoderSensorReset";
-    exports.ENCODER_SENSOR_SAMPLE = "encoderSensorSample";
-    exports.GET_GYRO_SENSOR_SAMPLE = "gyroSensorSample";
-    exports.MOTOR_STOP = "motorStop";
-    exports.MOTOR_MOVE_MODE = "motorMoveMode";
-    exports.MOTOR_DURATION = "motorDuration";
-    exports.MOTOR_DURATION_VALUE = "motorDurationValue";
-    exports.ROTATIONS = "ROTATIONS";
-    exports.ROTATION = "ROTATION";
-    exports.DEGREE = "DEGREE";
-    exports.POSITION = "position";
-    exports.FIRST = "first";
-    exports.LAST = "last";
-    exports.FROM_START = "fromStart";
-    exports.FROM_END = "fromEnd";
-    exports.GET = "get";
-    exports.SET = "set";
-    exports.REMOVE = "remove";
-    exports.GET_REMOVE = "getRemove";
-    exports.ITEM = "item";
-    exports.CREATE_LISTS_SET_INDEX = "createListsSetIndex";
-    exports.CREATE_LISTS_GET_INDEX = "createListsGetIndex";
-    exports.CREATE_LISTS_GET_INDEX_STMT = "createListsGetIndexStmt";
-    exports.CREATE_LISTS_GET_SUBLIST = "createGetSubList";
-    exports.GYRO_SENSOR_RESET = "createResetGyroSensor";
-    exports.TIMER_SENSOR_RESET = "createResetTimer";
-    exports.METHOD_VOID = "createMethodVoid";
-    exports.METHOD_RETURN = "createMethodReturn";
-    exports.IF_RETURN = "createMethodIfReturn";
-    exports.RETURN_TYPE = "returnType";
-    exports.METHOD_CALL_VOID = "createMethodCallVoid";
-    exports.METHOD_CALL_RETURN = "createMethodCallReturn";
-    exports.TEXT_JOIN = "createTextJoin";
-    exports.LIGHT_ACTION = "lightSensorAction";
-    exports.WHERE1 = "where1";
-    exports.WHERE2 = "where2";
-    exports.AT1 = "at1";
-    exports.AT2 = "at2";
-    exports.RETURN = "return";
-    exports.VALUES = "values";
-    exports.INSERT = "insert";
-    exports.LIGHT = "light";
-    exports.BUTTON_A = "A";
-    exports.BUTTON_B = "B";
-    exports.COMMENT = "comment";
-    exports.COMPASS = "compass";
-    exports.GESTURE = "gesture";
-    exports.TEMPERATURE = "temperature";
-    exports.ANALOG = "analog";
-    exports.DIGITAL = "digital";
-    exports.PIN_TOUCH_SENSOR = "createPinTouchSensor";
-    exports.PIN_GET_VALUE_SENSOR = "createPinGetValueSensor";
-    exports.PIN_WRITE_VALUE_SENSOR = "createPinWriteValueSensor";
-    exports.NOOP_STMT = "createNoopStmt";
-    exports.PIN = "pin";
-    exports.ASSERT_STMT = "createAssertStmt";
-    exports.TEST = "test";
-    exports.CONSOLE_DEBUG = "createConsoleDebugAction";
-    exports.COLOR_ENUM = {
-        NONE: "NONE",
-        BLACK: "BLACK",
-        BLUE: "BLUE",
-        GREEN: "GREEN",
-        YELLOW: "YELLOW",
-        RED: "RED",
-        WHITE: "WHITE",
-        BROWN: "BROWN"
+    exports.default = void 0;
+    var DEFAULT = {
+        ARG1: 'arg1',
+        ARG2: 'arg2',
+        EXPR: 'expr',
+        VALUE: 'value',
+        OP: 'op',
+        LEFT: 'left',
+        RIGHT: 'right',
+        ENTER: 'enter',
+        DOWN: 'down',
+        UP: 'up',
+        ANY: 'any',
+        ESCAPE: 'escape',
+        SHAKE: 'shake',
+        FREEFALL: 'freefall',
+        FACE_UP: 'face_up',
+        FACE_DOWN: 'face_down',
+        BINARY: 'Binary',
+        UNARY: 'Unary',
+        VAR: 'Var',
+        TYPE: 'type',
+        NAME: 'name',
+        STMT: 'stmt',
+        PARAMETERS: 'parameters',
+        FUNCTION_DECLARATION: 'functionDeclaration',
+        VAR_DECLARATION: 'VarDeclaration',
+        SINGLE_FUNCTION: 'SingleFunction',
+        MATH_RAIN_FUNCTION: 'MathrainFunct',
+        RANDOM_INT: 'randInt',
+        RANDOM_DOUBLE: 'randDouble',
+        RANDOM: 'random',
+        ASSIGN_STMT: 'AssignStmt',
+        ASSIGN_METHOD_PARAMETER_STMT: 'AssignMethodParameter',
+        REPEAT_STMT: 'RepeatStmt',
+        IF_STMT: 'IfStatement',
+        WAIT_STMT: 'WaitStmt',
+        MATH_CONST: 'createMathConstant',
+        SHOW_TEXT_ACTION: 'ShowTextAction',
+        SHOW_PICTURE_ACTION: 'ShowPictureAction',
+        DISPLAY_IMAGE_ACTION: 'DisplayImageAction',
+        CLEAR_DISPLAY_ACTION: 'ClearDisplay',
+        CREATE_DEBUG_ACTION: 'CreateDebugAction',
+        TONE_ACTION: 'ToneAction',
+        FREQUENCY: 'frequency',
+        DURATION: 'duration',
+        GET_VOLUME: 'GetVolume',
+        SET_VOLUME_ACTION: 'SetVolumeAction',
+        VOLUME: 'volume',
+        IMAGE: 'image',
+        IMAGE_SHIFT_ACTION: 'ImageShiftAction',
+        IMAGE_INVERT_ACTION: 'ImageInvertAction',
+        DIRECTION: 'direction',
+        PLAY_FILE_ACTION: 'PlayFileAction',
+        SET_LANGUAGE_ACTION: 'SetLanguageAction',
+        SAY_TEXT_ACTION: 'SayTextAction',
+        LANGUAGE: 'language',
+        PITCH: 'pitch',
+        FILE: 'file',
+        TEXT: 'text',
+        CHARACTER: 'character',
+        TEXT_APPEND: 'textAppend',
+        PICTURE: 'picture',
+        X: 'x',
+        Y: 'y',
+        N: 'n',
+        MATH_PROP_FUNCT: 'MathPropFunct',
+        WAIT_TIME_STMT: 'WaitTimeSTMT',
+        TIME: 'time',
+        LIST: 'list',
+        STMT_LIST: 'stmtList',
+        DRIVE_ACTION: 'DriveAction',
+        CURVE_ACTION: 'CurveAction',
+        TURN_LIGHT: 'turnLight',
+        TURN_ACTION: 'TurnAction',
+        STOP_DRIVE: 'stopDrive',
+        DRIVE_DIRECTION: 'driveDirection',
+        TURN_DIRECTION: 'turnDirection',
+        SPEED: 'speed',
+        SPEED_L: 'speedL',
+        SPEED_R: 'speedR',
+        DISTANCE: 'distance',
+        PRESENCE: 'presence',
+        SEEK: 'presence',
+        RESET: 'reset',
+        GET_SAMPLE: 'GetSample',
+        SENSOR_TYPE: 'sensorType',
+        SENSOR_MODE: 'sensorMode',
+        THEN_LIST: 'thenList',
+        ELSE_STMTS: 'elseStmts',
+        EXPR_LIST: 'exprList',
+        STATEMENTS: 'statements',
+        TOUCH: 'touch',
+        INFRARED: 'infrared',
+        ULTRASONIC: 'ultrasonic',
+        GYRO: 'gyro',
+        SOUND: 'sound',
+        BUTTONS: 'buttons',
+        RATE: 'rate',
+        NUM_CONST: 'NumConst',
+        BOOL_CONST: 'BoolConst',
+        STRING_CONST: 'StringConst',
+        IMAGE_CONST: 'image',
+        ANIMATION: 'animation',
+        STRING: 'STRING',
+        BOOLEAN: 'BOOLEAN',
+        NUMBER: 'NUMBER',
+        NULL_CONST: 'null',
+        LOOP_NUMBER: 'loopNumber',
+        TERNARY_EXPR: 'createTernaryExpr',
+        NUMERIC: 'Numeric',
+        ARRAY_NUMBER: 'Array_Number',
+        ARRAY_STRING: 'Array_String',
+        ARRAY_BOOLEAN: 'Array_Boolean',
+        ARRAY_COLOR: 'Array_Colour',
+        ARRAY_IMAGE: 'Array_Image',
+        CONTINUE: 'continue',
+        BREAK: 'break',
+        FLOW_CONTROL: 'flowControl',
+        ADD: 'ADD',
+        MINUS: 'MINUS',
+        POWER: 'POWER',
+        DIVIDE: 'DIVIDE',
+        MULTIPLY: 'MULTIPLY',
+        LT: 'LT',
+        GT: 'GT',
+        EQ: 'EQ',
+        NEQ: 'NEQ',
+        IN: 'in',
+        GTE: 'GTE',
+        LTE: 'LTE',
+        OR: 'OR',
+        AND: 'AND',
+        NEG: 'NEG',
+        MOD: 'MOD',
+        MIN: 'min',
+        MAX: 'max',
+        AVERAGE: 'average',
+        MEDIAN: 'median',
+        MODE: 'mode',
+        STD_DEV: 'stdDev',
+        FOREWARD: 'FOREWARD',
+        BACKWARD: 'BACKWARD',
+        WHILE: 'WHILE',
+        UNTIL: 'UNTIL',
+        FOREVER: 'FOREVER',
+        FOR: 'FOR',
+        FOR_EACH: 'forEach',
+        MATH_CHANGE: 'mathChange',
+        NOT: 'NOT',
+        ANGLE: 'angle',
+        COLOR: 'color',
+        COLOUR: 'colorValue',
+        LED_COLOR_CONST: 'ledColor',
+        RGB_COLOR_CONST: 'rgbColor',
+        LED_ON_ACTION: 'ledOnAction',
+        GREEN: 'GREEN',
+        RED: 'red',
+        // ANIMATION: 'animation',
+        SUM: 'sum',
+        RGB: 'rgb',
+        ORANGE: 'ORANGE',
+        ON: 'ON',
+        OFF: 'OFF',
+        FLASH: 'FLASH',
+        DOUBLE_FLASH: 'DOUBLE_FLASH',
+        STATUS_LIGHT_ACTION: 'statusLightAction',
+        AMBIENTLIGHT: 'ambientlight',
+        DISPLAY_TEXT_ACTION: 'displayTextAction',
+        BRIGHTNESS: 'brightness',
+        PIXEL: 'pixel',
+        DISPLAY_SET_BRIGHTNESS_ACTION: 'displaySetBrightnessAction',
+        DISPLAY_SET_PIXEL_ACTION: 'displaySetPixelAction',
+        DISPLAY_GET_BRIGHTNESS_ACTION: 'displayGetBrightnessAction',
+        DISPLAY_GET_PIXEL_ACTION: 'displayGetPixelAction',
+        TIMES: 'TIMES',
+        SIZE: 'size',
+        CREATE_LIST_IS_EMPTY: 'isListEmpty',
+        CREATE_LIST_LENGTH: 'listLength',
+        CREATE_LIST_WITH_ITEM: 'createCreateListWithItem',
+        CREATE_LIST_FIND_ITEM: 'createListFindItem',
+        COLOR_CONST: 'COLOR_CONST',
+        PILOT: 'pilot',
+        MOTOR_LEFT: 'C',
+        MOTOR_RIGHT: 'B',
+        MOTOR_XA: 'XA',
+        MOTOR_XB: 'XB',
+        MOTOR_XAB: 'XAB',
+        MOTOR_SIDE: 'motorSide',
+        MOTOR_ON_ACTION: 'motorOnAction',
+        MOTOR_GET_POWER: 'motorGetPowerAction',
+        MOTOR_SET_POWER: 'motorSetPowerAction',
+        ENCODER_SENSOR_RESET: 'encoderSensorReset',
+        ENCODER_SENSOR_SAMPLE: 'encoderSensorSample',
+        GET_GYRO_SENSOR_SAMPLE: 'gyroSensorSample',
+        MOTOR_STOP: 'motorStop',
+        MOTOR_MOVE_MODE: 'motorMoveMode',
+        MOTOR_DURATION: 'motorDuration',
+        MOTOR_DURATION_VALUE: 'motorDurationValue',
+        ROTATIONS: 'ROTATIONS',
+        ROTATION: 'ROTATION',
+        DEGREE: 'DEGREE',
+        POSITION: 'position',
+        FIRST: 'first',
+        LAST: 'last',
+        FROM_START: 'fromStart',
+        FROM_END: 'fromEnd',
+        GET: 'get',
+        SET: 'set',
+        REMOVE: 'remove',
+        GET_REMOVE: 'getRemove',
+        ITEM: 'item',
+        CREATE_LISTS_SET_INDEX: 'createListsSetIndex',
+        CREATE_LISTS_GET_INDEX: 'createListsGetIndex',
+        CREATE_LISTS_GET_INDEX_STMT: 'createListsGetIndexStmt',
+        CREATE_LISTS_GET_SUBLIST: 'createGetSubList',
+        GYRO_SENSOR_RESET: 'createResetGyroSensor',
+        TIMER_SENSOR_RESET: 'createResetTimer',
+        METHOD_VOID: 'createMethodVoid',
+        METHOD_RETURN: 'createMethodReturn',
+        IF_RETURN: 'createMethodIfReturn',
+        RETURN_TYPE: 'returnType',
+        METHOD_CALL_VOID: 'createMethodCallVoid',
+        METHOD_CALL_RETURN: 'createMethodCallReturn',
+        TEXT_JOIN: 'createTextJoin',
+        LIGHT_ACTION: 'lightSensorAction',
+        WHERE1: 'where1',
+        WHERE2: 'where2',
+        AT1: 'at1',
+        AT2: 'at2',
+        RETURN: 'return',
+        VALUES: 'values',
+        INSERT: 'insert',
+        LIGHT: 'light',
+        BUTTON_A: 'A',
+        BUTTON_B: 'B',
+        COMMENT: 'comment',
+        COMPASS: 'compass',
+        GESTURE: 'gesture',
+        TEMPERATURE: 'temperature',
+        ANALOG: 'analog',
+        DIGITAL: 'digital',
+        PIN_TOUCH_SENSOR: 'createPinTouchSensor',
+        PIN_GET_VALUE_SENSOR: 'createPinGetValueSensor',
+        PIN_WRITE_VALUE_SENSOR: 'createPinWriteValueSensor',
+        NOOP_STMT: 'createNoopStmt',
+        PIN: 'pin',
+        ASSERT_STMT: 'createAssertStmt',
+        TEST: 'test',
+        CONSOLE_DEBUG: 'createConsoleDebugAction',
+        COLOR_ENUM: {
+            NONE: 'NONE',
+            BLACK: 'BLACK',
+            BLUE: 'BLUE',
+            GREEN: 'GREEN',
+            YELLOW: 'YELLOW',
+            RED: 'RED',
+            WHITE: 'WHITE',
+            BROWN: 'BROWN',
+        },
+        TIMER: 'timer',
+        MATH_ON_LIST: 'createMathOnList',
+        TRACKWIDTH: 40,
+        TURN_RATIO: 40 / 3 / 2.8,
+        WHEEL_DIAMETER: 5.6,
+        MAXDIAG: 2500,
+        MAXPOWER: 0.351858377 * 3,
+        ENC: 360.0 / (3.0 * Math.PI * 5.6),
+        MAX_WIDTH: 2000,
+        MAX_HEIGHT: 820,
+        WAVE_LENGTH: 60,
+        DEBUG_BREAKPOINT: 'DebugBreakpoint',
+        DEBUG_STEP_INTO: 'DebugStepInto',
+        DEBUG_STEP_OVER: 'DebugStepOver',
+        MIN_SIZE_OBJECT: 10,
+        CORNER_RADIUS: 5,
+        ANIMATION_DURATION: 750
     };
-    exports.TIMER = "timer";
-    exports.MATH_ON_LIST = "createMathOnList";
-    exports.TRACKWIDTH = 40;
-    exports.TURN_RATIO = (40 / 3.) / 2.8;
-    exports.WHEEL_DIAMETER = 5.6;
-    exports.MAXDIAG = 2500;
-    exports.MAXPOWER = 0.351858377 * 3; // real Robot drives approx. 35 cm / 1 sec -> 105 pix/sec | 3pix  = 1cm
-    exports.ENC = 360.0 / (3.0 * Math.PI * 5.6);
-    exports.MAX_WIDTH = 2000;
-    exports.MAX_HEIGHT = 820;
-    exports.WAVE_LENGTH = 60;
-    exports.DEBUG_BREAKPOINT = "DebugBreakpoint";
-    exports.DEBUG_STEP_INTO = "DebugStepInto";
-    exports.DEBUG_STEP_OVER = "DebugStepOver";
+    exports.default = DEFAULT;
 });

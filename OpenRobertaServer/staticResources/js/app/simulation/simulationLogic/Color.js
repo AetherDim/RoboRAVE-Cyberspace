@@ -1,6 +1,7 @@
-define(["require", "exports", "./constants"], function (require, exports, CONSTANTS) {
+define(["require", "exports", "./simulation.constants"], function (require, exports, CONSTANTS) {
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.rgbToHsv = exports.hsvToColorName = exports.COLOR_MAP_XKCD = exports.ColorPalette = exports.Color = exports.rgbToNumber = void 0;
+    var COLOR = CONSTANTS.default.COLOR_ENUM;
     // https://stackoverflow.com/questions/13070054/convert-rgb-strings-to-hex-in-javascript
     function rgbToNumber(rgb) {
         var raw = rgb.split("(")[1].split(")")[0];
@@ -92,27 +93,27 @@ define(["require", "exports", "./constants"], function (require, exports, CONSTA
     function hsvToColorName(hsv) {
         var h = hsv.h, s = hsv.s, v = hsv.v;
         if (v <= 10) {
-            return CONSTANTS.COLOR_ENUM.BLACK;
+            return COLOR.BLACK;
         }
         if ((h < 10 || h > 350) && s > 90 && v > 50) {
-            return CONSTANTS.COLOR_ENUM.RED;
+            return COLOR.RED;
         }
         if (h > 40 && h < 70 && s > 90 && v > 50) {
-            return CONSTANTS.COLOR_ENUM.YELLOW;
+            return COLOR.YELLOW;
         }
         if (h < 50 && s > 50 && s < 100 && v < 50) {
-            return CONSTANTS.COLOR_ENUM.BROWN;
+            return COLOR.BROWN;
         }
         if (s < 10 && v > 90) {
-            return CONSTANTS.COLOR_ENUM.WHITE;
+            return COLOR.WHITE;
         }
         if (h > 70 && h < 160 && s > 80) {
-            return CONSTANTS.COLOR_ENUM.GREEN;
+            return COLOR.GREEN;
         }
         if (h > 200 && h < 250 && s > 90 && v > 50) {
-            return CONSTANTS.COLOR_ENUM.BLUE;
+            return COLOR.BLUE;
         }
-        return CONSTANTS.COLOR_ENUM.NONE;
+        return COLOR.NONE;
     }
     exports.hsvToColorName = hsvToColorName;
     /**

@@ -64,6 +64,12 @@ function initRequireJS(version) {
             'matter-js': 'libs/matterjs/matter.min',
             'webfontloader': 'libs/webfontloader/webfontloader',
 
+            'webots': 'libs/webots/webots.min',
+            'glm': 'libs/webots/glm-js.min',
+            'webots.enum': 'libs/webots/enum',
+            'webots.wren': 'libs/webots/wrenjs',
+            'webots.simulation': 'app/webotsSimulation/webots.simulation',
+
             'confDelete.controller': 'app/roberta/controller/confDelete.controller',
             'configuration.controller': 'app/roberta/controller/configuration.controller',
             'configuration.model': 'app/roberta/models/configuration.model',
@@ -123,8 +129,10 @@ function initRequireJS(version) {
             'interpreter.jsHelper': 'app/nepostackmachine/interpreter.jsHelper',
 
             'neuralnetwork.nn': 'app/neuralnetwork/neuralnetwork.nn',
-            'neuralnetwork.state': 'app/neuralnetwork/neuralnetwork.state',
-            'neuralnetwork.playground': 'app/neuralnetwork/neuralnetwork.playground',
+            'neuralnetwork.uistate': 'app/neuralnetwork/neuralnetwork.uistate',
+            'neuralnetwork.ui': 'app/neuralnetwork/neuralnetwork.ui',
+            'neuralnetwork.helper': 'app/neuralnetwork/neuralnetwork.helper',
+            'neuralnetwork.msg': 'app/neuralnetwork/neuralnetwork.msg',
 
             'confVisualization': 'app/configVisualization/confVisualization',
             'const.robots': 'app/configVisualization/const.robots',
@@ -133,7 +141,7 @@ function initRequireJS(version) {
             'wires': 'app/configVisualization/wires',
 
 
-            'simulation.constants': 'app/simulation/simulationLogic/simulation.constants',
+            'simulation.constants': 'app/simulation/simulationLogic/constants',
             'simulation.simulation': 'app/simulation/simulationLogic/simulation',
 
             'main': 'main',

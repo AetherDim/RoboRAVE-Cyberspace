@@ -1,8 +1,9 @@
 import { Vector } from "matter-js"
-import * as C from "../constants"
+import * as CONSTANTS from "../simulation.constants"
 import { Unit } from "../Unit"
 import { Util } from "../Util"
 
+const C = CONSTANTS.default
 export const robotLEDColors = ["LIGHTGRAY", "GREEN", "ORANGE", "RED"] as const
 export type RobotLEDColor = typeof robotLEDColors[number]
 
