@@ -12,7 +12,11 @@ export const SEND_LOG = false
  * Used in 'wrap.js' to print the error before it is wrapped
  */
 export const PRINT_NON_WRAPPED_ERROR = true
-export const DISABLE_WRAP = false;
+
+/**
+ * Disable 'wrap.js' so stack trace is not polluted
+ */
+export const DISABLE_WRAP = true;
 
 
 const updatableList: dat.GUIController[] = []

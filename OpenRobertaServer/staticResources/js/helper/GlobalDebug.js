@@ -10,7 +10,10 @@ define(["require", "exports", "dat.gui", "./Timer"], function (require, exports,
      * Used in 'wrap.js' to print the error before it is wrapped
      */
     exports.PRINT_NON_WRAPPED_ERROR = true;
-    exports.DISABLE_WRAP = false;
+    /**
+     * Disable 'wrap.js' so stack trace is not polluted
+     */
+    exports.DISABLE_WRAP = true;
     var updatableList = [];
     exports.DEBUG_UPDATE_TIMER = new Timer_1.Timer(0.5, function () { return updateDebugDisplay(); });
     exports.DEBUG_UPDATE_TIMER.start();
