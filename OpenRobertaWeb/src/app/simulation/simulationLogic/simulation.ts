@@ -176,3 +176,7 @@ export function zoomReset() {
 export function setSimSpeed(speedup: number) {
 	cyberspace.setSimulationSpeedupFactor(speedup)
 }
+
+export function getDebugMode(): boolean {
+	return false;
+}
