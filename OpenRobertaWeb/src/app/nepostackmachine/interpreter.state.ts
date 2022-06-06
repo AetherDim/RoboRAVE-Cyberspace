@@ -303,6 +303,7 @@ export class State {
                     if (object.hasClass('selectedBreakpoint')) {
                         object.removeClass('selectedBreakpoint').addClass('breakpoint');
                     }
+                    this.removeBlockHighlight(block);
                 }
             });
 

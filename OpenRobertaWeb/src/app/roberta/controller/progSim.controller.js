@@ -23,6 +23,7 @@ function init() {
 export { init };
 
 function initEvents() {
+
     $('#simButton').off('click touchend');
     $('#simButton').onWrap('click touchend', function (event) {
         debug = false;

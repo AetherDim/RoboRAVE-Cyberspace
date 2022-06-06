@@ -140,6 +140,7 @@ export class UIRobertaToggleStateButton<T extends TwoProperties<T, RobertaButton
 			const keys = Object.keys(buttonSettingsState)
 			return keys[keys.indexOf(state as string) == 0 ? 1 : 0]
 		})
+		this.setState(initialState)
 	}
 
 }
@@ -157,7 +158,7 @@ export class UIManager {
 	static readonly physicsSimControlButton = new UIRobertaToggleStateButton(
 		"simFLowControl", "stop", {
 			start: { class: "typcn-flash-outline", tooltip: "Start simulation" },
-			stop: { class: "typcn-flash", tooltip: "Stop simulation" }
+			stop: { class: "typcn-flash", tooltip: "Stop simulation"}
 		})
 	
 	static readonly showScoreButton = new UIRobertaToggleStateButton(
@@ -173,7 +174,9 @@ export class UIManager {
 		}
 	)
 
+	// simResetPose is handled by roberta itself
 	static readonly resetSceneButton = new UIRobertaButton("simResetPose")
+
 	static readonly zoomOutButton = new UIRobertaButton("zoomOut")
 	static readonly zoomInButton = new UIRobertaButton("zoomIn")
 	static readonly zoomResetButton = new UIRobertaButton("zoomReset")

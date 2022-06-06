@@ -132,6 +132,7 @@ define(["require", "exports", "blockly"], function (require, exports, Blockly) {
                 var keys = Object.keys(buttonSettingsState);
                 return keys[keys.indexOf(state) == 0 ? 1 : 0];
             });
+            _this.setState(initialState);
             return _this;
         }
         return UIRobertaToggleStateButton;
@@ -157,6 +158,7 @@ define(["require", "exports", "blockly"], function (require, exports, Blockly) {
             fastForward: { class: "typcn-media-fast-forward-outline" },
             normalSpeed: { class: "typcn-media-fast-forward" }
         });
+        // simResetPose is handled by roberta itself
         UIManager.resetSceneButton = new UIRobertaButton("simResetPose");
         UIManager.zoomOutButton = new UIRobertaButton("zoomOut");
         UIManager.zoomInButton = new UIRobertaButton("zoomIn");

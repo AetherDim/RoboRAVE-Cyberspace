@@ -277,6 +277,7 @@ define(["require", "exports", "./interpreter.constants", "./interpreter.util"], 
         /** Will remove highlights from all currently blocks being currently executed and all given Breakpoints
          * @param breakPoints the array of breakpoint block id's to have their highlights removed*/
         State.prototype.removeHighlights = function (breakPoints) {
+            var _this = this;
             __spreadArray([], __read(this.currentBlocks), false).map(function (blockId) { return stackmachineJsHelper.getBlockById(blockId); })
                 .forEach(function (block) {
                 if (block !== null) {
@@ -284,6 +285,7 @@ define(["require", "exports", "./interpreter.constants", "./interpreter.util"], 
                     if (object.hasClass('selectedBreakpoint')) {
                         object.removeClass('selectedBreakpoint').addClass('breakpoint');
                     }
+                    _this.removeBlockHighlight(block);
                 }
             });
             breakPoints
