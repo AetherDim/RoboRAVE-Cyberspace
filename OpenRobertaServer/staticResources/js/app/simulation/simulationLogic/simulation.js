@@ -272,22 +272,30 @@ define(["require", "exports", "./external/SceneDesciptorList", "./Cyberspace/Cyb
         cyberspace.switchToNextScene();
     });
     var INITIAL_WIDTH = 0.5;
+    function openSimulationView() {
+        requestSimAssemblyForProgram(function (result) {
+            if (result.rc == 'ok') {
+                cyberspace.setRobertaRobotSetupData([result], GUISTATE_C.getRobotGroup());
+                if (TOUR_C.getInstance() && TOUR_C.getInstance().trigger) {
+                    TOUR_C.getInstance().trigger('startSim');
+                }
+                $('#blockly').openRightView('sim', INITIAL_WIDTH);
+            }
+            else {
+                MSG.displayInformation(result, '', result.message, '', undefined);
+            }
+            PROG_C.reloadProgram(result); // load program into workspace
+        });
+        UTIL.openSimRobotWindow(CONST.default.ANIMATION_DURATION);
+    }
+    // open simulation view after one second
+    setTimeout(function () {
+        UIManager_1.UIManager.simViewButton.setState("closed");
+        openSimulationView();
+    }, 1000);
     UIManager_1.UIManager.simViewButton.onClick(function (state) {
         if (state == "open") {
-            requestSimAssemblyForProgram(function (result) {
-                if (result.rc == 'ok') {
-                    cyberspace.setRobertaRobotSetupData([result], GUISTATE_C.getRobotGroup());
-                    if (TOUR_C.getInstance() && TOUR_C.getInstance().trigger) {
-                        TOUR_C.getInstance().trigger('startSim');
-                    }
-                    $('#blockly').openRightView('sim', INITIAL_WIDTH);
-                }
-                else {
-                    MSG.displayInformation(result, '', result.message, '', undefined);
-                }
-                PROG_C.reloadProgram(result); // load program into workspace
-            });
-            UTIL.openSimRobotWindow(CONST.default.ANIMATION_DURATION);
+            openSimulationView();
         }
         else {
             $('#blockly').closeRightView(function () {

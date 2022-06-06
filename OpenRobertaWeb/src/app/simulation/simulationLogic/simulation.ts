@@ -305,28 +305,35 @@ UIManager.switchSceneButton.onClick(() => {
 
 const INITIAL_WIDTH = 0.5;
 
+function openSimulationView() {
+	requestSimAssemblyForProgram(result => {
+		if (result.rc == 'ok') {
+			cyberspace.setRobertaRobotSetupData([result], GUISTATE_C.getRobotGroup())
+
+			if (TOUR_C.getInstance() && TOUR_C.getInstance().trigger) {
+				TOUR_C.getInstance().trigger('startSim');
+			}
+
+			$('#blockly').openRightView('sim', INITIAL_WIDTH)
+
+		} else {
+			MSG.displayInformation(result, '', result.message, '', undefined)
+		}
+		PROG_C.reloadProgram(result) // load program into workspace
+	})
+
+	UTIL.openSimRobotWindow(CONST.default.ANIMATION_DURATION)
+}
+
+// open simulation view after one second
+setTimeout(() => {
+	UIManager.simViewButton.setState("closed")
+	openSimulationView()
+}, 1000)
+
 UIManager.simViewButton.onClick(state => {
 	if(state == "open") {
-
-		requestSimAssemblyForProgram(result => {
-			if (result.rc == 'ok') {
-				cyberspace.setRobertaRobotSetupData([result], GUISTATE_C.getRobotGroup())
-
-				if (TOUR_C.getInstance() && TOUR_C.getInstance().trigger) {
-					TOUR_C.getInstance().trigger('startSim');
-				}
-
-				$('#blockly').openRightView('sim', INITIAL_WIDTH)
-
-			} else {
-				MSG.displayInformation(result, '', result.message, '', undefined)
-			}
-			PROG_C.reloadProgram(result) // load program into workspace
-		})
-
-		UTIL.openSimRobotWindow(CONST.default.ANIMATION_DURATION)
-
-
+		openSimulationView()
 	} else {
 		$('#blockly').closeRightView(() => {
 			$('.nav > li > ul > .robotType').removeClass('disabled')
