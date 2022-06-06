@@ -272,7 +272,7 @@ define(["require", "exports", "./external/SceneDesciptorList", "./Cyberspace/Cyb
     });
     var INITIAL_WIDTH = 0.5;
     UIManager_1.UIManager.simViewButton.onClick(function (state) {
-        if (state == "open") {
+        if (state == "closed") {
             requestSimAssemblyForProgram(function (result) {
                 if (result.rc == 'ok') {
                     cyberspace.setRobertaRobotSetupData([result], GUISTATE_C.getRobotGroup());
