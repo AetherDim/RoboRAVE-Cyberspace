@@ -1,4 +1,4 @@
-define(["require", "exports", "../Util", "./WaypointList"], function (require, exports, Util_1, WaypointList_1) {
+define(["require", "exports", "../Utils", "./WaypointList"], function (require, exports, Utils_1, WaypointList_1) {
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.WaypointsManager = void 0;
     /**
@@ -48,7 +48,7 @@ define(["require", "exports", "../Util", "./WaypointList"], function (require, e
                 return;
             }
             var waypoint = this.waypointList.get(nextWaypointIndex);
-            if (Util_1.Util.vectorDistanceSquared(waypoint.position, objectPosition) <= waypoint.maxDistance * waypoint.maxDistance) {
+            if (Utils_1.Utils.vectorDistanceSquared(waypoint.position, objectPosition) <= waypoint.maxDistance * waypoint.maxDistance) {
                 this.waypointIndex = nextWaypointIndex;
                 var waypointIndex = nextWaypointIndex;
                 this.waypointEvent(this.waypointIndex, waypoint);
@@ -74,7 +74,7 @@ define(["require", "exports", "../Util", "./WaypointList"], function (require, e
                     isVisible = function (index) { return index == waypointIndex + 1; };
                     break;
                 default:
-                    Util_1.Util.exhaustiveSwitch(this.waypointVisibilityBehavior);
+                    Utils_1.Utils.exhaustiveSwitch(this.waypointVisibilityBehavior);
             }
             waypoints.forEach(function (w, index) { return w.graphics.visible = isVisible(index); });
         };

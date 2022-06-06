@@ -9,7 +9,7 @@ import { EventType, ScrollViewEvent } from "../ScrollView";
 import { Unit } from "../Unit";
 import { Scene } from "./Scene";
 import { AsyncChain } from "./AsyncChain";
-import { Util } from "../Util";
+import { Utils } from "../Utils";
 
 export class TestScene extends Scene {
 
@@ -84,7 +84,7 @@ export class TestScene extends Scene {
 			Vector.create(100, 50),
 			Vector.create(0, 100),
 			Vector.create(50, 50)
-		].map(v => unit.getPosition(Vector.mult(Util.vectorAdd(v, Vector.create(200, 200)), scale))))
+		].map(v => unit.getPosition(Vector.mult(Utils.vectorAdd(v, Vector.create(200, 200)), scale))))
 	
 		const polygonGraphics = new PIXI.Graphics()
 		polygonGraphics.beginFill(0xFF0000)
@@ -133,7 +133,7 @@ export class TestScene extends Scene {
 			}
 
 			if (event.type == EventType.DRAG) {
-				const ls = new LineSegment(mousePos, Util.vectorAdd(mousePos, Vector.create(20, 100)))
+				const ls = new LineSegment(mousePos, Utils.vectorAdd(mousePos, Vector.create(20, 100)))
 				lineSegmentGraphics.position.set(mousePos.x, mousePos.y)
 				const intersectionPoints = polygon.intersectionPointsWithLine(ls)
 				intersectionPointGraphics.forEach(g => {
@@ -201,7 +201,7 @@ export class TestScene extends Scene {
 			const force = Vector.mult(vec, 0.0001 * 1000 * 1000 * 1000 * 1000)
 			let normalVec = Vector.mult(Vector.create(-vec.y, vec.x), 10)
 	
-			const forcePos = Util.vectorAdd(body.position, Vector.mult(vec, -40))
+			const forcePos = Utils.vectorAdd(body.position, Vector.mult(vec, -40))
 	
 			
 			const maxTorque = unit.getTorque(100*1000*1000 * Math.pow(scale, 3.5))

@@ -1,7 +1,7 @@
 import { Vector } from "matter-js"
 import * as CONSTANTS from "../simulation.constants"
 import { Unit } from "../Unit"
-import { Util } from "../Util"
+import { Utils } from "../Utils"
 
 const C = CONSTANTS.default
 export const robotLEDColors = ["LIGHTGRAY", "GREEN", "ORANGE", "RED"] as const
@@ -63,7 +63,7 @@ export class RobotLED {
 			case "RED":
 				return 0xff0000
 			default:
-				Util.exhaustiveSwitch(this.color)
+				Utils.exhaustiveSwitch(this.color)
 		}
 	}
 

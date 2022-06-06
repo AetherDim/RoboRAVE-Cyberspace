@@ -1,4 +1,4 @@
-define(["require", "exports", "../simulation.constants", "../Util"], function (require, exports, CONSTANTS, Util_1) {
+define(["require", "exports", "../simulation.constants", "../Utils"], function (require, exports, CONSTANTS, Utils_1) {
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.RobotLED = exports.robotLEDColors = void 0;
     var C = CONSTANTS.default;
@@ -45,7 +45,7 @@ define(["require", "exports", "../simulation.constants", "../Util"], function (r
                 case "RED":
                     return 0xff0000;
                 default:
-                    Util_1.Util.exhaustiveSwitch(this.color);
+                    Utils_1.Utils.exhaustiveSwitch(this.color);
             }
         };
         RobotLED.prototype.updateGraphics = function () {

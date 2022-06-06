@@ -3,7 +3,7 @@ import { Body, Vector } from "matter-js"
 import { ElectricMotor } from "./ElectricMotor"
 import { DrawablePhysicsEntity, PhysicsRectEntity } from "../Entity"
 import { Scene } from "../Scene/Scene"
-import { Util } from "../Util"
+import { Utils } from "../Utils"
 import { GUI } from "dat.gui";
 
 export class Wheel extends DrawablePhysicsEntity<PIXI.Container> {
@@ -173,7 +173,7 @@ export class Wheel extends DrawablePhysicsEntity<PIXI.Container> {
 		if (false) { 
 			return velocity/stepFunctionWidth 
 		} else {
-			return Util.continuousSign(velocity, this.scene.unit.getVelocity(stepFunctionWidth))
+			return Utils.continuousSign(velocity, this.scene.unit.getVelocity(stepFunctionWidth))
 		}
 	}
 
@@ -264,7 +264,7 @@ export class Wheel extends DrawablePhysicsEntity<PIXI.Container> {
 		const orthSlideFrictionForceVec = Vector.mult(orthVec, orthSlideFrictionForce)
 
 		// apply the friction force
-		this._wheelForceVector = Util.vectorAdd(alongForceVec, orthSlideFrictionForceVec)
+		this._wheelForceVector = Utils.vectorAdd(alongForceVec, orthSlideFrictionForceVec)
 		Body.applyForce(wheel, wheel.position, this._wheelForceVector)
 
 
@@ -316,7 +316,7 @@ export class Wheel extends DrawablePhysicsEntity<PIXI.Container> {
 		))
 
 		// apply forces
-		this._wheelForceVector = Util.vectorAdd(alongForceVec, orthSlideFrictionForceVec)
+		this._wheelForceVector = Utils.vectorAdd(alongForceVec, orthSlideFrictionForceVec)
 		Body.applyForce(wheel, wheel.position, this._wheelForceVector)
 
 		// angularVelocity * this.wheelRadius = velocity

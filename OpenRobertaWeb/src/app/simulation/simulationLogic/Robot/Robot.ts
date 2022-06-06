@@ -12,7 +12,7 @@ import { Ray } from '../Geometry/Ray'
 import { TouchSensor } from './Sensors/TouchSensor'
 import { IContainerEntity, IEntity, IPhysicsCompositeEntity, IUpdatableEntity, PhysicsRectEntity } from '../Entity'
 import { Scene } from '../Scene/Scene'
-import { StringMap, Util } from '../Util'
+import { StringMap, Utils } from '../Utils'
 // Dat Gui
 import { downloadFile } from "./../GlobalDebug";
 import { BodyHelper } from "./BodyHelper";
@@ -118,7 +118,7 @@ export class Robot implements IContainerEntity, IUpdatableEntity, IPhysicsCompos
 		maxAngularVelocity: 0.02,
 		/**
 		 * Given the encoder difference `encoderDiff = endEncoder - encoder`, use
-		 * `Util.continuousSign(encoderDiff, maxForceControlEncoderDifference)`
+		 * `Utils.continuousSign(encoderDiff, maxForceControlEncoderDifference)`
 		 * as multiplier to the maximum force.
 		 */
 		maxForceControlEncoderDifference: 0.2,
@@ -273,17 +273,17 @@ export class Robot implements IContainerEntity, IUpdatableEntity, IPhysicsCompos
 			wheel.frictionAir = 0.0
 			// const constraint1 = new CustomConstraint(
 			//     this.body, wheel,
-			//     Util.vectorSub(wheel.position, this.body.position), Vector.create(), {
+			//     Utils.vectorSub(wheel.position, this.body.position), Vector.create(), {
 			//         angularFrequency: 2 * Math.PI * 0.6,
 			//         damping: 1.0,
-			//         length: 0//Vector.magnitude(Util.vectorSub(this.body.position, wheel.position))
+			//         length: 0//Vector.magnitude(Utils.vectorSub(this.body.position, wheel.position))
 			//     })
 			// const constraint2 = new CustomConstraint(
 			//     this.body, wheel,
-			//     Vector.create(), Util.vectorSub(this.body.position, wheel.position), {
+			//     Vector.create(), Utils.vectorSub(this.body.position, wheel.position), {
 			//         angularFrequency: 2 * Math.PI * 0.6,
 			//         damping: 1.0,
-			//         length: 0//Vector.magnitude(Util.vectorSub(this.body.position, wheel.position))
+			//         length: 0//Vector.magnitude(Utils.vectorSub(this.body.position, wheel.position))
 			//     })
 			
 			// this.customConstraints.push(constraint1)
@@ -343,7 +343,7 @@ export class Robot implements IContainerEntity, IUpdatableEntity, IPhysicsCompos
 
 	removeChild(child: IEntity) {
 		child._setParent(undefined)
-		Util.removeFromArray(this.children, child)
+		Utils.removeFromArray(this.children, child)
 		this.scene.removeEntity(child)
 	}
 
@@ -354,7 +354,7 @@ export class Robot implements IContainerEntity, IUpdatableEntity, IPhysicsCompos
 	 * @param rotation Rotation of the robot body in radians
 	 */
 	setPose(position: Vector, rotation: number, inRadians: boolean = true) {
-		Composite.translate(this.physicsComposite, Util.vectorSub(position, this.body.position))
+		Composite.translate(this.physicsComposite, Utils.vectorSub(position, this.body.position))
 		if (!inRadians) {
 			rotation *= 2 * Math.PI / 360
 		}
@@ -516,8 +516,8 @@ export class Robot implements IContainerEntity, IUpdatableEntity, IPhysicsCompos
 	updateWheelVelocity(wheel: Body, dt: number) {
 		const vec = this.vectorAlongBody(wheel)
 		const velocityAlongBody = Vector.mult(vec, Vector.dot(vec, wheel.velocity))
-		const velocityOrthBody = Util.vectorSub(wheel.velocity, velocityAlongBody)
-		const velocityChange = Util.vectorAdd(
+		const velocityOrthBody = Utils.vectorSub(wheel.velocity, velocityAlongBody)
+		const velocityChange = Utils.vectorAdd(
 			Vector.mult(velocityAlongBody, -this.wheelDriveFriction),
 			Vector.mult(velocityOrthBody, -this.wheelSlideFriction))
 
@@ -583,10 +583,10 @@ export class Robot implements IContainerEntity, IUpdatableEntity, IPhysicsCompos
 		const LEDActionState: { color?: string, mode: string } | undefined
 			= this.robotBehaviour.getActionState("led", true)
 		const LEDAction =
-			Util.flatMapOptional(LEDActionState, action => {
+			Utils.flatMapOptional(LEDActionState, action => {
 				return {
-					color: Util.flatMapOptional(action.color?.toUpperCase(), color => {
-						if (Util.listIncludesValue(robotLEDColors, color)) {
+					color: Utils.flatMapOptional(action.color?.toUpperCase(), color => {
+						if (Utils.listIncludesValue(robotLEDColors, color)) {
 							return color
 						} else {
 							console.warn(`The robot LED color ('${color}') is not typed as 'RobotLEDColor'`)
@@ -647,9 +647,9 @@ export class Robot implements IContainerEntity, IUpdatableEntity, IPhysicsCompos
 			} else {
 				const maxDifference = t.endEncoderSettings.maxForceControlEncoderDifference
 				const dampingFactor = t.endEncoderSettings.encoderAngleDampingFactor
-				t.leftForce = Util.continuousSign(
+				t.leftForce = Utils.continuousSign(
 					encoderDifference.left - t.leftDrivingWheel.angularVelocity * dampingFactor * dt, maxDifference) * Math.abs(speedLeft)
-				t.rightForce = Util.continuousSign(
+				t.rightForce = Utils.continuousSign(
 					encoderDifference.right - t.rightDrivingWheel.angularVelocity * dampingFactor * dt, maxDifference) * Math.abs(speedRight)
 			}
 		}
@@ -683,7 +683,7 @@ export class Robot implements IContainerEntity, IUpdatableEntity, IPhysicsCompos
 				if (this.endEncoder == undefined) {
 					this.needsNewCommands = false
 					/** also wheel distance */
-					const axleLength = Util.vectorDistance(this.leftDrivingWheel.physicsBody.position, this.rightDrivingWheel.physicsBody.position)
+					const axleLength = Utils.vectorDistance(this.leftDrivingWheel.physicsBody.position, this.rightDrivingWheel.physicsBody.position)
 					const wheelDrivingDistance = rotateData.angle * 0.5 * axleLength
 					// left rotation for `angle * speed > 0`
 					const rotationFactor = Math.sign(rotateData.speed) / this.calibrationParameters.rotationAngleFactor
@@ -940,8 +940,8 @@ export class Robot implements IContainerEntity, IUpdatableEntity, IPhysicsCompos
 		append("Robot X", this.body.position.x)
 		append("Robot Y", this.body.position.y)
 		append("Robot θ", this.body.angle * 180 / Math.PI, "°")
-		append("Motor left", Util.toDegrees(sensors.encoder?.left ?? 0), "°")
-		append("Motor right", Util.toDegrees(sensors.encoder?.right ?? 0), "°")
+		append("Motor left", Utils.toDegrees(sensors.encoder?.left ?? 0), "°")
+		append("Motor right", Utils.toDegrees(sensors.encoder?.right ?? 0), "°")
 		for (const [port, touchSensor] of this.touchSensors) {
 			appendAny("Touch Sensor "+port, touchSensor.getIsTouched())
 		}
@@ -961,7 +961,7 @@ export class Robot implements IContainerEntity, IUpdatableEntity, IPhysicsCompos
 	 * Returns the absolute position relative to `this.body`
 	 */
 	private getAbsolutePosition(relativePosition: Vector): Vector {
-		return Util.vectorAdd(this.body.position, Vector.rotate(relativePosition, this.body.angle))
+		return Utils.vectorAdd(this.body.position, Vector.rotate(relativePosition, this.body.angle))
 	}
 
 	private updateRobotBehaviourHardwareStateSensors() {
@@ -978,12 +978,12 @@ export class Robot implements IContainerEntity, IUpdatableEntity, IPhysicsCompos
 		// Note: OpenRoberta has a bug for the gyro.rate where they calculate it by
 		// angleDifference * timeDifference but it should be angleDifference / timeDifference
 		const gyroData = sensors.gyro ?? {}
-		const gyroRate = Util.toDegrees(this.body.angularVelocity)
-		const gyroAngleDifference = Util.toDegrees(this.body.angle - this.body.anglePrev)
+		const gyroRate = Utils.toDegrees(this.body.angularVelocity)
+		const gyroAngleDifference = Utils.toDegrees(this.body.angle - this.body.anglePrev)
 		const dt = this.scene.getDT()
 		for (const [port, gyroSensor] of this.gyroSensors) {
 			const referenceAngle = this.robotBehaviour.getGyroReferenceAngle(port) ?? 0
-			const angle = Util.toDegrees(this.body.angle)
+			const angle = Utils.toDegrees(this.body.angle)
 			gyroSensor.update(angle, referenceAngle, dt)
 			// gyroData uses the 'true' angle instead of '' since the referenceAngle/"angleReset" is used
 			// in 'RobotSimBehaviour.getSensorValue'
@@ -1050,17 +1050,17 @@ export class Robot implements IContainerEntity, IUpdatableEntity, IPhysicsCompos
 					return Vector.dot(point, vectors[0]) < dotProducts[0]
 						&& Vector.dot(point, vectors[1]) > dotProducts[1]
 				})
-				let minDistanceSquared = nearestPoint ? Util.vectorDistanceSquared(nearestPoint, sensorPosition) : Infinity
+				let minDistanceSquared = nearestPoint ? Utils.vectorDistanceSquared(nearestPoint, sensorPosition) : Infinity
 				const intersectionPoints = BodyHelper.intersectionPointsWithLine(rays[0], allBodies, robotBodies).concat(BodyHelper.intersectionPointsWithLine(rays[1], allBodies, robotBodies))
 				intersectionPoints.forEach(intersectionPoint => {
-					const distanceSquared = Util.vectorDistanceSquared(intersectionPoint, sensorPosition)
+					const distanceSquared = Utils.vectorDistanceSquared(intersectionPoint, sensorPosition)
 					if (distanceSquared < minDistanceSquared) {
 						minDistanceSquared = distanceSquared
 						nearestPoint = intersectionPoint
 					}
 				})
 
-				ultrasonicDistance = nearestPoint ? Util.vectorDistance(nearestPoint, sensorPosition) : Infinity
+				ultrasonicDistance = nearestPoint ? Utils.vectorDistance(nearestPoint, sensorPosition) : Infinity
 			}
 			ultrasonicSensor.setMeasuredDistance(ultrasonicDistance, this.updateSensorGraphics)
 			if (this.updateSensorGraphics) {
@@ -1222,21 +1222,21 @@ class CustomConstraint {
 		const rotatedPositionB = Vector.rotate(this.positionB, this.bodyB.angle - this.angleB)
 
 		/** positionA in world space */
-		const pointA = Util.vectorAdd(this.bodyA.position, rotatedPositionA)
+		const pointA = Utils.vectorAdd(this.bodyA.position, rotatedPositionA)
 		/** positionB in world space */
-		const pointB = Util.vectorAdd(this.bodyB.position, rotatedPositionB)
+		const pointB = Utils.vectorAdd(this.bodyB.position, rotatedPositionB)
 
-		const relativePosition = Util.vectorSub(pointB, pointA)
+		const relativePosition = Utils.vectorSub(pointB, pointA)
 		const length = Vector.magnitude(relativePosition)
 		const unitRelativePosition = Vector.mult(relativePosition, 1 / (length > 0 ? length : 1e-10))
 		const lengthDelta = length - this.length
 		
 		/** velocity of positionA in world space */
-		const velocityA = Util.vectorAdd(this.bodyA.velocity, Vector.mult(Vector.perp(rotatedPositionA), this.bodyA.angularVelocity))
+		const velocityA = Utils.vectorAdd(this.bodyA.velocity, Vector.mult(Vector.perp(rotatedPositionA), this.bodyA.angularVelocity))
 		/** velocity of positionB in world space */
-		const velocityB = Util.vectorAdd(this.bodyB.velocity, Vector.mult(Vector.perp(rotatedPositionB), this.bodyB.angularVelocity))
+		const velocityB = Utils.vectorAdd(this.bodyB.velocity, Vector.mult(Vector.perp(rotatedPositionB), this.bodyB.angularVelocity))
 
-		const relativeVelocity = Util.vectorSub(velocityB, velocityA)
+		const relativeVelocity = Utils.vectorSub(velocityB, velocityA)
 		const velocity = Vector.dot(unitRelativePosition, relativeVelocity)
 
 		// see Wikipedia https://en.wikipedia.org/wiki/Harmonic_oscillator#Damped_harmonic_oscillator

@@ -9,7 +9,7 @@ var __values = (this && this.__values) || function(o) {
     };
     throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
 };
-define(["require", "exports", "../Util", "../Robot/Robot"], function (require, exports, Util_1, Robot_1) {
+define(["require", "exports", "../Utils", "../Robot/Robot"], function (require, exports, Utils_1, Robot_1) {
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.SimulationCache = void 0;
     var SimulationCache = /** @class */ (function () {
@@ -24,7 +24,7 @@ define(["require", "exports", "../Util", "../Robot/Robot"], function (require, e
                     var setupData = robertaRobotSetupDataList_1_1.value;
                     var portToSensorMapping = setupData.configuration.SENSORS;
                     var allKeys = Object.keys(portToSensorMapping);
-                    var allValues = Util_1.Util.nonNullObjectValues(portToSensorMapping);
+                    var allValues = Utils_1.Utils.nonNullObjectValues(portToSensorMapping);
                     var wrongValueCount = (_c = (_b = allValues.find(function (e) { return !Robot_1.sensorTypeStrings.includes(e); })) === null || _b === void 0 ? void 0 : _b.length) !== null && _c !== void 0 ? _c : 0;
                     if (wrongValueCount > 0 || allKeys.filter(function (e) { return typeof e === "number"; }).length > 0) {
                         console.error("The 'configuration' has not the expected type. Configuration: ".concat(portToSensorMapping));
@@ -57,7 +57,7 @@ define(["require", "exports", "../Util", "../Robot/Robot"], function (require, e
                     configuration: data.configuration
                 };
             }
-            return Util_1.Util.deepEqual(this.storedRobertaRobotSetupDataList.map(toProgramEqualityObject), cache.storedRobertaRobotSetupDataList.map(toProgramEqualityObject));
+            return Utils_1.Utils.deepEqual(this.storedRobertaRobotSetupDataList.map(toProgramEqualityObject), cache.storedRobertaRobotSetupDataList.map(toProgramEqualityObject));
         };
         return SimulationCache;
     }());

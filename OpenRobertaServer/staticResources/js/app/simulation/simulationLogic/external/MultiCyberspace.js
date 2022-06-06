@@ -23,7 +23,7 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
     }
     return to.concat(ar || Array.prototype.slice.call(from));
 };
-define(["require", "exports", "../Cyberspace/Cyberspace", "../GlobalDebug", "../Robot/RobotProgramGenerator", "../UIManager", "../Util", "./SceneDesciptorList", "./RESTApi", "../program.model", "../guiState.model", "../RRC/Scene/RRCScoreScene"], function (require, exports, Cyberspace_1, GlobalDebug_1, RobotProgramGenerator_1, UIManager_1, Util_1, SceneDesciptorList_1, RESTApi_1, PROGRAM_MODEL, GUISTATE_MODEL, RRCScoreScene_1) {
+define(["require", "exports", "../Cyberspace/Cyberspace", "../GlobalDebug", "../Robot/RobotProgramGenerator", "../UIManager", "../Utils", "./SceneDesciptorList", "./RESTApi", "../program.model", "../guiState.model", "../RRC/Scene/RRCScoreScene"], function (require, exports, Cyberspace_1, GlobalDebug_1, RobotProgramGenerator_1, UIManager_1, Utils_1, SceneDesciptorList_1, RESTApi_1, PROGRAM_MODEL, GUISTATE_MODEL, RRCScoreScene_1) {
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.initEvents = exports.init = void 0;
     var cyberspaces = [];
@@ -115,7 +115,7 @@ define(["require", "exports", "../Cyberspace/Cyberspace", "../GlobalDebug", "../
                         score: Math.round(scoreScene.score * 1000),
                         // maximum signed int32 (2^32 - 1)
                         // https://dev.mysql.com/doc/refman/5.6/en/integer-types.html
-                        time: Math.round((_a = Util_1.Util.flatMapOptional(scoreScene.getProgramRuntime(), function (runtime) { return runtime * 1000; })) !== null && _a !== void 0 ? _a : 2147483647),
+                        time: Math.round((_a = Utils_1.Utils.flatMapOptional(scoreScene.getProgramRuntime(), function (runtime) { return runtime * 1000; })) !== null && _a !== void 0 ? _a : 2147483647),
                         comment: "",
                         modifiedBy: "Score scene " + new Date(),
                     }, function (result) {
@@ -178,7 +178,7 @@ define(["require", "exports", "../Cyberspace/Cyberspace", "../GlobalDebug", "../
         });
     }
     function generateDebugRobertaRobotSetupData(count) {
-        return Util_1.Util.range(0, count).map(function (index) {
+        return Utils_1.Utils.range(0, count).map(function (index) {
             return {
                 configuration: {
                     TRACKWIDTH: 18,
@@ -264,7 +264,7 @@ define(["require", "exports", "../Cyberspace/Cyberspace", "../GlobalDebug", "../
                     map_1.set(index, setupData);
                     if (map_1.size == programCount_1) {
                         // if all programs are converted
-                        var setupDataList = Util_1.Util.mapNotNull(Util_1.Util.range(0, map_1.size), function (i) {
+                        var setupDataList = Utils_1.Utils.mapNotNull(Utils_1.Utils.range(0, map_1.size), function (i) {
                             var ageGroup = String(res[i].agegroup);
                             var challenge = String(res[i].challenge);
                             var programID = res[i].id;
@@ -299,7 +299,7 @@ define(["require", "exports", "../Cyberspace/Cyberspace", "../GlobalDebug", "../
     function generateRandomMultiSetupData(count) {
         return generateDebugRobertaRobotSetupData(count).map(function (robertaRobotSetupData, index) {
             return {
-                sceneID: Util_1.Util.randomElement(SceneDesciptorList_1.cyberspaceScenes).ID,
+                sceneID: Utils_1.Utils.randomElement(SceneDesciptorList_1.cyberspaceScenes).ID,
                 groupName: "Test group " + index,
                 robertaRobotSetupData: robertaRobotSetupData,
                 programID: undefined
@@ -379,8 +379,8 @@ define(["require", "exports", "../Cyberspace/Cyberspace", "../GlobalDebug", "../
         // const heightCount = Math.ceil(Math.sqrt(divElements.length * sceneAspectRatio / windowAspectRatio))
         // const widthCount = Math.ceil(divCount / heightCount)
         var widthCount = Math.ceil(Math.sqrt(divElements.length / sceneAspectRatio * windowAspectRatio));
-        var indices = Util_1.Util.range(0, divCount);
-        setGridStyle(Util_1.Util.map2D(Util_1.Util.reshape1Dto2D(indices, widthCount), function (index) { return divElements[index]; }), {
+        var indices = Utils_1.Utils.range(0, divCount);
+        setGridStyle(Utils_1.Utils.map2D(Utils_1.Utils.reshape1Dto2D(indices, widthCount), function (index) { return divElements[index]; }), {
             relativePadding: 1
         });
     }

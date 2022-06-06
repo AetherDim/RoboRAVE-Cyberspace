@@ -5,7 +5,7 @@ import { Timer } from '../Timer';
 import { EventType, ScrollViewEvent } from '../ScrollView';
 import { IEntity } from "../Entity";
 import { Unit } from '../Unit';
-import { Util } from '../Util';
+import { Utils } from '../Utils';
 import { AsyncChain } from "./AsyncChain";
 import { WaypointsManager } from '../Waypoints/WaypointsManager';
 import { ScoreWaypoint } from '../Waypoints/ScoreWaypoint';
@@ -626,7 +626,7 @@ export class Scene {
 					}
 					this.mouseConstraint = Constraint.create({
 						bodyA: body,
-						pointA: Util.vectorSub(mousePosition, body.position),
+						pointA: Utils.vectorSub(mousePosition, body.position),
 						pointB: mousePosition
 					})
 					// attach constraint

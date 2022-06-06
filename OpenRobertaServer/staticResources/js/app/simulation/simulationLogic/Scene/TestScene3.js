@@ -13,27 +13,27 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-define(["require", "exports", "../GlobalDebug", "../Robot/Robot", "../Robot/RobotProgramGenerator", "../Robot/RobotTester", "../Unit", "../Util", "./Scene"], function (require, exports, GlobalDebug_1, Robot_1, RobotProgramGenerator_1, RobotTester_1, Unit_1, Util_1, Scene_1) {
+define(["require", "exports", "../GlobalDebug", "../Robot/Robot", "../Robot/RobotProgramGenerator", "../Robot/RobotTester", "../Unit", "../Utils", "./Scene"], function (require, exports, GlobalDebug_1, Robot_1, RobotProgramGenerator_1, RobotTester_1, Unit_1, Utils_1, Scene_1) {
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.TestScene3 = void 0;
     var KeyData = /** @class */ (function () {
         function KeyData() {
             this.usePseudoPhysics = [true];
             // (0.05, 0.5, 0.05)
-            this.rollingFriction = Util_1.Util.closedRange(0.03, 0.03, 0.1);
+            this.rollingFriction = Utils_1.Utils.closedRange(0.03, 0.03, 0.1);
             // (0.05, 1.0, 0.05)
-            this.slideFriction = Util_1.Util.closedRange(0.3, 0.3, 0.1);
-            this.otherRollingFriction = Util_1.Util.closedRange(0.03, 0.03, 0.01);
-            this.otherSlideFriction = Util_1.Util.closedRange(0.05, 0.05, 0.01);
+            this.slideFriction = Utils_1.Utils.closedRange(0.3, 0.3, 0.1);
+            this.otherRollingFriction = Utils_1.Utils.closedRange(0.03, 0.03, 0.01);
+            this.otherSlideFriction = Utils_1.Utils.closedRange(0.05, 0.05, 0.01);
             this.programType = ["driveForward"];
-            this.driveForwardSpeed = true ? [100] : Util_1.Util.range(60, 100, 1);
-            this.driveForwardDistance = true ? [1] : Util_1.Util.range(0, 2.0, 0.04);
-            this.rotateSpeed = true ? [100] : Util_1.Util.closedRange(1, 100, 1);
-            this.rotateAngle = true ? [360] : Util_1.Util.closedRange(0, 360, 10);
+            this.driveForwardSpeed = true ? [100] : Utils_1.Utils.range(60, 100, 1);
+            this.driveForwardDistance = true ? [1] : Utils_1.Utils.range(0, 2.0, 0.04);
+            this.rotateSpeed = true ? [100] : Utils_1.Utils.closedRange(1, 100, 1);
+            this.rotateAngle = true ? [360] : Utils_1.Utils.closedRange(0, 360, 10);
             this.directionRight = [true];
-            this.maxForceControlEncoderDifference = Util_1.Util.closedRange(0, 5, 0.2);
-            this.encoderAngleDampingFactor = Util_1.Util.closedRange(0, 40, 2);
-            this.pseudoMotorTorqueMultiplier = Util_1.Util.closedRange(1, 20, 2);
+            this.maxForceControlEncoderDifference = Utils_1.Utils.closedRange(0, 5, 0.2);
+            this.encoderAngleDampingFactor = Utils_1.Utils.closedRange(0, 40, 2);
+            this.pseudoMotorTorqueMultiplier = Utils_1.Utils.closedRange(1, 20, 2);
             this.pseudoRollingFriction = [2.0];
             this.pseudoSlideFriction = [2.0];
             this.otherPseudoRollingFriction = [2.0];
@@ -80,7 +80,7 @@ define(["require", "exports", "../GlobalDebug", "../Robot/Robot", "../Robot/Robo
             return new ValueHelper(opt.name, opt.initialValue, opt.endMaxDelta, opt.context, opt.getNewValue, function (start, end) { return end - start; });
         };
         ValueHelper.fromVector = function (opt) {
-            return new ValueHelper(opt.name, opt.initialValue, opt.endMaxDelta, opt.context, opt.getNewValue, function (v1, v2) { return Util_1.Util.vectorDistance(v1, v2); });
+            return new ValueHelper(opt.name, opt.initialValue, opt.endMaxDelta, opt.context, opt.getNewValue, function (v1, v2) { return Utils_1.Utils.vectorDistance(v1, v2); });
         };
         return ValueHelper;
     }());
@@ -111,7 +111,7 @@ define(["require", "exports", "../GlobalDebug", "../Robot/Robot", "../Robot/Robo
                 endMaxDelta: Infinity,
                 context: _this,
                 getNewValue: function (c) { return c.robot.body.angle; }
-            }).withMappedSignedDistance(function (angle) { return Util_1.Util.toDegrees(angle); });
+            }).withMappedSignedDistance(function (angle) { return Utils_1.Utils.toDegrees(angle); });
             /**
              * The array of `ValueHelper`s. Note that `initialValue` has to be set in `onInit`
              */
@@ -133,14 +133,14 @@ define(["require", "exports", "../GlobalDebug", "../Robot/Robot", "../Robot/Robo
             // TODO: Maybe set it always to 0 and remove timeout argument for `Timer.asyncStop`
             _this.setSimTickerStopPollTime(0);
             // make tuples from 'keyData' and maybe shuffle them in order to get a better ETA
-            _this.keyValues = Util_1.Util.allPropertiesTuples(_this.keyData);
+            _this.keyValues = Utils_1.Utils.allPropertiesTuples(_this.keyData);
             if (_this.randomizeKeyValues) {
-                Util_1.Util.shuffle(_this.keyValues);
+                Utils_1.Utils.shuffle(_this.keyValues);
             }
             var DebugGui = _this.getDebugGuiStatic();
             DebugGui === null || DebugGui === void 0 ? void 0 : DebugGui.addButton("Download data", function () { return (0, GlobalDebug_1.downloadJSONFile)("data.json", _this.data); });
             DebugGui === null || DebugGui === void 0 ? void 0 : DebugGui.addUpdatable("progress", function () { return _this.keyIndex + "/" + _this.keyValues.length; });
-            DebugGui === null || DebugGui === void 0 ? void 0 : DebugGui.addUpdatable("ETA", function () { return Util_1.Util.toTimeString(_this.testTime / _this.keyIndex * (_this.keyValues.length - _this.keyIndex)); });
+            DebugGui === null || DebugGui === void 0 ? void 0 : DebugGui.addUpdatable("ETA", function () { return Utils_1.Utils.toTimeString(_this.testTime / _this.keyIndex * (_this.keyValues.length - _this.keyIndex)); });
             DebugGui === null || DebugGui === void 0 ? void 0 : DebugGui.addUpdatable("test timing", function () { return String(_this.testTime); });
             DebugGui === null || DebugGui === void 0 ? void 0 : DebugGui.addButton("Reset", function () {
                 _this.resetData();

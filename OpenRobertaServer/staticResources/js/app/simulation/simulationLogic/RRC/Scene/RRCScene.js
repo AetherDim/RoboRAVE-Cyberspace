@@ -13,7 +13,7 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-define(["require", "exports", "../../Scene/AsyncChain", "../../Robot/Robot", "matter-js", "../../Unit", "./RRCScoreScene", "../../Entity", "../../Waypoints/ScoreWaypoint", "../../Util"], function (require, exports, AsyncChain_1, Robot_1, matter_js_1, Unit_1, RRCScoreScene_1, Entity_1, ScoreWaypoint_1, Util_1) {
+define(["require", "exports", "../../Scene/AsyncChain", "../../Robot/Robot", "matter-js", "../../Unit", "./RRCScoreScene", "../../Entity", "../../Waypoints/ScoreWaypoint", "../../Utils"], function (require, exports, AsyncChain_1, Robot_1, matter_js_1, Unit_1, RRCScoreScene_1, Entity_1, ScoreWaypoint_1, Utils_1) {
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.wp = exports.RRCScene = void 0;
     var RRCScene = /** @class */ (function (_super) {
@@ -122,7 +122,7 @@ define(["require", "exports", "../../Scene/AsyncChain", "../../Robot/Robot", "ma
             var y = unit.fromLength(wall.y);
             var w = unit.fromLength(wall.w);
             var h = unit.fromLength(wall.h);
-            var opts = Util_1.Util.getOptions(Entity_1.RectEntityOptions, options);
+            var opts = Utils_1.Utils.getOptions(Entity_1.RectEntityOptions, options);
             if ((options === null || options === void 0 ? void 0 : options.relativeToCenter) == undefined) {
                 opts.relativeToCenter = false;
             }

@@ -1,5 +1,5 @@
 import { Vector } from "matter-js";
-import { Util } from "../Util";
+import { Utils } from "../Utils";
 import { Waypoint } from "./Waypoint";
 import { WaypointList } from "./WaypointList";
 
@@ -69,7 +69,7 @@ export class WaypointsManager<W extends Waypoint> {
 
 		const waypoint = this.waypointList.get(nextWaypointIndex)
 
-		if (Util.vectorDistanceSquared(waypoint.position, objectPosition) <= waypoint.maxDistance * waypoint.maxDistance) {
+		if (Utils.vectorDistanceSquared(waypoint.position, objectPosition) <= waypoint.maxDistance * waypoint.maxDistance) {
 			this.waypointIndex = nextWaypointIndex
 			const waypointIndex = nextWaypointIndex
 			this.waypointEvent(this.waypointIndex, waypoint)
@@ -97,7 +97,7 @@ export class WaypointsManager<W extends Waypoint> {
 				isVisible = (index) => index == waypointIndex + 1
 				break
 			default:
-				Util.exhaustiveSwitch(this.waypointVisibilityBehavior)
+				Utils.exhaustiveSwitch(this.waypointVisibilityBehavior)
 		}
 		waypoints.forEach((w, index) => w.graphics.visible = isVisible(index))
 	}

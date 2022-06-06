@@ -13,7 +13,7 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-define(["require", "exports", "./RRCScene", "../RRAssetLoader", "../AgeGroup", "../../Waypoints/WaypointList", "../../Util"], function (require, exports, RRCScene_1, RRC, AgeGroup_1, WaypointList_1, Util_1) {
+define(["require", "exports", "./RRCScene", "../RRAssetLoader", "../AgeGroup", "../../Waypoints/WaypointList", "../../Utils"], function (require, exports, RRCScene_1, RRC, AgeGroup_1, WaypointList_1, Utils_1) {
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.RRCLineFollowingScene = void 0;
     var RRCLineFollowingScene = /** @class */ (function (_super) {
@@ -173,7 +173,7 @@ define(["require", "exports", "./RRCScene", "../RRAssetLoader", "../AgeGroup", "
                 case AgeGroup_1.AgeGroup.ES: return [];
                 case AgeGroup_1.AgeGroup.MS: return [17];
                 case AgeGroup_1.AgeGroup.HS: return [7, 22];
-                default: Util_1.Util.exhaustiveSwitch(this.ageGroup);
+                default: Utils_1.Utils.exhaustiveSwitch(this.ageGroup);
             }
         };
         RRCLineFollowingScene.prototype.onInit = function (chain) {

@@ -11,16 +11,16 @@ define(["require", "exports", "message", "util", "webots.simulation", "simulatio
     exports.init = init;
     function initEvents() {
         // open/close simulation view
-        $('#simButton').off('click touchend');
+        /*$('#simButton').off('click touchend');
         $('#simButton').onWrap('click touchend', function (event) {
             debug = false;
             // Workaround for IOS speech synthesis, speech must be triggered once by a button click explicitly before it can be used programmatically
             if (window.speechSynthesis && GUISTATE_C.getRobot().indexOf('ev3') !== -1) {
                 window.speechSynthesis.speak(new SpeechSynthesisUtterance(''));
             }
-            toggleSim();
+            //toggleSim();
             return false;
-        });
+        });*/
         // Not visible on this fork
         /*$('#simDebugButton').off('click touchend');
         $('#simDebugButton').onWrap('click touchend', function (event) {

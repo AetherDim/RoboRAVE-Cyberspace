@@ -2,7 +2,7 @@ import * as WebFont from 'webfontloader'
 import './pixijs'
 import Texture = PIXI.Texture;
 import {randomIntBetween} from "./Random";
-import { Util } from "./Util"
+import { Utils } from "./Utils"
 
 export class Asset {
 
@@ -103,7 +103,7 @@ export class SharedAssetLoader {
 			return (asset instanceof FontAsset) && !SharedAssetLoader.fontMap.get(asset.name);
 		});
 
-		const assetsToLoad = Util.mapNotNull(assets, asset => {
+		const assetsToLoad = Utils.mapNotNull(assets, asset => {
 
 			let assetToLoad: Asset | null = null;
 			if(asset == undefined || asset instanceof FontAsset) {

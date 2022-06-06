@@ -1,7 +1,7 @@
 import { Vector, Body, Query } from "matter-js"
 import { LineBaseClass } from "../Geometry/LineBaseClass"
 import { Polygon } from "../Geometry/Polygon"
-import { Util } from "../Util"
+import { Utils } from "../Utils"
 
 export class BodyHelper {
 
@@ -26,7 +26,7 @@ export class BodyHelper {
 		BodyHelper.forEachBodyPartVertices(bodies, exceptBodies, vertices => {
 			const nearestBodyPoint = new Polygon(vertices).nearestPointToPoint(point, includePoint)
 			if (nearestBodyPoint) {
-				const distanceSquared = Util.vectorDistanceSquared(point, nearestBodyPoint)
+				const distanceSquared = Utils.vectorDistanceSquared(point, nearestBodyPoint)
 				if (distanceSquared < minDistanceSquared) {
 					minDistanceSquared = distanceSquared
 					nearestPoint = nearestBodyPoint

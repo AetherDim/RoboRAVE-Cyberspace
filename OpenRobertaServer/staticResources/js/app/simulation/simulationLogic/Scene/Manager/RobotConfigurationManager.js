@@ -1,4 +1,4 @@
-define(["require", "exports", "matter-js", "../../Entity", "../../Util", "../../Robot/Sensors/TouchSensor", "../../Robot/Sensors/UltrasonicSensor", "../../Robot/Sensors/GyroSensor", "../../Robot/Sensors/ColorSensor", "../../pixijs"], function (require, exports, matter_js_1, Entity_1, Util_1, TouchSensor_1, UltrasonicSensor_1, GyroSensor_1, ColorSensor_1) {
+define(["require", "exports", "matter-js", "../../Entity", "../../Utils", "../../Robot/Sensors/TouchSensor", "../../Robot/Sensors/UltrasonicSensor", "../../Robot/Sensors/GyroSensor", "../../Robot/Sensors/ColorSensor", "../../pixijs"], function (require, exports, matter_js_1, Entity_1, Utils_1, TouchSensor_1, UltrasonicSensor_1, GyroSensor_1, ColorSensor_1) {
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.RobotConfigurationManager = void 0;
     var MaxSensorCount = /** @class */ (function () {
@@ -33,11 +33,11 @@ define(["require", "exports", "matter-js", "../../Entity", "../../Util", "../../
         RobotConfigurationManager.addTouchSensor = function (robot, port, scene, configuration) {
             var touchSensorBody = Entity_1.PhysicsRectEntity.create(scene, configuration.x, configuration.y, configuration.width, configuration.height, { color: 0xFF0000, strokeColor: 0xffffff, strokeWidth: 1, strokeAlpha: 0.5, strokeAlignment: 1 });
             matter_js_1.Body.setMass(touchSensorBody.getPhysicsBody(), scene.unit.getMass(configuration.mass));
-            matter_js_1.Body.rotate(touchSensorBody.getPhysicsBody(), Util_1.Util.toRadians(configuration.angle));
+            matter_js_1.Body.rotate(touchSensorBody.getPhysicsBody(), Utils_1.Utils.toRadians(configuration.angle));
             robot.addTouchSensor(port, new TouchSensor_1.TouchSensor(scene, touchSensorBody));
         };
         RobotConfigurationManager.addUltrasonicSensor = function (robot, port, scene, configuration) {
-            var ultrasonicSensor = new UltrasonicSensor_1.UltrasonicSensor(scene.unit, matter_js_1.Vector.create(configuration.x, configuration.y), Util_1.Util.toRadians(configuration.angle), Util_1.Util.toRadians(configuration.angularRange));
+            var ultrasonicSensor = new UltrasonicSensor_1.UltrasonicSensor(scene.unit, matter_js_1.Vector.create(configuration.x, configuration.y), Utils_1.Utils.toRadians(configuration.angle), Utils_1.Utils.toRadians(configuration.angularRange));
             var portText = new PIXI.Text(port, new PIXI.TextStyle({
                 fill: "0x555555"
             }));
@@ -64,9 +64,9 @@ define(["require", "exports", "matter-js", "../../Entity", "../../Util", "../../
             /** any[][] | undefined[] | undefined */
             var allSensorsConfigurations = this.robotConfiguration[sensorType];
             /** any[] | undefined  where any[] is the array of values used for each port */
-            var sensorsConfiguration = Util_1.Util.safeIndexing(allSensorsConfigurations, sensorCount - 1);
+            var sensorsConfiguration = Utils_1.Utils.safeIndexing(allSensorsConfigurations, sensorCount - 1);
             for (var i = 0; i < sensorCount; i++) {
-                addSensor(robot, ports[i], scene, Util_1.Util.safeIndexing(sensorsConfiguration, i));
+                addSensor(robot, ports[i], scene, Utils_1.Utils.safeIndexing(sensorsConfiguration, i));
             }
         };
         RobotConfigurationManager.configureRobot = function (robot, configuration) {
@@ -123,8 +123,8 @@ define(["require", "exports", "matter-js", "../../Entity", "../../Util", "../../
             ],
             COLOR: 
             // vertically centered colorsensors at the front of the robot
-            Util_1.Util.closedRange(0, 3).map(function (count) {
-                return Util_1.Util.closedRange(0, count).map(function (index) {
+            Utils_1.Utils.closedRange(0, 3).map(function (count) {
+                return Utils_1.Utils.closedRange(0, count).map(function (index) {
                     return {
                         x: 0.06, y: (index - count / 2) * RobotConfigurationManager.colorSensorOffset,
                         graphicsRadius: RobotConfigurationManager.colorSensorRadius

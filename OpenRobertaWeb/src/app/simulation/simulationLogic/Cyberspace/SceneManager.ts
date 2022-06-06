@@ -1,5 +1,5 @@
 import { Scene } from "../Scene/Scene";
-import { Util } from "../Util";
+import { Utils } from "../Utils";
 
 export class SceneDescriptor {
 	readonly name: string
@@ -14,7 +14,7 @@ export class SceneDescriptor {
 		if(ID) {
 			this.ID = ID
 		} else {
-			this.ID = Util.genHtmlUid2()
+			this.ID = Utils.genHtmlUid2()
 		}
 		
 		this._createScene = createScene

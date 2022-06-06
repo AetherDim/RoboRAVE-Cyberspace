@@ -1,4 +1,4 @@
-define(["require", "exports", "../Util"], function (require, exports, Util_1) {
+define(["require", "exports", "../Utils"], function (require, exports, Utils_1) {
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.RobotProgramGenerator = void 0;
     var RobotProgramGenerator = /** @class */ (function () {
@@ -6,7 +6,7 @@ define(["require", "exports", "../Util"], function (require, exports, Util_1) {
         }
         RobotProgramGenerator.generateProgram = function (operations) {
             return {
-                javaScriptProgram: JSON.stringify({ "ops": Util_1.Util.flattenArray(operations) }, undefined, "\t")
+                javaScriptProgram: JSON.stringify({ "ops": Utils_1.Utils.flattenArray(operations) }, undefined, "\t")
             };
         };
         /**
@@ -14,9 +14,9 @@ define(["require", "exports", "../Util"], function (require, exports, Util_1) {
          * @param distance in meters
          */
         RobotProgramGenerator.driveForwardOpCodes = function (speed, distance) {
-            var uuidExpr1 = Util_1.Util.genUid();
-            var uuidExpr2 = Util_1.Util.genUid();
-            var uuidDriveAction = Util_1.Util.genUid();
+            var uuidExpr1 = Utils_1.Utils.genUid();
+            var uuidExpr2 = Utils_1.Utils.genUid();
+            var uuidDriveAction = Utils_1.Utils.genUid();
             return [
                 {
                     "opc": "expr",
@@ -70,9 +70,9 @@ define(["require", "exports", "../Util"], function (require, exports, Util_1) {
          * @param angle in degree
          */
         RobotProgramGenerator.rotateOpCodes = function (speed, angle, right) {
-            var uuidExpr1 = Util_1.Util.genUid();
-            var uuidExpr2 = Util_1.Util.genUid();
-            var uuidRotateAction = Util_1.Util.genUid();
+            var uuidExpr1 = Utils_1.Utils.genUid();
+            var uuidExpr2 = Utils_1.Utils.genUid();
+            var uuidRotateAction = Utils_1.Utils.genUid();
             var dir = right ? 'right' : 'left';
             return [
                 {

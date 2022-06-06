@@ -141,7 +141,7 @@ export type TupleUnpackArray<T extends readonly any[]> = { [k in keyof T]: Unpac
 type RestrictedKeys<T, KeyType> = { [k in keyof T]: T[k] extends KeyType ? k : never }[keyof T]
 type RestrictedKeysType<T, KeyType> = { [k in keyof T]: T[k] extends KeyType ? T[k] : never }
 
-export class Util {
+export class Utils {
 
 	static safeIndexing<T extends unknown[] | undefined>(value: T, index: number): NumberIndexed<T> {
 		if (value == undefined) {
@@ -160,7 +160,7 @@ export class Util {
 		return (x && y && typeof x === 'object' && typeof y === 'object') ?
 		  (Object.keys(x).length === Object.keys(y).length) &&
 			Object.keys(x).reduce<boolean>((isEqual, key) =>
-				isEqual && Util.deepEqual(x[key], y[key])
+				isEqual && Utils.deepEqual(x[key], y[key])
 			, true) : (x === y);
 	  }
 
@@ -236,7 +236,7 @@ export class Util {
 	 * @example
 	 * const list: readonly ["A", "B"] = ["A", "B"] as const
 	 * const value = "C"
-	 * if (Util.listIncludesValue(list, value)) {
+	 * if (Utils.listIncludesValue(list, value)) {
 	 *     value // is of type "A" | "B"
 	 * }
 	 */
@@ -276,10 +276,10 @@ export class Util {
 	 */
 	static genUid(): string {
 		const length = 20;
-		const soupLength = Util.soup_.length;
+		const soupLength = Utils.soup_.length;
 		const id: string[] = [];
 		for (let i = 0; i < length; i++) {
-			id[i] = Util.soup_.charAt(Math.random() * soupLength);
+			id[i] = Utils.soup_.charAt(Math.random() * soupLength);
 		}
 		return id.join('');
 	};
@@ -301,11 +301,11 @@ export class Util {
 	 */
 	static genHtmlUid(): string {
 		const length = 25;
-		const soupLength = Util.soupHTML_.length;
+		const soupLength = Utils.soupHTML_.length;
 		const id: string[] = [];
-		id[0] = Util.soupAlphabet_.charAt(Math.random() * Util.soupAlphabet_.length);
+		id[0] = Utils.soupAlphabet_.charAt(Math.random() * Utils.soupAlphabet_.length);
 		for (let i = 1; i < length; i++) {
-			id[i] = Util.soupHTML_.charAt(Math.random() * soupLength);
+			id[i] = Utils.soupHTML_.charAt(Math.random() * soupLength);
 		}
 		return id.join('');
 	};
@@ -416,10 +416,10 @@ export class Util {
 		} else {
 			const result: any[][] = []
 			for (const value of list[list.length - 1]) {
-				let val = Util.anyTuples(list.slice(0, -1)).map(tuple =>
+				let val = Utils.anyTuples(list.slice(0, -1)).map(tuple =>
 					tuple.concat(value)
 				)
-				Util.pushAll(result, val)
+				Utils.pushAll(result, val)
 			}
 			return result
 		}
@@ -431,7 +431,7 @@ export class Util {
 	 * i.e.`[[list[0][0],list[1][0], list[2][0],...], [list[0][1],list[1][0], list[2][0],...], ...]`
 	 */
 	static tuples<T extends readonly (readonly any[])[]>(list: T): TupleUnpackArray<T>[] {
-		return Util.anyTuples(list as any as any[][]) as any as TupleUnpackArray<T>[]
+		return Utils.anyTuples(list as any as any[][]) as any as TupleUnpackArray<T>[]
 	}
 
 	static strictPropertiesTuples<
@@ -447,7 +447,7 @@ export class Util {
 			}
 		}
 		const values = (keys as Key[]).map(key => applyRestrictedKey<T, any[]>(type, key))
-		const tuples = Util.anyTuples(values)
+		const tuples = Utils.anyTuples(values)
 		return tuples.map(tuple => {
 			const obj: any = {}
 			for (let i = 0; i < keys.length; i++) {
@@ -466,7 +466,7 @@ export class Util {
 			}
 		}
 		const values = keys.map(key => applyRestrictedKey<T, any[]>(type, key))
-		const tuples = Util.anyTuples(values)
+		const tuples = Utils.anyTuples(values)
 		return tuples.map(tuple => {
 			const obj: any = {}
 			for (let i = 0; i < keys.length; i++) {
@@ -478,7 +478,7 @@ export class Util {
 
 	static allPropertiesTuples<T extends { [k in keyof T]: readonly any[] }>(type: T): Expand<UnpackArrayProperties<T>>[] {
 		const keys = Object.keys(type) as RestrictedKeys<T, any[]>[]
-		return Util.propertiesTuples(type, keys)
+		return Utils.propertiesTuples(type, keys)
 	}
 
 	/**
@@ -499,7 +499,7 @@ export class Util {
 		
 		/** repeatedValues[valueIndex][count] returns an array where values[valueIndex] is repeated 'count' times */
 		const repeatedValues = values.map(value =>
-			Util.closedRange(0, length).map(len =>
+			Utils.closedRange(0, length).map(len =>
 				new Array<T>(len).fill(value)
 			)
 		)

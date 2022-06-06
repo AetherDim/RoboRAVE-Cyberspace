@@ -17,6 +17,8 @@ import * as PROGRAM from "program.model";
 import * as MSG from "message";
 import * as PROG_C from "program.controller";
 import * as CONST from "./simulation.constants"
+import * as TOUR_C from "tour.controller";
+import * as UTIL from "./util";
 
 //
 // init all components for a simulation
@@ -92,7 +94,7 @@ export function setPause(pause:boolean) {
 }
 
 export function run(refresh:boolean, robotType: any) {
-	//init(Util.simulation.storedRobertaRobotSetupData, refresh, robotType);
+	//init(Utils.simulation.storedRobertaRobotSetupData, refresh, robotType);
 	console.log("run!")
 }
 
@@ -190,6 +192,21 @@ export function getDebugMode(): boolean {
 }
 
 
+function requestSimAssemblyForProgram(callback: (result: RobertaRobotSetupData) => void) {
+	const xmlProgram = Blockly.Xml.workspaceToDom(GUISTATE_C.getBlocklyWorkspace());
+	const xmlTextProgram = Blockly.Xml.domToText(xmlProgram);
+
+	const isNamedConfig = !GUISTATE_C.isConfigurationStandard() && !GUISTATE_C.isConfigurationAnonymous();
+	const configName = isNamedConfig ? GUISTATE_C.getConfigurationName() : undefined;
+	const xmlConfigText = GUISTATE_C.isConfigurationAnonymous() ? GUISTATE_C.getConfigurationXML() : undefined;
+	const language = GUISTATE_C.getLanguage();
+
+	// Request simulation assembly program from server
+	PROGRAM.runInSim(GUISTATE_C.getProgramName(), configName, xmlTextProgram, xmlConfigText, language, function (result) {
+		callback(result);
+	});
+}
+
 
 // Button
 UIManager.programControlButton.onClick( state => {
@@ -198,19 +215,9 @@ UIManager.programControlButton.onClick( state => {
 
 		if (state == "start") {
 			Blockly.hideChaff();
-			const xmlProgram = Blockly.Xml.workspaceToDom(GUISTATE_C.getBlocklyWorkspace());
-			const xmlTextProgram = Blockly.Xml.domToText(xmlProgram);
-
-			const isNamedConfig = !GUISTATE_C.isConfigurationStandard() && !GUISTATE_C.isConfigurationAnonymous();
-			const configName = isNamedConfig ? GUISTATE_C.getConfigurationName() : undefined;
-			const xmlConfigText = GUISTATE_C.isConfigurationAnonymous() ? GUISTATE_C.getConfigurationXML() : undefined;
-
-			const language = GUISTATE_C.getLanguage();
-
 			NN_CTRL.mkNNfromNNStepData();
 
-			// Request simulation assembly program from server
-			PROGRAM.runInSim(GUISTATE_C.getProgramName(), configName, xmlTextProgram, xmlConfigText, language, function (result) {
+			requestSimAssemblyForProgram(result => {
 				if (result.rc == 'ok') {
 					MSG.displayMessage('MESSAGE_EDIT_START', 'TOAST', GUISTATE_C.getProgramName(), undefined, undefined);
 
@@ -292,4 +299,41 @@ UIManager.zoomResetButton.onClick(() => {
 
 UIManager.switchSceneButton.onClick(() => {
 	cyberspace.switchToNextScene()
+})
+
+
+const INITIAL_WIDTH = 0.5;
+
+UIManager.simViewButton.onClick(state => {
+	if(state == "open") {
+
+		requestSimAssemblyForProgram(result => {
+			if (result.rc == 'ok') {
+				cyberspace.setRobertaRobotSetupData([result], GUISTATE_C.getRobotGroup())
+
+				if (TOUR_C.getInstance() && TOUR_C.getInstance().trigger) {
+					TOUR_C.getInstance().trigger('startSim');
+				}
+
+				$('#blockly').openRightView('sim', INITIAL_WIDTH)
+
+			} else {
+				MSG.displayInformation(result, '', result.message, '', undefined)
+			}
+			PROG_C.reloadProgram(result) // load program into workspace
+		})
+
+		UTIL.openSimRobotWindow(CONST.default.ANIMATION_DURATION)
+
+
+	} else {
+		$('#blockly').closeRightView(() => {
+			$('.nav > li > ul > .robotType').removeClass('disabled')
+			$('.' + GUISTATE_C.getRobot()).addClass('disabled')
+		})
+
+		UTIL.closeSimRobotWindow(CONST.default.ANIMATION_DURATION)
+
+		blocklyDebugManager.setDebugMode(false)
+	}
 })

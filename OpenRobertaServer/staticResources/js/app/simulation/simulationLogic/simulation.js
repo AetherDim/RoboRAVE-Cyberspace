@@ -23,7 +23,7 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
     }
     return to.concat(ar || Array.prototype.slice.call(from));
 };
-define(["require", "exports", "./external/SceneDesciptorList", "./Cyberspace/Cyberspace", "./BlocklyDebug", "./UIManager", "interpreter.jsHelper", "./RRC/Scene/RRCScoreScene", "./external/RESTApi", "jquery", "blockly", "guiState.controller", "nn.controller", "program.model", "message", "program.controller", "./simulation.constants", "./pixijs", "./ExtendedMatter"], function (require, exports, SceneDesciptorList_1, Cyberspace_1, BlocklyDebug_1, UIManager_1, interpreter_jsHelper_1, RRCScoreScene_1, RESTApi_1, $, Blockly, GUISTATE_C, NN_CTRL, PROGRAM, MSG, PROG_C, CONST) {
+define(["require", "exports", "./external/SceneDesciptorList", "./Cyberspace/Cyberspace", "./BlocklyDebug", "./UIManager", "interpreter.jsHelper", "./RRC/Scene/RRCScoreScene", "./external/RESTApi", "jquery", "blockly", "guiState.controller", "nn.controller", "program.model", "message", "program.controller", "./simulation.constants", "tour.controller", "./util", "./pixijs", "./ExtendedMatter"], function (require, exports, SceneDesciptorList_1, Cyberspace_1, BlocklyDebug_1, UIManager_1, interpreter_jsHelper_1, RRCScoreScene_1, RESTApi_1, $, Blockly, GUISTATE_C, NN_CTRL, PROGRAM, MSG, PROG_C, CONST, TOUR_C, UTIL) {
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.getDebugMode = exports.setSimSpeed = exports.zoomReset = exports.zoomOut = exports.zoomIn = exports.score = exports.sim = exports.nextScene = exports.selectScene = exports.getScenes = exports.cancel = exports.interpreterAddEvent = exports.endDebugging = exports.updateDebugMode = exports.resetPose = exports.setInfo = exports.importImage = exports.stopProgram = exports.run = exports.setPause = exports.getNumRobots = exports.init = void 0;
     //
@@ -84,7 +84,7 @@ define(["require", "exports", "./external/SceneDesciptorList", "./Cyberspace/Cyb
     }
     exports.setPause = setPause;
     function run(refresh, robotType) {
-        //init(Util.simulation.storedRobertaRobotSetupData, refresh, robotType);
+        //init(Utils.simulation.storedRobertaRobotSetupData, refresh, robotType);
         console.log("run!");
     }
     exports.run = run;
@@ -180,20 +180,25 @@ define(["require", "exports", "./external/SceneDesciptorList", "./Cyberspace/Cyb
         return false;
     }
     exports.getDebugMode = getDebugMode;
+    function requestSimAssemblyForProgram(callback) {
+        var xmlProgram = Blockly.Xml.workspaceToDom(GUISTATE_C.getBlocklyWorkspace());
+        var xmlTextProgram = Blockly.Xml.domToText(xmlProgram);
+        var isNamedConfig = !GUISTATE_C.isConfigurationStandard() && !GUISTATE_C.isConfigurationAnonymous();
+        var configName = isNamedConfig ? GUISTATE_C.getConfigurationName() : undefined;
+        var xmlConfigText = GUISTATE_C.isConfigurationAnonymous() ? GUISTATE_C.getConfigurationXML() : undefined;
+        var language = GUISTATE_C.getLanguage();
+        // Request simulation assembly program from server
+        PROGRAM.runInSim(GUISTATE_C.getProgramName(), configName, xmlTextProgram, xmlConfigText, language, function (result) {
+            callback(result);
+        });
+    }
     // Button
     UIManager_1.UIManager.programControlButton.onClick(function (state) {
         if (cyberspace.robotCount() <= 1) {
             if (state == "start") {
                 Blockly.hideChaff();
-                var xmlProgram = Blockly.Xml.workspaceToDom(GUISTATE_C.getBlocklyWorkspace());
-                var xmlTextProgram = Blockly.Xml.domToText(xmlProgram);
-                var isNamedConfig = !GUISTATE_C.isConfigurationStandard() && !GUISTATE_C.isConfigurationAnonymous();
-                var configName = isNamedConfig ? GUISTATE_C.getConfigurationName() : undefined;
-                var xmlConfigText = GUISTATE_C.isConfigurationAnonymous() ? GUISTATE_C.getConfigurationXML() : undefined;
-                var language = GUISTATE_C.getLanguage();
                 NN_CTRL.mkNNfromNNStepData();
-                // Request simulation assembly program from server
-                PROGRAM.runInSim(GUISTATE_C.getProgramName(), configName, xmlTextProgram, xmlConfigText, language, function (result) {
+                requestSimAssemblyForProgram(function (result) {
                     if (result.rc == 'ok') {
                         MSG.displayMessage('MESSAGE_EDIT_START', 'TOAST', GUISTATE_C.getProgramName(), undefined, undefined);
                         cyberspace.setRobertaRobotSetupData([result], GUISTATE_C.getRobotGroup());
@@ -264,5 +269,32 @@ define(["require", "exports", "./external/SceneDesciptorList", "./Cyberspace/Cyb
     });
     UIManager_1.UIManager.switchSceneButton.onClick(function () {
         cyberspace.switchToNextScene();
+    });
+    var INITIAL_WIDTH = 0.5;
+    UIManager_1.UIManager.simViewButton.onClick(function (state) {
+        if (state == "open") {
+            requestSimAssemblyForProgram(function (result) {
+                if (result.rc == 'ok') {
+                    cyberspace.setRobertaRobotSetupData([result], GUISTATE_C.getRobotGroup());
+                    if (TOUR_C.getInstance() && TOUR_C.getInstance().trigger) {
+                        TOUR_C.getInstance().trigger('startSim');
+                    }
+                    $('#blockly').openRightView('sim', INITIAL_WIDTH);
+                }
+                else {
+                    MSG.displayInformation(result, '', result.message, '', undefined);
+                }
+                PROG_C.reloadProgram(result); // load program into workspace
+            });
+            UTIL.openSimRobotWindow(CONST.default.ANIMATION_DURATION);
+        }
+        else {
+            $('#blockly').closeRightView(function () {
+                $('.nav > li > ul > .robotType').removeClass('disabled');
+                $('.' + GUISTATE_C.getRobot()).addClass('disabled');
+            });
+            UTIL.closeSimRobotWindow(CONST.default.ANIMATION_DURATION);
+            blocklyDebugManager.setDebugMode(false);
+        }
     });
 });

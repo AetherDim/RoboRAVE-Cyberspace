@@ -1,4 +1,4 @@
-define(["require", "exports", "matter-js", "../Geometry/Polygon", "../Util"], function (require, exports, matter_js_1, Polygon_1, Util_1) {
+define(["require", "exports", "matter-js", "../Geometry/Polygon", "../Utils"], function (require, exports, matter_js_1, Polygon_1, Utils_1) {
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.BodyHelper = void 0;
     var BodyHelper = /** @class */ (function () {
@@ -23,7 +23,7 @@ define(["require", "exports", "matter-js", "../Geometry/Polygon", "../Util"], fu
             BodyHelper.forEachBodyPartVertices(bodies, exceptBodies, function (vertices) {
                 var nearestBodyPoint = new Polygon_1.Polygon(vertices).nearestPointToPoint(point, includePoint);
                 if (nearestBodyPoint) {
-                    var distanceSquared = Util_1.Util.vectorDistanceSquared(point, nearestBodyPoint);
+                    var distanceSquared = Utils_1.Utils.vectorDistanceSquared(point, nearestBodyPoint);
                     if (distanceSquared < minDistanceSquared) {
                         minDistanceSquared = distanceSquared;
                         nearestPoint = nearestBodyPoint;

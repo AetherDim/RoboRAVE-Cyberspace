@@ -1,4 +1,4 @@
-import { Util } from "../Util";
+import { Utils } from "../Utils";
 import { RobertaRobotSetupData } from "../Robot/RobertaRobotSetupData";
 import { sensorTypeStrings } from "../Robot/Robot";
 import { RobotSetupData } from "../Robot/RobotSetupData";
@@ -14,7 +14,7 @@ export class SimulationCache {
 		for (const setupData of robertaRobotSetupDataList) {
 			const portToSensorMapping = setupData.configuration.SENSORS
 			const allKeys = Object.keys(portToSensorMapping)
-			const allValues = Util.nonNullObjectValues(portToSensorMapping)
+			const allValues = Utils.nonNullObjectValues(portToSensorMapping)
 			const wrongValueCount = allValues.find((e) => !sensorTypeStrings.includes(e))?.length ?? 0
 			if (wrongValueCount > 0 || allKeys.filter((e) => typeof e === "number").length > 0) {
 				console.error(`The 'configuration' has not the expected type. Configuration: ${portToSensorMapping}`)
@@ -41,7 +41,7 @@ export class SimulationCache {
 				configuration: data.configuration
 			}
 		}
-		return Util.deepEqual(
+		return Utils.deepEqual(
 			this.storedRobertaRobotSetupDataList.map(toProgramEqualityObject),
 			cache.storedRobertaRobotSetupDataList.map(toProgramEqualityObject))
 	}

@@ -1,6 +1,6 @@
 import { Vector } from "matter-js";
 import { Scene } from "../Scene/Scene";
-import { Util } from "../Util";
+import { Utils } from "../Utils";
 import { Waypoint } from "./Waypoint";
 
 /**

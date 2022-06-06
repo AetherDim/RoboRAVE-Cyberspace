@@ -1,6 +1,6 @@
 import {IDrawablePhysicsEntity, IEntity, IUpdatableEntity, Type} from "../../Entity";
 import {Composite} from "matter-js";
-import {Util} from "../../Util";
+import {Utils} from "../../Utils";
 import {Scene} from "../Scene";
 
 export class EntityManager {
@@ -64,7 +64,7 @@ export class EntityManager {
 		if (entity.getScene() != this.scene) {
 			console.warn(`Entity ${entity} is not in this (${this}) scene`)
 		}
-		if(Util.removeFromArray(this.entities, entity)) {
+		if(Utils.removeFromArray(this.entities, entity)) {
 
 			// remove from parent
 			const parentEntity = entity.getParent()
@@ -75,7 +75,7 @@ export class EntityManager {
 			// remove physics and graphics
 
 			if (Type.IUpdatableEntity.isSupertypeOf(entity)) {
-				Util.removeFromArray(this.updatableEntities, entity)
+				Utils.removeFromArray(this.updatableEntities, entity)
 			}
 
 			if (Type.IDrawableEntity.isSupertypeOf(entity)) {
@@ -86,7 +86,7 @@ export class EntityManager {
 				// TODO: The entity might not be in the world and will therefore not
 				// removed from its parent container
 				Composite.remove(this.scene.getWorld(), entity.getPhysicsObject(), true)
-				Util.removeFromArray(this.drawablePhysicsEntities, entity)
+				Utils.removeFromArray(this.drawablePhysicsEntities, entity)
 			}
 
 			if (Type.IContainerEntity.isSupertypeOf(entity)) {

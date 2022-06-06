@@ -7,4 +7,8 @@ export interface RobertaRobotSetupData {
 	 */
 	 configuration: RobotConfiguration
 	 javaScriptProgram: string
+
+	// could be optional?
+	rc?: string // "ok" or something else
+	message?: string // message
 }

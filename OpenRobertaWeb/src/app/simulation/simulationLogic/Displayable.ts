@@ -1,7 +1,7 @@
 import { Body, Bodies, Vector } from "matter-js";
 import { ColorPalette } from "./Color";
 import { Unit } from "./Unit";
-import { Util } from "./Util";
+import { Utils } from "./Utils";
 
 export class Displayable {
 	displayObject: PIXI.DisplayObject;
@@ -88,7 +88,7 @@ export function createDisplayableFromBody(body: Body, settings?: DisplaySettings
 	graphics.beginFill(settings.color, settings.alpha);
 
 	var vertices = body.vertices;
-	vertices = vertices.map(e => Util.vectorSub(e, body.position));
+	vertices = vertices.map(e => Utils.vectorSub(e, body.position));
 
 	graphics.moveTo(vertices[0].x, vertices[0].y);
 

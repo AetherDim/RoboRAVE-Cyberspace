@@ -25,7 +25,7 @@ var __read = (this && this.__read) || function (o, n) {
     }
     return ar;
 };
-define(["require", "exports", "matter-js", "./ElectricMotor", "../interpreter.constants", "../interpreter.interpreter", "./RobotSimBehaviour", "./Wheel", "./Sensors/ColorSensor", "../Geometry/Ray", "../Entity", "../Util", "./../GlobalDebug", "./BodyHelper", "../Color", "./RobotLED", "../ExtendedMatter"], function (require, exports, matter_js_1, ElectricMotor_1, interpreter_constants_1, interpreter_interpreter_1, RobotSimBehaviour_1, Wheel_1, ColorSensor_1, Ray_1, Entity_1, Util_1, GlobalDebug_1, BodyHelper_1, Color_1, RobotLED_1) {
+define(["require", "exports", "matter-js", "./ElectricMotor", "../interpreter.constants", "../interpreter.interpreter", "./RobotSimBehaviour", "./Wheel", "./Sensors/ColorSensor", "../Geometry/Ray", "../Entity", "../Utils", "./../GlobalDebug", "./BodyHelper", "../Color", "./RobotLED", "../ExtendedMatter"], function (require, exports, matter_js_1, ElectricMotor_1, interpreter_constants_1, interpreter_interpreter_1, RobotSimBehaviour_1, Wheel_1, ColorSensor_1, Ray_1, Entity_1, Utils_1, GlobalDebug_1, BodyHelper_1, Color_1, RobotLED_1) {
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.Robot = exports.sensorTypeStrings = void 0;
     exports.sensorTypeStrings = ["TOUCH", "GYRO", "COLOR", "ULTRASONIC", "INFRARED", "SOUND", "COMPASS",
@@ -77,7 +77,7 @@ define(["require", "exports", "matter-js", "./ElectricMotor", "../interpreter.co
                 maxAngularVelocity: 0.02,
                 /**
                  * Given the encoder difference `encoderDiff = endEncoder - encoder`, use
-                 * `Util.continuousSign(encoderDiff, maxForceControlEncoderDifference)`
+                 * `Utils.continuousSign(encoderDiff, maxForceControlEncoderDifference)`
                  * as multiplier to the maximum force.
                  */
                 maxForceControlEncoderDifference: 0.2,
@@ -201,17 +201,17 @@ define(["require", "exports", "matter-js", "./ElectricMotor", "../interpreter.co
                 wheel.frictionAir = 0.0;
                 // const constraint1 = new CustomConstraint(
                 //     this.body, wheel,
-                //     Util.vectorSub(wheel.position, this.body.position), Vector.create(), {
+                //     Utils.vectorSub(wheel.position, this.body.position), Vector.create(), {
                 //         angularFrequency: 2 * Math.PI * 0.6,
                 //         damping: 1.0,
-                //         length: 0//Vector.magnitude(Util.vectorSub(this.body.position, wheel.position))
+                //         length: 0//Vector.magnitude(Utils.vectorSub(this.body.position, wheel.position))
                 //     })
                 // const constraint2 = new CustomConstraint(
                 //     this.body, wheel,
-                //     Vector.create(), Util.vectorSub(this.body.position, wheel.position), {
+                //     Vector.create(), Utils.vectorSub(this.body.position, wheel.position), {
                 //         angularFrequency: 2 * Math.PI * 0.6,
                 //         damping: 1.0,
-                //         length: 0//Vector.magnitude(Util.vectorSub(this.body.position, wheel.position))
+                //         length: 0//Vector.magnitude(Utils.vectorSub(this.body.position, wheel.position))
                 //     })
                 // this.customConstraints.push(constraint1)
                 // this.customConstraints.push(constraint2)
@@ -252,7 +252,7 @@ define(["require", "exports", "matter-js", "./ElectricMotor", "../interpreter.co
         };
         Robot.prototype.removeChild = function (child) {
             child._setParent(undefined);
-            Util_1.Util.removeFromArray(this.children, child);
+            Utils_1.Utils.removeFromArray(this.children, child);
             this.scene.removeEntity(child);
         };
         /**
@@ -263,7 +263,7 @@ define(["require", "exports", "matter-js", "./ElectricMotor", "../interpreter.co
          */
         Robot.prototype.setPose = function (position, rotation, inRadians) {
             if (inRadians === void 0) { inRadians = true; }
-            matter_js_1.Composite.translate(this.physicsComposite, Util_1.Util.vectorSub(position, this.body.position));
+            matter_js_1.Composite.translate(this.physicsComposite, Utils_1.Utils.vectorSub(position, this.body.position));
             if (!inRadians) {
                 rotation *= 2 * Math.PI / 360;
             }
@@ -382,8 +382,8 @@ define(["require", "exports", "matter-js", "./ElectricMotor", "../interpreter.co
         Robot.prototype.updateWheelVelocity = function (wheel, dt) {
             var vec = this.vectorAlongBody(wheel);
             var velocityAlongBody = matter_js_1.Vector.mult(vec, matter_js_1.Vector.dot(vec, wheel.velocity));
-            var velocityOrthBody = Util_1.Util.vectorSub(wheel.velocity, velocityAlongBody);
-            var velocityChange = Util_1.Util.vectorAdd(matter_js_1.Vector.mult(velocityAlongBody, -this.wheelDriveFriction), matter_js_1.Vector.mult(velocityOrthBody, -this.wheelSlideFriction));
+            var velocityOrthBody = Utils_1.Utils.vectorSub(wheel.velocity, velocityAlongBody);
+            var velocityChange = Utils_1.Utils.vectorAdd(matter_js_1.Vector.mult(velocityAlongBody, -this.wheelDriveFriction), matter_js_1.Vector.mult(velocityOrthBody, -this.wheelSlideFriction));
             // divide two times by `dt` since the simulation calculates velocity changes by adding
             // force/mass * dt
             matter_js_1.Body.applyForce(wheel, wheel.position, matter_js_1.Vector.mult(velocityChange, wheel.mass / dt));
@@ -433,11 +433,11 @@ define(["require", "exports", "matter-js", "./ElectricMotor", "../interpreter.co
             this.updateRobotBehaviourHardwareStateSensors();
             // update LEDs
             var LEDActionState = this.robotBehaviour.getActionState("led", true);
-            var LEDAction = Util_1.Util.flatMapOptional(LEDActionState, function (action) {
+            var LEDAction = Utils_1.Utils.flatMapOptional(LEDActionState, function (action) {
                 var _a;
                 return {
-                    color: Util_1.Util.flatMapOptional((_a = action.color) === null || _a === void 0 ? void 0 : _a.toUpperCase(), function (color) {
-                        if (Util_1.Util.listIncludesValue(RobotLED_1.robotLEDColors, color)) {
+                    color: Utils_1.Utils.flatMapOptional((_a = action.color) === null || _a === void 0 ? void 0 : _a.toUpperCase(), function (color) {
+                        if (Utils_1.Utils.listIncludesValue(RobotLED_1.robotLEDColors, color)) {
                             return color;
                         }
                         else {
@@ -494,8 +494,8 @@ define(["require", "exports", "matter-js", "./ElectricMotor", "../interpreter.co
                 else {
                     var maxDifference = t.endEncoderSettings.maxForceControlEncoderDifference;
                     var dampingFactor = t.endEncoderSettings.encoderAngleDampingFactor;
-                    t.leftForce = Util_1.Util.continuousSign(encoderDifference.left - t.leftDrivingWheel.angularVelocity * dampingFactor * dt, maxDifference) * Math.abs(speedLeft);
-                    t.rightForce = Util_1.Util.continuousSign(encoderDifference.right - t.rightDrivingWheel.angularVelocity * dampingFactor * dt, maxDifference) * Math.abs(speedRight);
+                    t.leftForce = Utils_1.Utils.continuousSign(encoderDifference.left - t.leftDrivingWheel.angularVelocity * dampingFactor * dt, maxDifference) * Math.abs(speedLeft);
+                    t.rightForce = Utils_1.Utils.continuousSign(encoderDifference.right - t.rightDrivingWheel.angularVelocity * dampingFactor * dt, maxDifference) * Math.abs(speedRight);
                 }
             }
             var driveData = this.robotBehaviour.drive;
@@ -526,7 +526,7 @@ define(["require", "exports", "matter-js", "./ElectricMotor", "../interpreter.co
                     if (this.endEncoder == undefined) {
                         this.needsNewCommands = false;
                         /** also wheel distance */
-                        var axleLength = Util_1.Util.vectorDistance(this.leftDrivingWheel.physicsBody.position, this.rightDrivingWheel.physicsBody.position);
+                        var axleLength = Utils_1.Utils.vectorDistance(this.leftDrivingWheel.physicsBody.position, this.rightDrivingWheel.physicsBody.position);
                         var wheelDrivingDistance = rotateData.angle * 0.5 * axleLength;
                         // left rotation for `angle * speed > 0`
                         var rotationFactor = Math.sign(rotateData.speed) / this.calibrationParameters.rotationAngleFactor;
@@ -776,8 +776,8 @@ define(["require", "exports", "matter-js", "./ElectricMotor", "../interpreter.co
             append("Robot X", this.body.position.x);
             append("Robot Y", this.body.position.y);
             append("Robot θ", this.body.angle * 180 / Math.PI, "°");
-            append("Motor left", Util_1.Util.toDegrees((_f = (_e = sensors.encoder) === null || _e === void 0 ? void 0 : _e.left) !== null && _f !== void 0 ? _f : 0), "°");
-            append("Motor right", Util_1.Util.toDegrees((_h = (_g = sensors.encoder) === null || _g === void 0 ? void 0 : _g.right) !== null && _h !== void 0 ? _h : 0), "°");
+            append("Motor left", Utils_1.Utils.toDegrees((_f = (_e = sensors.encoder) === null || _e === void 0 ? void 0 : _e.left) !== null && _f !== void 0 ? _f : 0), "°");
+            append("Motor right", Utils_1.Utils.toDegrees((_h = (_g = sensors.encoder) === null || _g === void 0 ? void 0 : _g.right) !== null && _h !== void 0 ? _h : 0), "°");
             try {
                 for (var _j = __values(this.touchSensors), _k = _j.next(); !_k.done; _k = _j.next()) {
                     var _l = __read(_k.value, 2), port = _l[0], touchSensor = _l[1];
@@ -835,7 +835,7 @@ define(["require", "exports", "matter-js", "./ElectricMotor", "../interpreter.co
          * Returns the absolute position relative to `this.body`
          */
         Robot.prototype.getAbsolutePosition = function (relativePosition) {
-            return Util_1.Util.vectorAdd(this.body.position, matter_js_1.Vector.rotate(relativePosition, this.body.angle));
+            return Utils_1.Utils.vectorAdd(this.body.position, matter_js_1.Vector.rotate(relativePosition, this.body.angle));
         };
         Robot.prototype.updateRobotBehaviourHardwareStateSensors = function () {
             var e_5, _a, e_6, _b, e_7, _c, e_8, _d;
@@ -850,14 +850,14 @@ define(["require", "exports", "matter-js", "./ElectricMotor", "../interpreter.co
             // Note: OpenRoberta has a bug for the gyro.rate where they calculate it by
             // angleDifference * timeDifference but it should be angleDifference / timeDifference
             var gyroData = (_e = sensors.gyro) !== null && _e !== void 0 ? _e : {};
-            var gyroRate = Util_1.Util.toDegrees(this.body.angularVelocity);
-            var gyroAngleDifference = Util_1.Util.toDegrees(this.body.angle - this.body.anglePrev);
+            var gyroRate = Utils_1.Utils.toDegrees(this.body.angularVelocity);
+            var gyroAngleDifference = Utils_1.Utils.toDegrees(this.body.angle - this.body.anglePrev);
             var dt = this.scene.getDT();
             try {
                 for (var _g = __values(this.gyroSensors), _h = _g.next(); !_h.done; _h = _g.next()) {
                     var _j = __read(_h.value, 2), port = _j[0], gyroSensor = _j[1];
                     var referenceAngle = (_f = this.robotBehaviour.getGyroReferenceAngle(port)) !== null && _f !== void 0 ? _f : 0;
-                    var angle = Util_1.Util.toDegrees(this.body.angle);
+                    var angle = Utils_1.Utils.toDegrees(this.body.angle);
                     gyroSensor.update(angle, referenceAngle, dt);
                     // gyroData uses the 'true' angle instead of '' since the referenceAngle/"angleReset" is used
                     // in 'RobotSimBehaviour.getSensorValue'
@@ -937,16 +937,16 @@ define(["require", "exports", "matter-js", "./ElectricMotor", "../interpreter.co
                         return matter_js_1.Vector.dot(point, vectors_1[0]) < dotProducts_1[0]
                             && matter_js_1.Vector.dot(point, vectors_1[1]) > dotProducts_1[1];
                     });
-                    var minDistanceSquared_1 = nearestPoint ? Util_1.Util.vectorDistanceSquared(nearestPoint, sensorPosition) : Infinity;
+                    var minDistanceSquared_1 = nearestPoint ? Utils_1.Utils.vectorDistanceSquared(nearestPoint, sensorPosition) : Infinity;
                     var intersectionPoints = BodyHelper_1.BodyHelper.intersectionPointsWithLine(rays[0], allBodies, robotBodies).concat(BodyHelper_1.BodyHelper.intersectionPointsWithLine(rays[1], allBodies, robotBodies));
                     intersectionPoints.forEach(function (intersectionPoint) {
-                        var distanceSquared = Util_1.Util.vectorDistanceSquared(intersectionPoint, sensorPosition);
+                        var distanceSquared = Utils_1.Utils.vectorDistanceSquared(intersectionPoint, sensorPosition);
                         if (distanceSquared < minDistanceSquared_1) {
                             minDistanceSquared_1 = distanceSquared;
                             nearestPoint = intersectionPoint;
                         }
                     });
-                    ultrasonicDistance = nearestPoint ? Util_1.Util.vectorDistance(nearestPoint, sensorPosition) : Infinity;
+                    ultrasonicDistance = nearestPoint ? Utils_1.Utils.vectorDistance(nearestPoint, sensorPosition) : Infinity;
                 }
                 ultrasonicSensor.setMeasuredDistance(ultrasonicDistance, this_1.updateSensorGraphics);
                 if (this_1.updateSensorGraphics) {
@@ -1110,18 +1110,18 @@ define(["require", "exports", "matter-js", "./ElectricMotor", "../interpreter.co
             var rotatedPositionA = matter_js_1.Vector.rotate(this.positionA, this.bodyA.angle - this.angleA);
             var rotatedPositionB = matter_js_1.Vector.rotate(this.positionB, this.bodyB.angle - this.angleB);
             /** positionA in world space */
-            var pointA = Util_1.Util.vectorAdd(this.bodyA.position, rotatedPositionA);
+            var pointA = Utils_1.Utils.vectorAdd(this.bodyA.position, rotatedPositionA);
             /** positionB in world space */
-            var pointB = Util_1.Util.vectorAdd(this.bodyB.position, rotatedPositionB);
-            var relativePosition = Util_1.Util.vectorSub(pointB, pointA);
+            var pointB = Utils_1.Utils.vectorAdd(this.bodyB.position, rotatedPositionB);
+            var relativePosition = Utils_1.Utils.vectorSub(pointB, pointA);
             var length = matter_js_1.Vector.magnitude(relativePosition);
             var unitRelativePosition = matter_js_1.Vector.mult(relativePosition, 1 / (length > 0 ? length : 1e-10));
             var lengthDelta = length - this.length;
             /** velocity of positionA in world space */
-            var velocityA = Util_1.Util.vectorAdd(this.bodyA.velocity, matter_js_1.Vector.mult(matter_js_1.Vector.perp(rotatedPositionA), this.bodyA.angularVelocity));
+            var velocityA = Utils_1.Utils.vectorAdd(this.bodyA.velocity, matter_js_1.Vector.mult(matter_js_1.Vector.perp(rotatedPositionA), this.bodyA.angularVelocity));
             /** velocity of positionB in world space */
-            var velocityB = Util_1.Util.vectorAdd(this.bodyB.velocity, matter_js_1.Vector.mult(matter_js_1.Vector.perp(rotatedPositionB), this.bodyB.angularVelocity));
-            var relativeVelocity = Util_1.Util.vectorSub(velocityB, velocityA);
+            var velocityB = Utils_1.Utils.vectorAdd(this.bodyB.velocity, matter_js_1.Vector.mult(matter_js_1.Vector.perp(rotatedPositionB), this.bodyB.angularVelocity));
+            var relativeVelocity = Utils_1.Utils.vectorSub(velocityB, velocityA);
             var velocity = matter_js_1.Vector.dot(unitRelativePosition, relativeVelocity);
             // see Wikipedia https://en.wikipedia.org/wiki/Harmonic_oscillator#Damped_harmonic_oscillator
             var acceleration = -this.angularFrequency * (this.angularFrequency * lengthDelta + 2 * this.damping * velocity);

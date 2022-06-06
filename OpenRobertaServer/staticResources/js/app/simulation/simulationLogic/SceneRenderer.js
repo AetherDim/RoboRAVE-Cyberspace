@@ -1,4 +1,4 @@
-define(["require", "exports", "jquery", "./Color", "./ScrollView", "./Util", "./GlobalDebug", "./pixijs"], function (require, exports, $, Color_1, ScrollView_1, Util_1, GlobalDebug_1) {
+define(["require", "exports", "jquery", "./Color", "./ScrollView", "./Utils", "./GlobalDebug", "./pixijs"], function (require, exports, $, Color_1, ScrollView_1, Utils_1, GlobalDebug_1) {
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.SceneRender = void 0;
     // physics and graphics
@@ -33,7 +33,7 @@ define(["require", "exports", "jquery", "./Color", "./ScrollView", "./Util", "./
                 antialias: true,
                 resizeTo: resizeTo || undefined,
                 autoDensity: true,
-                resolution: Util_1.Util.getPixelRatio(),
+                resolution: Utils_1.Utils.getPixelRatio(),
                 forceCanvas: true
             });
             this.app.ticker.maxFPS = 30;

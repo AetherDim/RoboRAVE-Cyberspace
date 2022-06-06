@@ -5,7 +5,7 @@ import { AsyncChain } from "./AsyncChain";
 import * as RRC from '../RRC/RRAssetLoader'
 import { randomIntBetween } from "../Random";
 import { WaypointList } from "../Waypoints/WaypointList";
-import { StringMap, Util } from "../Util";
+import { StringMap, Utils } from "../Utils";
 import { SensorType } from "../Robot/Robot";
 import { AgeGroup } from "../RRC/AgeGroup";
 
@@ -29,7 +29,7 @@ export class TestScene2 extends RRCScene {
 	readonly _sensorTypes = [...this.testSensorTypes, undefined]
 	readonly useMultiSetCombinations = true
 	readonly allSensorConfigurations = this.useMultiSetCombinations ?
-		Util.generateMultiSetTuples(
+		Utils.generateMultiSetTuples(
 			this._sensorTypes, 4
 		).map(multiSet => { return {
 			1: multiSet[0],
@@ -37,7 +37,7 @@ export class TestScene2 extends RRCScene {
 			3: multiSet[2],
 			4: multiSet[3]
 		}}) :
-		Util.allPropertiesTuples({
+		Utils.allPropertiesTuples({
 			1: this._sensorTypes,
 			2: this._sensorTypes,
 			3: this._sensorTypes,

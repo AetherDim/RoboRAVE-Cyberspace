@@ -13,13 +13,13 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-define(["require", "exports", "../Util", "./LineBaseClass"], function (require, exports, Util_1, LineBaseClass_1) {
+define(["require", "exports", "../Utils", "./LineBaseClass"], function (require, exports, Utils_1, LineBaseClass_1) {
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.LineSegment = void 0;
     var LineSegment = /** @class */ (function (_super) {
         __extends(LineSegment, _super);
         function LineSegment(point1, point2) {
-            var _this = _super.call(this, point1, Util_1.Util.vectorSub(point2, point1)) || this;
+            var _this = _super.call(this, point1, Utils_1.Utils.vectorSub(point2, point1)) || this;
             _this.point1 = point1;
             _this.point2 = point2;
             return _this;

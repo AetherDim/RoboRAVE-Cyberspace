@@ -1,4 +1,4 @@
-import { Util } from "../Util";
+import { Utils } from "../Utils";
 import { RobotProgram } from "./RobotProgram";
 
 export interface OpCode {
@@ -12,7 +12,7 @@ export class RobotProgramGenerator {
 
 	static generateProgram(operations: OpCode[][]): RobotProgram {
 		return {
-			javaScriptProgram: JSON.stringify({ "ops": Util.flattenArray(operations) }, undefined, "\t")
+			javaScriptProgram: JSON.stringify({ "ops": Utils.flattenArray(operations) }, undefined, "\t")
 		}
 	}
 
@@ -21,9 +21,9 @@ export class RobotProgramGenerator {
 	 * @param distance in meters
 	 */
 	static driveForwardOpCodes(speed: number, distance: number): OpCode[] {
-		const uuidExpr1 = Util.genUid()
-		const uuidExpr2 = Util.genUid()
-		const uuidDriveAction= Util.genUid()
+		const uuidExpr1 = Utils.genUid()
+		const uuidExpr2 = Utils.genUid()
+		const uuidDriveAction= Utils.genUid()
 		return [
 			{
 				"opc": "expr",
@@ -78,9 +78,9 @@ export class RobotProgramGenerator {
 	 * @param angle in degree
 	 */
 	static rotateOpCodes(speed: number, angle: number, right: boolean): OpCode[] {
-		const uuidExpr1 = Util.genUid()
-		const uuidExpr2 = Util.genUid()
-		const uuidRotateAction= Util.genUid()
+		const uuidExpr1 = Utils.genUid()
+		const uuidExpr2 = Utils.genUid()
+		const uuidRotateAction= Utils.genUid()
 		const dir = right ? 'right' : 'left'
 		return [
 			{

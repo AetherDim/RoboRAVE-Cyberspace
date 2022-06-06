@@ -29,7 +29,7 @@ var __read = (this && this.__read) || function (o, n) {
     }
     return ar;
 };
-define(["require", "exports", "matter-js", "./Util"], function (require, exports, matter_js_1, Util_1) {
+define(["require", "exports", "matter-js", "./Utils"], function (require, exports, matter_js_1, Utils_1) {
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.DrawableEntity = exports.PhysicsRectEntity = exports.RectEntityOptions = exports.RectOptions = exports.DrawSettings = exports.DrawablePhysicsEntity = exports.Type = exports.Meta = void 0;
     var Meta = /** @class */ (function () {
@@ -152,14 +152,14 @@ define(["require", "exports", "matter-js", "./Util"], function (require, exports
         PhysicsRectEntity.create = function (scene, x, y, width, height, opts) {
             var _a;
             _a = __read(scene.unit.getLengths([x, y, width, height]), 4), x = _a[0], y = _a[1], width = _a[2], height = _a[3];
-            var options = Util_1.Util.getOptions(RectEntityOptions, opts);
+            var options = Utils_1.Utils.getOptions(RectEntityOptions, opts);
             var graphics = PhysicsRectEntity.createGraphics(width, height, options);
             return new PhysicsRectEntity(scene, x, y, width, height, graphics, options);
         };
         PhysicsRectEntity.createWithContainer = function (scene, x, y, width, height, opts) {
             var _a;
             _a = __read(scene.unit.getLengths([x, y, width, height]), 4), x = _a[0], y = _a[1], width = _a[2], height = _a[3];
-            var options = Util_1.Util.getOptions(RectEntityOptions, opts);
+            var options = Utils_1.Utils.getOptions(RectEntityOptions, opts);
             var graphics = PhysicsRectEntity.createGraphics(width, height, options);
             var container = new PIXI.Container();
             container.addChild(graphics);
@@ -167,7 +167,7 @@ define(["require", "exports", "matter-js", "./Util"], function (require, exports
         };
         PhysicsRectEntity.createTexture = function (scene, x, y, texture, alpha, relativeToCenter, bodyOptions) {
             if (relativeToCenter === void 0) { relativeToCenter = false; }
-            return new PhysicsRectEntity(scene, x, y, texture.width, texture.height, new PIXI.DisplayObject(), Util_1.Util.getOptions(RectEntityOptions, { physics: bodyOptions }));
+            return new PhysicsRectEntity(scene, x, y, texture.width, texture.height, new PIXI.DisplayObject(), Utils_1.Utils.getOptions(RectEntityOptions, { physics: bodyOptions }));
             // TODO
         };
         return PhysicsRectEntity;
@@ -193,7 +193,7 @@ define(["require", "exports", "matter-js", "./Util"], function (require, exports
             return this.drawable;
         };
         DrawableEntity.rect = function (scene, x, y, width, height, opts) {
-            var options = Util_1.Util.getOptions(RectOptions, opts);
+            var options = Utils_1.Utils.getOptions(RectOptions, opts);
             var graphicsX = 0;
             var graphicsY = 0;
             if (options.relativeToCenter) {

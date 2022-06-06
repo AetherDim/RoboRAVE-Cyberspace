@@ -148,7 +148,7 @@ function initRequireJS(version) {
             'ScrollView',
             'SharedAssetLoader',
             'Random',
-            'Util',
+            'Utils',
             'Entity',
             'BlocklyDebug',
             'UIManager',

@@ -7,7 +7,7 @@ import {RRCScoreScene} from "./RRCScoreScene";
 import {PhysicsRectEntity, DrawableEntity, RectEntityOptions} from "../../Entity";
 import {ScoreWaypoint} from "../../Waypoints/ScoreWaypoint"
 import {WaypointList} from "../../Waypoints/WaypointList";
-import {Util} from "../../Util";
+import {Utils} from "../../Utils";
 import { WaypointVisibilityBehavior } from "../../Waypoints/WaypointsManager";
 
 export class RRCScene extends RRCScoreScene {
@@ -134,7 +134,7 @@ export class RRCScene extends RRCScoreScene {
 		const w = unit.fromLength(wall.w)
 		const h = unit.fromLength(wall.h)
 
-		const opts = Util.getOptions(RectEntityOptions, options)
+		const opts = Utils.getOptions(RectEntityOptions, options)
 		if (options?.relativeToCenter == undefined) {
 			opts.relativeToCenter = false
 		}

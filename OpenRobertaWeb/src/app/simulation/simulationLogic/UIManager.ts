@@ -1,6 +1,6 @@
 
 import Blockly = require("blockly");
-import { UnionToTuple } from "./Util";
+import { UnionToTuple } from "./Utils";
 
 interface RobertaButtonSettings {
 	class: string
@@ -182,5 +182,10 @@ export class UIManager {
 	static readonly zoomResetButton = new UIRobertaButton("zoomReset")
 
 	static readonly switchSceneButton = new UIRobertaButton("simScene")
+
+	static readonly simViewButton = new UIRobertaToggleStateButton("simButton", "closed", {
+		closed: { class: "" },
+		open: { class: "" }
+	})
 
 }

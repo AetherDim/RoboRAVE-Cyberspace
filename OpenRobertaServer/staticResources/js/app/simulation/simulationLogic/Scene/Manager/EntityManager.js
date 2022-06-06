@@ -1,4 +1,4 @@
-define(["require", "exports", "../../Entity", "matter-js", "../../Util"], function (require, exports, Entity_1, matter_js_1, Util_1) {
+define(["require", "exports", "../../Entity", "matter-js", "../../Utils"], function (require, exports, Entity_1, matter_js_1, Utils_1) {
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.EntityManager = void 0;
     var EntityManager = /** @class */ (function () {
@@ -54,7 +54,7 @@ define(["require", "exports", "../../Entity", "matter-js", "../../Util"], functi
             if (entity.getScene() != this.scene) {
                 console.warn("Entity ".concat(entity, " is not in this (").concat(this, ") scene"));
             }
-            if (Util_1.Util.removeFromArray(this.entities, entity)) {
+            if (Utils_1.Utils.removeFromArray(this.entities, entity)) {
                 // remove from parent
                 var parentEntity = entity.getParent();
                 if (parentEntity != undefined) {
@@ -62,7 +62,7 @@ define(["require", "exports", "../../Entity", "matter-js", "../../Util"], functi
                 }
                 // remove physics and graphics
                 if (Entity_1.Type.IUpdatableEntity.isSupertypeOf(entity)) {
-                    Util_1.Util.removeFromArray(this.updatableEntities, entity);
+                    Utils_1.Utils.removeFromArray(this.updatableEntities, entity);
                 }
                 if (Entity_1.Type.IDrawableEntity.isSupertypeOf(entity)) {
                     (_a = entity.getContainer) === null || _a === void 0 ? void 0 : _a.call(entity).removeChild(entity.getDrawable());
@@ -71,7 +71,7 @@ define(["require", "exports", "../../Entity", "matter-js", "../../Util"], functi
                     // TODO: The entity might not be in the world and will therefore not
                     // removed from its parent container
                     matter_js_1.Composite.remove(this.scene.getWorld(), entity.getPhysicsObject(), true);
-                    Util_1.Util.removeFromArray(this.drawablePhysicsEntities, entity);
+                    Utils_1.Utils.removeFromArray(this.drawablePhysicsEntities, entity);
                 }
                 if (Entity_1.Type.IContainerEntity.isSupertypeOf(entity)) {
                     var children = entity.getChildren();

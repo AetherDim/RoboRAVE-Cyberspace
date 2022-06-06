@@ -1,4 +1,4 @@
-define(["require", "exports", "webfontloader", "./Random", "./Util", "./pixijs"], function (require, exports, WebFont, Random_1, Util_1) {
+define(["require", "exports", "webfontloader", "./Random", "./Utils", "./pixijs"], function (require, exports, WebFont, Random_1, Utils_1) {
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.SharedAssetLoader = exports.MultiAsset = exports.FontAsset = exports.Asset = void 0;
     var Asset = /** @class */ (function () {
@@ -82,7 +82,7 @@ define(["require", "exports", "webfontloader", "./Random", "./Util", "./pixijs"]
             var fontsToLoad = assets.filter(function (asset) {
                 return (asset instanceof FontAsset) && !SharedAssetLoader.fontMap.get(asset.name);
             });
-            var assetsToLoad = Util_1.Util.mapNotNull(assets, function (asset) {
+            var assetsToLoad = Utils_1.Utils.mapNotNull(assets, function (asset) {
                 var assetToLoad = null;
                 if (asset == undefined || asset instanceof FontAsset) {
                     return null;

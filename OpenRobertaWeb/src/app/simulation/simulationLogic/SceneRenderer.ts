@@ -3,7 +3,7 @@ import * as $ from "jquery";
 import { Scene } from './Scene/Scene';
 import { rgbToNumber } from './Color'
 import { ScrollView, ScrollViewEvent } from './ScrollView';
-import { Util } from './Util';
+import { Utils } from './Utils';
 import { DebugGuiRoot, initGlobalSceneDebug } from './GlobalDebug';
 import { RobotSetupData } from './Robot/RobotSetupData';
 
@@ -74,7 +74,7 @@ export class SceneRender {
 				antialias: true,
 				resizeTo: resizeTo || undefined,
 				autoDensity: true,
-				resolution: Util.getPixelRatio(),
+				resolution: Utils.getPixelRatio(),
 				forceCanvas: true
 			}
 		);

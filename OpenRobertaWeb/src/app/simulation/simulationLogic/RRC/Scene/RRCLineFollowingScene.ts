@@ -4,7 +4,7 @@ import * as RRC from '../RRAssetLoader'
 import {AgeGroup} from "../AgeGroup";
 import { WaypointList } from "../../Waypoints/WaypointList";
 import {ScoreWaypoint} from "../../Waypoints/ScoreWaypoint";
-import { Util } from "../../Util";
+import { Utils } from "../../Utils";
 
 export class RRCLineFollowingScene extends RRCScene {
 
@@ -180,7 +180,7 @@ export class RRCLineFollowingScene extends RRCScene {
 		case AgeGroup.ES: return []
 		case AgeGroup.MS: return [17]
 		case AgeGroup.HS: return [7, 22]
-		default: Util.exhaustiveSwitch(this.ageGroup)
+		default: Utils.exhaustiveSwitch(this.ageGroup)
 		}
 	}
 

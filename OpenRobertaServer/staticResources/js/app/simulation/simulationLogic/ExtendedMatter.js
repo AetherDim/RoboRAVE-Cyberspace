@@ -9,7 +9,7 @@ var __assign = (this && this.__assign) || function () {
     };
     return __assign.apply(this, arguments);
 };
-define(["require", "exports", "matter-js", "./Util"], function (require, exports, matter_js_1, Util_1) {
+define(["require", "exports", "matter-js", "./Utils"], function (require, exports, matter_js_1, Utils_1) {
     Object.defineProperty(exports, "__esModule", { value: true });
     // === Composite ===
     function addRigidBodyConstraints(bodyA, bodyB, rotationStiffnessA, rotationStiffnessB, offsetA, offsetB) {
@@ -28,8 +28,8 @@ define(["require", "exports", "matter-js", "./Util"], function (require, exports
         }
         // add constraints to world or compound body
         [
-            makeConstraint(Util_1.Util.vectorSub(bodyB.position, bodyA.position), offsetB, rotationStiffnessA),
-            makeConstraint(offsetA, Util_1.Util.vectorSub(bodyA.position, bodyB.position), rotationStiffnessB)
+            makeConstraint(Utils_1.Utils.vectorSub(bodyB.position, bodyA.position), offsetB, rotationStiffnessA),
+            makeConstraint(offsetA, Utils_1.Utils.vectorSub(bodyA.position, bodyB.position), rotationStiffnessB)
         ].forEach(function (constraint) { return matter_js_1.Composite.add(_this, constraint); });
     }
     function scale(scaleX, scaleY, point, recursive) {

@@ -29,7 +29,7 @@ var __read = (this && this.__read) || function (o, n) {
     }
     return ar;
 };
-define(["require", "exports", "d3", "matter-js", "../Entity", "../Util"], function (require, exports, d3_1, matter_js_1, Entity_1, Util_1) {
+define(["require", "exports", "d3", "matter-js", "../Entity", "../Utils"], function (require, exports, d3_1, matter_js_1, Entity_1, Utils_1) {
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.Wheel = void 0;
     var Wheel = /** @class */ (function (_super) {
@@ -167,7 +167,7 @@ define(["require", "exports", "d3", "matter-js", "../Entity", "../Util"], functi
                 return velocity / stepFunctionWidth;
             }
             else {
-                return Util_1.Util.continuousSign(velocity, this.scene.unit.getVelocity(stepFunctionWidth));
+                return Utils_1.Utils.continuousSign(velocity, this.scene.unit.getVelocity(stepFunctionWidth));
             }
         };
         Wheel.prototype.update = function (dt) {
@@ -241,7 +241,7 @@ define(["require", "exports", "d3", "matter-js", "../Entity", "../Util"], functi
                 * this.customFunction(-orthVelocity, this.orthStepFunctionWidth);
             var orthSlideFrictionForceVec = matter_js_1.Vector.mult(orthVec, orthSlideFrictionForce);
             // apply the friction force
-            this._wheelForceVector = Util_1.Util.vectorAdd(alongForceVec, orthSlideFrictionForceVec);
+            this._wheelForceVector = Utils_1.Utils.vectorAdd(alongForceVec, orthSlideFrictionForceVec);
             matter_js_1.Body.applyForce(wheel, wheel.position, this._wheelForceVector);
             // update `wheelAngle` and `angularVelocity` using torque
             // this.angularVelocity = (this.wheelAngle - this.prevWheelAngle) / dt
@@ -276,7 +276,7 @@ define(["require", "exports", "d3", "matter-js", "../Entity", "../Util"], functi
             //* this.customFunction(this.pseudoSpeedControllerVelocity - velocityWheelEdge, 0.1)
             ));
             // apply forces
-            this._wheelForceVector = Util_1.Util.vectorAdd(alongForceVec, orthSlideFrictionForceVec);
+            this._wheelForceVector = Utils_1.Utils.vectorAdd(alongForceVec, orthSlideFrictionForceVec);
             matter_js_1.Body.applyForce(wheel, wheel.position, this._wheelForceVector);
             // angularVelocity * this.wheelRadius = velocity
             this.angularVelocity = velocityAlong / this.wheelRadius;

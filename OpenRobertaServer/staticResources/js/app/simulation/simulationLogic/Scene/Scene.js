@@ -23,7 +23,7 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
     }
     return to.concat(ar || Array.prototype.slice.call(from));
 };
-define(["require", "exports", "matter-js", "../Timer", "../ScrollView", "../Unit", "../Util", "./AsyncChain", "../Waypoints/WaypointsManager", "./../GlobalDebug", "./Manager/EntityManager", "./Manager/ContainerManager", "./Manager/RobotManager", "../EventManager/EventManager"], function (require, exports, matter_js_1, Timer_1, ScrollView_1, Unit_1, Util_1, AsyncChain_1, WaypointsManager_1, GlobalDebug_1, EntityManager_1, ContainerManager_1, RobotManager_1, EventManager_1) {
+define(["require", "exports", "matter-js", "../Timer", "../ScrollView", "../Unit", "../Utils", "./AsyncChain", "../Waypoints/WaypointsManager", "./../GlobalDebug", "./Manager/EntityManager", "./Manager/ContainerManager", "./Manager/RobotManager", "../EventManager/EventManager"], function (require, exports, matter_js_1, Timer_1, ScrollView_1, Unit_1, Utils_1, AsyncChain_1, WaypointsManager_1, GlobalDebug_1, EntityManager_1, ContainerManager_1, RobotManager_1, EventManager_1) {
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.Scene = void 0;
     var Scene = /** @class */ (function () {
@@ -481,7 +481,7 @@ define(["require", "exports", "matter-js", "../Timer", "../ScrollView", "../Unit
                         }
                         this.mouseConstraint = matter_js_1.Constraint.create({
                             bodyA: body,
-                            pointA: Util_1.Util.vectorSub(mousePosition, body.position),
+                            pointA: Utils_1.Utils.vectorSub(mousePosition, body.position),
                             pointB: mousePosition
                         });
                         // attach constraint

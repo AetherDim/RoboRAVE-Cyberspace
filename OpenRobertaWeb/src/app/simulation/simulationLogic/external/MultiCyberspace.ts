@@ -3,7 +3,7 @@ import { clearDebugGuiRoot, DebugGuiRoot } from "../GlobalDebug"
 import { RobertaRobotSetupData } from "../Robot/RobertaRobotSetupData"
 import { RobotProgramGenerator } from "../Robot/RobotProgramGenerator"
 import { UIManager } from "../UIManager"
-import { Util } from "../Util"
+import { Utils } from "../Utils"
 import { cyberspaceScenes, sceneIDMap } from "./SceneDesciptorList"
 import { sendProgramRequest, ProgramsRequestResult, ResultErrorType, sendSetScoreRequest } from "./RESTApi"
 import PROGRAM_MODEL = require("../program.model")
@@ -110,7 +110,7 @@ function createCyberspaceData(sceneID: string, groupName: string, programID: num
 						score: Math.round(scoreScene.score * 1000),
 						// maximum signed int32 (2^32 - 1)
 						// https://dev.mysql.com/doc/refman/5.6/en/integer-types.html
-						time: Math.round(Util.flatMapOptional(scoreScene.getProgramRuntime(), runtime => runtime * 1000) ?? 2147483647),
+						time: Math.round(Utils.flatMapOptional(scoreScene.getProgramRuntime(), runtime => runtime * 1000) ?? 2147483647),
 						comment: "",
 						modifiedBy: "Score scene " + new Date(),
 					 }, (result) => {
@@ -182,7 +182,7 @@ if (debug != undefined) {
 }
 
 function generateDebugRobertaRobotSetupData(count: number): RobertaRobotSetupData[] {
-	return Util.range(0, count).map(index => {
+	return Utils.range(0, count).map(index => {
 		return {
 			configuration: {
 				TRACKWIDTH: 18,
@@ -298,7 +298,7 @@ function loadScenesFromRequest(result: ProgramsRequestResult | undefined, secret
 				if (map.size == programCount) {
 
 					// if all programs are converted
-					const setupDataList = Util.mapNotNull(Util.range(0, map.size), i => {
+					const setupDataList = Utils.mapNotNull(Utils.range(0, map.size), i => {
 
 						const ageGroup = String(res[i].agegroup)
 						const challenge = String(res[i].challenge)
@@ -337,7 +337,7 @@ function loadScenesFromRequest(result: ProgramsRequestResult | undefined, secret
 function generateRandomMultiSetupData(count: number): MultiCyberspaceSetupData[] {
 	return generateDebugRobertaRobotSetupData(count).map((robertaRobotSetupData, index) => {
 		return {
-			sceneID: Util.randomElement(cyberspaceScenes)!.ID,
+			sceneID: Utils.randomElement(cyberspaceScenes)!.ID,
 			groupName: "Test group " + index,
 			robertaRobotSetupData: robertaRobotSetupData,
 			programID: undefined
@@ -424,10 +424,10 @@ function loadScenes(setupDataList: MultiCyberspaceSetupData[], secretKey: string
 	// const widthCount = Math.ceil(divCount / heightCount)
 	const widthCount = Math.ceil(Math.sqrt(divElements.length / sceneAspectRatio * windowAspectRatio))
 
-	const indices = Util.range(0, divCount)
+	const indices = Utils.range(0, divCount)
 	setGridStyle(
-		Util.map2D(
-			Util.reshape1Dto2D(indices, widthCount)
+		Utils.map2D(
+			Utils.reshape1Dto2D(indices, widthCount)
 			, index => divElements[index]
 		)
 		, {

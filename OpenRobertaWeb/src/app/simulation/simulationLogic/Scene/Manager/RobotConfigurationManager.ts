@@ -1,7 +1,7 @@
 import { Body, Vector } from "matter-js";
 import { PhysicsRectEntity } from "../../Entity";
 import { Scene } from "../Scene";
-import { NumberIndexed, StringMap, Util } from "../../Util";
+import { NumberIndexed, StringMap, Utils } from "../../Utils";
 import { Robot, SensorType } from "../../Robot/Robot";
 import { TouchSensor } from "../../Robot/Sensors/TouchSensor";
 import { UltrasonicSensor } from "../../Robot/Sensors/UltrasonicSensor";
@@ -69,8 +69,8 @@ export class RobotConfigurationManager {
 		],
 		COLOR:
 			// vertically centered colorsensors at the front of the robot
-			Util.closedRange(0, 3).map(count => 
-				Util.closedRange(0, count).map(index => {
+			Utils.closedRange(0, 3).map(count =>
+				Utils.closedRange(0, count).map(index => {
 					return {
 						x: 0.06, y: (index - count / 2) * RobotConfigurationManager.colorSensorOffset, 
 						graphicsRadius: RobotConfigurationManager.colorSensorRadius
@@ -133,7 +133,7 @@ export class RobotConfigurationManager {
 			configuration.x, configuration.y, configuration.width, configuration.height,
 			{ color: 0xFF0000, strokeColor: 0xffffff, strokeWidth: 1, strokeAlpha: 0.5, strokeAlignment: 1 })
 		Body.setMass(touchSensorBody.getPhysicsBody(), scene.unit.getMass(configuration.mass))
-		Body.rotate(touchSensorBody.getPhysicsBody(), Util.toRadians(configuration.angle))
+		Body.rotate(touchSensorBody.getPhysicsBody(), Utils.toRadians(configuration.angle))
 		robot.addTouchSensor(port, new TouchSensor(scene, touchSensorBody))
 	}
 
@@ -141,8 +141,8 @@ export class RobotConfigurationManager {
 		const ultrasonicSensor = new UltrasonicSensor(
 			scene.unit,
 			Vector.create(configuration.x, configuration.y),
-			Util.toRadians(configuration.angle),
-			Util.toRadians(configuration.angularRange)
+			Utils.toRadians(configuration.angle),
+			Utils.toRadians(configuration.angularRange)
 		)
 		const portText = new PIXI.Text(port, new PIXI.TextStyle({
 			fill: "0x555555"
@@ -173,10 +173,10 @@ export class RobotConfigurationManager {
 		/** any[][] | undefined[] | undefined */
 		const allSensorsConfigurations = this.robotConfiguration[sensorType]
 		/** any[] | undefined  where any[] is the array of values used for each port */
-		const sensorsConfiguration = Util.safeIndexing(allSensorsConfigurations, sensorCount - 1)
+		const sensorsConfiguration = Utils.safeIndexing(allSensorsConfigurations, sensorCount - 1)
 
 		for(let i = 0; i < sensorCount; i++) {
-			addSensor(robot, ports[i], scene, Util.safeIndexing(sensorsConfiguration, i))
+			addSensor(robot, ports[i], scene, Utils.safeIndexing(sensorsConfiguration, i))
 		}
 	}
 

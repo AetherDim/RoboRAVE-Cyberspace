@@ -1,7 +1,7 @@
 import { Composite, Constraint, Vector, Body, ICompositeDefinition, IBodyDefinition, Vertices, Axes, Bounds } from "matter-js";
 import { Displayable } from "./Displayable";
 import { Unit } from "./Unit";
-import { Util } from "./Util";
+import { Utils } from "./Utils";
 
 declare module "matter-js" {
 	export interface Body {
@@ -86,8 +86,8 @@ function addRigidBodyConstraints(
 
 	// add constraints to world or compound body
 	[
-		makeConstraint(Util.vectorSub(bodyB.position, bodyA.position), offsetB, rotationStiffnessA),
-		makeConstraint(offsetA, Util.vectorSub(bodyA.position, bodyB.position), rotationStiffnessB)
+		makeConstraint(Utils.vectorSub(bodyB.position, bodyA.position), offsetB, rotationStiffnessA),
+		makeConstraint(offsetA, Utils.vectorSub(bodyA.position, bodyB.position), rotationStiffnessB)
 	].forEach(constraint => Composite.add(this, constraint))
 }
 

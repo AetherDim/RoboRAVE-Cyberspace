@@ -38,7 +38,7 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
     }
     return to.concat(ar || Array.prototype.slice.call(from));
 };
-define(["require", "exports", "../RRC/Scene/RRCScene", "../Unit", "../RRC/RRAssetLoader", "../Random", "../Waypoints/WaypointList", "../Util"], function (require, exports, RRCScene_1, Unit_1, RRC, Random_1, WaypointList_1, Util_1) {
+define(["require", "exports", "../RRC/Scene/RRCScene", "../Unit", "../RRC/RRAssetLoader", "../Random", "../Waypoints/WaypointList", "../Utils"], function (require, exports, RRCScene_1, Unit_1, RRC, Random_1, WaypointList_1, Utils_1) {
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.TestScene2 = void 0;
     var TestScene2 = /** @class */ (function (_super) {
@@ -55,7 +55,7 @@ define(["require", "exports", "../RRC/Scene/RRCScene", "../Unit", "../RRC/RRAsse
             _this._sensorTypes = __spreadArray(__spreadArray([], __read(_this.testSensorTypes), false), [undefined], false);
             _this.useMultiSetCombinations = true;
             _this.allSensorConfigurations = _this.useMultiSetCombinations ?
-                Util_1.Util.generateMultiSetTuples(_this._sensorTypes, 4).map(function (multiSet) {
+                Utils_1.Utils.generateMultiSetTuples(_this._sensorTypes, 4).map(function (multiSet) {
                     return {
                         1: multiSet[0],
                         2: multiSet[1],
@@ -63,7 +63,7 @@ define(["require", "exports", "../RRC/Scene/RRCScene", "../Unit", "../RRC/RRAsse
                         4: multiSet[3]
                     };
                 }) :
-                Util_1.Util.allPropertiesTuples({
+                Utils_1.Utils.allPropertiesTuples({
                     1: _this._sensorTypes,
                     2: _this._sensorTypes,
                     3: _this._sensorTypes,

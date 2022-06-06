@@ -7,7 +7,7 @@ import { RobotProgramGenerator } from "../Robot/RobotProgramGenerator";
 import { RobotSetupData } from "../Robot/RobotSetupData";
 import { RobotTester } from "../Robot/RobotTester";
 import { Unit } from "../Unit";
-import { UnpackArrayProperties, Util, Expand } from "../Util";
+import { UnpackArrayProperties, Utils, Expand } from "../Utils";
 import { AsyncChain } from "./AsyncChain";
 import { Scene } from "./Scene";
 
@@ -21,24 +21,24 @@ class KeyData {
 	usePseudoPhysics = [true]
 
 	// (0.05, 0.5, 0.05)
-	rollingFriction = Util.closedRange(0.03, 0.03, 0.1)
+	rollingFriction = Utils.closedRange(0.03, 0.03, 0.1)
 	// (0.05, 1.0, 0.05)
-	slideFriction = Util.closedRange(0.3, 0.3, 0.1)
+	slideFriction = Utils.closedRange(0.3, 0.3, 0.1)
 
-	otherRollingFriction = Util.closedRange(0.03, 0.03, 0.01)
-	otherSlideFriction = Util.closedRange(0.05, 0.05, 0.01)
+	otherRollingFriction = Utils.closedRange(0.03, 0.03, 0.01)
+	otherSlideFriction = Utils.closedRange(0.05, 0.05, 0.01)
 
 	programType: ("driveForward" | "rotate")[] = ["driveForward"]
 
-	driveForwardSpeed = true ? [100] : Util.range(60, 100, 1)
-	driveForwardDistance = true ? [1] : Util.range(0, 2.0, 0.04)
-	rotateSpeed = true ? [100] : Util.closedRange(1, 100, 1)
-	rotateAngle = true ? [360] : Util.closedRange(0, 360, 10)
+	driveForwardSpeed = true ? [100] : Utils.range(60, 100, 1)
+	driveForwardDistance = true ? [1] : Utils.range(0, 2.0, 0.04)
+	rotateSpeed = true ? [100] : Utils.closedRange(1, 100, 1)
+	rotateAngle = true ? [360] : Utils.closedRange(0, 360, 10)
 	directionRight = [true]
 
-	maxForceControlEncoderDifference = Util.closedRange(0, 5, 0.2)
-	encoderAngleDampingFactor = Util.closedRange(0, 40, 2)
-	pseudoMotorTorqueMultiplier = Util.closedRange(1, 20, 2)
+	maxForceControlEncoderDifference = Utils.closedRange(0, 5, 0.2)
+	encoderAngleDampingFactor = Utils.closedRange(0, 40, 2)
+	pseudoMotorTorqueMultiplier = Utils.closedRange(1, 20, 2)
 
 	pseudoRollingFriction = [2.0]
 	pseudoSlideFriction = [2.0]
@@ -110,7 +110,7 @@ class ValueHelper<T, C> {
 	}
 
 	static fromVector<C>(opt: { name: string, initialValue: Vector, endMaxDelta: number, context: C, getNewValue: (context: C) => Vector }): ValueHelper<Vector, C> {
-		return new ValueHelper(opt.name, opt.initialValue, opt.endMaxDelta, opt.context, opt.getNewValue, (v1, v2) => Util.vectorDistance(v1, v2))
+		return new ValueHelper(opt.name, opt.initialValue, opt.endMaxDelta, opt.context, opt.getNewValue, (v1, v2) => Utils.vectorDistance(v1, v2))
 	}
 
 }
@@ -152,7 +152,7 @@ export class TestScene3 extends Scene {
 			endMaxDelta: Infinity,
 			context: this,
 			getNewValue: (c) => c.robot.body.angle
-		}).withMappedSignedDistance(angle => Util.toDegrees(angle))
+		}).withMappedSignedDistance(angle => Utils.toDegrees(angle))
 
 
 	/**
@@ -189,9 +189,9 @@ export class TestScene3 extends Scene {
 		this.setSimTickerStopPollTime(0)
 
 		// make tuples from 'keyData' and maybe shuffle them in order to get a better ETA
-		this.keyValues = Util.allPropertiesTuples(this.keyData)
+		this.keyValues = Utils.allPropertiesTuples(this.keyData)
 		if (this.randomizeKeyValues) {
-			Util.shuffle(this.keyValues)
+			Utils.shuffle(this.keyValues)
 		}
 
 		const DebugGui = this.getDebugGuiStatic()
@@ -199,7 +199,7 @@ export class TestScene3 extends Scene {
 		DebugGui?.addButton("Download data", () => downloadJSONFile("data.json", this.data))
 
 		DebugGui?.addUpdatable("progress", () => this.keyIndex + "/" + this.keyValues.length)
-		DebugGui?.addUpdatable("ETA", () => Util.toTimeString(this.testTime/this.keyIndex*(this.keyValues.length - this.keyIndex)))
+		DebugGui?.addUpdatable("ETA", () => Utils.toTimeString(this.testTime/this.keyIndex*(this.keyValues.length - this.keyIndex)))
 		DebugGui?.addUpdatable("test timing", () => String(this.testTime))
 
 		DebugGui?.addButton("Reset", () =>  {

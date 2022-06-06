@@ -1,4 +1,4 @@
-define(["require", "exports", "matter-js", "../Util", "./Line", "./LineSegment"], function (require, exports, matter_js_1, Util_1, Line_1, LineSegment_1) {
+define(["require", "exports", "matter-js", "../Utils", "./Line", "./LineSegment"], function (require, exports, matter_js_1, Utils_1, Line_1, LineSegment_1) {
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.Polygon = void 0;
     var Polygon = /** @class */ (function () {
@@ -7,7 +7,7 @@ define(["require", "exports", "matter-js", "../Util", "./Line", "./LineSegment"]
         }
         Polygon.prototype.distanceTo = function (point) {
             var minDistanceSquared = Infinity;
-            var newVertices = this.vertices.map(function (p) { return Util_1.Util.vectorSub(p, point); });
+            var newVertices = this.vertices.map(function (p) { return Utils_1.Utils.vectorSub(p, point); });
             var zeroVector = matter_js_1.Vector.create();
             var vertex0 = newVertices[0];
             var vertex1 = newVertices[1];
@@ -40,12 +40,12 @@ define(["require", "exports", "matter-js", "../Util", "./Line", "./LineSegment"]
                 var dotProduct;
                 var endVertexDistanceSquared;
                 if (lastVertexIsNear) {
-                    direction = Util_1.Util.vectorSub(vertex1_1, vertex0_1);
+                    direction = Utils_1.Utils.vectorSub(vertex1_1, vertex0_1);
                     dotProduct = matter_js_1.Vector.dot(vertex0_1, direction);
                     endVertexDistanceSquared = vertex1DistanceSquared;
                 }
                 else {
-                    direction = Util_1.Util.vectorSub(vertex0_1, vertex1_1);
+                    direction = Utils_1.Utils.vectorSub(vertex0_1, vertex1_1);
                     dotProduct = matter_js_1.Vector.dot(vertex1_1, direction);
                     endVertexDistanceSquared = lastVertexDistanceSquared;
                 }
@@ -93,7 +93,7 @@ define(["require", "exports", "matter-js", "../Util", "./Line", "./LineSegment"]
         };
         Polygon.prototype.distanceTo2 = function (point) {
             var minDistanceSquared = Infinity;
-            var newVertices = this.vertices.map(function (p) { return Util_1.Util.vectorSub(p, point); });
+            var newVertices = this.vertices.map(function (p) { return Utils_1.Utils.vectorSub(p, point); });
             var zeroVector = matter_js_1.Vector.create();
             for (var i = 2; i < newVertices.length; i++) {
                 var vertex0 = newVertices[i - 1];
@@ -144,7 +144,7 @@ define(["require", "exports", "matter-js", "../Util", "./Line", "./LineSegment"]
             var minDistanceSquared = Infinity;
             var minDistancePoint;
             function updateWithVertices(vertex0, vertex1) {
-                var line = new Line_1.Line(vertex0, Util_1.Util.vectorSub(vertex1, vertex0));
+                var line = new Line_1.Line(vertex0, Utils_1.Utils.vectorSub(vertex1, vertex0));
                 var parameter = line.uncheckedNearestParameterTo(point);
                 var newMinPoint;
                 if (parameter <= 0) {
@@ -156,7 +156,7 @@ define(["require", "exports", "matter-js", "../Util", "./Line", "./LineSegment"]
                 else {
                     newMinPoint = line.getPoint(parameter);
                 }
-                var newMinDistanceSquared = Util_1.Util.vectorDistanceSquared(newMinPoint, point);
+                var newMinDistanceSquared = Utils_1.Utils.vectorDistanceSquared(newMinPoint, point);
                 if (newMinDistanceSquared < minDistanceSquared && includePoint(newMinPoint)) {
                     minDistancePoint = newMinPoint;
                     minDistanceSquared = newMinDistanceSquared;
