@@ -23,7 +23,7 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
     }
     return to.concat(ar || Array.prototype.slice.call(from));
 };
-define(["require", "exports", "../Cyberspace/Cyberspace", "../GlobalDebug", "../Robot/RobotProgramGenerator", "../UIManager", "../Utils", "./SceneDesciptorList", "./RESTApi", "../program.model", "../guiState.model", "../RRC/Scene/RRCScoreScene"], function (require, exports, Cyberspace_1, GlobalDebug_1, RobotProgramGenerator_1, UIManager_1, Utils_1, SceneDesciptorList_1, RESTApi_1, PROGRAM_MODEL, GUISTATE_MODEL, RRCScoreScene_1) {
+define(["require", "exports", "../Cyberspace/Cyberspace", "../GlobalDebug", "../Robot/RobotProgramGenerator", "../UI/UIManager", "../Utils", "./SceneDesciptorList", "./RESTApi", "../program.model", "../guiState.model", "../RRC/Scene/RRCScoreScene"], function (require, exports, Cyberspace_1, GlobalDebug_1, RobotProgramGenerator_1, UIManager_1, Utils_1, SceneDesciptorList_1, RESTApi_1, PROGRAM_MODEL, GUISTATE_MODEL, RRCScoreScene_1) {
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.initEvents = exports.init = void 0;
     var cyberspaces = [];

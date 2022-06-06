@@ -5,7 +5,7 @@ import { RobertaRobotSetupData } from './Robot/RobertaRobotSetupData'
 import { Cyberspace } from './Cyberspace/Cyberspace';
 import { SceneDescriptor } from './Cyberspace/SceneManager';
 import { BlocklyDebug } from './BlocklyDebug';
-import { UIManager } from './UIManager';
+import { UIManager } from './UI/UIManager';
 import { interpreterSimBreakEventHandlers } from "interpreter.jsHelper"
 import { RRCScoreScene } from './RRC/Scene/RRCScoreScene';
 import { RESTState, ResultErrorType, sendStateRequest } from './external/RESTApi';

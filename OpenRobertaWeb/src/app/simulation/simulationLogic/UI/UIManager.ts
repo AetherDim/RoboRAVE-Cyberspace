@@ -1,6 +1,6 @@
 
 import Blockly = require("blockly");
-import { UnionToTuple } from "./Utils";
+import { UnionToTuple } from "../Utils";
 
 interface RobertaButtonSettings {
 	class: string
