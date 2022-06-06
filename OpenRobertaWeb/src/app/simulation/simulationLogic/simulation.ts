@@ -369,3 +369,33 @@ UIManager.debugStepOverButton.onClick(() => {
 UIManager.debugStepIntoButton.onClick(() => {
 	blocklyDebugManager.interpreterAddEvent(CONST.default.DEBUG_STEP_INTO)
 })
+
+
+function buildSceneMenu(menu, addString) {
+	// TODO: clear #simSelectionMenuContent??
+	// seems to work without clear
+	const scenes = cyberspace.getScenes();
+
+	for (let i = 0; i < scenes.length; i++) {
+		const scene = scenes[i];
+		$(menu).append('<li><a href="#" id="' + scene.ID + addString + '" class="menuSim typcn typcn-image " title="' + scene.description + '">' + scene.name + '</a></li>');
+		if(i === 0) {
+			$('#'+scene.ID + addString).parent().addClass('disabled');
+		}
+	}
+}
+
+buildSceneMenu('#simSelectionMenuContentSmall', '_small_Menu_');
+buildSceneMenu('#simSelectionMenuContent', '');
+
+$('.sim-nav').onWrap('click', 'li:not(.disabled) a', function(event) {
+	$('.modal').modal('hide') // remove modal
+	$('.menuSim').parent().removeClass('disabled') // enable all items in list
+	$("#simButtonsCollapse").collapse('hide') // collapse popup list
+
+	const name = event.target.id.replace('_small_Menu_', '')
+	cyberspace.loadScene(name)
+	$('#'+name).parent().addClass('disabled')
+	$('#'+name+'_small_Menu_').parent().addClass('disabled')
+
+}, 'sim clicked');
