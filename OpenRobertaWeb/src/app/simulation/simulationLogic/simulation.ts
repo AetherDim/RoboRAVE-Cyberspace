@@ -18,6 +18,8 @@ import * as PROG_C from "program.controller";
 import * as CONST from "./simulation.constants"
 import * as TOUR_C from "tour.controller";
 import * as UTIL from "./util";
+import {DEBUG} from "./GlobalDebug";
+import {getProgramLink} from "program.controller";
 
 //
 // init all components for a simulation
@@ -313,3 +315,38 @@ $('.sim-nav').onWrap('click', 'li:not(.disabled) a', function(event) {
 
 }, 'sim clicked');
 
+// UPLOAD Menu
+$('#head-navigation-upload').onWrap('click', '.dropdown-menu li:not(.disabled) a', (event) => {
+	switch (event.target.id) {
+		case 'menuSubmitSolution':
+
+			if(!GUISTATE_C.isUserLoggedIn()) {
+				alert("Please login")
+				return;
+			}
+
+			var form = document.createElement("form");
+			form.setAttribute("method", "post");
+			form.setAttribute("action",
+				DEBUG ?
+					"https://my-dev.roborave.de/submitSolution.php" :
+					"https://my.roborave.de/submitSolution.php");
+			form.setAttribute("target", "view");
+			const hiddenField = document.createElement("input");
+			hiddenField.setAttribute("type", "hidden");
+			hiddenField.setAttribute("name", "link");
+			hiddenField.setAttribute("value", getProgramLink());
+			const hiddenField2 = document.createElement("input");
+			hiddenField2.setAttribute("type", "hidden");
+			hiddenField2.setAttribute("name", "account");
+			hiddenField2.setAttribute("value", GUISTATE_C.getUserAccountName());
+			form.appendChild(hiddenField);
+			form.appendChild(hiddenField2);
+			document.body.appendChild(form);
+			window.open('', 'view');
+			form.submit();
+			break;
+		default:
+			break;
+	}
+}, 'upload edit clicked');

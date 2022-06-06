@@ -1,6 +1,6 @@
 define(["require", "exports", "message", "log", "util", "guiState.controller", "robot.controller", "program.model", "user.model", "configuration.controller", "progCode.controller", "blockly", "jquery", "jquery-validate"], function (require, exports, MSG, LOG, UTIL, GUISTATE_C, ROBOT_C, PROGRAM, USER, CONFIGURATION_C, PROGCODE_C, Blockly, $) {
     Object.defineProperty(exports, "__esModule", { value: true });
-    exports.programToBlocklyWorkspace = exports.loadExternalToolbox = exports.loadToolbox = exports.resetView = exports.reloadView = exports.reloadProgram = exports.getBlocklyWorkspace = exports.exportAllXml = exports.exportXml = exports.linkProgram = exports.newProgram = exports.initProgramEnvironment = exports.showSaveAsModal = exports.initProgramForms = exports.loadFromGallery = exports.saveToServer = exports.init = exports.password = exports.SSID = void 0;
+    exports.getProgramLink = exports.programToBlocklyWorkspace = exports.loadExternalToolbox = exports.loadToolbox = exports.resetView = exports.reloadView = exports.reloadProgram = exports.getBlocklyWorkspace = exports.exportAllXml = exports.exportXml = exports.linkProgram = exports.newProgram = exports.initProgramEnvironment = exports.showSaveAsModal = exports.initProgramForms = exports.loadFromGallery = exports.saveToServer = exports.init = exports.password = exports.SSID = void 0;
     var $formSingleModal;
     var blocklyWorkspace;
     var listenToBlocklyEvents = true;
@@ -362,16 +362,21 @@ define(["require", "exports", "message", "log", "util", "guiState.controller", "
             MSG.displayMessage('POPUP_BEFOREUNLOAD', 'POPUP', '', true);
         }
     }
-    function linkProgram() {
+    function getProgramLink() {
         var dom = Blockly.Xml.workspaceToDom(blocklyWorkspace);
         var xml = Blockly.Xml.domToText(dom);
         //TODO this should be removed after the next release
         xml = '<export xmlns="http://de.fhg.iais.roberta.blockly"><program>' + xml + '</program><config>' + GUISTATE_C.getConfigurationXML() + '</config></export>';
-        var link = 'https://lab.open-roberta.org/#loadProgram';
+        var link = location.href + '#loadProgram';
         link += '&&' + GUISTATE_C.getRobot();
         link += '&&' + GUISTATE_C.getProgramName();
         link += '&&' + xml;
         link = encodeURI(link);
+        return link;
+    }
+    exports.getProgramLink = getProgramLink;
+    function linkProgram() {
+        var link = getProgramLink();
         var $temp = $('<input>');
         $('body').append($temp);
         $temp.val(link).select();

@@ -1,3 +1,4 @@
+import { DEBUG } from "./../GlobalDebug";
 
 function httpAsync(req: string, url: string, data: string|undefined,
 	transferComplete: (this: XMLHttpRequest) => void,
@@ -34,13 +35,12 @@ let PROGRAMS_URL = "/sqlrest/programs"
 let SET_SCORE_URL = "/sqlrest/setScore"
 let GET_STATUS_URL = "/sqlrest/state"
 
-if (location.hostname === "localhost" || location.hostname === "127.0.0.1") {
+if ((location.hostname === "localhost" || location.hostname === "127.0.0.1") && DEBUG) {
 	// TODO: change this to a debug address
 	PROGRAMS_URL = "https://dev.cyberspace.roborave.de/sqlrest/programs"
 	SET_SCORE_URL = "https://dev.cyberspace.roborave.de/sqlrest/setScore"
 	GET_STATUS_URL = "https://dev.cyberspace.roborave.de/sqlrest/state"
 }
-
 
 export interface ProgramSQLEntry {
 	/** challenge id / scene id */
