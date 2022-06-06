@@ -305,7 +305,7 @@ UIManager.switchSceneButton.onClick(() => {
 const INITIAL_WIDTH = 0.5;
 
 UIManager.simViewButton.onClick(state => {
-	if(state == "closed") {
+	if(state == "open") {
 
 		requestSimAssemblyForProgram(result => {
 			if (result.rc == 'ok') {

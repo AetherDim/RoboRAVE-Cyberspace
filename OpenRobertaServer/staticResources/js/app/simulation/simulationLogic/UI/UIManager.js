@@ -167,7 +167,7 @@ define(["require", "exports", "blockly"], function (require, exports, Blockly) {
         UIManager.simDebugViewButton = new UIRobertaButton("simValues");
         UIManager.debugStepOverButton = new UIRobertaButton("simControlStepInto");
         UIManager.debugStepIntoButton = new UIRobertaButton("simControlStepOver");
-        UIManager.simViewButton = new UIRobertaToggleStateButton("simButton", "closed", {
+        UIManager.simViewButton = new UIRobertaToggleStateButton("simButton", "open", {
             closed: { class: "" },
             open: { class: "" }
         });
