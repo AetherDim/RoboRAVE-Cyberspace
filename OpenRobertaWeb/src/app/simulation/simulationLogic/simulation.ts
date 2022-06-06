@@ -286,7 +286,7 @@ UIManager.resetSceneButton.onClick(() => {
 	cyberspace.resetScene()
 })
 
-UIManager.zoomOutButton.onClick(() => {
+UIManager.zoomInButton.onClick(() => {
 	cyberspace.zoomViewIn()
 })
 

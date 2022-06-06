@@ -259,7 +259,7 @@ define(["require", "exports", "./external/SceneDesciptorList", "./Cyberspace/Cyb
     UIManager_1.UIManager.resetSceneButton.onClick(function () {
         cyberspace.resetScene();
     });
-    UIManager_1.UIManager.zoomOutButton.onClick(function () {
+    UIManager_1.UIManager.zoomInButton.onClick(function () {
         cyberspace.zoomViewIn();
     });
     UIManager_1.UIManager.zoomOutButton.onClick(function () {
