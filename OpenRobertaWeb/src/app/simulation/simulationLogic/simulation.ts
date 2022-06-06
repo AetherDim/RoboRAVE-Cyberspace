@@ -337,3 +337,35 @@ UIManager.simViewButton.onClick(state => {
 		blocklyDebugManager.setDebugMode(false)
 	}
 })
+
+function toggleRobotWindow(id, position) {
+	if ($(id).is(':hidden')) {
+		$(id).css({
+			top: position.top + 12,
+			left: position.left
+		});
+	}
+	$(id).animate({
+		'opacity': 'toggle',
+		'top': 'toggle'
+	}, 300);
+	$(id).draggable(
+		{
+			constraint: 'window'
+		}
+	);
+}
+
+UIManager.simDebugViewButton.onClick(() => {
+	const position = $('#simDiv').position();
+	position.left = $(window).width() - ($('#simValuesWindow').width() + 12);
+	toggleRobotWindow('#simValuesWindow', position);
+})
+
+UIManager.debugStepOverButton.onClick(() => {
+	blocklyDebugManager.interpreterAddEvent(CONST.default.DEBUG_STEP_OVER)
+})
+
+UIManager.debugStepIntoButton.onClick(() => {
+	blocklyDebugManager.interpreterAddEvent(CONST.default.DEBUG_STEP_INTO)
+})

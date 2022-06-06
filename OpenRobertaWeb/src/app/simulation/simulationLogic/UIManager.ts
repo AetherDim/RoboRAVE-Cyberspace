@@ -183,6 +183,13 @@ export class UIManager {
 
 	static readonly switchSceneButton = new UIRobertaButton("simScene")
 
+	static readonly simDebugViewButton = new UIRobertaButton("simValues")
+
+
+	static readonly debugStepOverButton = new UIRobertaButton("simControlStepInto")
+	static readonly debugStepIntoButton = new UIRobertaButton("simControlStepOver")
+
+
 	static readonly simViewButton = new UIRobertaToggleStateButton("simButton", "closed", {
 		closed: { class: "" },
 		open: { class: "" }

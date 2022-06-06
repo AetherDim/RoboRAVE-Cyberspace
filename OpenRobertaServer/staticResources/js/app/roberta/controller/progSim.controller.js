@@ -147,11 +147,12 @@ define(["require", "exports", "message", "util", "webots.simulation", "simulatio
             toggleRobotWindow('#simRobotWindow', position);
         }, 'sim show robot clicked');*/
         // display simulation values (Robot position, sender data, ...)
-        $('#simValues').onWrap('click', function (event) {
+        /*$('#simValues').onWrap('click', function(event) {
             var position = $('#simDiv').position();
             position.left = $(window).width() - ($('#simValuesWindow').width() + 12);
             toggleRobotWindow('#simValuesWindow', position);
         }, 'sim show values clicked');
+    
         function toggleRobotWindow(id, position) {
             if ($(id).is(':hidden')) {
                 $(id).css({
@@ -163,17 +164,19 @@ define(["require", "exports", "message", "util", "webots.simulation", "simulatio
                 'opacity': 'toggle',
                 'top': 'toggle'
             }, 300);
-            $(id).draggable({
-                constraint: 'window'
-            });
-        }
+            $(id).draggable(
+                {
+                    constraint: 'window'
+                }
+            );
+        }*/
         // Robot view close button
-        $('.simWindow .close').onWrap('click', function (event) {
+        /*$('.simWindow .close').onWrap('click', function(event) {
             $($(this).parents('.simWindow:first')).animate({
                 'opacity': 'hide',
                 'top': 'hide'
             }, 300);
-        }, 'sim close robotWindow clicked');
+        }, 'sim close robotWindow clicked');*/
         // reset scene button
         /*$('#simResetPose').onWrap(
             'click',
@@ -187,13 +190,21 @@ define(["require", "exports", "message", "util", "webots.simulation", "simulatio
             'sim reset pose clicked'
         );*/
         // Debug step into
-        $('#simControlStepInto').onWrap('click', function (event) {
-            toggleSimEvent(simulation_constants_1.default.DEBUG_STEP_INTO);
-        }, 'sim step into clicked');
+        /*$('#simControlStepInto').onWrap(
+            'click',
+            function (event) {
+                toggleSimEvent(CONST.DEBUG_STEP_INTO);
+            },
+            'sim step into clicked'
+        );*/
         // Debug step over
-        $('#simControlStepOver').onWrap('click', function (event) {
-            toggleSimEvent(simulation_constants_1.default.DEBUG_STEP_OVER);
-        }, 'sim step over clicked');
+        /*$('#simControlStepOver').onWrap(
+            'click',
+            function (event) {
+                toggleSimEvent(CONST.DEBUG_STEP_OVER);
+            },
+            'sim step over clicked'
+        );*/
         // not used in this fork
         // adds obstacle
         /*

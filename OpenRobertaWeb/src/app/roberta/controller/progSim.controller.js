@@ -168,7 +168,7 @@ function initEvents() {
     }, 'sim show robot clicked');*/
 
     // display simulation values (Robot position, sender data, ...)
-    $('#simValues').onWrap('click', function(event) {
+    /*$('#simValues').onWrap('click', function(event) {
         var position = $('#simDiv').position();
         position.left = $(window).width() - ($('#simValuesWindow').width() + 12);
         toggleRobotWindow('#simValuesWindow', position);
@@ -190,15 +190,15 @@ function initEvents() {
                 constraint: 'window'
             }
         );
-    }
+    }*/
 
     // Robot view close button
-    $('.simWindow .close').onWrap('click', function(event) {
+    /*$('.simWindow .close').onWrap('click', function(event) {
         $($(this).parents('.simWindow:first')).animate({
             'opacity': 'hide',
             'top': 'hide'
         }, 300);
-    }, 'sim close robotWindow clicked');
+    }, 'sim close robotWindow clicked');*/
 
 
     // reset scene button
@@ -215,22 +215,22 @@ function initEvents() {
     );*/
 
     // Debug step into
-    $('#simControlStepInto').onWrap(
+    /*$('#simControlStepInto').onWrap(
         'click',
         function (event) {
             toggleSimEvent(CONST.DEBUG_STEP_INTO);
         },
         'sim step into clicked'
-    );
+    );*/
 
     // Debug step over
-    $('#simControlStepOver').onWrap(
+    /*$('#simControlStepOver').onWrap(
         'click',
         function (event) {
             toggleSimEvent(CONST.DEBUG_STEP_OVER);
         },
         'sim step over clicked'
-    );
+    );*/
 
     // not used in this fork
     // adds obstacle
