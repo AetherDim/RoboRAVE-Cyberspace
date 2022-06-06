@@ -211,7 +211,8 @@ function requestSimAssemblyForProgram(callback: (result: RobertaRobotSetupData) 
 // Button
 UIManager.programControlButton.onClick( state => {
 
-	if (cyberspace.robotCount() <= 1) {
+	// TODO: Add proper multi robot support
+	if (cyberspace.robotCount() <= 1 || true) {
 
 		if (state == "start") {
 			Blockly.hideChaff();

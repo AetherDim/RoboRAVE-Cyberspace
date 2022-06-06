@@ -194,7 +194,8 @@ define(["require", "exports", "./external/SceneDesciptorList", "./Cyberspace/Cyb
     }
     // Button
     UIManager_1.UIManager.programControlButton.onClick(function (state) {
-        if (cyberspace.robotCount() <= 1) {
+        // TODO: Add proper multi robot support
+        if (cyberspace.robotCount() <= 1 || true) {
             if (state == "start") {
                 Blockly.hideChaff();
                 NN_CTRL.mkNNfromNNStepData();
