@@ -170,16 +170,16 @@ export class Interpreter {
     private evalNOperations(N: number): number {
         for (let i = 0; (i < N && !this.robotBehaviour.getBlocking()); i++) {
             let op = this.state.getOp();
-            this.state.evalTerminations(op);
-            this.state.evalInitiations(op);
+            this.state.evalHighlightings(op, this.lastBlock);
 
             if (this.state.getDebugMode()) {
                 let canContinue = this.calculateDebugBehaviour(op);
-                if (!canContinue) return 0
+                if (!canContinue) return 0;
             }
 
             let [result, stop] = this.evalSingleOperation(op);
             this.lastStoppedBlock = null;
+            this.lastBlock = op;
 
             if (result > 0 || stop) {
                 return result;
@@ -187,8 +187,12 @@ export class Interpreter {
             if (this.terminated) {
                 // termination either requested by the client or by executing 'stop' or after last statement
                 this.robotBehaviour.close();
-                this.callbackOnTermination()
+                this.callbackOnTermination();
                 return 0;
+            }
+
+            if (this.state.getDebugMode()) {
+                return this.debugDelay;
             }
         }
 

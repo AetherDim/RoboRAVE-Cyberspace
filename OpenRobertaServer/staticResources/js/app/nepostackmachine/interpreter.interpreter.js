@@ -154,8 +154,7 @@ define(["require", "exports", "./interpreter.state", "./interpreter.constants", 
         Interpreter.prototype.evalNOperations = function (N) {
             for (var i = 0; (i < N && !this.robotBehaviour.getBlocking()); i++) {
                 var op = this.state.getOp();
-                this.state.evalTerminations(op);
-                this.state.evalInitiations(op);
+                this.state.evalHighlightings(op, this.lastBlock);
                 if (this.state.getDebugMode()) {
                     var canContinue = this.calculateDebugBehaviour(op);
                     if (!canContinue)
@@ -163,6 +162,7 @@ define(["require", "exports", "./interpreter.state", "./interpreter.constants", 
                 }
                 var _a = __read(this.evalSingleOperation(op), 2), result = _a[0], stop_2 = _a[1];
                 this.lastStoppedBlock = null;
+                this.lastBlock = op;
                 if (result > 0 || stop_2) {
                     return result;
                 }
@@ -171,6 +171,9 @@ define(["require", "exports", "./interpreter.state", "./interpreter.constants", 
                     this.robotBehaviour.close();
                     this.callbackOnTermination();
                     return 0;
+                }
+                if (this.state.getDebugMode()) {
+                    return this.debugDelay;
                 }
             }
             return 0;
