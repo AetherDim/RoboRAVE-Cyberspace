@@ -13,13 +13,13 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-define(["require", "exports", "blockly"], function (require, exports, Blockly) {
+define(["require", "exports", "blockly", "./UIElement"], function (require, exports, Blockly, UIElement_1) {
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.UIManager = exports.UIRobertaToggleStateButton = exports.UIRobertaStateButton = exports.UIRobertaButton = void 0;
-    var UIRobertaButton = /** @class */ (function () {
-        function UIRobertaButton(buttonID) {
-            this.buttonID = buttonID;
-            this.jQueryHTMLElement = $("#" + buttonID);
+    var UIRobertaButton = /** @class */ (function (_super) {
+        __extends(UIRobertaButton, _super);
+        function UIRobertaButton(id) {
+            return _super.call(this, $("#" + id), id) || this;
         }
         /**
          * Adds `onClickHandler` to the html element as click handler
@@ -31,25 +31,26 @@ define(["require", "exports", "blockly"], function (require, exports, Blockly) {
          */
         UIRobertaButton.prototype.onClick = function (onClickHandler) {
             var t = this;
-            this.jQueryHTMLElement.onWrap("click", onClickHandler, this.buttonID + " clicked");
+            this.jQueryHTMLElement.onWrap("click", onClickHandler, this.id + " clicked");
             return this;
         };
         UIRobertaButton.prototype.update = function () {
-            this.jQueryHTMLElement = $("#" + this.buttonID);
+            this.jQueryHTMLElement = $("#" + this.id);
         };
         return UIRobertaButton;
-    }());
+    }(UIElement_1.UIElement));
     exports.UIRobertaButton = UIRobertaButton;
-    var UIRobertaStateButton = /** @class */ (function () {
+    var UIRobertaStateButton = /** @class */ (function (_super) {
+        __extends(UIRobertaStateButton, _super);
         function UIRobertaStateButton(buttonID, initialState, buttonSettingsState) {
-            this.clickHanders = [];
+            var _this = _super.call(this, $("#" + buttonID), buttonID) || this;
+            _this.clickHandlers = [];
             // TODO: Convert all the 'onWrap' js code to use the 'UIManager'
             // Workaround since 'onWrap' is not loaded initially
-            this.needsOnWrapHandler = true;
-            this.buttonID = buttonID;
-            this.jQueryHTMLElement = $("#" + buttonID);
-            this.stateMappingObject = buttonSettingsState;
-            this.state = initialState;
+            _this.needsOnWrapHandler = true;
+            _this.stateMappingObject = buttonSettingsState;
+            _this.state = initialState;
+            return _this;
             // TODO: Convert all the 'onWrap' js code to use the 'UIManager'
             // call 'setButtonEventHandler' only for buttons on which 'onClick' is called
             //this.setButtonEventHandler()
@@ -68,12 +69,12 @@ define(["require", "exports", "blockly"], function (require, exports, Blockly) {
                     var _a, _b, _c;
                     t_1.jQueryHTMLElement.removeClass(t_1.stateMappingObject[t_1.state].class);
                     var state = t_1.state;
-                    t_1.clickHanders.forEach(function (handler) { return handler(state); });
+                    t_1.clickHandlers.forEach(function (handler) { return handler(state); });
                     t_1.state = (_b = (_a = t_1.stateChangeHandler) === null || _a === void 0 ? void 0 : _a.call(t_1, state)) !== null && _b !== void 0 ? _b : state;
                     var buttonSettings = t_1.stateMappingObject[t_1.state];
                     t_1.jQueryHTMLElement.addClass(buttonSettings.class);
                     t_1.jQueryHTMLElement.attr("data-original-title", (_c = buttonSettings.tooltip) !== null && _c !== void 0 ? _c : "");
-                }, this.buttonID + " clicked");
+                }, this.id + " clicked");
             }
             else {
                 // workaround for onWrap not loaded
@@ -102,7 +103,7 @@ define(["require", "exports", "blockly"], function (require, exports, Blockly) {
         UIRobertaStateButton.prototype.onClick = function (onClickHandler) {
             // TODO: 'setButtonEventHandler' to the constructor if all 'onWrap' code is converted to TypeScript 
             this.setButtonEventHandler();
-            this.clickHanders.push(onClickHandler);
+            this.clickHandlers.push(onClickHandler);
             return this;
         };
         UIRobertaStateButton.prototype.update = function () {
@@ -122,7 +123,7 @@ define(["require", "exports", "blockly"], function (require, exports, Blockly) {
             this.update();
         };
         return UIRobertaStateButton;
-    }());
+    }(UIElement_1.UIElement));
     exports.UIRobertaStateButton = UIRobertaStateButton;
     var UIRobertaToggleStateButton = /** @class */ (function (_super) {
         __extends(UIRobertaToggleStateButton, _super);

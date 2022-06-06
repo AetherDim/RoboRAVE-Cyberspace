@@ -166,6 +166,7 @@ function initRequireJS(version) {
             'Entity',
             'BlocklyDebug',
             { 'UI': [
+                'UIElement',
                 'UIManager',
             ]},
             { 'Scene': [

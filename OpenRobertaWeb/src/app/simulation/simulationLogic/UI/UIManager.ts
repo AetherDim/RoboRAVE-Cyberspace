@@ -1,20 +1,17 @@
 
 import Blockly = require("blockly");
 import { UnionToTuple } from "../Utils";
+import { UIElement } from "./UIElement";
 
 interface RobertaButtonSettings {
 	class: string
 	tooltip?: string
 }
 
-export class UIRobertaButton {
+export class UIRobertaButton extends UIElement {
 
-	readonly buttonID: string
-	private jQueryHTMLElement: JQuery<HTMLElement>
-
-	constructor(buttonID: string) {
-		this.buttonID = buttonID
-		this.jQueryHTMLElement = $("#"+buttonID)
+	constructor(id: string) {
+		super($("#"+id), id)
 	}
 
 	/**
@@ -27,31 +24,28 @@ export class UIRobertaButton {
 	 */
 	onClick(onClickHandler: () => void): UIRobertaButton {
 		const t = this;
-		this.jQueryHTMLElement.onWrap("click", onClickHandler, this.buttonID + " clicked")
+		this.jQueryHTMLElement.onWrap("click", onClickHandler, this.id + " clicked")
 		return this
 	}
 
 	update() {
-		this.jQueryHTMLElement = $("#"+this.buttonID)
+		this.jQueryHTMLElement = $("#"+this.id)
 	}
 }
 
-export class UIRobertaStateButton<T extends { [key in string]: RobertaButtonSettings }> {
-	readonly buttonID: string
-	private jQueryHTMLElement: JQuery<HTMLElement>
+export class UIRobertaStateButton<T extends { [key in string]: RobertaButtonSettings }> extends UIElement {
 	protected stateMappingObject: T
 	protected state: keyof T
 
 	private stateChangeHandler?: (state: keyof T) => keyof T
-	private clickHanders: ((state: keyof T) => void)[] = []
+	private clickHandlers: ((state: keyof T) => void)[] = []
 
 	// TODO: Convert all the 'onWrap' js code to use the 'UIManager'
 	// Workaround since 'onWrap' is not loaded initially
 	private needsOnWrapHandler = true
 
 	constructor(buttonID: string, initialState: keyof T, buttonSettingsState: T) {
-		this.buttonID = buttonID
-		this.jQueryHTMLElement = $("#"+buttonID)
+		super($("#"+buttonID), buttonID)
 		this.stateMappingObject = buttonSettingsState
 		this.state = initialState
 
@@ -72,12 +66,12 @@ export class UIRobertaStateButton<T extends { [key in string]: RobertaButtonSett
 			this.jQueryHTMLElement.onWrap("click", () => {
 				t.jQueryHTMLElement.removeClass(t.stateMappingObject[t.state].class)
 				const state = t.state
-				t.clickHanders.forEach(handler => handler(state))
+				t.clickHandlers.forEach(handler => handler(state))
 				t.state = t.stateChangeHandler?.(state) ?? state
 				const buttonSettings = t.stateMappingObject[t.state]
 				t.jQueryHTMLElement.addClass(buttonSettings.class)
 				t.jQueryHTMLElement.attr("data-original-title", buttonSettings.tooltip ?? "");
-			}, this.buttonID + " clicked")
+			}, this.id + " clicked")
 		} else {
 			// workaround for onWrap not loaded
 			setTimeout(() => this.setButtonEventHandler(), 200)
@@ -107,7 +101,7 @@ export class UIRobertaStateButton<T extends { [key in string]: RobertaButtonSett
 	onClick(onClickHandler: (state: keyof T) => void): UIRobertaStateButton<T> {
 		// TODO: 'setButtonEventHandler' to the constructor if all 'onWrap' code is converted to TypeScript 
 		this.setButtonEventHandler()
-		this.clickHanders.push(onClickHandler)
+		this.clickHandlers.push(onClickHandler)
 		return this
 	}
 
