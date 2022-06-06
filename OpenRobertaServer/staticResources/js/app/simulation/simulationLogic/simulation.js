@@ -25,7 +25,7 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
 };
 define(["require", "exports", "./external/SceneDesciptorList", "./Cyberspace/Cyberspace", "./BlocklyDebug", "./UI/UIManager", "interpreter.jsHelper", "./RRC/Scene/RRCScoreScene", "./external/RESTApi", "jquery", "blockly", "guiState.controller", "nn.controller", "program.model", "message", "program.controller", "./simulation.constants", "tour.controller", "./util", "./pixijs", "./ExtendedMatter"], function (require, exports, SceneDesciptorList_1, Cyberspace_1, BlocklyDebug_1, UIManager_1, interpreter_jsHelper_1, RRCScoreScene_1, RESTApi_1, $, Blockly, GUISTATE_C, NN_CTRL, PROGRAM, MSG, PROG_C, CONST, TOUR_C, UTIL) {
     Object.defineProperty(exports, "__esModule", { value: true });
-    exports.getDebugMode = exports.setSimSpeed = exports.zoomReset = exports.zoomOut = exports.zoomIn = exports.score = exports.sim = exports.nextScene = exports.selectScene = exports.getScenes = exports.cancel = exports.interpreterAddEvent = exports.endDebugging = exports.updateDebugMode = exports.resetPose = exports.setInfo = exports.importImage = exports.stopProgram = exports.run = exports.setPause = exports.getNumRobots = exports.init = void 0;
+    exports.init = void 0;
     //
     // init all components for a simulation
     //
@@ -70,116 +70,9 @@ define(["require", "exports", "./external/SceneDesciptorList", "./Cyberspace/Cyb
         cyberspace.setRobertaRobotSetupData(programs, robotType);
     }
     exports.init = init;
-    function getNumRobots() {
-        return 1;
-    }
-    exports.getNumRobots = getNumRobots;
-    function setPause(pause) {
-        if (pause) {
-            cyberspace.pausePrograms();
-        }
-        else {
-            cyberspace.startPrograms();
-        }
-    }
-    exports.setPause = setPause;
-    function run(refresh, robotType) {
-        //init(Utils.simulation.storedRobertaRobotSetupData, refresh, robotType);
-        console.log("run!");
-    }
-    exports.run = run;
-    /**
-     * on stop program
-     */
-    function stopProgram() {
-        cyberspace.stopPrograms();
-    }
-    exports.stopProgram = stopProgram;
-    function importImage() {
-        alert('This function is not supported, sorry :(');
-    }
-    exports.importImage = importImage;
-    function setInfo() {
-        alert('info');
-    }
-    exports.setInfo = setInfo;
-    /**
-     * Reset robot position and zoom of ScrollView
-     */
-    function resetPose() {
-        cyberspace.resetScene();
-    }
-    exports.resetPose = resetPose;
-    function updateDebugMode(debugMode) {
-        blocklyDebugManager.setDebugMode(debugMode);
-    }
-    exports.updateDebugMode = updateDebugMode;
-    function endDebugging() {
-        blocklyDebugManager.setDebugMode(false);
-    }
-    exports.endDebugging = endDebugging;
-    function interpreterAddEvent(event) {
-        blocklyDebugManager.interpreterAddEvent(event);
-    }
-    exports.interpreterAddEvent = interpreterAddEvent;
-    /**
-     * on simulation close
-     */
-    function cancel() {
-        cyberspace.pausePrograms();
-    }
-    exports.cancel = cancel;
     //
-    // Scene selection functions
+    // UI Implementation
     //
-    function getScenes() {
-        return cyberspace.getScenes();
-    }
-    exports.getScenes = getScenes;
-    function selectScene(ID) {
-        cyberspace.loadScene(ID);
-    }
-    exports.selectScene = selectScene;
-    function nextScene() {
-        return cyberspace.switchToNextScene();
-    }
-    exports.nextScene = nextScene;
-    function sim(run) {
-        if (run) {
-            cyberspace.startSimulation();
-        }
-        else {
-            cyberspace.pauseSimulation();
-        }
-    }
-    exports.sim = sim;
-    function score(visible) {
-        var scene = cyberspace.getScene();
-        if (scene instanceof RRCScoreScene_1.RRCScoreScene) {
-            scene.showScoreScreen(visible);
-        }
-    }
-    exports.score = score;
-    function zoomIn() {
-        cyberspace.zoomViewIn();
-    }
-    exports.zoomIn = zoomIn;
-    function zoomOut() {
-        cyberspace.zoomViewOut();
-    }
-    exports.zoomOut = zoomOut;
-    function zoomReset() {
-        cyberspace.resetView();
-    }
-    exports.zoomReset = zoomReset;
-    function setSimSpeed(speedup) {
-        cyberspace.setSimulationSpeedupFactor(speedup);
-    }
-    exports.setSimSpeed = setSimSpeed;
-    function getDebugMode() {
-        return false;
-    }
-    exports.getDebugMode = getDebugMode;
     function requestSimAssemblyForProgram(callback) {
         var xmlProgram = Blockly.Xml.workspaceToDom(GUISTATE_C.getBlocklyWorkspace());
         var xmlTextProgram = Blockly.Xml.domToText(xmlProgram);
@@ -310,7 +203,7 @@ define(["require", "exports", "./external/SceneDesciptorList", "./Cyberspace/Cyb
         if ($(id).is(':hidden')) {
             $(id).css({
                 top: position.top + 12,
-                right: position.left
+                left: position.left
             });
         }
         $(id).animate({

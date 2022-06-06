@@ -363,7 +363,7 @@ function initEvents() {
     );*/
 }
 
-function initSimulation(result) {
+/*function initSimulation(result) {
     SIM.init([result], true, GUISTATE_C.getRobotGroup());
     $('#simControl').addClass('typcn-media-play-outline').removeClass('typcn-media-play');
     if (SIM.getNumRobots() === 1 && debug) {
@@ -469,4 +469,4 @@ function toggleSimEvent(event) {
         $('#simControl').addClass('typcn-media-play-outline').removeClass('typcn-media-play');
         SIM.stopProgram();
     }
-}
+}*/

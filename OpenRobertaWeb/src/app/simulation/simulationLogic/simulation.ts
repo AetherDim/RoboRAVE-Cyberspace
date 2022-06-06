@@ -3,7 +3,6 @@ import './ExtendedMatter'
 import { cyberspaceScenes } from './external/SceneDesciptorList'
 import { RobertaRobotSetupData } from './Robot/RobertaRobotSetupData'
 import { Cyberspace } from './Cyberspace/Cyberspace';
-import { SceneDescriptor } from './Cyberspace/SceneManager';
 import { BlocklyDebug } from './BlocklyDebug';
 import { UIManager } from './UI/UIManager';
 import { interpreterSimBreakEventHandlers } from "interpreter.jsHelper"
@@ -79,117 +78,9 @@ export function init(programs: RobertaRobotSetupData[], refresh: boolean, robotT
 	cyberspace.setRobertaRobotSetupData(programs, robotType)
 }
 
-
-export function getNumRobots(): number {
-	return 1;
-}
-
-
-export function setPause(pause:boolean) {
-	if(pause) {
-		cyberspace.pausePrograms()
-	} else {
-		cyberspace.startPrograms()
-	}
-}
-
-export function run(refresh:boolean, robotType: any) {
-	//init(Utils.simulation.storedRobertaRobotSetupData, refresh, robotType);
-	console.log("run!")
-}
-
-/**
- * on stop program
- */
-export function stopProgram() {
-	cyberspace.stopPrograms()
-}
-
-export function importImage() {
-	alert('This function is not supported, sorry :(');
-}
-
-export function setInfo() {
-	alert('info');
-}
-
-/**
- * Reset robot position and zoom of ScrollView
- */
-export function resetPose() {
-	cyberspace.resetScene()
-}
-
-export function updateDebugMode(debugMode:boolean) {
-	blocklyDebugManager.setDebugMode(debugMode)
-}
-
-export function endDebugging() {
-	blocklyDebugManager.setDebugMode(false)
-}
-
-export function interpreterAddEvent(event:any) {
-	blocklyDebugManager.interpreterAddEvent(event)
-}
-
-/**
- * on simulation close
- */
-export function cancel() {
-	cyberspace.pausePrograms()
-}
-
-
 //
-// Scene selection functions
+// UI Implementation
 //
-
-export function getScenes(): SceneDescriptor[] {
-	return cyberspace.getScenes()
-}
-
-export function selectScene(ID: string) {
-	cyberspace.loadScene(ID)
-}
-
-export function nextScene(): SceneDescriptor | undefined {
-	return cyberspace.switchToNextScene();
-}
-
-export function sim(run: boolean) {
-	if(run) {
-		cyberspace.startSimulation()
-	} else {
-		cyberspace.pauseSimulation()
-	}
-}
-
-export function score(visible: boolean) {
-	const scene = cyberspace.getScene()
-	if (scene instanceof RRCScoreScene) {
-		scene.showScoreScreen(visible)
-	}
-}
-
-export function zoomIn() {
-	cyberspace.zoomViewIn()
-}
-
-export function zoomOut() {
-	cyberspace.zoomViewOut()
-}
-
-export function zoomReset() {
-	cyberspace.resetView()
-}
-
-export function setSimSpeed(speedup: number) {
-	cyberspace.setSimulationSpeedupFactor(speedup)
-}
-
-export function getDebugMode(): boolean {
-	return false;
-}
 
 
 function requestSimAssemblyForProgram(callback: (result: RobertaRobotSetupData) => void) {

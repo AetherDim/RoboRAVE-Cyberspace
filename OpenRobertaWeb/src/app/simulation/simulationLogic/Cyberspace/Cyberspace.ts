@@ -6,7 +6,6 @@ import { RRCScoreScene } from "../RRC/Scene/RRCScoreScene"
 import { SceneRender } from "../SceneRenderer"
 import { SceneDescriptor, SceneManager } from "./SceneManager"
 import { EventManager, ParameterTypes } from "../EventManager/EventManager"
-import {getScenes} from "simulation.simulation";
 
 
 export class Cyberspace {
