@@ -9,6 +9,12 @@ define(["require", "exports"], function (require, exports) {
         UIElement.fromID = function (id) {
             return new UIElement($("#" + id));
         };
+        UIElement.prototype.hide = function () {
+            this.jQueryHTMLElement.addClass("hide");
+        };
+        UIElement.prototype.show = function () {
+            this.jQueryHTMLElement.removeClass("hide");
+        };
         return UIElement;
     }());
     exports.UIElement = UIElement;

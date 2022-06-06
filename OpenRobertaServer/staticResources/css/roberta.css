@@ -1159,14 +1159,27 @@ button#simCustomObstacle.typcn:before {
     display: none;
 }
 
-.simWindow#simValuesWindow button.close {
+.simWindow#simValuesModal button.close {
     top: 4px;
     right: 14px;
     color: #bbb;
     position: absolute;
 }
 
-.simWindow#simValuesWindow button.close:hover {
+.simWindow#simValuesModal button.close:hover {
+    top: 4px;
+    right: 14px;
+    color: #333;
+}
+
+.simWindow#simVariablesModal button.close {
+    top: 4px;
+    right: 14px;
+    color: #bbb;
+    position: absolute;
+}
+
+.simWindow#simVariablesModal button.close:hover {
     top: 4px;
     right: 14px;
     color: #333;

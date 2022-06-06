@@ -166,8 +166,11 @@ define(["require", "exports", "blockly", "./UIElement"], function (require, expo
         UIManager.zoomResetButton = new UIRobertaButton("zoomReset");
         UIManager.switchSceneButton = new UIRobertaButton("simScene");
         UIManager.simDebugViewButton = new UIRobertaButton("simValues");
+        UIManager.simDebugMode = new UIRobertaButton("debugMode");
         UIManager.debugStepOverButton = new UIRobertaButton("simControlStepInto");
         UIManager.debugStepIntoButton = new UIRobertaButton("simControlStepOver");
+        UIManager.debugStepBreakPointButton = new UIRobertaButton("simControlBreakPoint");
+        UIManager.debugVariablesButton = new UIRobertaButton("simVariables");
         UIManager.simViewButton = new UIRobertaToggleStateButton("simButton", "open", {
             closed: { class: "" },
             open: { class: "" }

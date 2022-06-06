@@ -303,14 +303,14 @@ define(["require", "exports", "./external/SceneDesciptorList", "./Cyberspace/Cyb
                 $('.' + GUISTATE_C.getRobot()).addClass('disabled');
             });
             UTIL.closeSimRobotWindow(CONST.default.ANIMATION_DURATION);
-            blocklyDebugManager.setDebugMode(false);
+            cyberspace.disableDebugMode();
         }
     });
-    function toggleRobotWindow(id, position) {
+    function toggleModal(id, position) {
         if ($(id).is(':hidden')) {
             $(id).css({
                 top: position.top + 12,
-                left: position.left
+                right: position.left
             });
         }
         $(id).animate({
@@ -323,14 +323,25 @@ define(["require", "exports", "./external/SceneDesciptorList", "./Cyberspace/Cyb
     }
     UIManager_1.UIManager.simDebugViewButton.onClick(function () {
         var position = $('#simDiv').position();
-        position.left = $(window).width() - ($('#simValuesWindow').width() + 12);
-        toggleRobotWindow('#simValuesWindow', position);
+        position.left = $(window).width() - ($('#simValuesModal').width() + 12);
+        toggleModal('#simValuesModal', position);
     });
     UIManager_1.UIManager.debugStepOverButton.onClick(function () {
         blocklyDebugManager.interpreterAddEvent(CONST.default.DEBUG_STEP_OVER);
     });
     UIManager_1.UIManager.debugStepIntoButton.onClick(function () {
         blocklyDebugManager.interpreterAddEvent(CONST.default.DEBUG_STEP_INTO);
+    });
+    UIManager_1.UIManager.simDebugMode.onClick(function () {
+        blocklyDebugManager.setDebugMode(!cyberspace.getProgramManager().isDebugMode());
+    });
+    UIManager_1.UIManager.debugStepBreakPointButton.onClick(function () {
+        blocklyDebugManager.interpreterAddEvent(CONST.default.DEBUG_BREAKPOINT);
+    });
+    UIManager_1.UIManager.debugVariablesButton.onClick(function () {
+        var position = $('#simDiv').position();
+        position.left = $(window).width() - ($('#simVariablesModal').width() + 12);
+        toggleModal('#simVariablesModal', position);
     });
     function buildSceneMenu(menu, addString) {
         // TODO: clear #simSelectionMenuContent??

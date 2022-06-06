@@ -12,5 +12,13 @@ export class UIElement {
 	static fromID(id: string): UIElement {
 		return new UIElement($("#" + id))
 	}
+
+	hide() {
+		this.jQueryHTMLElement.addClass("hide")
+	}
+
+	show() {
+		this.jQueryHTMLElement.removeClass("hide")
+	}
  
 }

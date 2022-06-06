@@ -70,7 +70,7 @@ export class BlocklyDebug {
 
 
 	updateSimVariables() {
-		if($("#simVariablesModal").attr('aria-hidden') == "false") {
+		if($("#simVariablesModal").is(':visible')) {
 			$("#variableValue").html("");
 			const variables = this.cyberspace.getProgramManager().getSimVariables();
 			if (Object.keys(variables).length > 0) {

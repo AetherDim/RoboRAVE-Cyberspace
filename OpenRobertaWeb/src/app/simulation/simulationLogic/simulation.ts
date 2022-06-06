@@ -342,11 +342,11 @@ UIManager.simViewButton.onClick(state => {
 
 		UTIL.closeSimRobotWindow(CONST.default.ANIMATION_DURATION)
 
-		blocklyDebugManager.setDebugMode(false)
+		cyberspace.disableDebugMode()
 	}
 })
 
-function toggleRobotWindow(id, position) {
+function toggleModal(id, position) {
 	if ($(id).is(':hidden')) {
 		$(id).css({
 			top: position.top + 12,
@@ -366,8 +366,8 @@ function toggleRobotWindow(id, position) {
 
 UIManager.simDebugViewButton.onClick(() => {
 	const position = $('#simDiv').position();
-	position.left = $(window).width() - ($('#simValuesWindow').width() + 12);
-	toggleRobotWindow('#simValuesWindow', position);
+	position.left = $(window).width() - ($('#simValuesModal').width() + 12);
+	toggleModal('#simValuesModal', position);
 })
 
 UIManager.debugStepOverButton.onClick(() => {
@@ -376,6 +376,20 @@ UIManager.debugStepOverButton.onClick(() => {
 
 UIManager.debugStepIntoButton.onClick(() => {
 	blocklyDebugManager.interpreterAddEvent(CONST.default.DEBUG_STEP_INTO)
+})
+
+UIManager.simDebugMode.onClick(() => {
+	blocklyDebugManager.setDebugMode(!cyberspace.getProgramManager().isDebugMode())
+})
+
+UIManager.debugStepBreakPointButton.onClick(() => {
+	blocklyDebugManager.interpreterAddEvent(CONST.default.DEBUG_BREAKPOINT)
+})
+
+UIManager.debugVariablesButton.onClick(() => {
+	const position = $('#simDiv').position();
+	position.left = $(window).width() - ($('#simVariablesModal').width() + 12);
+	toggleModal('#simVariablesModal', position);
 })
 
 
@@ -407,3 +421,4 @@ $('.sim-nav').onWrap('click', 'li:not(.disabled) a', function(event) {
 	$('#'+name+'_small_Menu_').parent().addClass('disabled')
 
 }, 'sim clicked');
+

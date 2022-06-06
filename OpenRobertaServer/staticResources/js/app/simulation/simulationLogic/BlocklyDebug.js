@@ -47,7 +47,7 @@ define(["require", "exports", "blockly", "./Timer"], function (require, exports,
             this.blocklyTicker.sleepTime = simSleepTime;
         };
         BlocklyDebug.prototype.updateSimVariables = function () {
-            if ($("#simVariablesModal").attr('aria-hidden') == "false") {
+            if ($("#simVariablesModal").is(':visible')) {
                 $("#variableValue").html("");
                 var variables = this.cyberspace.getProgramManager().getSimVariables();
                 if (Object.keys(variables).length > 0) {

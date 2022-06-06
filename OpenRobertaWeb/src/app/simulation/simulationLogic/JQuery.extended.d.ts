@@ -4,4 +4,5 @@ interface JQuery {
 	closeRightView(func: () => void)
 	openRightView(viewName: string, initialViewWidth: number, callBack?: (() => void)|string)
 	draggable(whatever: any)
+	draggable()
 }
