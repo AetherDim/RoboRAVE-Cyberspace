@@ -23,7 +23,7 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
     }
     return to.concat(ar || Array.prototype.slice.call(from));
 };
-define(["require", "exports", "./external/SceneDesciptorList", "./Cyberspace/Cyberspace", "./BlocklyDebug", "./UIManager", "interpreter.jsHelper", "./RRC/Scene/RRCScoreScene", "./external/RESTApi", "./pixijs", "./ExtendedMatter"], function (require, exports, SceneDesciptorList_1, Cyberspace_1, BlocklyDebug_1, UIManager_1, interpreter_jsHelper_1, RRCScoreScene_1, RESTApi_1) {
+define(["require", "exports", "./external/SceneDesciptorList", "./Cyberspace/Cyberspace", "./BlocklyDebug", "./UIManager", "interpreter.jsHelper", "./RRC/Scene/RRCScoreScene", "./external/RESTApi", "jquery", "blockly", "guiState.controller", "nn.controller", "program.model", "message", "program.controller", "./simulation.constants", "./pixijs", "./ExtendedMatter"], function (require, exports, SceneDesciptorList_1, Cyberspace_1, BlocklyDebug_1, UIManager_1, interpreter_jsHelper_1, RRCScoreScene_1, RESTApi_1, $, Blockly, GUISTATE_C, NN_CTRL, PROGRAM, MSG, PROG_C, CONST) {
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.getDebugMode = exports.setSimSpeed = exports.zoomReset = exports.zoomOut = exports.zoomIn = exports.score = exports.sim = exports.nextScene = exports.selectScene = exports.getScenes = exports.cancel = exports.interpreterAddEvent = exports.endDebugging = exports.updateDebugMode = exports.resetPose = exports.setInfo = exports.importImage = exports.stopProgram = exports.run = exports.setPause = exports.getNumRobots = exports.init = void 0;
     //
@@ -180,4 +180,89 @@ define(["require", "exports", "./external/SceneDesciptorList", "./Cyberspace/Cyb
         return false;
     }
     exports.getDebugMode = getDebugMode;
+    // Button
+    UIManager_1.UIManager.programControlButton.onClick(function (state) {
+        if (cyberspace.robotCount() <= 1) {
+            if (state == "start") {
+                Blockly.hideChaff();
+                var xmlProgram = Blockly.Xml.workspaceToDom(GUISTATE_C.getBlocklyWorkspace());
+                var xmlTextProgram = Blockly.Xml.domToText(xmlProgram);
+                var isNamedConfig = !GUISTATE_C.isConfigurationStandard() && !GUISTATE_C.isConfigurationAnonymous();
+                var configName = isNamedConfig ? GUISTATE_C.getConfigurationName() : undefined;
+                var xmlConfigText = GUISTATE_C.isConfigurationAnonymous() ? GUISTATE_C.getConfigurationXML() : undefined;
+                var language = GUISTATE_C.getLanguage();
+                NN_CTRL.mkNNfromNNStepData();
+                // Request simulation assembly program from server
+                PROGRAM.runInSim(GUISTATE_C.getProgramName(), configName, xmlTextProgram, xmlConfigText, language, function (result) {
+                    if (result.rc == 'ok') {
+                        MSG.displayMessage('MESSAGE_EDIT_START', 'TOAST', GUISTATE_C.getProgramName(), undefined, undefined);
+                        cyberspace.setRobertaRobotSetupData([result], GUISTATE_C.getRobotGroup());
+                        cyberspace.startPrograms();
+                        if (cyberspace.getProgramManager().isDebugMode()) {
+                            blocklyDebugManager.interpreterAddEvent(CONST.default.DEBUG_BREAKPOINT);
+                        }
+                    }
+                    else {
+                        MSG.displayInformation(result, '', result.message, '', undefined);
+                    }
+                    PROG_C.reloadProgram(result); // load to current blocky workspace
+                });
+            }
+            else {
+                cyberspace.pausePrograms(); // TODO: pause or stop???
+                if (cyberspace.getProgramManager().isDebugMode()) {
+                    blocklyDebugManager.interpreterAddEvent(CONST.default.DEBUG_BREAKPOINT);
+                }
+            }
+        }
+        else {
+            // TODO: add multiple robot support
+            /*if ($('#simControl').hasClass('typcn-media-play-outline')) {
+                MSG.displayMessage('MESSAGE_EDIT_START', 'TOAST', 'multiple simulation');
+                $('#simControl').addClass('typcn-media-stop').removeClass('typcn-media-play-outline');
+                $('#simControl').attr('data-original-title', Blockly.Msg.MENU_SIM_STOP_TOOLTIP);
+                SIM.run(false, GUISTATE_C.getRobotGroup());
+                setTimeout(function () {
+                    SIM.setPause(false);
+                }, 500);
+            } else {
+                $('#simControl').addClass('typcn-media-play-outline').removeClass('typcn-media-stop');
+                $('#simControl').attr('data-original-title', Blockly.Msg.MENU_SIM_START_TOOLTIP);
+                SIM.stopProgram();
+            }*/
+        }
+    });
+    UIManager_1.UIManager.physicsSimControlButton.onClick(function (state) {
+        if (state == "start") {
+            cyberspace.startSimulation();
+        }
+        else {
+            cyberspace.pauseSimulation();
+        }
+    });
+    UIManager_1.UIManager.showScoreButton.onClick(function (state) {
+        var scene = cyberspace.getScene();
+        if (scene instanceof RRCScoreScene_1.RRCScoreScene) {
+            scene.showScoreScreen(state == "showScore");
+        }
+    });
+    UIManager_1.UIManager.simSpeedUpButton.onClick(function (state) {
+        var speedup = state == "normalSpeed" ? 1 : 10;
+        cyberspace.setSimulationSpeedupFactor(speedup);
+    });
+    UIManager_1.UIManager.resetSceneButton.onClick(function () {
+        cyberspace.resetScene();
+    });
+    UIManager_1.UIManager.zoomOutButton.onClick(function () {
+        cyberspace.zoomViewIn();
+    });
+    UIManager_1.UIManager.zoomOutButton.onClick(function () {
+        cyberspace.zoomViewOut();
+    });
+    UIManager_1.UIManager.zoomResetButton.onClick(function () {
+        cyberspace.resetView();
+    });
+    UIManager_1.UIManager.switchSceneButton.onClick(function () {
+        cyberspace.switchToNextScene();
+    });
 });

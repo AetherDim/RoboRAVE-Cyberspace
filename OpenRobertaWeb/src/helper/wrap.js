@@ -3,6 +3,11 @@ import * as LOG from 'log';
 import * as $ from 'jquery';
 import * as DEBUG from 'GlobalDebug';
 
+// Import self to force load wrap
+// This fixes an issue for the simulation where wrap has not been defined
+// it works O.o
+//import * as WRAP from 'wrap';
+
 /**
  * we want to guarantee, that only ONE thread of work is active. A thread of work is usually started by a UI-callback attached to
  * the DOM, may call the REST-server and continues with the REST-callback associated with the response of the REST-call.
@@ -179,18 +184,23 @@ function wrapErrorFn(errorFnToBeWrapped) {
     };
     return DEBUG.DISABLE_WRAP ? errorFnToBeWrapped : wrap;
 }
+
+// Import self to force load wrap
+// This fixes an issue for the simulation where wrap has not been defined
+const FUNC_DEF = { wrapTotal, wrapUI, wrapREST, wrapErrorFn };
+
 export { wrapTotal, wrapUI, wrapREST, wrapErrorFn };
 
 $.fn.onWrap = function (event, callbackOrFilter, callbackOrMessage, optMessage) {
     if (typeof callbackOrFilter === 'string') {
         if (typeof callbackOrMessage === 'function') {
-            return this.on(event, callbackOrFilter, WRAP.wrapUI(callbackOrMessage, optMessage));
+            return this.on(event, callbackOrFilter, FUNC_DEF.wrapUI(callbackOrMessage, optMessage));
         } else {
             LOG.error('illegal wrapping. Parameter: ' + event + ' ::: ' + callbackOrFilter + ' ::: ' + callbackOrMessage + ' ::: ' + optMessage);
         }
     } else if (typeof callbackOrFilter === 'function') {
         if (typeof callbackOrMessage === 'string' || callbackOrMessage === undefined) {
-            return this.on(event, WRAP.wrapUI(callbackOrFilter, callbackOrMessage));
+            return this.on(event, FUNC_DEF.wrapUI(callbackOrFilter, callbackOrMessage));
         } else {
             LOG.error('illegal wrapping. Parameter: ' + event + ' ::: ' + callbackOrFilter + ' ::: ' + callbackOrMessage + ' ::: ' + optMessage);
         }

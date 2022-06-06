@@ -24,6 +24,7 @@ export { init };
 
 function initEvents() {
 
+    // open/close simulation view
     $('#simButton').off('click touchend');
     $('#simButton').onWrap('click touchend', function (event) {
         debug = false;
@@ -35,7 +36,8 @@ function initEvents() {
         return false;
     });
 
-    $('#simDebugButton').off('click touchend');
+    // Not visible on this fork
+    /*$('#simDebugButton').off('click touchend');
     $('#simDebugButton').onWrap('click touchend', function (event) {
         debug = true;
         // Workaround for IOS speech synthesis, speech must be triggered once by a button click explicitly before it can be used programmatically
@@ -44,9 +46,10 @@ function initEvents() {
         }
         toggleSim();
         return false;
-    });
+    });*/
 
-    $('#simStop').onWrap(
+    // Stop button in debug view
+    /*$('#simStop').onWrap(
         'click',
         function (event) {
             $('#simStop').addClass('disabled');
@@ -54,8 +57,10 @@ function initEvents() {
             SIM.stopProgram();
         },
         'sim stop clicked'
-    );
-    $('#simControl').onWrap(
+    );*/
+
+    // sim start/stop button
+    /*$('#simControl').onWrap(
         'click',
         function (event) {
             event.stopPropagation();
@@ -125,24 +130,32 @@ function initEvents() {
             }
         },
         'sim start clicked'
-    );
+    );*/
+
+    // Not in this fork
+    // imports custom background image from user
+    /*
     $('#simImport').onWrap(
         'click',
         function (event) {
             SIM.importImage();
         },
         'simImport clicked'
-    );
+    );*/
 
-    $('.simInfo').onWrap(
+    // What is this???
+    // seems to be unused
+    /*$('.simInfo').onWrap(
         'click',
         function (event) {
             SIM.setInfo();
         },
         'sim info clicked'
-    );
+    );*/
 
-    $('#simRobot').onWrap('click', function (event) {
+    // opens the ev3 view (Robot display and buttons)
+    // not implemented
+    /*$('#simRobot').onWrap('click', function (event) {
         var robot = GUISTATE_C.getRobot();
         var position = $('#simDiv').position();
 
@@ -152,8 +165,9 @@ function initEvents() {
             position.left += 48;
         }
         toggleRobotWindow('#simRobotWindow', position);
-    }, 'sim show robot clicked');
+    }, 'sim show robot clicked');*/
 
+    // display simulation values (Robot position, sender data, ...)
     $('#simValues').onWrap('click', function(event) {
         var position = $('#simDiv').position();
         position.left = $(window).width() - ($('#simValuesWindow').width() + 12);
@@ -178,6 +192,7 @@ function initEvents() {
         );
     }
 
+    // Robot view close button
     $('.simWindow .close').onWrap('click', function(event) {
         $($(this).parents('.simWindow:first')).animate({
             'opacity': 'hide',
@@ -185,7 +200,9 @@ function initEvents() {
         }, 300);
     }, 'sim close robotWindow clicked');
 
-    $('#simResetPose').onWrap(
+
+    // reset scene button
+    /*$('#simResetPose').onWrap(
         'click',
         function(event) {
             if (GUISTATE_C.hasWebotsSim()) {
@@ -195,8 +212,9 @@ function initEvents() {
             SIM.resetPose();
         },
         'sim reset pose clicked'
-    );
+    );*/
 
+    // Debug step into
     $('#simControlStepInto').onWrap(
         'click',
         function (event) {
@@ -205,6 +223,7 @@ function initEvents() {
         'sim step into clicked'
     );
 
+    // Debug step over
     $('#simControlStepOver').onWrap(
         'click',
         function (event) {
@@ -213,6 +232,9 @@ function initEvents() {
         'sim step over clicked'
     );
 
+    // not used in this fork
+    // adds obstacle
+    /*
     $('#simAddObstacleRectangle').onWrap(
         'click',
         function (event) {
@@ -220,16 +242,22 @@ function initEvents() {
             event.stopPropagation();
         },
         'sim add rectangle obstacle clicked'
-    );
+    );*/
 
+    // not used in this fork
+    // adds obstacle
+    /*
     $('#simAddObstacleTriangle').onWrap(
         'click',
         function (event) {
             SIM.addObstacle('triangle');
         },
         'sim add triangle obstacle clicked'
-    );
+    );*/
 
+    // not used in this fork
+    // adds obstacle
+    /*
     $('#simAddObstacleCircle').onWrap(
         'click',
         function (event) {
@@ -237,8 +265,11 @@ function initEvents() {
             event.stopPropagation();
         },
         'sim add circle obstacle clicked'
-    );
+    );*/
 
+    // not used in this fork
+    // adds obstacle
+    /*
     $('#simAddAreaRectangle').onWrap(
         'click',
         function (event) {
@@ -246,8 +277,11 @@ function initEvents() {
             event.stopPropagation();
         },
         'sim add rectangle area clicked'
-    );
+    );*/
 
+    // not used in this fork
+    // adds obstacle
+    /*
     $('#simAddAreaTriangle').onWrap(
         'click',
         function (event) {
@@ -255,8 +289,11 @@ function initEvents() {
             event.stopPropagation();
         },
         'sim add triangle area clicked'
-    );
+    );*/
 
+    // not used in this fork
+    // adds obstacle
+    /*
     $('#simAddAreaCircle').onWrap(
         'click',
         function (event) {
@@ -264,8 +301,11 @@ function initEvents() {
             event.stopPropagation();
         },
         'sim add circle area clicked'
-    );
+    );*/
 
+    // not used in this fork
+    // adds obstacle
+    /*
     $('#simChangeObjectColor').onWrap(
         'click',
         function (event) {
@@ -274,8 +314,11 @@ function initEvents() {
             }
         },
         'sim edit object clicked'
-    );
+    );*/
 
+    // not used in this fork
+    // adds obstacle
+    /*
     $('#simDeleteObject').onWrap(
         'click',
         function (event) {
@@ -284,8 +327,11 @@ function initEvents() {
             }
         },
         'sim delete object clicked'
-    );
+    );*/
 
+    // not used in this fork
+    // download config
+    /*
     $('#simDownloadConfig').onWrap(
         'click',
         function (event) {
@@ -294,23 +340,27 @@ function initEvents() {
             MSG.displayMessage('MENU_MESSAGE_DOWNLOAD', 'TOAST', filename);
         },
         'sim download config clicked'
-    );
+    );*/
 
+    // not used in this fork
+    // upload config
+    /*
     $('#simUploadConfig').onWrap(
         'click',
         function (event) {
             SIM.importConfigData();
         },
         'sim upload config clicked'
-    );
+    );*/
 
-    $('#simScene').onWrap(
+    // switch scene
+    /*$('#simScene').onWrap(
         'click',
         function (event) {
             SIM.setBackground(-1, SIM.setBackground);
         },
         'sim toggle background clicked'
-    );
+    );*/
 }
 
 function initSimulation(result) {
@@ -381,7 +431,7 @@ function toggleSim() {
             } else {
                 MSG.displayInformation(result, '', result.message, '');
             }
-            PROG_C.reloadProgram(result);
+            PROG_C.reloadProgram(result); // load program into workspace
         });
         UTIL.openSimRobotWindow(CONST.ANIMATION_DURATION);
     }

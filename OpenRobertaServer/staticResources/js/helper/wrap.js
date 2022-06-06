@@ -1,6 +1,10 @@
 define(["require", "exports", "comm", "log", "jquery", "GlobalDebug"], function (require, exports, COMM, LOG, $, DEBUG) {
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.wrapErrorFn = exports.wrapREST = exports.wrapUI = exports.wrapTotal = void 0;
+    // Import self to force load wrap
+    // This fixes an issue for the simulation where wrap has not been defined
+    // it works O.o
+    //import * as WRAP from 'wrap';
     /**
      * we want to guarantee, that only ONE thread of work is active. A thread of work is usually started by a UI-callback attached to
      * the DOM, may call the REST-server and continues with the REST-callback associated with the response of the REST-call.
@@ -169,10 +173,13 @@ define(["require", "exports", "comm", "log", "jquery", "GlobalDebug"], function 
         return DEBUG.DISABLE_WRAP ? errorFnToBeWrapped : wrap;
     }
     exports.wrapErrorFn = wrapErrorFn;
+    // Import self to force load wrap
+    // This fixes an issue for the simulation where wrap has not been defined
+    var FUNC_DEF = { wrapTotal: wrapTotal, wrapUI: wrapUI, wrapREST: wrapREST, wrapErrorFn: wrapErrorFn };
     $.fn.onWrap = function (event, callbackOrFilter, callbackOrMessage, optMessage) {
         if (typeof callbackOrFilter === 'string') {
             if (typeof callbackOrMessage === 'function') {
-                return this.on(event, callbackOrFilter, WRAP.wrapUI(callbackOrMessage, optMessage));
+                return this.on(event, callbackOrFilter, FUNC_DEF.wrapUI(callbackOrMessage, optMessage));
             }
             else {
                 LOG.error('illegal wrapping. Parameter: ' + event + ' ::: ' + callbackOrFilter + ' ::: ' + callbackOrMessage + ' ::: ' + optMessage);
@@ -180,7 +187,7 @@ define(["require", "exports", "comm", "log", "jquery", "GlobalDebug"], function 
         }
         else if (typeof callbackOrFilter === 'function') {
             if (typeof callbackOrMessage === 'string' || callbackOrMessage === undefined) {
-                return this.on(event, WRAP.wrapUI(callbackOrFilter, callbackOrMessage));
+                return this.on(event, FUNC_DEF.wrapUI(callbackOrFilter, callbackOrMessage));
             }
             else {
                 LOG.error('illegal wrapping. Parameter: ' + event + ' ::: ' + callbackOrFilter + ' ::: ' + callbackOrMessage + ' ::: ' + optMessage);

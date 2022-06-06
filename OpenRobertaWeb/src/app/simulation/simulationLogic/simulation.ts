@@ -9,6 +9,14 @@ import { UIManager } from './UIManager';
 import { interpreterSimBreakEventHandlers } from "interpreter.jsHelper"
 import { RRCScoreScene } from './RRC/Scene/RRCScoreScene';
 import { RESTState, ResultErrorType, sendStateRequest } from './external/RESTApi';
+import * as $ from "jquery";
+import * as Blockly from "blockly";
+import * as GUISTATE_C from "guiState.controller";
+import * as NN_CTRL from "nn.controller";
+import * as PROGRAM from "program.model";
+import * as MSG from "message";
+import * as PROG_C from "program.controller";
+import * as CONST from "./simulation.constants"
 
 //
 // init all components for a simulation
@@ -180,3 +188,108 @@ export function setSimSpeed(speedup: number) {
 export function getDebugMode(): boolean {
 	return false;
 }
+
+
+
+// Button
+UIManager.programControlButton.onClick( state => {
+
+	if (cyberspace.robotCount() <= 1) {
+
+		if (state == "start") {
+			Blockly.hideChaff();
+			const xmlProgram = Blockly.Xml.workspaceToDom(GUISTATE_C.getBlocklyWorkspace());
+			const xmlTextProgram = Blockly.Xml.domToText(xmlProgram);
+
+			const isNamedConfig = !GUISTATE_C.isConfigurationStandard() && !GUISTATE_C.isConfigurationAnonymous();
+			const configName = isNamedConfig ? GUISTATE_C.getConfigurationName() : undefined;
+			const xmlConfigText = GUISTATE_C.isConfigurationAnonymous() ? GUISTATE_C.getConfigurationXML() : undefined;
+
+			const language = GUISTATE_C.getLanguage();
+
+			NN_CTRL.mkNNfromNNStepData();
+
+			// Request simulation assembly program from server
+			PROGRAM.runInSim(GUISTATE_C.getProgramName(), configName, xmlTextProgram, xmlConfigText, language, function (result) {
+				if (result.rc == 'ok') {
+					MSG.displayMessage('MESSAGE_EDIT_START', 'TOAST', GUISTATE_C.getProgramName(), undefined, undefined);
+
+					cyberspace.setRobertaRobotSetupData([result], GUISTATE_C.getRobotGroup())
+					cyberspace.startPrograms()
+
+					if(cyberspace.getProgramManager().isDebugMode()) {
+						blocklyDebugManager.interpreterAddEvent(CONST.default.DEBUG_BREAKPOINT)
+					}
+
+				} else {
+					MSG.displayInformation(result, '', result.message, '', undefined);
+				}
+
+				PROG_C.reloadProgram(result); // load to current blocky workspace
+			});
+
+		} else {
+			cyberspace.pausePrograms() // TODO: pause or stop???
+			if(cyberspace.getProgramManager().isDebugMode()) {
+				blocklyDebugManager.interpreterAddEvent(CONST.default.DEBUG_BREAKPOINT)
+			}
+		}
+
+	} else {
+		// TODO: add multiple robot support
+		/*if ($('#simControl').hasClass('typcn-media-play-outline')) {
+			MSG.displayMessage('MESSAGE_EDIT_START', 'TOAST', 'multiple simulation');
+			$('#simControl').addClass('typcn-media-stop').removeClass('typcn-media-play-outline');
+			$('#simControl').attr('data-original-title', Blockly.Msg.MENU_SIM_STOP_TOOLTIP);
+			SIM.run(false, GUISTATE_C.getRobotGroup());
+			setTimeout(function () {
+				SIM.setPause(false);
+			}, 500);
+		} else {
+			$('#simControl').addClass('typcn-media-play-outline').removeClass('typcn-media-stop');
+			$('#simControl').attr('data-original-title', Blockly.Msg.MENU_SIM_START_TOOLTIP);
+			SIM.stopProgram();
+		}*/
+	}
+
+})
+
+UIManager.physicsSimControlButton.onClick(state => {
+	if(state == "start") {
+		cyberspace.startSimulation()
+	} else {
+		cyberspace.pauseSimulation()
+	}
+})
+
+UIManager.showScoreButton.onClick(state => {
+	const scene = cyberspace.getScene()
+	if (scene instanceof RRCScoreScene) {
+		scene.showScoreScreen(state == "showScore")
+	}
+})
+
+UIManager.simSpeedUpButton.onClick(state => {
+	const speedup = state == "normalSpeed" ? 1 : 10;
+	cyberspace.setSimulationSpeedupFactor(speedup)
+})
+
+UIManager.resetSceneButton.onClick(() => {
+	cyberspace.resetScene()
+})
+
+UIManager.zoomOutButton.onClick(() => {
+	cyberspace.zoomViewIn()
+})
+
+UIManager.zoomOutButton.onClick(() => {
+	cyberspace.zoomViewOut()
+})
+
+UIManager.zoomResetButton.onClick(() => {
+	cyberspace.resetView()
+})
+
+UIManager.switchSceneButton.onClick(() => {
+	cyberspace.switchToNextScene()
+})

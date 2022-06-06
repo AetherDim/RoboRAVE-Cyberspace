@@ -163,6 +163,7 @@ define(["require", "exports", "blockly"], function (require, exports, Blockly) {
         UIManager.zoomOutButton = new UIRobertaButton("zoomOut");
         UIManager.zoomInButton = new UIRobertaButton("zoomIn");
         UIManager.zoomResetButton = new UIRobertaButton("zoomReset");
+        UIManager.switchSceneButton = new UIRobertaButton("simScene");
         return UIManager;
     }());
     exports.UIManager = UIManager;

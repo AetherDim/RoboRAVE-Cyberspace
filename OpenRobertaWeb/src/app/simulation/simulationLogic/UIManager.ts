@@ -181,4 +181,6 @@ export class UIManager {
 	static readonly zoomInButton = new UIRobertaButton("zoomIn")
 	static readonly zoomResetButton = new UIRobertaButton("zoomReset")
 
+	static readonly switchSceneButton = new UIRobertaButton("simScene")
+
 }

@@ -132,6 +132,10 @@ define(["require", "exports", "./SimulationCache", "../Scene/Scene", "../RRC/Sce
                 }
             }
         };
+        /**
+         *
+         * @param forced whether we should load while the current scene is loading
+         */
         Cyberspace.prototype.switchToNextScene = function (forced) {
             if (forced === void 0) { forced = false; }
             if (forced || this.getScene().isLoadingComplete()) {
@@ -144,6 +148,9 @@ define(["require", "exports", "./SimulationCache", "../Scene/Scene", "../RRC/Sce
         };
         Cyberspace.prototype.getSceneManager = function () {
             return this.sceneManager;
+        };
+        Cyberspace.prototype.robotCount = function () {
+            return this.getScene().getRobotManager().getNumberOfRobots();
         };
         /* ############################################################################################ */
         /* #################################### Simulation control #################################### */

@@ -6,6 +6,7 @@ import { RRCScoreScene } from "../RRC/Scene/RRCScoreScene"
 import { SceneRender } from "../SceneRenderer"
 import { SceneDescriptor, SceneManager } from "./SceneManager"
 import { EventManager, ParameterTypes } from "../EventManager/EventManager"
+import {getScenes} from "simulation.simulation";
 
 
 export class Cyberspace {
@@ -135,6 +136,10 @@ export class Cyberspace {
 		}
 	}
 
+	/**
+	 *
+	 * @param forced whether we should load while the current scene is loading
+	 */
 	switchToNextScene(forced: boolean = false): SceneDescriptor {
 		if(forced || this.getScene().isLoadingComplete()) {
 			const scene = this.sceneManager.getNextScene()
@@ -147,6 +152,10 @@ export class Cyberspace {
 
 	getSceneManager() {
 		return this.sceneManager
+	}
+
+	robotCount() {
+		return this.getScene().getRobotManager().getNumberOfRobots()
 	}
 
 	
