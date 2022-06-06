@@ -68,6 +68,9 @@ export class TestScene extends Scene {
 		const useEV3 = true
 		const robot = useEV3 ? Robot.EV3(this) : Robot.default(this, scale)
 		this.addRobot(robot);
+
+		const robot2 = useEV3 ? Robot.EV3(this) : Robot.default(this, scale)
+		this.addRobot(robot2); // second robot
 		
 		const robotComposite = robot.physicsComposite
 
@@ -151,6 +154,8 @@ export class TestScene extends Scene {
 	
 		var body = robot.body;
 		body.enableMouseInteraction = true
+
+		robot2.body.enableMouseInteraction = true;
 	
 		var keyDownList: Array<string> = []
 	

@@ -66,6 +66,8 @@ define(["require", "exports", "matter-js", "../Entity", "../Geometry/LineSegment
             var useEV3 = true;
             var robot = useEV3 ? Robot_1.Robot.EV3(this) : Robot_1.Robot.default(this, scale);
             this.addRobot(robot);
+            var robot2 = useEV3 ? Robot_1.Robot.EV3(this) : Robot_1.Robot.default(this, scale);
+            this.addRobot(robot2); // second robot
             var robotComposite = robot.physicsComposite;
             //World.add(this.engine.world, robotComposite);
             matter_js_1.Composite.translate(robotComposite, unit.getPositionVec(100 * scale, 100 * scale));
@@ -135,6 +137,7 @@ define(["require", "exports", "matter-js", "../Entity", "../Geometry/LineSegment
             this.engine.world.gravity.y = 0.0;
             var body = robot.body;
             body.enableMouseInteraction = true;
+            robot2.body.enableMouseInteraction = true;
             var keyDownList = [];
             document.onkeydown = function (event) {
                 if (!keyDownList.includes(event.key)) {
