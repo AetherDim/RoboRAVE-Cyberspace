@@ -96,9 +96,6 @@ define(["require", "exports", "./external/SceneDesciptorList", "./Cyberspace/Cyb
                         MSG.displayMessage('MESSAGE_EDIT_START', 'TOAST', GUISTATE_C.getProgramName(), undefined, undefined);
                         cyberspace.setRobertaRobotSetupData([result], GUISTATE_C.getRobotGroup());
                         cyberspace.startPrograms();
-                        if (cyberspace.getProgramManager().isDebugMode()) {
-                            cyberspace.getProgramManager().interpreterAddEvent(CONST.default.DEBUG_BREAKPOINT);
-                        }
                     }
                     else {
                         MSG.displayInformation(result, '', result.message, '', undefined);
@@ -107,9 +104,6 @@ define(["require", "exports", "./external/SceneDesciptorList", "./Cyberspace/Cyb
                 });
             }
             else {
-                if (cyberspace.getProgramManager().isDebugMode()) {
-                    cyberspace.getProgramManager().interpreterAddEvent(CONST.default.DEBUG_BREAKPOINT);
-                }
                 cyberspace.stopPrograms();
             }
         }

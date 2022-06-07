@@ -117,10 +117,6 @@ UIManager.programControlButton.onClick( state => {
 
 					cyberspace.startPrograms()
 
-					if(cyberspace.getProgramManager().isDebugMode()) {
-						cyberspace.getProgramManager().interpreterAddEvent(CONST.default.DEBUG_BREAKPOINT)
-					}
-
 				} else {
 					MSG.displayInformation(result, '', result.message, '', undefined);
 				}
@@ -129,10 +125,6 @@ UIManager.programControlButton.onClick( state => {
 			});
 
 		} else {
-
-			if(cyberspace.getProgramManager().isDebugMode()) {
-				cyberspace.getProgramManager().interpreterAddEvent(CONST.default.DEBUG_BREAKPOINT)
-			}
 
 			cyberspace.stopPrograms()
 		}
