@@ -4,6 +4,7 @@ import {ProgramManager} from "./Scene/Manager/ProgramManager";
 import {Interpreter} from "interpreter.interpreter";
 import * as CONST from "./simulation.constants";
 
+type SpecialBlocklyBlock = Blockly.Block & { svgGroup_: any, svgPath_: any }
 
 export class BlocklyDebug {
 
@@ -110,6 +111,52 @@ export class BlocklyDebug {
 	//
 
 
+
+	onMutations(block: SpecialBlocklyBlock, mutations: MutationRecord[]) {
+		console.log(block)
+		console.log(mutations)
+
+		const isSelected = $(block.svgPath_).hasClass("blocklySelected")
+		const hasBreakpoint = $(block.svgPath_).hasClass("selectedBreakpoint") || $(block.svgPath_).hasClass("breakpoint")
+		let setBreakpoint = hasBreakpoint;
+		let change = false;
+
+		for(const mutation of mutations) {
+			if(mutation.type == "attributes" && mutation.attributeName == "class") {
+				if($(mutation.target).hasClass("blocklySelected") && !$(mutation.target).hasClass("blocklyDragging")) {
+					setBreakpoint = !hasBreakpoint;
+					change = true;
+				}
+			}
+		}
+
+		if(change) {
+			if(setBreakpoint) {
+				this.addBreakpoint(block.id)
+			} else {
+				this.removeBreakpoint(block.id)
+			}
+		}
+
+		$(block.svgPath_).removeClass('selectedBreakpoint')
+
+		if(isSelected && (hasBreakpoint || hasBreakpoint)) {
+			$(block.svgPath_).addClass('selectedBreakpoint')
+		}
+
+
+	}
+
+
+	clearObservers() {
+		// remove all observers
+		for(const observer of Object.values(this.observers)) {
+			observer.disconnect()
+		}
+		this.observers = {}
+	}
+
+
 	/** adds/removes the ability for a block to be a breakpoint to a block */
 	updateBreakpointEvent() {
 
@@ -117,57 +164,31 @@ export class BlocklyDebug {
 			// blockly workspace not initialized
 			return;
 		}
-		type SpecialBlocklyBlock = Blockly.Block & { svgGroup_: any, svgPath_: any }
 
-		const observers = this.observers
-		const removeBreakPoint = (breakpoint: string) => this.removeBreakpoint(breakpoint)
-		const breakpoints = this.breakpointIDs
+		if (this.isDebugMode()) {
 
-		const debugMode = this.isDebugMode()
-		if (debugMode) {
+			//this.clearObservers()
+
 			Blockly.getMainWorkspace()
 				.getAllBlocks(false)
-				.forEach(function (block: SpecialBlocklyBlock) {
-					if (!$(block.svgGroup_).hasClass('blocklyDisabled')) {
-						if (observers.hasOwnProperty(block.id)) {
-							observers[block.id].disconnect();
-						}
-						var observer = new MutationObserver(function (mutations) {
-							mutations.forEach(function (mutation) {
-								if ($(block.svgGroup_).hasClass('blocklyDisabled')) {
-									removeBreakPoint(block.id);
-									$(block.svgPath_).removeClass('breakpoint').removeClass('selectedBreakpoint');
-								}
-								else {
-									if ($(block.svgGroup_).hasClass('blocklySelected')) {
-										if ($(block.svgPath_).hasClass('breakpoint')) {
-											removeBreakPoint(block.id);
-											$(block.svgPath_).removeClass('breakpoint');
-										}
-										else if ($(block.svgPath_).hasClass('selectedBreakpoint')) {
-											removeBreakPoint(block.id);
-											$(block.svgPath_).removeClass('selectedBreakpoint').stop(true, true).animate({ 'fill-opacity': '1' }, 0);
-										}
-										else {
-											breakpoints.push(block.id);
-											$(block.svgPath_).addClass('breakpoint');
-										}
-									}
-								}
-							});
+				.forEach((block: SpecialBlocklyBlock) => {
+
+					if(!this.observers.hasOwnProperty(block.id)) {
+						const observer = new MutationObserver((mutations) => {
+							this.onMutations(block, mutations)
 						});
-						observers[block.id] = observer;
+
+						this.observers[block.id] = observer;
 						observer.observe(block.svgGroup_, { attributes: true });
 					}
+
 				});
-		}
-		else {
+		} else {
+			this.clearObservers()
+
 			Blockly.getMainWorkspace()
 				.getAllBlocks(true)
 				.forEach(function (block: SpecialBlocklyBlock) {
-					if (observers.hasOwnProperty(block.id)) {
-						observers[block.id].disconnect();
-					}
 					$(block.svgPath_).removeClass('breakpoint');
 				});
 		}
@@ -182,11 +203,15 @@ export class BlocklyDebug {
 		this.debugMode = mode ?? this.debugMode;
 
 		for (const interpreter of this.getInterpreters()) {
-			interpreter.setDebugMode(this.debugMode);
 
 			if(!this.debugMode) {
-				interpreter.breakpoints = [];
+				interpreter.breakpoints = []
+			} else {
+				interpreter.breakpoints = this.breakpointIDs
 			}
+
+			interpreter.setDebugMode(false); // remove highlights, these stack
+			interpreter.setDebugMode(this.debugMode);
 		}
 
 		if(!this.debugMode) {
@@ -219,10 +244,19 @@ export class BlocklyDebug {
 				interpreter.removeEvent(CONST.default.DEBUG_BREAKPOINT)
 			}
 		}
+
+		this.updateDebugMode(this.isDebugMode()) // force ui update
 	}
 
 	addBreakpoint(breakpointID: string) {
 		this.breakpointIDs.push(breakpointID)
+
+		for (const interpreter of this.getInterpreters()) {
+			// enable all breakpoints
+			interpreter.addEvent(CONST.default.DEBUG_BREAKPOINT)
+		}
+
+		this.updateDebugMode(this.isDebugMode()) // force ui update
 	}
 
 	startDebugging() {

@@ -322,6 +322,7 @@ export class SceneDebug {
 
 		program.add(pm, 'programPaused')
 		program.addUpdatable('debugMode', createReflectionGetter(pm, 'debugManager.debugMode'))
+		program.addUpdatable('debugObservers', () => Object.keys((pm as any).debugManager.observers).length)
 		program.addUpdatable('initialized', createReflectionGetter(pm, 'initialized'))
 
 		const entity = gui.addFolder('Entity Manager')

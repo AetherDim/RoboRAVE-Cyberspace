@@ -263,6 +263,7 @@ define(["require", "exports", "dat.gui", "./Timer"], function (require, exports,
             var pm = rm.getProgramManager();
             program.add(pm, 'programPaused');
             program.addUpdatable('debugMode', createReflectionGetter(pm, 'debugManager.debugMode'));
+            program.addUpdatable('debugObservers', function () { return Object.keys(pm.debugManager.observers).length; });
             program.addUpdatable('initialized', createReflectionGetter(pm, 'initialized'));
             var entity = gui.addFolder('Entity Manager');
             var em = scene.getEntityManager();

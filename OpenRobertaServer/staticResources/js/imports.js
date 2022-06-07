@@ -132,7 +132,7 @@ function initRequireJS(version) {
             'port': 'app/configVisualization/port',
             'robotBlock': 'app/configVisualization/robotBlock',
             'wires': 'app/configVisualization/wires',
-            'simulation.constants': 'app/simulation/simulationLogic/constants',
+            'simulation.constants': 'app/simulation/simulationLogic/simulation.constants',
             'simulation.simulation': 'app/simulation/simulationLogic/simulation',
             'main': 'main',
             'mainSim': 'mainSim',

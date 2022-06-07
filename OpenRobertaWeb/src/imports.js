@@ -142,7 +142,7 @@ function initRequireJS(version) {
             'wires': 'app/configVisualization/wires',
 
 
-            'simulation.constants': 'app/simulation/simulationLogic/constants',
+            'simulation.constants': 'app/simulation/simulationLogic/simulation.constants',
             'simulation.simulation': 'app/simulation/simulationLogic/simulation',
 
             'main': 'main',
