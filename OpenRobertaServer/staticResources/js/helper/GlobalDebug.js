@@ -1,3 +1,14 @@
+var __values = (this && this.__values) || function(o) {
+    var s = typeof Symbol === "function" && Symbol.iterator, m = s && o[s], i = 0;
+    if (m) return m.call(o);
+    if (o && typeof o.length === "number") return {
+        next: function () {
+            if (o && i >= o.length) o = void 0;
+            return { value: o && o[i++], done: !o };
+        }
+    };
+    throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
+};
 define(["require", "exports", "dat.gui", "./Timer"], function (require, exports, dat, Timer_1) {
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.downloadJSONFile = exports.downloadFile = exports.createReflectionGetter = exports.SceneDebug = exports.initGlobalSceneDebug = exports.createDebugGuiRoot = exports.clearDebugGuiRoot = exports.DebugGuiRoot = exports.registerDebugUpdatable = exports.DEBUG_UPDATE_TIMER = exports.DISABLE_WRAP = exports.PRINT_NON_WRAPPED_ERROR = exports.SEND_LOG = exports.DEBUG = void 0;
@@ -251,7 +262,7 @@ define(["require", "exports", "dat.gui", "./Timer"], function (require, exports,
             var program = robot.addFolder('Program Manager');
             var pm = rm.getProgramManager();
             program.add(pm, 'programPaused');
-            program.addUpdatable('debugMode', createReflectionGetter(pm, 'debugMode'));
+            program.addUpdatable('debugMode', createReflectionGetter(pm, 'debugManager.debugMode'));
             program.addUpdatable('initialized', createReflectionGetter(pm, 'initialized'));
             var entity = gui.addFolder('Entity Manager');
             var em = scene.getEntityManager();
@@ -263,7 +274,25 @@ define(["require", "exports", "dat.gui", "./Timer"], function (require, exports,
     }());
     exports.SceneDebug = SceneDebug;
     function createReflectionGetter(param, name) {
-        return function () { return param[name]; };
+        var names = name.split(".");
+        return function () {
+            var e_1, _a;
+            var res = param;
+            try {
+                for (var names_1 = __values(names), names_1_1 = names_1.next(); !names_1_1.done; names_1_1 = names_1.next()) {
+                    var name_1 = names_1_1.value;
+                    res = res[name_1];
+                }
+            }
+            catch (e_1_1) { e_1 = { error: e_1_1 }; }
+            finally {
+                try {
+                    if (names_1_1 && !names_1_1.done && (_a = names_1.return)) _a.call(names_1);
+                }
+                finally { if (e_1) throw e_1.error; }
+            }
+            return res;
+        };
     }
     exports.createReflectionGetter = createReflectionGetter;
     dat.GUI.prototype.addButton = function (name, callback) {
@@ -318,8 +347,8 @@ define(["require", "exports", "dat.gui", "./Timer"], function (require, exports,
         }
     }
     function removeFolderFromUpdateTimer(folder) {
-        for (var name_1 in folder.__folders) {
-            removeFolderFromUpdateTimer(folder.__folders[name_1]);
+        for (var name_2 in folder.__folders) {
+            removeFolderFromUpdateTimer(folder.__folders[name_2]);
         }
         folder.__controllers.forEach(function (controller) { return removeControllerFromUpdateTimer(controller); });
     }

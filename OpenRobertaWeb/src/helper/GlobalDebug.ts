@@ -321,7 +321,7 @@ export class SceneDebug {
 		const pm = rm.getProgramManager()
 
 		program.add(pm, 'programPaused')
-		program.addUpdatable('debugMode', createReflectionGetter(pm, 'debugMode'))
+		program.addUpdatable('debugMode', createReflectionGetter(pm, 'debugManager.debugMode'))
 		program.addUpdatable('initialized', createReflectionGetter(pm, 'initialized'))
 
 		const entity = gui.addFolder('Entity Manager')
@@ -337,7 +337,14 @@ export class SceneDebug {
 
 
 export function createReflectionGetter(param: any, name: string) {
-	return () => param[name]
+	const names = name.split(".")
+	return () => {
+		let res = param
+		for(const name of names) {
+			res = res[name]
+		}
+		return res
+	}
 }
 
 

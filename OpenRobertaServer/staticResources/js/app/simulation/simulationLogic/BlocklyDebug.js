@@ -1,40 +1,45 @@
-define(["require", "exports", "blockly", "./Timer"], function (require, exports, Blockly, Timer_1) {
+var __values = (this && this.__values) || function(o) {
+    var s = typeof Symbol === "function" && Symbol.iterator, m = s && o[s], i = 0;
+    if (m) return m.call(o);
+    if (o && typeof o.length === "number") return {
+        next: function () {
+            if (o && i >= o.length) o = void 0;
+            return { value: o && o[i++], done: !o };
+        }
+    };
+    throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
+};
+define(["require", "exports", "blockly", "./Timer", "./simulation.constants"], function (require, exports, Blockly, Timer_1, CONST) {
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.BlocklyDebug = void 0;
     var BlocklyDebug = /** @class */ (function () {
-        function BlocklyDebug(cyberspace) {
-            var _this_1 = this;
+        function BlocklyDebug(programManager, getInterpreters) {
             this.observers = {};
+            this.debugMode = false;
+            this.breakpointIDs = [];
             /**
              * sleep time before calling blockly update
              */
             this.blocklyUpdateSleepTime = 1 / 10;
-            this.cyberspace = cyberspace;
+            this.programManager = programManager;
+            this.getInterpreters = getInterpreters;
             var _this = this;
             this.blocklyTicker = new Timer_1.Timer(this.blocklyUpdateSleepTime, function (delta) {
                 // update blockly
                 _this.updateBreakpointEvent();
                 // update sim variables if some interpreter is running
-                var allTerminated = _this.cyberspace.getProgramManager().allInterpretersTerminated();
+                var allTerminated = _this.programManager.allInterpretersTerminated();
                 if (!allTerminated) {
-                    _this_1.updateSimVariables();
+                    _this.updateSimVariables();
                 }
             });
             this.startBlocklyUpdate();
         }
+        BlocklyDebug.prototype.getBreakpointIDs = function () {
+            return this.breakpointIDs;
+        };
         BlocklyDebug.prototype.destroy = function () {
             this.blocklyTicker.stop();
-            // TODO: Do we need/want this?
-            this.cyberspace.destroy();
-        };
-        BlocklyDebug.prototype.removeBreakPoint = function (block) {
-            this.cyberspace.getProgramManager().removeBreakpoint(block.id);
-        };
-        BlocklyDebug.prototype.addBreakpoint = function (block) {
-            this.cyberspace.getProgramManager().addBreakpoint(block.id);
-        };
-        BlocklyDebug.prototype.isDebugMode = function () {
-            return this.cyberspace.getProgramManager().isDebugMode();
         };
         BlocklyDebug.prototype.startBlocklyUpdate = function () {
             this.blocklyTicker.start();
@@ -49,7 +54,7 @@ define(["require", "exports", "blockly", "./Timer"], function (require, exports,
         BlocklyDebug.prototype.updateSimVariables = function () {
             if ($("#simVariablesModal").is(':visible')) {
                 $("#variableValue").html("");
-                var variables = this.cyberspace.getProgramManager().getSimVariables();
+                var variables = this.programManager.getSimVariables();
                 if (Object.keys(variables).length > 0) {
                     for (var v in variables) {
                         var value = variables[v][0];
@@ -83,76 +88,137 @@ define(["require", "exports", "blockly", "./Timer"], function (require, exports,
                 }
             }
         };
-        BlocklyDebug.prototype.setDebugMode = function (mode) {
-            var _this_1 = this;
-            if (mode) {
-                this.cyberspace.getProgramManager().startDebugging();
-            }
-            else {
-                Blockly.getMainWorkspace().getAllBlocks(false).forEach(function (block) {
-                    if (_this_1.observers.hasOwnProperty(block.id)) {
-                        _this_1.observers[block.id].disconnect();
-                    }
-                    $((block).svgPath_).removeClass('breakpoint');
-                    if (block.inTask && !block.disabled && !block.getInheritedDisabled()) {
-                        $(block.svgPath_).stop(true, true).animate({ 'fill-opacity': '1' }, 0);
-                    }
-                });
-                this.cyberspace.getProgramManager().endDebugging();
-            }
-        };
+        //
+        // New debug mode
+        //
         /** adds/removes the ability for a block to be a breakpoint to a block */
         BlocklyDebug.prototype.updateBreakpointEvent = function () {
-            var _this = this;
+            var _this_1 = this;
             if (!Blockly.getMainWorkspace()) {
                 // blockly workspace not initialized
                 return;
             }
-            if (this.isDebugMode()) {
-                Blockly.getMainWorkspace().getAllBlocks(false).forEach(function (realBlock) {
-                    var block = realBlock;
+            var observers = this.observers;
+            var removeBreakPoint = function (breakpoint) { return _this_1.removeBreakpoint(breakpoint); };
+            var breakpoints = this.breakpointIDs;
+            var debugMode = this.isDebugMode();
+            if (debugMode) {
+                Blockly.getMainWorkspace()
+                    .getAllBlocks(false)
+                    .forEach(function (block) {
                     if (!$(block.svgGroup_).hasClass('blocklyDisabled')) {
-                        if (_this.observers.hasOwnProperty(block.id)) {
-                            _this.observers[realBlock.id].disconnect();
+                        if (observers.hasOwnProperty(block.id)) {
+                            observers[block.id].disconnect();
                         }
                         var observer = new MutationObserver(function (mutations) {
                             mutations.forEach(function (mutation) {
                                 if ($(block.svgGroup_).hasClass('blocklyDisabled')) {
-                                    _this.removeBreakPoint(realBlock);
+                                    removeBreakPoint(block.id);
                                     $(block.svgPath_).removeClass('breakpoint').removeClass('selectedBreakpoint');
                                 }
                                 else {
                                     if ($(block.svgGroup_).hasClass('blocklySelected')) {
                                         if ($(block.svgPath_).hasClass('breakpoint')) {
-                                            _this.removeBreakPoint(realBlock);
+                                            removeBreakPoint(block.id);
                                             $(block.svgPath_).removeClass('breakpoint');
                                         }
                                         else if ($(block.svgPath_).hasClass('selectedBreakpoint')) {
-                                            _this.removeBreakPoint(realBlock);
+                                            removeBreakPoint(block.id);
                                             $(block.svgPath_).removeClass('selectedBreakpoint').stop(true, true).animate({ 'fill-opacity': '1' }, 0);
                                         }
                                         else {
-                                            _this.addBreakpoint(realBlock);
+                                            breakpoints.push(block.id);
                                             $(block.svgPath_).addClass('breakpoint');
                                         }
                                     }
                                 }
                             });
                         });
-                        _this.observers[realBlock.id] = observer;
+                        observers[block.id] = observer;
                         observer.observe(block.svgGroup_, { attributes: true });
                     }
                 });
             }
+            else {
+                Blockly.getMainWorkspace()
+                    .getAllBlocks(true)
+                    .forEach(function (block) {
+                    if (observers.hasOwnProperty(block.id)) {
+                        observers[block.id].disconnect();
+                    }
+                    $(block.svgPath_).removeClass('breakpoint');
+                });
+            }
         };
-        BlocklyDebug.prototype.startProgram = function () {
-            this.cyberspace.getProgramManager().startProgram();
+        BlocklyDebug.prototype.isDebugMode = function () {
+            return this.debugMode;
         };
-        BlocklyDebug.prototype.stopProgram = function () {
-            this.cyberspace.getProgramManager().stopProgram();
+        /** updates the debug mode for all interpreters */
+        BlocklyDebug.prototype.updateDebugMode = function (mode) {
+            var e_1, _a;
+            this.debugMode = mode !== null && mode !== void 0 ? mode : this.debugMode;
+            try {
+                for (var _b = __values(this.getInterpreters()), _c = _b.next(); !_c.done; _c = _b.next()) {
+                    var interpreter = _c.value;
+                    interpreter.setDebugMode(mode);
+                    if (!this.debugMode) {
+                        interpreter.breakpoints = [];
+                    }
+                }
+            }
+            catch (e_1_1) { e_1 = { error: e_1_1 }; }
+            finally {
+                try {
+                    if (_c && !_c.done && (_a = _b.return)) _a.call(_b);
+                }
+                finally { if (e_1) throw e_1.error; }
+            }
+            if (!this.debugMode) {
+                var workspace = Blockly.getMainWorkspace();
+                if (workspace != null) {
+                    workspace.getAllBlocks(false)
+                        .forEach(function (block) {
+                        $(block.svgPath_).stop(true, true).removeAttr('style');
+                    });
+                }
+                this.breakpointIDs = [];
+            }
+            this.updateBreakpointEvent();
         };
-        BlocklyDebug.prototype.interpreterAddEvent = function (mode) {
-            this.cyberspace.getProgramManager().interpreterAddEvent(mode);
+        /** removes breakpoint with breakpointID */
+        BlocklyDebug.prototype.removeBreakpoint = function (breakpointID) {
+            var e_2, _a;
+            for (var i = 0; i < this.breakpointIDs.length; i++) {
+                if (this.breakpointIDs[i] === breakpointID) {
+                    this.breakpointIDs.splice(i, 1);
+                    i--; // check same index again
+                }
+            }
+            if (this.breakpointIDs.length === 0) {
+                try {
+                    for (var _b = __values(this.getInterpreters()), _c = _b.next(); !_c.done; _c = _b.next()) {
+                        var interpreter = _c.value;
+                        // disable all breakpoints
+                        interpreter.removeEvent(CONST.default.DEBUG_BREAKPOINT);
+                    }
+                }
+                catch (e_2_1) { e_2 = { error: e_2_1 }; }
+                finally {
+                    try {
+                        if (_c && !_c.done && (_a = _b.return)) _a.call(_b);
+                    }
+                    finally { if (e_2) throw e_2.error; }
+                }
+            }
+        };
+        BlocklyDebug.prototype.addBreakpoint = function (breakpointID) {
+            this.breakpointIDs.push(breakpointID);
+        };
+        BlocklyDebug.prototype.startDebugging = function () {
+            this.updateDebugMode(true);
+        };
+        BlocklyDebug.prototype.endDebugging = function () {
+            this.updateDebugMode(false);
         };
         return BlocklyDebug;
     }());

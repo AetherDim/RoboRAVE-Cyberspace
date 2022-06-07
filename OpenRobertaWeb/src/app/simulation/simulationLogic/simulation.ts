@@ -3,7 +3,6 @@ import './ExtendedMatter'
 import { cyberspaceScenes } from './external/SceneDesciptorList'
 import { RobertaRobotSetupData } from './Robot/RobertaRobotSetupData'
 import { Cyberspace } from './Cyberspace/Cyberspace';
-import { BlocklyDebug } from './BlocklyDebug';
 import { UIManager } from './UI/UIManager';
 import { interpreterSimBreakEventHandlers } from "interpreter.jsHelper"
 import { RRCScoreScene } from './RRC/Scene/RRCScoreScene';
@@ -26,7 +25,6 @@ import {getProgramLink} from "program.controller";
 //
 const cyberspace = new Cyberspace('sceneCanvas', 'simDiv')
 const sceneManager = cyberspace.getSceneManager()
-const blocklyDebugManager = new BlocklyDebug(cyberspace)
 
 UIManager.simSpeedUpButton.setState("fastForward")
 UIManager.showScoreButton.setState("showScore")
@@ -116,10 +114,11 @@ UIManager.programControlButton.onClick( state => {
 					MSG.displayMessage('MESSAGE_EDIT_START', 'TOAST', GUISTATE_C.getProgramName(), undefined, undefined);
 
 					cyberspace.setRobertaRobotSetupData([result], GUISTATE_C.getRobotGroup())
+
 					cyberspace.startPrograms()
 
 					if(cyberspace.getProgramManager().isDebugMode()) {
-						blocklyDebugManager.interpreterAddEvent(CONST.default.DEBUG_BREAKPOINT)
+						cyberspace.getProgramManager().interpreterAddEvent(CONST.default.DEBUG_BREAKPOINT)
 					}
 
 				} else {
@@ -132,7 +131,7 @@ UIManager.programControlButton.onClick( state => {
 		} else {
 			cyberspace.pausePrograms() // TODO: pause or stop???
 			if(cyberspace.getProgramManager().isDebugMode()) {
-				blocklyDebugManager.interpreterAddEvent(CONST.default.DEBUG_BREAKPOINT)
+				cyberspace.getProgramManager().interpreterAddEvent(CONST.default.DEBUG_BREAKPOINT)
 			}
 		}
 
@@ -235,7 +234,7 @@ UIManager.simViewButton.onClick(state => {
 
 		UTIL.closeSimRobotWindow(CONST.default.ANIMATION_DURATION)
 
-		cyberspace.disableDebugMode()
+		cyberspace.setDebugMode(false)
 	}
 })
 
@@ -264,19 +263,22 @@ UIManager.simDebugViewButton.onClick(() => {
 })
 
 UIManager.debugStepOverButton.onClick(() => {
-	blocklyDebugManager.interpreterAddEvent(CONST.default.DEBUG_STEP_OVER)
+	cyberspace.startPrograms()
+	cyberspace.getProgramManager().interpreterAddEvent(CONST.default.DEBUG_STEP_OVER)
 })
 
 UIManager.debugStepIntoButton.onClick(() => {
-	blocklyDebugManager.interpreterAddEvent(CONST.default.DEBUG_STEP_INTO)
+	cyberspace.startPrograms()
+	cyberspace.getProgramManager().interpreterAddEvent(CONST.default.DEBUG_STEP_INTO)
 })
 
 UIManager.simDebugMode.onClick(() => {
-	blocklyDebugManager.setDebugMode(!cyberspace.getProgramManager().isDebugMode())
+	cyberspace.setDebugMode(!cyberspace.isDebugMode())
 })
 
 UIManager.debugStepBreakPointButton.onClick(() => {
-	blocklyDebugManager.interpreterAddEvent(CONST.default.DEBUG_BREAKPOINT)
+	cyberspace.startPrograms()
+	cyberspace.getProgramManager().interpreterAddEvent(CONST.default.DEBUG_BREAKPOINT)
 })
 
 UIManager.debugVariablesButton.onClick(() => {

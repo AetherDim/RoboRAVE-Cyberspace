@@ -207,20 +207,12 @@ export class Cyberspace {
 		this.getProgramManager().setPrograms(programs)
 	}
 
-	enableDebugMode() {
-		this.getProgramManager().startDebugging()
+	setDebugMode(state: boolean) {
+		this.getProgramManager().setDebugMode(state)
 	}
 
-	disableDebugMode() {
-		this.getProgramManager().endDebugging()
-	}
-
-	registerDebugEventsForAllPrograms() {
-
-	}
-
-	registerDebugEventsForMainPrograms() {
-		
+	isDebugMode() {
+		return this.getProgramManager().isDebugMode()
 	}
 
 

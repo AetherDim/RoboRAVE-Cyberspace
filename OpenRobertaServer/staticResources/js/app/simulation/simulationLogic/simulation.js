@@ -23,7 +23,7 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
     }
     return to.concat(ar || Array.prototype.slice.call(from));
 };
-define(["require", "exports", "./external/SceneDesciptorList", "./Cyberspace/Cyberspace", "./BlocklyDebug", "./UI/UIManager", "interpreter.jsHelper", "./RRC/Scene/RRCScoreScene", "./external/RESTApi", "jquery", "blockly", "guiState.controller", "nn.controller", "program.model", "message", "program.controller", "./simulation.constants", "tour.controller", "./util", "./GlobalDebug", "program.controller", "./pixijs", "./ExtendedMatter"], function (require, exports, SceneDesciptorList_1, Cyberspace_1, BlocklyDebug_1, UIManager_1, interpreter_jsHelper_1, RRCScoreScene_1, RESTApi_1, $, Blockly, GUISTATE_C, NN_CTRL, PROGRAM, MSG, PROG_C, CONST, TOUR_C, UTIL, GlobalDebug_1, program_controller_1) {
+define(["require", "exports", "./external/SceneDesciptorList", "./Cyberspace/Cyberspace", "./UI/UIManager", "interpreter.jsHelper", "./RRC/Scene/RRCScoreScene", "./external/RESTApi", "jquery", "blockly", "guiState.controller", "nn.controller", "program.model", "message", "program.controller", "./simulation.constants", "tour.controller", "./util", "./GlobalDebug", "program.controller", "./pixijs", "./ExtendedMatter"], function (require, exports, SceneDesciptorList_1, Cyberspace_1, UIManager_1, interpreter_jsHelper_1, RRCScoreScene_1, RESTApi_1, $, Blockly, GUISTATE_C, NN_CTRL, PROGRAM, MSG, PROG_C, CONST, TOUR_C, UTIL, GlobalDebug_1, program_controller_1) {
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.init = void 0;
     //
@@ -31,7 +31,6 @@ define(["require", "exports", "./external/SceneDesciptorList", "./Cyberspace/Cyb
     //
     var cyberspace = new Cyberspace_1.Cyberspace('sceneCanvas', 'simDiv');
     var sceneManager = cyberspace.getSceneManager();
-    var blocklyDebugManager = new BlocklyDebug_1.BlocklyDebug(cyberspace);
     UIManager_1.UIManager.simSpeedUpButton.setState("fastForward");
     UIManager_1.UIManager.showScoreButton.setState("showScore");
     (0, RESTApi_1.sendStateRequest)(function (res) {
@@ -98,7 +97,7 @@ define(["require", "exports", "./external/SceneDesciptorList", "./Cyberspace/Cyb
                         cyberspace.setRobertaRobotSetupData([result], GUISTATE_C.getRobotGroup());
                         cyberspace.startPrograms();
                         if (cyberspace.getProgramManager().isDebugMode()) {
-                            blocklyDebugManager.interpreterAddEvent(CONST.default.DEBUG_BREAKPOINT);
+                            cyberspace.getProgramManager().interpreterAddEvent(CONST.default.DEBUG_BREAKPOINT);
                         }
                     }
                     else {
@@ -110,7 +109,7 @@ define(["require", "exports", "./external/SceneDesciptorList", "./Cyberspace/Cyb
             else {
                 cyberspace.pausePrograms(); // TODO: pause or stop???
                 if (cyberspace.getProgramManager().isDebugMode()) {
-                    blocklyDebugManager.interpreterAddEvent(CONST.default.DEBUG_BREAKPOINT);
+                    cyberspace.getProgramManager().interpreterAddEvent(CONST.default.DEBUG_BREAKPOINT);
                 }
             }
         }
@@ -196,7 +195,7 @@ define(["require", "exports", "./external/SceneDesciptorList", "./Cyberspace/Cyb
                 $('.' + GUISTATE_C.getRobot()).addClass('disabled');
             });
             UTIL.closeSimRobotWindow(CONST.default.ANIMATION_DURATION);
-            cyberspace.disableDebugMode();
+            cyberspace.setDebugMode(false);
         }
     });
     function toggleModal(id, position) {
@@ -213,7 +212,6 @@ define(["require", "exports", "./external/SceneDesciptorList", "./Cyberspace/Cyb
         $(id).draggable({
             constraint: 'window'
         });
-        $("#simButtonsCollapse").collapse('hide');
     }
     UIManager_1.UIManager.simDebugViewButton.onClick(function () {
         var position = $('#simDiv').position();
@@ -221,16 +219,19 @@ define(["require", "exports", "./external/SceneDesciptorList", "./Cyberspace/Cyb
         toggleModal('#simValuesModal', position);
     });
     UIManager_1.UIManager.debugStepOverButton.onClick(function () {
-        blocklyDebugManager.interpreterAddEvent(CONST.default.DEBUG_STEP_OVER);
+        cyberspace.startPrograms();
+        cyberspace.getProgramManager().interpreterAddEvent(CONST.default.DEBUG_STEP_OVER);
     });
     UIManager_1.UIManager.debugStepIntoButton.onClick(function () {
-        blocklyDebugManager.interpreterAddEvent(CONST.default.DEBUG_STEP_INTO);
+        cyberspace.startPrograms();
+        cyberspace.getProgramManager().interpreterAddEvent(CONST.default.DEBUG_STEP_INTO);
     });
     UIManager_1.UIManager.simDebugMode.onClick(function () {
-        blocklyDebugManager.setDebugMode(!cyberspace.getProgramManager().isDebugMode());
+        cyberspace.setDebugMode(!cyberspace.isDebugMode());
     });
     UIManager_1.UIManager.debugStepBreakPointButton.onClick(function () {
-        blocklyDebugManager.interpreterAddEvent(CONST.default.DEBUG_BREAKPOINT);
+        cyberspace.startPrograms();
+        cyberspace.getProgramManager().interpreterAddEvent(CONST.default.DEBUG_BREAKPOINT);
     });
     UIManager_1.UIManager.debugVariablesButton.onClick(function () {
         var position = $('#simDiv').position();

@@ -1,14 +1,14 @@
-define(["require", "exports", "../../EventManager/EventManager"], function (require, exports, EventManager_1) {
+define(["require", "exports", "../../EventManager/EventManager", "../../BlocklyDebug"], function (require, exports, EventManager_1, BlocklyDebug_1) {
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.ProgramManager = void 0;
     var ProgramManager = /** @class */ (function () {
         function ProgramManager(robotManager) {
+            var _this = this;
             this.programPaused = true;
-            this.debugMode = false;
-            this.breakpoints = [];
             this.interpreters = [];
             this.initialized = false;
             this.cachedPrograms = [];
+            this.debugManager = new BlocklyDebug_1.BlocklyDebug(this, function () { return _this.interpreters; });
             this.eventManager = EventManager_1.EventManager.init({
                 onStartProgram: EventManager_1.ParameterTypes.none,
                 onPauseProgram: EventManager_1.ParameterTypes.none,
@@ -44,17 +44,14 @@ define(["require", "exports", "../../EventManager/EventManager"], function (requ
                     }
                     // We can use a single breakpoints array for all interpreters, because 
                     // the breakpoint IDs are unique
-                    this.interpreters.push(this.robots[i].setProgram(this.cachedPrograms[i], this.breakpoints));
+                    this.interpreters.push(this.robots[i].setProgram(this.cachedPrograms[i], this.debugManager.getBreakpointIDs()));
                 }
-                this.updateDebugMode(this.debugMode);
                 this.initialized = true;
             }
+            this.debugManager.updateDebugMode();
         };
         ProgramManager.prototype.isProgramPaused = function () {
             return this.programPaused;
-        };
-        ProgramManager.prototype.isDebugMode = function () {
-            return this.debugMode;
         };
         ProgramManager.prototype.setProgramPause = function (pause) {
             this.programPaused = pause;
@@ -114,26 +111,6 @@ define(["require", "exports", "../../EventManager/EventManager"], function (requ
             });
             return allTerminated;
         };
-        /** updates the debug mode for all interpreters */
-        ProgramManager.prototype.updateDebugMode = function (mode) {
-            this.debugMode = mode;
-            for (var i = 0; i < this.interpreters.length; i++) {
-                if (i < this.robots.length) {
-                    this.interpreters[i].setDebugMode(mode);
-                }
-            }
-        };
-        ProgramManager.prototype.addBreakpoint = function (breakpointID) {
-            this.breakpoints.push(breakpointID);
-        };
-        /** removes breakpoint with breakpointID */
-        ProgramManager.prototype.removeBreakpoint = function (breakpointID) {
-            for (var i = 0; i < this.breakpoints.length; i++) {
-                if (this.breakpoints[i] === breakpointID) {
-                    this.breakpoints.splice(i, 1);
-                }
-            }
-        };
         /** adds an event to the interpreters */
         ProgramManager.prototype.interpreterAddEvent = function (mode) {
             for (var i = 0; i < this.interpreters.length; i++) {
@@ -141,6 +118,7 @@ define(["require", "exports", "../../EventManager/EventManager"], function (requ
                     this.interpreters[i].addEvent(mode);
                 }
             }
+            this.debugManager.updateBreakpointEvent();
         };
         /** removes an event to the interpreters */
         ProgramManager.prototype.interpreterRemoveEvent = function (mode) {
@@ -149,21 +127,16 @@ define(["require", "exports", "../../EventManager/EventManager"], function (requ
                     this.interpreters[i].removeEvent(mode);
                 }
             }
+            this.debugManager.updateBreakpointEvent();
         };
-        ProgramManager.prototype.startDebugging = function () {
-            this.updateDebugMode(true);
+        //
+        // Debugging
+        //
+        ProgramManager.prototype.setDebugMode = function (state) {
+            this.debugManager.updateDebugMode(state);
         };
-        /** called to signify debugging is finished in simulation */
-        ProgramManager.prototype.endDebugging = function () {
-            // this is equivalent to updateDebugMode with additional breakpoint removal
-            for (var i = 0; i < this.interpreters.length; i++) {
-                if (i < this.robots.length) {
-                    this.interpreters[i].setDebugMode(false);
-                    this.interpreters[i].breakpoints = [];
-                }
-            }
-            this.breakpoints = [];
-            this.debugMode = false;
+        ProgramManager.prototype.isDebugMode = function () {
+            return this.debugManager.isDebugMode();
         };
         return ProgramManager;
     }());

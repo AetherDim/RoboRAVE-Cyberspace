@@ -188,15 +188,11 @@ define(["require", "exports", "./SimulationCache", "../Scene/Scene", "../RRC/Sce
         Cyberspace.prototype.setPrograms = function (programs) {
             this.getProgramManager().setPrograms(programs);
         };
-        Cyberspace.prototype.enableDebugMode = function () {
-            this.getProgramManager().startDebugging();
+        Cyberspace.prototype.setDebugMode = function (state) {
+            this.getProgramManager().setDebugMode(state);
         };
-        Cyberspace.prototype.disableDebugMode = function () {
-            this.getProgramManager().endDebugging();
-        };
-        Cyberspace.prototype.registerDebugEventsForAllPrograms = function () {
-        };
-        Cyberspace.prototype.registerDebugEventsForMainPrograms = function () {
+        Cyberspace.prototype.isDebugMode = function () {
+            return this.getProgramManager().isDebugMode();
         };
         Cyberspace.prototype.setRobertaRobotSetupData = function (robertaRobotSetupDataList, robotType) {
             var newSimulationCache = new SimulationCache_1.SimulationCache(robertaRobotSetupDataList, robotType);

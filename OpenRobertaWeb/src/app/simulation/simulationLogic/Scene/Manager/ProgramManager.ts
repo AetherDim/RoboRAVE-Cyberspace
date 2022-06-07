@@ -3,7 +3,7 @@ import { RobotManager } from "./RobotManager";
 import { Interpreter } from "./../../interpreter.interpreter";
 import { RobotProgram } from "../../Robot/RobotProgram";
 import { EventManager, ParameterTypes } from "../../EventManager/EventManager";
-
+import {BlocklyDebug} from "../../BlocklyDebug";
 
 export class ProgramManager {
 	
@@ -12,19 +12,18 @@ export class ProgramManager {
 
 	private programPaused: boolean = true;
 
-	private debugMode = false;
-	private breakpoints: string[] = [];
 	private interpreters: Interpreter[] = [];
 	private initialized = false;
 
 	private cachedPrograms: RobotProgram[] = []
+
+	private debugManager = new BlocklyDebug(this, () => this.interpreters)
 
 	readonly eventManager = EventManager.init({
 		onStartProgram: ParameterTypes.none,
 		onPauseProgram: ParameterTypes.none,
 		onStopProgram: ParameterTypes.none
 	})
-
 
 	hasBeenInitialized(): boolean {
 		return this.initialized;
@@ -60,26 +59,22 @@ export class ProgramManager {
 		if(!this.initialized) {
 			for(let i = 0; i < this.cachedPrograms.length; i++) {
 				if(i >= this.robots.length) {
-					console.info('Not enough robots, too many programs!');
-					break;
+					console.info('Not enough robots, too many programs!')
+					break
 				}
 				// We can use a single breakpoints array for all interpreters, because 
 				// the breakpoint IDs are unique
-				this.interpreters.push(this.robots[i].setProgram(this.cachedPrograms[i], this.breakpoints));
+				this.interpreters.push(this.robots[i].setProgram(this.cachedPrograms[i], this.debugManager.getBreakpointIDs()))
 			}
-
-			this.updateDebugMode(this.debugMode);
 
 			this.initialized = true
 		}
+
+		this.debugManager.updateDebugMode()
 	}
 
 	isProgramPaused(): boolean {
 		return this.programPaused
-	}
-
-	isDebugMode(): boolean {
-		return this.debugMode
 	}
 
 	private setProgramPause(pause: boolean) {
@@ -152,37 +147,14 @@ export class ProgramManager {
 		return allTerminated;
 	}
 
-	/** updates the debug mode for all interpreters */
-	private updateDebugMode(mode: boolean) {
-		this.debugMode = mode;
-
-		for (var i = 0; i < this.interpreters.length; i++) {
-			if(i < this.robots.length) {
-				this.interpreters[i].setDebugMode(mode);
-			}
-		}
-	}
-
-	addBreakpoint(breakpointID: string) {
-		this.breakpoints.push(breakpointID)
-	}
-
-	/** removes breakpoint with breakpointID */
-	removeBreakpoint(breakpointID: string) {
-		for (let i = 0; i < this.breakpoints.length; i++) {
-			if (this.breakpoints[i] === breakpointID) {
-				this.breakpoints.splice(i, 1);
-			}
-		}
-	}
-
 	/** adds an event to the interpreters */
 	interpreterAddEvent(mode: any) {
-		for (var i = 0; i < this.interpreters.length; i++) {
+		for (let i = 0; i < this.interpreters.length; i++) {
 			if(i < this.robots.length) {
 				this.interpreters[i].addEvent(mode);
 			}
 		}
+		this.debugManager.updateBreakpointEvent()
 	}
 
 	/** removes an event to the interpreters */
@@ -192,24 +164,20 @@ export class ProgramManager {
 				this.interpreters[i].removeEvent(mode);
 			}
 		}
+		this.debugManager.updateBreakpointEvent()
 	}
 
-	startDebugging() {
-		this.updateDebugMode(true)
+
+	//
+	// Debugging
+	//
+
+	setDebugMode(state: boolean) {
+		this.debugManager.updateDebugMode(state)
 	}
 
-	/** called to signify debugging is finished in simulation */
-	endDebugging() {
-		// this is equivalent to updateDebugMode with additional breakpoint removal
-		for (var i = 0; i < this.interpreters.length; i++) {
-			if(i < this.robots.length) {
-				this.interpreters[i].setDebugMode(false);
-				this.interpreters[i].breakpoints = [];
-			}
-		}
-
-		this.breakpoints = [];
-		this.debugMode = false;
+	isDebugMode() {
+		return this.debugManager.isDebugMode()
 	}
 
 }
