@@ -129,10 +129,12 @@ UIManager.programControlButton.onClick( state => {
 			});
 
 		} else {
-			cyberspace.pausePrograms() // TODO: pause or stop???
+
 			if(cyberspace.getProgramManager().isDebugMode()) {
 				cyberspace.getProgramManager().interpreterAddEvent(CONST.default.DEBUG_BREAKPOINT)
 			}
+
+			cyberspace.stopPrograms()
 		}
 
 	} else {

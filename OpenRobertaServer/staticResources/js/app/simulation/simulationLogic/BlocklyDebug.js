@@ -160,7 +160,7 @@ define(["require", "exports", "blockly", "./Timer", "./simulation.constants"], f
             try {
                 for (var _b = __values(this.getInterpreters()), _c = _b.next(); !_c.done; _c = _b.next()) {
                     var interpreter = _c.value;
-                    interpreter.setDebugMode(mode);
+                    interpreter.setDebugMode(this.debugMode);
                     if (!this.debugMode) {
                         interpreter.breakpoints = [];
                     }

@@ -182,7 +182,7 @@ export class BlocklyDebug {
 		this.debugMode = mode ?? this.debugMode;
 
 		for (const interpreter of this.getInterpreters()) {
-			interpreter.setDebugMode(mode);
+			interpreter.setDebugMode(this.debugMode);
 
 			if(!this.debugMode) {
 				interpreter.breakpoints = [];

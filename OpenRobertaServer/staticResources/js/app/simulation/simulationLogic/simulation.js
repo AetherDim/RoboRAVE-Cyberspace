@@ -107,10 +107,10 @@ define(["require", "exports", "./external/SceneDesciptorList", "./Cyberspace/Cyb
                 });
             }
             else {
-                cyberspace.pausePrograms(); // TODO: pause or stop???
                 if (cyberspace.getProgramManager().isDebugMode()) {
                     cyberspace.getProgramManager().interpreterAddEvent(CONST.default.DEBUG_BREAKPOINT);
                 }
+                cyberspace.stopPrograms();
             }
         }
         else {
