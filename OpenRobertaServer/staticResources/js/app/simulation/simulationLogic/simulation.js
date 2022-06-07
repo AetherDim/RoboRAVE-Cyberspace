@@ -207,6 +207,12 @@ define(["require", "exports", "./external/SceneDesciptorList", "./Cyberspace/Cyb
             constraint: 'window'
         });
     }
+    UIManager_1.UIManager.closeParentsButton.onClick(function () {
+        $($(this).parents('.simWindow:first')).animate({
+            'opacity': 'hide',
+            'top': 'hide'
+        }, 300);
+    });
     UIManager_1.UIManager.simDebugViewButton.onClick(function () {
         var position = $('#simDiv').position();
         position.left = $(window).width() - ($('#simValuesModal').width() + 12);

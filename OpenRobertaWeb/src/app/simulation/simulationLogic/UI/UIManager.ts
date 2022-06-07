@@ -10,27 +10,18 @@ interface RobertaButtonSettings {
 
 export class UIRobertaButton extends UIElement {
 
-	constructor(id: string) {
-		super($("#"+id), id)
-	}
-
 	/**
-	 * Adds `onClickHandler` to the html element as click handler
+	 * Adds `clickHandler` to the html element as click handler
 	 * 
-	 * @param onClickHandler will be called with the state in which the button is in **before** the state change.
-	 * It returns the new button state.
+	 * @param clickHandler will be called with the JQuery object of the `HTMLElement`.
 	 * 
 	 * @returns `this`
 	 */
-	onClick(onClickHandler: () => void): UIRobertaButton {
-		const t = this;
-		this.jQueryHTMLElement.onWrap("click", onClickHandler, this.id + " clicked")
+	onClick(clickHandler: (this: HTMLElement) => void): UIRobertaButton {
+		this.jQueryHTMLElement.onWrap("click", clickHandler, this.jQueryString + " clicked")
 		return this
 	}
 
-	update() {
-		this.jQueryHTMLElement = $("#"+this.id)
-	}
 }
 
 export class UIRobertaStateButton<T extends { [key in string]: RobertaButtonSettings }> extends UIElement {
@@ -45,7 +36,7 @@ export class UIRobertaStateButton<T extends { [key in string]: RobertaButtonSett
 	private needsOnWrapHandler = true
 
 	constructor(buttonID: string, initialState: keyof T, buttonSettingsState: T) {
-		super($("#"+buttonID), buttonID)
+		super({ id : buttonID })
 		this.stateMappingObject = buttonSettingsState
 		this.state = initialState
 
@@ -71,7 +62,7 @@ export class UIRobertaStateButton<T extends { [key in string]: RobertaButtonSett
 				const buttonSettings = t.stateMappingObject[t.state]
 				t.jQueryHTMLElement.addClass(buttonSettings.class)
 				t.jQueryHTMLElement.attr("data-original-title", buttonSettings.tooltip ?? "");
-			}, this.id + " clicked")
+			}, this.jQueryString + " clicked")
 		} else {
 			// workaround for onWrap not loaded
 			setTimeout(() => this.setButtonEventHandler(), 200)
@@ -169,21 +160,24 @@ export class UIManager {
 	)
 
 	// simResetPose is handled by roberta itself
-	static readonly resetSceneButton = new UIRobertaButton("simResetPose")
+	static readonly resetSceneButton = new UIRobertaButton({ id: "simResetPose" })
 
-	static readonly zoomOutButton = new UIRobertaButton("zoomOut")
-	static readonly zoomInButton = new UIRobertaButton("zoomIn")
-	static readonly zoomResetButton = new UIRobertaButton("zoomReset")
+	static readonly zoomOutButton = new UIRobertaButton({ id: "zoomOut" })
+	static readonly zoomInButton = new UIRobertaButton({ id: "zoomIn" })
+	static readonly zoomResetButton = new UIRobertaButton({ id: "zoomReset" })
 
-	static readonly switchSceneButton = new UIRobertaButton("simScene")
+	static readonly switchSceneButton = new UIRobertaButton({ id: "simScene" })
 
-	static readonly simDebugViewButton = new UIRobertaButton("simValues")
+	// used for simDebugView and debugVariables view
+	static readonly closeParentsButton = new UIRobertaButton({ jQueryString: ".simWindow .close" })
 
-	static readonly simDebugMode = new UIRobertaButton("debugMode")
-	static readonly debugStepOverButton = new UIRobertaButton("simControlStepInto")
-	static readonly debugStepIntoButton = new UIRobertaButton("simControlStepOver")
-	static readonly debugStepBreakPointButton = new UIRobertaButton("simControlBreakPoint")
-	static readonly debugVariablesButton = new UIRobertaButton("simVariables")
+	static readonly simDebugViewButton = new UIRobertaButton({ id: "simValues" })
+
+	static readonly simDebugMode = new UIRobertaButton({ id: "debugMode" })
+	static readonly debugStepOverButton = new UIRobertaButton({ id: "simControlStepInto" })
+	static readonly debugStepIntoButton = new UIRobertaButton({ id: "simControlStepOver" })
+	static readonly debugStepBreakPointButton = new UIRobertaButton({ id: "simControlBreakPoint" })
+	static readonly debugVariablesButton = new UIRobertaButton({ id: "simVariables" })
 
 
 	static readonly simViewButton = new UIRobertaToggleStateButton("simButton", "open", {

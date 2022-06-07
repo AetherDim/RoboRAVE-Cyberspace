@@ -18,24 +18,19 @@ define(["require", "exports", "blockly", "./UIElement"], function (require, expo
     exports.UIManager = exports.UIRobertaToggleStateButton = exports.UIRobertaStateButton = exports.UIRobertaButton = void 0;
     var UIRobertaButton = /** @class */ (function (_super) {
         __extends(UIRobertaButton, _super);
-        function UIRobertaButton(id) {
-            return _super.call(this, $("#" + id), id) || this;
+        function UIRobertaButton() {
+            return _super !== null && _super.apply(this, arguments) || this;
         }
         /**
-         * Adds `onClickHandler` to the html element as click handler
+         * Adds `clickHandler` to the html element as click handler
          *
-         * @param onClickHandler will be called with the state in which the button is in **before** the state change.
-         * It returns the new button state.
+         * @param clickHandler will be called with the JQuery object of the `HTMLElement`.
          *
          * @returns `this`
          */
-        UIRobertaButton.prototype.onClick = function (onClickHandler) {
-            var t = this;
-            this.jQueryHTMLElement.onWrap("click", onClickHandler, this.id + " clicked");
+        UIRobertaButton.prototype.onClick = function (clickHandler) {
+            this.jQueryHTMLElement.onWrap("click", clickHandler, this.jQueryString + " clicked");
             return this;
-        };
-        UIRobertaButton.prototype.update = function () {
-            this.jQueryHTMLElement = $("#" + this.id);
         };
         return UIRobertaButton;
     }(UIElement_1.UIElement));
@@ -43,7 +38,7 @@ define(["require", "exports", "blockly", "./UIElement"], function (require, expo
     var UIRobertaStateButton = /** @class */ (function (_super) {
         __extends(UIRobertaStateButton, _super);
         function UIRobertaStateButton(buttonID, initialState, buttonSettingsState) {
-            var _this = _super.call(this, $("#" + buttonID), buttonID) || this;
+            var _this = _super.call(this, { id: buttonID }) || this;
             _this.clickHandlers = [];
             // TODO: Convert all the 'onWrap' js code to use the 'UIManager'
             // Workaround since 'onWrap' is not loaded initially
@@ -74,7 +69,7 @@ define(["require", "exports", "blockly", "./UIElement"], function (require, expo
                     var buttonSettings = t_1.stateMappingObject[t_1.state];
                     t_1.jQueryHTMLElement.addClass(buttonSettings.class);
                     t_1.jQueryHTMLElement.attr("data-original-title", (_c = buttonSettings.tooltip) !== null && _c !== void 0 ? _c : "");
-                }, this.id + " clicked");
+                }, this.jQueryString + " clicked");
             }
             else {
                 // workaround for onWrap not loaded
@@ -160,17 +155,19 @@ define(["require", "exports", "blockly", "./UIElement"], function (require, expo
             normalSpeed: { class: "typcn-media-fast-forward" }
         });
         // simResetPose is handled by roberta itself
-        UIManager.resetSceneButton = new UIRobertaButton("simResetPose");
-        UIManager.zoomOutButton = new UIRobertaButton("zoomOut");
-        UIManager.zoomInButton = new UIRobertaButton("zoomIn");
-        UIManager.zoomResetButton = new UIRobertaButton("zoomReset");
-        UIManager.switchSceneButton = new UIRobertaButton("simScene");
-        UIManager.simDebugViewButton = new UIRobertaButton("simValues");
-        UIManager.simDebugMode = new UIRobertaButton("debugMode");
-        UIManager.debugStepOverButton = new UIRobertaButton("simControlStepInto");
-        UIManager.debugStepIntoButton = new UIRobertaButton("simControlStepOver");
-        UIManager.debugStepBreakPointButton = new UIRobertaButton("simControlBreakPoint");
-        UIManager.debugVariablesButton = new UIRobertaButton("simVariables");
+        UIManager.resetSceneButton = new UIRobertaButton({ id: "simResetPose" });
+        UIManager.zoomOutButton = new UIRobertaButton({ id: "zoomOut" });
+        UIManager.zoomInButton = new UIRobertaButton({ id: "zoomIn" });
+        UIManager.zoomResetButton = new UIRobertaButton({ id: "zoomReset" });
+        UIManager.switchSceneButton = new UIRobertaButton({ id: "simScene" });
+        // used for simDebugView and debugVariables view
+        UIManager.closeParentsButton = new UIRobertaButton({ jQueryString: ".simWindow .close" });
+        UIManager.simDebugViewButton = new UIRobertaButton({ id: "simValues" });
+        UIManager.simDebugMode = new UIRobertaButton({ id: "debugMode" });
+        UIManager.debugStepOverButton = new UIRobertaButton({ id: "simControlStepInto" });
+        UIManager.debugStepIntoButton = new UIRobertaButton({ id: "simControlStepOver" });
+        UIManager.debugStepBreakPointButton = new UIRobertaButton({ id: "simControlBreakPoint" });
+        UIManager.debugVariablesButton = new UIRobertaButton({ id: "simVariables" });
         UIManager.simViewButton = new UIRobertaToggleStateButton("simButton", "open", {
             closed: { class: "" },
             open: { class: "" }

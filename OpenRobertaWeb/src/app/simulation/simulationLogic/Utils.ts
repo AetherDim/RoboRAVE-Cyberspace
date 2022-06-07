@@ -115,6 +115,8 @@ export const asUniqueArray = <
   a: A
 ) => a;
 
+export type KeysOfUnion<T> = T extends T ? keyof T : never
+export type FilterObjectsWithKeys<T, K extends KeysOfUnion<T>> = T extends { [k in K] : T[k] } ? T : never
 
 function applyRestrictedKey<T, KeyType>(type: T, key: RestrictedKeys<T, KeyType>): KeyType {
 	return type[key] as unknown as KeyType
@@ -142,6 +144,24 @@ type RestrictedKeys<T, KeyType> = { [k in keyof T]: T[k] extends KeyType ? k : n
 type RestrictedKeysType<T, KeyType> = { [k in keyof T]: T[k] extends KeyType ? T[k] : never }
 
 export class Utils {
+
+	/**
+	 * Checks if the `object` contains all `keys`.
+	 * 
+	 * It statically restricts the type of `object` in an `if`.
+	 * 
+	 * @param object the object to check
+	 * @param keys a list of object keys 
+	 * @returns true if the object contains all `keys`
+	 */
+	static containsAllKeys<T, Keys extends ReadonlyArray<KeysOfUnion<T>>>(object: T, keys: Keys): object is FilterObjectsWithKeys<T, Keys[number]> {
+		for (const key of keys) {
+			if (object[key] == undefined) {
+				return false
+			}
+		}
+		return true
+	}
 
 	static safeIndexing<T extends unknown[] | undefined>(value: T, index: number): NumberIndexed<T> {
 		if (value == undefined) {

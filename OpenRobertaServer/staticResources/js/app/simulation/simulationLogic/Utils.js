@@ -1,3 +1,14 @@
+var __values = (this && this.__values) || function(o) {
+    var s = typeof Symbol === "function" && Symbol.iterator, m = s && o[s], i = 0;
+    if (m) return m.call(o);
+    if (o && typeof o.length === "number") return {
+        next: function () {
+            if (o && i >= o.length) o = void 0;
+            return { value: o && o[i++], done: !o };
+        }
+    };
+    throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
+};
 var __read = (this && this.__read) || function (o, n) {
     var m = typeof Symbol === "function" && o[Symbol.iterator];
     if (!m) return o;
@@ -14,17 +25,6 @@ var __read = (this && this.__read) || function (o, n) {
     }
     return ar;
 };
-var __values = (this && this.__values) || function(o) {
-    var s = typeof Symbol === "function" && Symbol.iterator, m = s && o[s], i = 0;
-    if (m) return m.call(o);
-    if (o && typeof o.length === "number") return {
-        next: function () {
-            if (o && i >= o.length) o = void 0;
-            return { value: o && o[i++], done: !o };
-        }
-    };
-    throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
-};
 define(["require", "exports", "./Random"], function (require, exports, Random_1) {
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.Utils = exports.asUniqueArray = void 0;
@@ -36,6 +36,34 @@ define(["require", "exports", "./Random"], function (require, exports, Random_1)
     var Utils = /** @class */ (function () {
         function Utils() {
         }
+        /**
+         * Checks if the `object` contains all `keys`.
+         *
+         * It statically restricts the type of `object` in an `if`.
+         *
+         * @param object the object to check
+         * @param keys a list of object keys
+         * @returns true if the object contains all `keys`
+         */
+        Utils.containsAllKeys = function (object, keys) {
+            var e_1, _a;
+            try {
+                for (var keys_1 = __values(keys), keys_1_1 = keys_1.next(); !keys_1_1.done; keys_1_1 = keys_1.next()) {
+                    var key = keys_1_1.value;
+                    if (object[key] == undefined) {
+                        return false;
+                    }
+                }
+            }
+            catch (e_1_1) { e_1 = { error: e_1_1 }; }
+            finally {
+                try {
+                    if (keys_1_1 && !keys_1_1.done && (_a = keys_1.return)) _a.call(keys_1);
+                }
+                finally { if (e_1) throw e_1.error; }
+            }
+            return true;
+        };
         Utils.safeIndexing = function (value, index) {
             if (value == undefined) {
                 return undefined;
@@ -276,7 +304,7 @@ define(["require", "exports", "./Random"], function (require, exports, Random_1)
          * i.e.`[[list[0][0],list[1][0], list[2][0],...], [list[0][1],list[1][0], list[2][0],...], ...]`
          */
         Utils.anyTuples = function (list) {
-            var e_1, _a;
+            var e_2, _a;
             if (list.length == 0) {
                 return list;
             }
@@ -297,12 +325,12 @@ define(["require", "exports", "./Random"], function (require, exports, Random_1)
                         _loop_1(value);
                     }
                 }
-                catch (e_1_1) { e_1 = { error: e_1_1 }; }
+                catch (e_2_1) { e_2 = { error: e_2_1 }; }
                 finally {
                     try {
                         if (_c && !_c.done && (_a = _b.return)) _a.call(_b);
                     }
-                    finally { if (e_1) throw e_1.error; }
+                    finally { if (e_2) throw e_2.error; }
                 }
                 return result;
             }
@@ -412,7 +440,7 @@ define(["require", "exports", "./Random"], function (require, exports, Random_1)
          * @returns A string of the form "4d 5h 6m 7.8s"
          */
         Utils.toTimeString = function (time) {
-            var e_2, _a;
+            var e_3, _a;
             var sec = time;
             var days = Math.floor(sec / 86400);
             sec -= days * 86400;
@@ -432,17 +460,17 @@ define(["require", "exports", "./Random"], function (require, exports, Random_1)
                     }
                 }
             }
-            catch (e_2_1) { e_2 = { error: e_2_1 }; }
+            catch (e_3_1) { e_3 = { error: e_3_1 }; }
             finally {
                 try {
                     if (_c && !_c.done && (_a = _b.return)) _a.call(_b);
                 }
-                finally { if (e_2) throw e_2.error; }
+                finally { if (e_3) throw e_3.error; }
             }
             return string;
         };
         Utils.nonNullObjectValues = function (value) {
-            var e_3, _a;
+            var e_4, _a;
             var values = Object.values(value);
             var result = [];
             try {
@@ -453,17 +481,17 @@ define(["require", "exports", "./Random"], function (require, exports, Random_1)
                     }
                 }
             }
-            catch (e_3_1) { e_3 = { error: e_3_1 }; }
+            catch (e_4_1) { e_4 = { error: e_4_1 }; }
             finally {
                 try {
                     if (values_1_1 && !values_1_1.done && (_a = values_1.return)) _a.call(values_1);
                 }
-                finally { if (e_3) throw e_3.error; }
+                finally { if (e_4) throw e_4.error; }
             }
             return result;
         };
         Utils.mapNotNull = function (array, transform) {
-            var e_4, _a;
+            var e_5, _a;
             var result = [];
             try {
                 for (var array_1 = __values(array), array_1_1 = array_1.next(); !array_1_1.done; array_1_1 = array_1.next()) {
@@ -474,12 +502,12 @@ define(["require", "exports", "./Random"], function (require, exports, Random_1)
                     }
                 }
             }
-            catch (e_4_1) { e_4 = { error: e_4_1 }; }
+            catch (e_5_1) { e_5 = { error: e_5_1 }; }
             finally {
                 try {
                     if (array_1_1 && !array_1_1.done && (_a = array_1.return)) _a.call(array_1);
                 }
-                finally { if (e_4) throw e_4.error; }
+                finally { if (e_5) throw e_5.error; }
             }
             return result;
         };

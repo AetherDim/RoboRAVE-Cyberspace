@@ -250,6 +250,13 @@ function toggleModal(id, position) {
 	);
 }
 
+UIManager.closeParentsButton.onClick(function (this: HTMLElement) {
+	$($(this).parents('.simWindow:first')).animate({
+		'opacity': 'hide',
+		'top': 'hide'
+	}, 300)
+})
+
 UIManager.simDebugViewButton.onClick(() => {
 	const position = $('#simDiv').position();
 	position.left = $(window).width() - ($('#simValuesModal').width() + 12);

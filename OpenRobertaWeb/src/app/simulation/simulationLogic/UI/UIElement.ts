@@ -1,16 +1,21 @@
+import { Utils } from "../Utils"
 
 export class UIElement {
 
-	readonly id?: string
+	readonly jQueryString?: string
 	jQueryHTMLElement: JQuery<HTMLElement>
 
-	constructor(jQueryHTMLElement: JQuery<HTMLElement>, id?: string) {
-		this.jQueryHTMLElement = jQueryHTMLElement
-		this.id = id
-	}
-
-	static fromID(id: string): UIElement {
-		return new UIElement($("#" + id))
+	constructor(arg: { id: string } | { jQueryString: string} | { jQuery: JQuery, jQueryString?: string }) {
+		if (Utils.containsAllKeys(arg, ["id"])) {
+			this.jQueryString = "#" + arg.id
+			this.jQueryHTMLElement = $(this.jQueryString)
+		} else if (Utils.containsAllKeys(arg, ["jQuery"])) {
+			this.jQueryString = arg.jQueryString
+			this.jQueryHTMLElement = arg.jQuery
+		} else if (Utils.containsAllKeys(arg, ["jQueryString"])) {
+			this.jQueryString = arg.jQueryString
+			this.jQueryHTMLElement = $(this.jQueryString)
+		}
 	}
 
 	hide() {
