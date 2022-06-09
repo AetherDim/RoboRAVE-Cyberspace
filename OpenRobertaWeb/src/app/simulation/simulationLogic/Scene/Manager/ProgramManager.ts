@@ -17,7 +17,7 @@ export class ProgramManager {
 
 	private cachedPrograms: RobotProgram[] = []
 
-	private debugManager = new BlocklyDebug(this, () => this.interpreters)
+	private debugManager = BlocklyDebug.getInstanceAndInit(this, () => this.interpreters)
 
 	readonly eventManager = EventManager.init({
 		onStartProgram: ParameterTypes.none,
@@ -57,6 +57,7 @@ export class ProgramManager {
 
 	private init() {
 		if(!this.initialized) {
+			console.log("Init program manager!")
 			for(let i = 0; i < this.cachedPrograms.length; i++) {
 				if(i >= this.robots.length) {
 					console.info('Not enough robots, too many programs!')
@@ -154,7 +155,6 @@ export class ProgramManager {
 				this.interpreters[i].addEvent(mode);
 			}
 		}
-		this.debugManager.updateBreakpointEvent()
 	}
 
 	/** removes an event to the interpreters */
@@ -164,7 +164,6 @@ export class ProgramManager {
 				this.interpreters[i].removeEvent(mode);
 			}
 		}
-		this.debugManager.updateBreakpointEvent()
 	}
 
 

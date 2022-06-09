@@ -84,6 +84,21 @@ define(["require", "exports", "./external/SceneDesciptorList", "./Cyberspace/Cyb
             callback(result);
         });
     }
+    function simulateProgram(callback) {
+        var _this = this;
+        requestSimAssemblyForProgram(function (result) {
+            if (result.rc == 'ok') {
+                MSG.displayMessage('MESSAGE_EDIT_START', 'TOAST', GUISTATE_C.getProgramName(), undefined, undefined);
+                cyberspace.setRobertaRobotSetupData([result], GUISTATE_C.getRobotGroup());
+                cyberspace.startPrograms();
+                callback === null || callback === void 0 ? void 0 : callback.call(_this);
+            }
+            else {
+                MSG.displayInformation(result, '', result.message, '', undefined);
+            }
+            PROG_C.reloadProgram(result); // load to current blocky workspace
+        });
+    }
     // Button
     UIManager_1.UIManager.programControlButton.onClick(function (state) {
         // TODO: Add proper multi robot support
@@ -91,17 +106,7 @@ define(["require", "exports", "./external/SceneDesciptorList", "./Cyberspace/Cyb
             if (state == "start") {
                 Blockly.hideChaff();
                 NN_CTRL.mkNNfromNNStepData();
-                requestSimAssemblyForProgram(function (result) {
-                    if (result.rc == 'ok') {
-                        MSG.displayMessage('MESSAGE_EDIT_START', 'TOAST', GUISTATE_C.getProgramName(), undefined, undefined);
-                        cyberspace.setRobertaRobotSetupData([result], GUISTATE_C.getRobotGroup());
-                        cyberspace.startPrograms();
-                    }
-                    else {
-                        MSG.displayInformation(result, '', result.message, '', undefined);
-                    }
-                    PROG_C.reloadProgram(result); // load to current blocky workspace
-                });
+                simulateProgram();
             }
             else {
                 cyberspace.stopPrograms();
@@ -190,6 +195,7 @@ define(["require", "exports", "./external/SceneDesciptorList", "./Cyberspace/Cyb
             });
             UTIL.closeSimRobotWindow(CONST.default.ANIMATION_DURATION);
             cyberspace.setDebugMode(false);
+            updateDebugButtons();
         }
     });
     function toggleModal(id, position) {
@@ -218,20 +224,42 @@ define(["require", "exports", "./external/SceneDesciptorList", "./Cyberspace/Cyb
         position.left = $(window).width() - ($('#simValuesModal').width() + 12);
         toggleModal('#simValuesModal', position);
     });
+    function startProgramIfRequired(callback) {
+        if (cyberspace.getProgramManager().allInterpretersTerminated()) {
+            simulateProgram(callback);
+        }
+        else {
+            cyberspace.startPrograms();
+            callback();
+        }
+    }
     UIManager_1.UIManager.debugStepOverButton.onClick(function () {
-        cyberspace.startPrograms();
-        cyberspace.getProgramManager().interpreterAddEvent(CONST.default.DEBUG_STEP_OVER);
+        startProgramIfRequired(function () { return cyberspace.getProgramManager().interpreterAddEvent(CONST.default.DEBUG_STEP_OVER); });
     });
     UIManager_1.UIManager.debugStepIntoButton.onClick(function () {
-        cyberspace.startPrograms();
-        cyberspace.getProgramManager().interpreterAddEvent(CONST.default.DEBUG_STEP_INTO);
+        startProgramIfRequired(function () { return cyberspace.getProgramManager().interpreterAddEvent(CONST.default.DEBUG_STEP_INTO); });
     });
+    function updateDebugButtons() {
+        if (cyberspace.isDebugMode()) {
+            UIManager_1.UIManager.debugStepIntoButton.show();
+            UIManager_1.UIManager.debugStepOverButton.show();
+            UIManager_1.UIManager.debugStepBreakPointButton.show();
+            UIManager_1.UIManager.debugVariablesButton.show();
+        }
+        else {
+            UIManager_1.UIManager.debugStepIntoButton.hide();
+            UIManager_1.UIManager.debugStepOverButton.hide();
+            UIManager_1.UIManager.debugStepBreakPointButton.hide();
+            UIManager_1.UIManager.debugVariablesButton.hide();
+        }
+    }
+    updateDebugButtons(); // on init
     UIManager_1.UIManager.simDebugMode.onClick(function () {
         cyberspace.setDebugMode(!cyberspace.isDebugMode());
+        updateDebugButtons();
     });
     UIManager_1.UIManager.debugStepBreakPointButton.onClick(function () {
-        cyberspace.startPrograms();
-        cyberspace.getProgramManager().interpreterAddEvent(CONST.default.DEBUG_BREAKPOINT);
+        startProgramIfRequired(function () { return cyberspace.getProgramManager().interpreterAddEvent(CONST.default.DEBUG_BREAKPOINT); });
     });
     UIManager_1.UIManager.debugVariablesButton.onClick(function () {
         var position = $('#simDiv').position();

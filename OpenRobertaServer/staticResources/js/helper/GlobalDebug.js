@@ -79,7 +79,7 @@ define(["require", "exports", "dat.gui", "./Timer"], function (require, exports,
         search[fieldName] = "";
         var searchField = exports.DebugGuiRoot.add(search, fieldName);
         searchField.onChange(function (search) {
-            console.log(search);
+            //console.log(search)
             searchGUI(search, searchField);
         });
     }
@@ -265,6 +265,14 @@ define(["require", "exports", "dat.gui", "./Timer"], function (require, exports,
             program.addUpdatable('debugMode', createReflectionGetter(pm, 'debugManager.debugMode'));
             program.addUpdatable('debugObservers', function () { return Object.keys(pm.debugManager.observers).length; });
             program.addUpdatable('initialized', createReflectionGetter(pm, 'initialized'));
+            program.addButton('Print breakpoint IDs', function () {
+                //window.alert((pm as any).debugManager.breakpointIDs)
+                console.log(pm.debugManager.breakpointIDs);
+            });
+            program.addButton('Print observers IDs', function () {
+                //window.alert((pm as any).debugManager.breakpointIDs)
+                console.log(pm.debugManager.observers);
+            });
             var entity = gui.addFolder('Entity Manager');
             var em = scene.getEntityManager();
             entity.addUpdatable('Number of entities', function () { return em.getNumberOfEntities(); });

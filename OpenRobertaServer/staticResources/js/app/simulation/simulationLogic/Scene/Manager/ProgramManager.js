@@ -8,7 +8,7 @@ define(["require", "exports", "../../EventManager/EventManager", "../../BlocklyD
             this.interpreters = [];
             this.initialized = false;
             this.cachedPrograms = [];
-            this.debugManager = new BlocklyDebug_1.BlocklyDebug(this, function () { return _this.interpreters; });
+            this.debugManager = BlocklyDebug_1.BlocklyDebug.getInstanceAndInit(this, function () { return _this.interpreters; });
             this.eventManager = EventManager_1.EventManager.init({
                 onStartProgram: EventManager_1.ParameterTypes.none,
                 onPauseProgram: EventManager_1.ParameterTypes.none,
@@ -37,6 +37,7 @@ define(["require", "exports", "../../EventManager/EventManager", "../../BlocklyD
         };
         ProgramManager.prototype.init = function () {
             if (!this.initialized) {
+                console.log("Init program manager!");
                 for (var i = 0; i < this.cachedPrograms.length; i++) {
                     if (i >= this.robots.length) {
                         console.info('Not enough robots, too many programs!');
@@ -118,7 +119,6 @@ define(["require", "exports", "../../EventManager/EventManager", "../../BlocklyD
                     this.interpreters[i].addEvent(mode);
                 }
             }
-            this.debugManager.updateBreakpointEvent();
         };
         /** removes an event to the interpreters */
         ProgramManager.prototype.interpreterRemoveEvent = function (mode) {
@@ -127,7 +127,6 @@ define(["require", "exports", "../../EventManager/EventManager", "../../BlocklyD
                     this.interpreters[i].removeEvent(mode);
                 }
             }
-            this.debugManager.updateBreakpointEvent();
         };
         //
         // Debugging

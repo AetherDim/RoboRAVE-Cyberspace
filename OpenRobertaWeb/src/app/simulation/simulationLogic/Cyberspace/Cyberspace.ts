@@ -119,6 +119,7 @@ export class Cyberspace {
 	}
 
 	private switchToScene(scene: Scene) {
+		this.stopPrograms()
 		this.renderer.switchScene(this.simulationCache.toRobotSetupData(), scene)
 		if (scene.isLoadingComplete()) {
 			this.fullResetScene()

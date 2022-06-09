@@ -85,7 +85,7 @@ function registerSearchBar() {
 	search[fieldName] = ""
 	const searchField = DebugGuiRoot.add(search, fieldName)
 	searchField.onChange((search) => {
-		console.log(search)
+		//console.log(search)
 		searchGUI(search, searchField)
 	})
 }
@@ -324,6 +324,14 @@ export class SceneDebug {
 		program.addUpdatable('debugMode', createReflectionGetter(pm, 'debugManager.debugMode'))
 		program.addUpdatable('debugObservers', () => Object.keys((pm as any).debugManager.observers).length)
 		program.addUpdatable('initialized', createReflectionGetter(pm, 'initialized'))
+		program.addButton('Print breakpoint IDs', () => {
+			//window.alert((pm as any).debugManager.breakpointIDs)
+			console.log((pm as any).debugManager.breakpointIDs)
+		})
+		program.addButton('Print observers IDs', () => {
+			//window.alert((pm as any).debugManager.breakpointIDs)
+			console.log((pm as any).debugManager.observers)
+		})
 
 		const entity = gui.addFolder('Entity Manager')
 		const em = scene.getEntityManager()

@@ -117,6 +117,7 @@ define(["require", "exports", "./SimulationCache", "../Scene/Scene", "../RRC/Sce
             return this.sceneManager.getSceneDescriptorList();
         };
         Cyberspace.prototype.switchToScene = function (scene) {
+            this.stopPrograms();
             this.renderer.switchScene(this.simulationCache.toRobotSetupData(), scene);
             if (scene.isLoadingComplete()) {
                 this.fullResetScene();

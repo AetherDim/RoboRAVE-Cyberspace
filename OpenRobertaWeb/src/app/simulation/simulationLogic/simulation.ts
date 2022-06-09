@@ -98,6 +98,24 @@ function requestSimAssemblyForProgram(callback: (result: RobertaRobotSetupData) 
 	});
 }
 
+function simulateProgram(callback?: () => void) {
+	requestSimAssemblyForProgram(result => {
+		if (result.rc == 'ok') {
+			MSG.displayMessage('MESSAGE_EDIT_START', 'TOAST', GUISTATE_C.getProgramName(), undefined, undefined);
+
+			cyberspace.setRobertaRobotSetupData([result], GUISTATE_C.getRobotGroup())
+
+			cyberspace.startPrograms()
+
+			callback?.call(this)
+
+		} else {
+			MSG.displayInformation(result, '', result.message, '', undefined);
+		}
+
+		PROG_C.reloadProgram(result); // load to current blocky workspace
+	});
+}
 
 // Button
 UIManager.programControlButton.onClick( state => {
@@ -109,20 +127,7 @@ UIManager.programControlButton.onClick( state => {
 			Blockly.hideChaff();
 			NN_CTRL.mkNNfromNNStepData();
 
-			requestSimAssemblyForProgram(result => {
-				if (result.rc == 'ok') {
-					MSG.displayMessage('MESSAGE_EDIT_START', 'TOAST', GUISTATE_C.getProgramName(), undefined, undefined);
-
-					cyberspace.setRobertaRobotSetupData([result], GUISTATE_C.getRobotGroup())
-
-					cyberspace.startPrograms()
-
-				} else {
-					MSG.displayInformation(result, '', result.message, '', undefined);
-				}
-
-				PROG_C.reloadProgram(result); // load to current blocky workspace
-			});
+			simulateProgram()
 
 		} else {
 
@@ -229,6 +234,7 @@ UIManager.simViewButton.onClick(state => {
 		UTIL.closeSimRobotWindow(CONST.default.ANIMATION_DURATION)
 
 		cyberspace.setDebugMode(false)
+		updateDebugButtons()
 	}
 })
 
@@ -263,23 +269,46 @@ UIManager.simDebugViewButton.onClick(() => {
 	toggleModal('#simValuesModal', position);
 })
 
+function startProgramIfRequired(callback: () => void) {
+	if(cyberspace.getProgramManager().allInterpretersTerminated()) {
+		simulateProgram(callback)
+	} else {
+		cyberspace.startPrograms()
+		callback()
+	}
+}
+
 UIManager.debugStepOverButton.onClick(() => {
-	cyberspace.startPrograms()
-	cyberspace.getProgramManager().interpreterAddEvent(CONST.default.DEBUG_STEP_OVER)
+	startProgramIfRequired(() => cyberspace.getProgramManager().interpreterAddEvent(CONST.default.DEBUG_STEP_OVER))
 })
 
 UIManager.debugStepIntoButton.onClick(() => {
-	cyberspace.startPrograms()
-	cyberspace.getProgramManager().interpreterAddEvent(CONST.default.DEBUG_STEP_INTO)
+	startProgramIfRequired(() => cyberspace.getProgramManager().interpreterAddEvent(CONST.default.DEBUG_STEP_INTO))
 })
+
+function updateDebugButtons() {
+	if(cyberspace.isDebugMode()) {
+		UIManager.debugStepIntoButton.show()
+		UIManager.debugStepOverButton.show()
+		UIManager.debugStepBreakPointButton.show()
+		UIManager.debugVariablesButton.show()
+	} else {
+		UIManager.debugStepIntoButton.hide()
+		UIManager.debugStepOverButton.hide()
+		UIManager.debugStepBreakPointButton.hide()
+		UIManager.debugVariablesButton.hide()
+	}
+}
+
+updateDebugButtons() // on init
 
 UIManager.simDebugMode.onClick(() => {
 	cyberspace.setDebugMode(!cyberspace.isDebugMode())
+	updateDebugButtons()
 })
 
 UIManager.debugStepBreakPointButton.onClick(() => {
-	cyberspace.startPrograms()
-	cyberspace.getProgramManager().interpreterAddEvent(CONST.default.DEBUG_BREAKPOINT)
+	startProgramIfRequired(() => cyberspace.getProgramManager().interpreterAddEvent(CONST.default.DEBUG_BREAKPOINT))
 })
 
 UIManager.debugVariablesButton.onClick(() => {

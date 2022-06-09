@@ -240,7 +240,7 @@ export class Scene {
 	 * Reloads the whole scene and force reloads the assets
 	 */
 	fullReset(robotSetupData: RobotSetupData[]) {
-		this.load(robotSetupData, true);
+		this.load(robotSetupData, true)
 	}
 
 	/**
