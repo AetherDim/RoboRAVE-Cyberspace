@@ -15,6 +15,8 @@ export class UIElement {
 		} else if (Utils.containsAllKeys(arg, ["jQueryString"])) {
 			this.jQueryString = arg.jQueryString
 			this.jQueryHTMLElement = $(this.jQueryString)
+		} else {
+			throw "Missing state"
 		}
 	}
 

@@ -160,7 +160,7 @@ export class RRCScoreScene extends Scene {
 	onUpdatePrePhysics() {
 		const robots = this.getRobotManager().getRobots()
 		if (robots.length > 0) {
-			if (robots[0].interpreter?.isTerminated() === false && !this.getProgramManager().isProgramPaused()) {
+			if (robots[0].programManager.allProgramsTerminated() === false && robots[0].programManager.isAnyProgramRunning()) {
 				// program is running
 				if (this.programEventTimes == undefined || this.programEventTimes.stopTime != undefined) {
 					// set the start time, if it was not set before, or if both time values were set

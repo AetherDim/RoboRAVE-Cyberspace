@@ -1,7 +1,6 @@
 import Blockly = require("blockly");
 import { Timer } from "./Timer";
-import {Program, ProgramManager} from "./Scene/Manager/ProgramManager";
-import {Interpreter} from "interpreter.interpreter";
+import {Program} from "./Scene/Manager/ProgramManager";
 
 type SpecialBlocklyBlock = Blockly.Block & { svgGroup_: any, svgPath_: any }
 
@@ -163,8 +162,8 @@ export class BlocklyDebug {
 		const workspace = Blockly.getMainWorkspace()
 		if (workspace != null) {
 			workspace.getAllBlocks(false)
-				.forEach((block: SpecialBlocklyBlock) => {
-					$(block.svgPath_).stop(true, true).removeAttr('style')
+				.forEach((block) => {
+					$((block as SpecialBlocklyBlock).svgPath_).stop(true, true).removeAttr('style')
 				})
 		}
 

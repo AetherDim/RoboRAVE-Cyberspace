@@ -121,6 +121,9 @@
         "**/node_modules/",
         "**/interpreter.runStackMachineJson.ts"
     ],
+    //"references": [{
+    //    "path": "./src/app/simulation"
+    //}],
     "compileOnSave": false,
     "buildOnSave": false
 }

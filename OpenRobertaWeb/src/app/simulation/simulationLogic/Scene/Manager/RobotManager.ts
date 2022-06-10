@@ -1,9 +1,6 @@
 import {Robot} from "../../Robot/Robot";
-import {ProgramManager} from "./ProgramManager";
 import {Scene} from "../Scene";
 import { RobotConfigurationManager } from "./RobotConfigurationManager";
-import {RobertaRobotSetupData} from "../../Robot/RobertaRobotSetupData";
-import {Unit} from "../../Unit";
 import {RobotProgram} from "../../Robot/RobotProgram";
 import {BlocklyDebug} from "../../BlocklyDebug";
 
@@ -143,5 +140,13 @@ export class RobotManager {
 			robot.programManager.pausePrograms()
 		}
 	}
-	
+
+	allProgramsTerminated() {
+		for(const robot of this.robots) {
+			if(!robot.programManager.allProgramsTerminated()) {
+				return false;
+			}
+		}
+		return true;
+	}
 }

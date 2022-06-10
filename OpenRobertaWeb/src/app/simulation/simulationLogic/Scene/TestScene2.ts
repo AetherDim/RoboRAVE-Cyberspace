@@ -5,7 +5,7 @@ import { AsyncChain } from "./AsyncChain";
 import * as RRC from '../RRC/RRAssetLoader'
 import { randomIntBetween } from "../Random";
 import { WaypointList } from "../Waypoints/WaypointList";
-import { StringMap, Utils } from "../Utils";
+import { Utils } from "../Utils";
 import { SensorType } from "../Robot/Robot";
 import { AgeGroup } from "../RRC/AgeGroup";
 

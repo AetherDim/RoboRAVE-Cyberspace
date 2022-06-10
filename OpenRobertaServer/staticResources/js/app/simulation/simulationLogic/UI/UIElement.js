@@ -15,6 +15,9 @@ define(["require", "exports", "../Utils"], function (require, exports, Utils_1) 
                 this.jQueryString = arg.jQueryString;
                 this.jQueryHTMLElement = $(this.jQueryString);
             }
+            else {
+                throw "Missing state";
+            }
         }
         UIElement.prototype.hide = function () {
             this.jQueryHTMLElement.addClass("hide");

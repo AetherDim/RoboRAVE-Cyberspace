@@ -3,8 +3,6 @@ import { ElectricMotor } from './ElectricMotor'
 
 import "../ExtendedMatter"
 import { MAXPOWER } from '../interpreter.constants'
-import { Interpreter, InterpreterCallback } from '../interpreter.interpreter'
-import { RobotSimBehaviour } from './RobotSimBehaviour'
 import { Wheel } from './Wheel'
 import { ColorSensor } from './Sensors/ColorSensor'
 import { UltrasonicSensor } from './Sensors/UltrasonicSensor'
@@ -12,14 +10,13 @@ import { Ray } from '../Geometry/Ray'
 import { TouchSensor } from './Sensors/TouchSensor'
 import { IContainerEntity, IEntity, IPhysicsCompositeEntity, IUpdatableEntity, PhysicsRectEntity } from '../Entity'
 import { Scene } from '../Scene/Scene'
-import { StringMap, Utils } from '../Utils'
+import { Utils } from '../Utils'
 // Dat Gui
-import {createReflectionGetter, downloadFile} from "./../GlobalDebug";
+import { downloadFile} from "./../GlobalDebug";
 import { BodyHelper } from "./BodyHelper";
-import { RobotProgram } from './RobotProgram'
 import { hsvToColorName, rgbToHsv } from '../Color'
 import { GyroSensor } from './Sensors/GyroSensor'
-import { RobotLED, RobotLEDColor, robotLEDColors } from './RobotLED'
+import { RobotLED, robotLEDColors } from './RobotLED'
 import {Program, ProgramManager} from '../Scene/Manager/ProgramManager'
 
 export const sensorTypeStrings =  ["TOUCH", "GYRO", "COLOR", "ULTRASONIC", "INFRARED", "SOUND", "COMPASS",
@@ -591,8 +588,8 @@ export class Robot implements IContainerEntity, IUpdatableEntity, IPhysicsCompos
 
 
 		// update LEDs
-		const LEDActionState: { color?: string, mode: string } | undefined
-			= robotBehaviour.getActionState("led", true)
+		const LEDActionState: { color?: string, mode: string } | undefined
+			= robotBehaviour?.getActionState("led", true)
 		const LEDAction =
 			Utils.flatMapOptional(LEDActionState, action => {
 				return {
@@ -653,7 +650,7 @@ export class Robot implements IContainerEntity, IUpdatableEntity, IPhysicsCompos
 			if (stopEncoder) {
 				// on end
 				t.endEncoder = undefined
-				robotBehaviour.resetCommands()
+				robotBehaviour?.resetCommands()
 				t.needsNewCommands = true
 			} else {
 				const maxDifference = t.endEncoderSettings.maxForceControlEncoderDifference
@@ -665,7 +662,7 @@ export class Robot implements IContainerEntity, IUpdatableEntity, IPhysicsCompos
 			}
 		}
 
-		const driveData = robotBehaviour.drive
+		const driveData = robotBehaviour?.drive
 		if (driveData) {
 			// handle `driveAction` and `curveAction`
 			if (driveData.distance && driveData.speed) {
@@ -688,7 +685,7 @@ export class Robot implements IContainerEntity, IUpdatableEntity, IPhysicsCompos
 			}
 		}
 
-		const rotateData = robotBehaviour.rotate
+		const rotateData = robotBehaviour?.rotate
 		if (rotateData) {
 			if (rotateData.angle) {
 				if (this.endEncoder == undefined) {
@@ -718,7 +715,7 @@ export class Robot implements IContainerEntity, IUpdatableEntity, IPhysicsCompos
 		}
 
 		// update pose
-		let motors = robotBehaviour.getActionState("motors", true);
+		let motors = robotBehaviour?.getActionState("motors", true);
 		if (motors) {
 			const maxForce = true ? 0.01 : MAXPOWER
 			let left = motors.c;
@@ -749,7 +746,7 @@ export class Robot implements IContainerEntity, IUpdatableEntity, IPhysicsCompos
 		this.rightDrivingWheel.applyTorqueFromMotor(ElectricMotor.EV3(this.scene.unit), this.rightForce)
 
 		// reset internal encoder values if necessary
-		const encoder = robotBehaviour.getActionState("encoder", true);
+		const encoder = robotBehaviour?.getActionState("encoder", true);
 		if (encoder) {
 			if (encoder.leftReset) {
 				this.encoder.left = 0;

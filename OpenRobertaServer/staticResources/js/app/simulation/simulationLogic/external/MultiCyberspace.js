@@ -49,7 +49,7 @@ define(["require", "exports", "../Cyberspace/Cyberspace", "../GlobalDebug", "../
         return cyberspaces.every(function (c) {
             var scene = c.getScene();
             if (scene instanceof RRCScoreScene_1.RRCScoreScene) {
-                return scene.getProgramManager().allInterpretersTerminated();
+                return scene.getRobotManager().allProgramsTerminated();
             }
             else {
                 return true;

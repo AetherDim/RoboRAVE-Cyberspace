@@ -6,7 +6,6 @@ import {randomBool, randomWeightedBool} from "../../Random";
 import {Asset} from "../../SharedAssetLoader";
 import {WaypointList} from "../../Waypoints/WaypointList";
 import {ScoreWaypoint} from "../../Waypoints/ScoreWaypoint";
-import {RectEntityOptions} from "../../Entity";
 
 
 export class RRCRainbowScene extends RRCScene {

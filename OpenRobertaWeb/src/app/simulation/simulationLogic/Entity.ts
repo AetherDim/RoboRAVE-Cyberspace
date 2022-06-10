@@ -1,5 +1,5 @@
 import {Scene} from "./Scene/Scene";
-import {Body, Composite, Constraint, Vector, Bodies, IBodyDefinition, IChamferableBodyDefinition} from "matter-js";
+import {Body, Composite, Constraint, Bodies, IChamferableBodyDefinition} from "matter-js";
 import { Utils } from "./Utils";
 
 

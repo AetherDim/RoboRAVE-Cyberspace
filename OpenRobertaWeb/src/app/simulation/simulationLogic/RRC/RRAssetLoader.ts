@@ -1,4 +1,4 @@
-import { SharedAssetLoader, Asset, MultiAsset, FontAsset } from '../SharedAssetLoader';
+import { Asset, MultiAsset, FontAsset } from '../SharedAssetLoader';
 
 export const RRC_ASSET_PATH = 'assets/roborave/';
 

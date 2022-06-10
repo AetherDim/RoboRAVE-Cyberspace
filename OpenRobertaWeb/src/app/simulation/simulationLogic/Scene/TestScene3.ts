@@ -4,7 +4,6 @@ import { downloadJSONFile } from "../GlobalDebug";
 import { Robot } from "../Robot/Robot";
 import { RobotProgram } from "../Robot/RobotProgram";
 import { RobotProgramGenerator } from "../Robot/RobotProgramGenerator";
-import { RobotSetupData } from "../Robot/RobotSetupData";
 import { RobotTester } from "../Robot/RobotTester";
 import { Unit } from "../Unit";
 import { UnpackArrayProperties, Utils, Expand } from "../Utils";
@@ -340,7 +339,7 @@ export class TestScene3 extends Scene {
 				// timeout
 				this.pushDataAndResetWithTimeout(true)
 			}
-			if (this.getProgramManager().allInterpretersTerminated()) {
+			if (this.getRobotManager().allProgramsTerminated()) {
 				// program terminated
 				let finished = true
 				this.valueHelpers.forEach(keyValue => {

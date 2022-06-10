@@ -15,7 +15,6 @@ import {ContainerManager} from "./Manager/ContainerManager";
 import {RobotManager} from "./Manager/RobotManager";
 import { RobotSetupData } from '../Robot/RobotSetupData';
 import { EventManager, ParameterTypes } from '../EventManager/EventManager';
-import {RobertaRobotSetupData} from "../Robot/RobertaRobotSetupData";
 
 export class Scene {
 

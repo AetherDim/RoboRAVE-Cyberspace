@@ -1,7 +1,7 @@
 import { Body, Vector } from "matter-js";
 import { PhysicsRectEntity } from "../../Entity";
 import { Scene } from "../Scene";
-import { NumberIndexed, StringMap, Utils } from "../../Utils";
+import { NumberIndexed, Utils } from "../../Utils";
 import { Robot, SensorType } from "../../Robot/Robot";
 import { TouchSensor } from "../../Robot/Sensors/TouchSensor";
 import { UltrasonicSensor } from "../../Robot/Sensors/UltrasonicSensor";

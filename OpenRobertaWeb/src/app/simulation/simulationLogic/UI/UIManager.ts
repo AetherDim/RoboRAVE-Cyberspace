@@ -1,4 +1,3 @@
-
 import Blockly = require("blockly");
 import { UnionToTuple } from "../Utils";
 import { UIElement } from "./UIElement";

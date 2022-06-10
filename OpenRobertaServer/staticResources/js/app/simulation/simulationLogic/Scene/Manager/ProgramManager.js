@@ -55,8 +55,9 @@ define(["require", "exports", "./../../interpreter.interpreter", "../../EventMan
             this.clearInterpretersAndStop();
         };
         Program.prototype.clearInterpretersAndStop = function () {
+            var _a;
             // remove all highlights from breakpoints
-            this.interpreter.removeHighlights();
+            (_a = this.interpreter) === null || _a === void 0 ? void 0 : _a.removeHighlights();
             // reset interpreters
             this.interpreter = undefined;
             this.programState = "terminated";
@@ -72,17 +73,20 @@ define(["require", "exports", "./../../interpreter.interpreter", "../../EventMan
         };
         /** adds an event to the interpreters */
         Program.prototype.interpreterAddEvent = function (mode) {
-            this.interpreter.addEvent(mode);
+            var _a;
+            (_a = this.interpreter) === null || _a === void 0 ? void 0 : _a.addEvent(mode);
         };
         /** removes an event to the interpreters */
         Program.prototype.interpreterRemoveEvent = function (mode) {
-            this.interpreter.removeEvent(mode);
+            var _a;
+            (_a = this.interpreter) === null || _a === void 0 ? void 0 : _a.removeEvent(mode);
         };
         Program.prototype.isRunning = function () {
             return this.programState == "running";
         };
         Program.prototype.runNOperations = function (N) {
-            return this.interpreter.runNOperations(N);
+            var _a, _b;
+            return (_b = (_a = this.interpreter) === null || _a === void 0 ? void 0 : _a.runNOperations(N)) !== null && _b !== void 0 ? _b : 0;
         };
         return Program;
     }());
@@ -139,6 +143,25 @@ define(["require", "exports", "./../../interpreter.interpreter", "../../EventMan
         };
         ProgramManager.prototype.getPrograms = function () {
             return this.programs;
+        };
+        ProgramManager.prototype.isAnyProgramRunning = function () {
+            var e_2, _a;
+            try {
+                for (var _b = __values(this.programs), _c = _b.next(); !_c.done; _c = _b.next()) {
+                    var program = _c.value;
+                    if (program.isRunning()) {
+                        return true;
+                    }
+                }
+            }
+            catch (e_2_1) { e_2 = { error: e_2_1 }; }
+            finally {
+                try {
+                    if (_c && !_c.done && (_a = _b.return)) _a.call(_b);
+                }
+                finally { if (e_2) throw e_2.error; }
+            }
+            return false;
         };
         return ProgramManager;
     }());

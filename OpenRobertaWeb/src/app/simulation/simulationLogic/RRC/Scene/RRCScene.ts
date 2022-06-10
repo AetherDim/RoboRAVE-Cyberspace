@@ -4,7 +4,7 @@ import {Robot} from "../../Robot/Robot";
 import {Body, Vector} from "matter-js";
 import {Unit} from "../../Unit";
 import {RRCScoreScene} from "./RRCScoreScene";
-import {PhysicsRectEntity, DrawableEntity, RectEntityOptions} from "../../Entity";
+import {PhysicsRectEntity, RectEntityOptions} from "../../Entity";
 import {ScoreWaypoint} from "../../Waypoints/ScoreWaypoint"
 import {WaypointList} from "../../Waypoints/WaypointList";
 import {Utils} from "../../Utils";

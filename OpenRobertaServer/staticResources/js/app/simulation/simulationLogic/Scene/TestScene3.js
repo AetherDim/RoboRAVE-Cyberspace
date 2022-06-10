@@ -224,8 +224,8 @@ define(["require", "exports", "../GlobalDebug", "../Robot/Robot", "../Robot/Robo
                             : RobotProgramGenerator_1.RobotProgramGenerator.rotateOpCodes(tuple.rotateSpeed, tuple.rotateAngle, tuple.directionRight)
                     ])
                 ];
-                this.getProgramManager().setPrograms(programs, this.unit);
-                this.getProgramManager().startPrograms();
+                this.getRobotManager().setPrograms([programs]);
+                this.getRobotManager().startPrograms();
             }
             asyncChain.next();
         };
@@ -256,7 +256,7 @@ define(["require", "exports", "../GlobalDebug", "../Robot/Robot", "../Robot/Robo
                     // timeout
                     this.pushDataAndResetWithTimeout(true);
                 }
-                if (this.getProgramManager().allInterpretersTerminated()) {
+                if (this.getRobotManager().allProgramsTerminated()) {
                     // program terminated
                     var finished_1 = true;
                     this.valueHelpers.forEach(function (keyValue) {

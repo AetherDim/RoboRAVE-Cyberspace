@@ -41,7 +41,7 @@ function everyScoreSceneIsFinished(): boolean {
 	return cyberspaces.every(c => {
 		const scene = c.getScene()
 		if (scene instanceof RRCScoreScene) {
-			return scene.getProgramManager().allInterpretersTerminated()
+			return scene.getRobotManager().allProgramsTerminated()
 		} else {
 			return true
 		}

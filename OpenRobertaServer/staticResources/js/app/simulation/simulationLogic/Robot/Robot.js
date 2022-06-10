@@ -454,7 +454,7 @@ define(["require", "exports", "matter-js", "./ElectricMotor", "../interpreter.co
             // update sensors
             this.updateRobotBehaviourHardwareStateSensors(program);
             // update LEDs
-            var LEDActionState = robotBehaviour.getActionState("led", true);
+            var LEDActionState = robotBehaviour === null || robotBehaviour === void 0 ? void 0 : robotBehaviour.getActionState("led", true);
             var LEDAction = Utils_1.Utils.flatMapOptional(LEDActionState, function (action) {
                 var _a;
                 return {
@@ -510,7 +510,7 @@ define(["require", "exports", "matter-js", "./ElectricMotor", "../interpreter.co
                 if (stopEncoder) {
                     // on end
                     t.endEncoder = undefined;
-                    robotBehaviour.resetCommands();
+                    robotBehaviour === null || robotBehaviour === void 0 ? void 0 : robotBehaviour.resetCommands();
                     t.needsNewCommands = true;
                 }
                 else {
@@ -520,7 +520,7 @@ define(["require", "exports", "matter-js", "./ElectricMotor", "../interpreter.co
                     t.rightForce = Utils_1.Utils.continuousSign(encoderDifference.right - t.rightDrivingWheel.angularVelocity * dampingFactor * dt, maxDifference) * Math.abs(speedRight);
                 }
             }
-            var driveData = robotBehaviour.drive;
+            var driveData = robotBehaviour === null || robotBehaviour === void 0 ? void 0 : robotBehaviour.drive;
             if (driveData) {
                 // handle `driveAction` and `curveAction`
                 if (driveData.distance && driveData.speed) {
@@ -542,7 +542,7 @@ define(["require", "exports", "matter-js", "./ElectricMotor", "../interpreter.co
                     robotBehaviour.drive = undefined;
                 }
             }
-            var rotateData = robotBehaviour.rotate;
+            var rotateData = robotBehaviour === null || robotBehaviour === void 0 ? void 0 : robotBehaviour.rotate;
             if (rotateData) {
                 if (rotateData.angle) {
                     if (this.endEncoder == undefined) {
@@ -573,7 +573,7 @@ define(["require", "exports", "matter-js", "./ElectricMotor", "../interpreter.co
                 }
             }
             // update pose
-            var motors = robotBehaviour.getActionState("motors", true);
+            var motors = robotBehaviour === null || robotBehaviour === void 0 ? void 0 : robotBehaviour.getActionState("motors", true);
             if (motors) {
                 var maxForce = true ? 0.01 : interpreter_constants_1.MAXPOWER;
                 var left = motors.c;
@@ -604,7 +604,7 @@ define(["require", "exports", "matter-js", "./ElectricMotor", "../interpreter.co
             this.leftDrivingWheel.applyTorqueFromMotor(ElectricMotor_1.ElectricMotor.EV3(this.scene.unit), this.leftForce);
             this.rightDrivingWheel.applyTorqueFromMotor(ElectricMotor_1.ElectricMotor.EV3(this.scene.unit), this.rightForce);
             // reset internal encoder values if necessary
-            var encoder = robotBehaviour.getActionState("encoder", true);
+            var encoder = robotBehaviour === null || robotBehaviour === void 0 ? void 0 : robotBehaviour.getActionState("encoder", true);
             if (encoder) {
                 if (encoder.leftReset) {
                     this.encoder.left = 0;

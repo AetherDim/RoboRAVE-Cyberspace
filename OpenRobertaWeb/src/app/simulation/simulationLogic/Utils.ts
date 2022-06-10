@@ -1,6 +1,5 @@
 import { Vector } from "matter-js"
 import { randomIntBetween } from "./Random"
-import { RobertaRobotSetupData } from "./Robot/RobertaRobotSetupData"
 
 export type StringMap<V> = { [key: string]: V | undefined }
 export type NumberMap<V> = { [key: number]: V | undefined }

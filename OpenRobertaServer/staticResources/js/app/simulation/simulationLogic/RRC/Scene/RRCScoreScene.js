@@ -137,10 +137,9 @@ define(["require", "exports", "../../Scene/AsyncChain", "../../Scene/Scene", "..
             }
         };
         RRCScoreScene.prototype.onUpdatePrePhysics = function () {
-            var _a;
             var robots = this.getRobotManager().getRobots();
             if (robots.length > 0) {
-                if (((_a = robots[0].interpreter) === null || _a === void 0 ? void 0 : _a.isTerminated()) === false && !this.getProgramManager().isProgramPaused()) {
+                if (robots[0].programManager.allProgramsTerminated() === false && robots[0].programManager.isAnyProgramRunning()) {
                     // program is running
                     if (this.programEventTimes == undefined || this.programEventTimes.stopTime != undefined) {
                         // set the start time, if it was not set before, or if both time values were set

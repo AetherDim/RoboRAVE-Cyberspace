@@ -2,7 +2,6 @@ import { Utils } from "../Utils";
 import { RobertaRobotSetupData } from "../Robot/RobertaRobotSetupData";
 import { sensorTypeStrings } from "../Robot/Robot";
 import { RobotSetupData } from "../Robot/RobotSetupData";
-import {program} from "guiState.model";
 import {RobotProgram} from "../Robot/RobotProgram";
 
 export class SimulationCache {

@@ -81,7 +81,7 @@ export class Program {
 	private clearInterpretersAndStop() {
 
 		// remove all highlights from breakpoints
-		this.interpreter.removeHighlights()
+		this.interpreter?.removeHighlights()
 
 
 		// reset interpreters
@@ -104,12 +104,12 @@ export class Program {
 
 	/** adds an event to the interpreters */
 	interpreterAddEvent(mode: any) {
-		this.interpreter.addEvent(mode);
+		this.interpreter?.addEvent(mode);
 	}
 
 	/** removes an event to the interpreters */
 	interpreterRemoveEvent(mode: any) {
-		this.interpreter.removeEvent(mode);
+		this.interpreter?.removeEvent(mode);
 	}
 
 	isRunning() {
@@ -117,7 +117,7 @@ export class Program {
 	}
 
 	runNOperations(N: number) : number {
-		return this.interpreter.runNOperations(N)
+		return this.interpreter?.runNOperations(N) ?? 0
 	}
 }
 export class ProgramManager {
@@ -174,4 +174,13 @@ export class ProgramManager {
 	getPrograms() {
 		return this.programs
 	}
+
+    isAnyProgramRunning() {
+		for (const program of this.programs) {
+			if(program.isRunning()) {
+				return true
+			}
+		}
+		return false
+    }
 }

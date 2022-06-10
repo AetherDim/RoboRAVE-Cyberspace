@@ -1,5 +1,4 @@
 import { RobertaRobotSetupData } from "../Robot/RobertaRobotSetupData"
-import { RobotProgram } from "../Robot/RobotProgram"
 import { SimulationCache } from "./SimulationCache"
 import { Scene } from "../Scene/Scene"
 import { RRCScoreScene } from "../RRC/Scene/RRCScoreScene"

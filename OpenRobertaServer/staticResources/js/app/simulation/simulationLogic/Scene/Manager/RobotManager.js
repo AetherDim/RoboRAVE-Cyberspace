@@ -161,6 +161,25 @@ define(["require", "exports", "./RobotConfigurationManager", "../../BlocklyDebug
                 finally { if (e_4) throw e_4.error; }
             }
         };
+        RobotManager.prototype.allProgramsTerminated = function () {
+            var e_5, _a;
+            try {
+                for (var _b = __values(this.robots), _c = _b.next(); !_c.done; _c = _b.next()) {
+                    var robot = _c.value;
+                    if (!robot.programManager.allProgramsTerminated()) {
+                        return false;
+                    }
+                }
+            }
+            catch (e_5_1) { e_5 = { error: e_5_1 }; }
+            finally {
+                try {
+                    if (_c && !_c.done && (_a = _b.return)) _a.call(_b);
+                }
+                finally { if (e_5) throw e_5.error; }
+            }
+            return true;
+        };
         return RobotManager;
     }());
     exports.RobotManager = RobotManager;

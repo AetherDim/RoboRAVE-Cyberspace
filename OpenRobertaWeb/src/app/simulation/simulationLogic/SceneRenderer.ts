@@ -4,7 +4,7 @@ import { Scene } from './Scene/Scene';
 import { rgbToNumber } from './Color'
 import { ScrollView, ScrollViewEvent } from './ScrollView';
 import { Utils } from './Utils';
-import { DebugGuiRoot, initGlobalSceneDebug } from './GlobalDebug';
+import { initGlobalSceneDebug } from './GlobalDebug';
 import { RobotSetupData } from './Robot/RobotSetupData';
 
 

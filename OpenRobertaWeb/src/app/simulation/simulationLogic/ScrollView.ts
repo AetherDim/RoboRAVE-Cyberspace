@@ -1,5 +1,4 @@
 import './pixijs'
-import { Utils } from './Utils'
 
 export class Browser {
 
