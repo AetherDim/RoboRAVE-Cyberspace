@@ -301,8 +301,8 @@ export class TestScene3 extends Scene {
 							: RobotProgramGenerator.rotateOpCodes(tuple.rotateSpeed, tuple.rotateAngle, tuple.directionRight)
 					])
 				]
-			this.getProgramManager().setPrograms(programs)
-			this.getProgramManager().startProgram()
+			this.getProgramManager().setPrograms(programs, this.unit)
+			this.getProgramManager().startPrograms()
 		}
 
 		asyncChain.next()

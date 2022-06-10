@@ -14,7 +14,7 @@ var __read = (this && this.__read) || function (o, n) {
     }
     return ar;
 };
-define(["require", "exports", "./interpreter.state", "./interpreter.constants", "./interpreter.util", "neuralnetwork.ui", "interpreter.jsHelper"], function (require, exports, interpreter_state_1, C, U, UI, stackmachineJsHelper) {
+define(["require", "exports", "./interpreter.state", "./interpreter.constants", "./interpreter.util", "neuralnetwork.ui"], function (require, exports, interpreter_state_1, C, U, UI) {
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.Interpreter = void 0;
     var Interpreter = /** @class */ (function () {
@@ -24,12 +24,12 @@ define(["require", "exports", "./interpreter.state", "./interpreter.constants", 
          * . @param robotBehaviour implementation of the ARobotBehaviour class
          * . @param cbOnTermination is called when the program has terminated
          */
-        function Interpreter(generatedCode, r, cbOnTermination, simBreakpoints) {
+        function Interpreter(generatedCode, r, cbOnTermination, onProgramBreak, simBreakpoints) {
             this.terminated = false;
-            this.callbackOnTermination = undefined;
             this.debugDelay = 2;
             this.terminated = false;
             this.callbackOnTermination = cbOnTermination;
+            this.onProgramBreak = onProgramBreak;
             var stmts = generatedCode[C.OPS];
             this.robotBehaviour = r;
             this.breakpoints = simBreakpoints;
@@ -64,7 +64,7 @@ define(["require", "exports", "./interpreter.state", "./interpreter.constants", 
          */
         Interpreter.prototype.terminate = function () {
             this.terminated = true;
-            this.callbackOnTermination();
+            this.callbackOnTermination(this);
             this.robotBehaviour.close();
             this.state.removeHighlights([]);
         };
@@ -140,7 +140,7 @@ define(["require", "exports", "./interpreter.state", "./interpreter.constants", 
                 if (this.terminated) {
                     // termination either requested by the client or by executing 'stop' or after last statement
                     this.robotBehaviour.close();
-                    this.callbackOnTermination();
+                    this.callbackOnTermination(this);
                     return 0;
                 }
                 if (this.state.getDebugMode()) {
@@ -167,7 +167,7 @@ define(["require", "exports", "./interpreter.state", "./interpreter.constants", 
                 if (this.terminated) {
                     // termination either requested by the client or by executing 'stop' or after last statement
                     this.robotBehaviour.close();
-                    this.callbackOnTermination();
+                    this.callbackOnTermination(this);
                     return 0;
                 }
                 if (this.state.getDebugMode()) {
@@ -207,18 +207,18 @@ define(["require", "exports", "./interpreter.state", "./interpreter.constants", 
             return true;
         };
         Interpreter.prototype.stepOver = function (op) {
-            stackmachineJsHelper.setSimBreak();
+            this.onProgramBreak(this);
             this.events[C.DEBUG_STEP_OVER] = false;
             this.stepOverBlock = null;
             this.lastStoppedBlock = op;
         };
         Interpreter.prototype.stepInto = function (op) {
-            stackmachineJsHelper.setSimBreak();
+            this.onProgramBreak(this);
             this.events[C.DEBUG_STEP_INTO] = false;
             this.lastStoppedBlock = op;
         };
         Interpreter.prototype.breakPoint = function (op) {
-            stackmachineJsHelper.setSimBreak();
+            this.onProgramBreak(this);
             this.events[C.DEBUG_BREAKPOINT] = false;
             this.lastStoppedBlock = op;
         };

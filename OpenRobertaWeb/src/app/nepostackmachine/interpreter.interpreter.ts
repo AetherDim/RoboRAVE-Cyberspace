@@ -3,12 +3,12 @@ import { State } from './interpreter.state';
 import * as C from './interpreter.constants';
 import * as U from './interpreter.util';
 import * as UI from 'neuralnetwork.ui';
-import * as stackmachineJsHelper from "interpreter.jsHelper"
 
+export type InterpreterCallback = () => void
 export class Interpreter {
     public breakpoints: string[];
     private terminated = false;
-    private callbackOnTermination = undefined;
+    private callbackOnTermination: (interpreter: Interpreter) => void
     private robotBehaviour: ARobotBehaviour;
     private state: State; // the state of the interpreter (ops, pc, bindings, stack, ...)
     private events: any;
@@ -18,15 +18,24 @@ export class Interpreter {
 
     private readonly debugDelay = 2;
 
+    private readonly onProgramBreak: (interpreter: Interpreter) => void
+
     /*
      *
      * . @param generatedCode argument contains the operations and the function definitions
      * . @param robotBehaviour implementation of the ARobotBehaviour class
      * . @param cbOnTermination is called when the program has terminated
      */
-    constructor(generatedCode: any, r: ARobotBehaviour, cbOnTermination: () => void, simBreakpoints: any[]) {
+    constructor(
+        generatedCode: any,
+        r: ARobotBehaviour,
+        cbOnTermination: InterpreterCallback, 
+        onProgramBreak: InterpreterCallback,
+        simBreakpoints: any[]
+    ) {
         this.terminated = false;
         this.callbackOnTermination = cbOnTermination;
+        this.onProgramBreak = onProgramBreak
         const stmts = generatedCode[C.OPS];
         this.robotBehaviour = r;
 
@@ -69,7 +78,7 @@ export class Interpreter {
      */
     public terminate() {
         this.terminated = true;
-        this.callbackOnTermination();
+        this.callbackOnTermination(this);
         this.robotBehaviour.close();
         this.state.removeHighlights([]);
     }
@@ -153,7 +162,7 @@ export class Interpreter {
             if (this.terminated) {
                 // termination either requested by the client or by executing 'stop' or after last statement
                 this.robotBehaviour.close();
-                this.callbackOnTermination();
+                this.callbackOnTermination(this);
                 return 0;
             }
 
@@ -184,7 +193,7 @@ export class Interpreter {
             if (this.terminated) {
                 // termination either requested by the client or by executing 'stop' or after last statement
                 this.robotBehaviour.close();
-                this.callbackOnTermination();
+                this.callbackOnTermination(this);
                 return 0;
             }
 
@@ -229,20 +238,20 @@ export class Interpreter {
     }
 
     private stepOver(op) {
-        stackmachineJsHelper.setSimBreak();
+        this.onProgramBreak(this)
         this.events[C.DEBUG_STEP_OVER] = false;
         this.stepOverBlock = null;
         this.lastStoppedBlock = op;
     }
 
     private stepInto(op) {
-        stackmachineJsHelper.setSimBreak();
+        this.onProgramBreak(this)
         this.events[C.DEBUG_STEP_INTO] = false;
         this.lastStoppedBlock = op;
     }
 
     private breakPoint(op) {
-        stackmachineJsHelper.setSimBreak();
+        this.onProgramBreak(this)
         this.events[C.DEBUG_BREAKPOINT] = false;
         this.lastStoppedBlock = op;
     }

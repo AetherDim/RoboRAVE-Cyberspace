@@ -299,7 +299,7 @@ define(["require", "exports", "matter-js", "../Timer", "../ScrollView", "../Unit
                 return;
             }
             this.getRobotManager().configurationManager.setRobotConfigurations(robotSetupData.map(function (setup) { return setup.configuration; }));
-            this.getProgramManager().setPrograms(robotSetupData.map(function (setup) { return setup.program; }));
+            this.getProgramManager().setPrograms(robotSetupData.map(function (setup) { return setup.program; }), this.unit);
             // stop the simulation
             this.pauseSim();
             this.debug.clearDebugGuiDynamic(); // if dynamic debug gui exist, clear it
@@ -521,7 +521,6 @@ define(["require", "exports", "matter-js", "../Timer", "../ScrollView", "../Unit
             if (this.robotManager.getNumberOfRobots() >= 1) {
                 this.waypointsManager.update(this.robotManager.getRobots()[0].body.position);
             }
-            this.getProgramManager().update(); // update breakpoints, ...
             // FIX Grid bucket memory consumption
             // Remove empty buckets
             var grid = this.engine.broadphase;

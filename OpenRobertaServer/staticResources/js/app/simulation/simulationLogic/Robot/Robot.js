@@ -25,7 +25,7 @@ var __read = (this && this.__read) || function (o, n) {
     }
     return ar;
 };
-define(["require", "exports", "matter-js", "./ElectricMotor", "../interpreter.constants", "../interpreter.interpreter", "./RobotSimBehaviour", "./Wheel", "./Sensors/ColorSensor", "../Geometry/Ray", "../Entity", "../Utils", "./../GlobalDebug", "./BodyHelper", "../Color", "./RobotLED", "../ExtendedMatter"], function (require, exports, matter_js_1, ElectricMotor_1, interpreter_constants_1, interpreter_interpreter_1, RobotSimBehaviour_1, Wheel_1, ColorSensor_1, Ray_1, Entity_1, Utils_1, GlobalDebug_1, BodyHelper_1, Color_1, RobotLED_1) {
+define(["require", "exports", "matter-js", "./ElectricMotor", "../interpreter.constants", "./RobotSimBehaviour", "./Wheel", "./Sensors/ColorSensor", "../Geometry/Ray", "../Entity", "../Utils", "./../GlobalDebug", "./BodyHelper", "../Color", "./RobotLED", "../Scene/Manager/ProgramManager", "../ExtendedMatter"], function (require, exports, matter_js_1, ElectricMotor_1, interpreter_constants_1, RobotSimBehaviour_1, Wheel_1, ColorSensor_1, Ray_1, Entity_1, Utils_1, GlobalDebug_1, BodyHelper_1, Color_1, RobotLED_1, ProgramManager_1) {
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.Robot = exports.sensorTypeStrings = void 0;
     exports.sensorTypeStrings = ["TOUCH", "GYRO", "COLOR", "ULTRASONIC", "INFRARED", "SOUND", "COMPASS",
@@ -56,7 +56,7 @@ define(["require", "exports", "matter-js", "./ElectricMotor", "../interpreter.co
              */
             this.gyroSensors = new Map();
             this.LEDs = [];
-            this.programCode = null;
+            this.programManager = new ProgramManager_1.ProgramManager();
             /**
              * Time to wait until the next command should be executed (in internal units)
              */
@@ -136,13 +136,13 @@ define(["require", "exports", "matter-js", "./ElectricMotor", "../interpreter.co
             // TODO: change things
         };
         Robot.prototype.addDebugSettings = function () {
-            var _this_1 = this;
+            var _this = this;
             var DebugGui = this.scene.getDebugGuiDynamic();
             if (DebugGui) {
                 var robotFolder_1 = DebugGui.addFolder('Robot');
                 var pos = robotFolder_1.addFolder('Position');
-                pos.addUpdatable('x', function () { return String(_this_1.body.position.x); });
-                pos.addUpdatable('y', function () { return String(_this_1.body.position.y); });
+                pos.addUpdatable('x', function () { return String(_this.body.position.x); });
+                pos.addUpdatable('y', function () { return String(_this.body.position.y); });
                 robotFolder_1.add(this, "transferWheelForcesToRobotBody");
                 robotFolder_1.add(this, "pseudoMotorTorqueMultiplier", 1, 20);
                 robotFolder_1.add(this, "usePseudoWheelPhysics");
@@ -160,39 +160,39 @@ define(["require", "exports", "matter-js", "./ElectricMotor", "../interpreter.co
                     pseudoRollingFriction: this.wheelsList[0].pseudoRollingFriction
                 };
                 robotFolder_1.add(control, 'pseudoSlideFriction', 0, 10).onChange(function (value) {
-                    _this_1.wheelsList.forEach(function (wheel) { return wheel.pseudoSlideFriction = value; });
+                    _this.wheelsList.forEach(function (wheel) { return wheel.pseudoSlideFriction = value; });
                     robotFolder_1.updateDisplay();
                 });
                 robotFolder_1.add(control, 'pseudoRollingFriction', 0, 10).onChange(function (value) {
-                    _this_1.wheelsList.forEach(function (wheel) { return wheel.pseudoRollingFriction = value; });
+                    _this.wheelsList.forEach(function (wheel) { return wheel.pseudoRollingFriction = value; });
                     robotFolder_1.updateDisplay();
                 });
                 wheelFolder_1.add(control, 'alongStepFunctionWidth', 0, 0.1).onChange(function (value) {
-                    _this_1.wheelsList.forEach(function (wheel) { return wheel.alongStepFunctionWidth = value; });
+                    _this.wheelsList.forEach(function (wheel) { return wheel.alongStepFunctionWidth = value; });
                     wheelFolder_1.updateDisplay();
                 });
                 wheelFolder_1.add(control, 'orthStepFunctionWidth', 0, 0.1).onChange(function (value) {
-                    _this_1.wheelsList.forEach(function (wheel) { return wheel.orthStepFunctionWidth = value; });
+                    _this.wheelsList.forEach(function (wheel) { return wheel.orthStepFunctionWidth = value; });
                     wheelFolder_1.updateDisplay();
                 });
                 wheelFolder_1.add(control, 'rollingFriction').onChange(function (value) {
-                    _this_1.wheelsList.forEach(function (wheel) { return wheel.rollingFriction = value; });
+                    _this.wheelsList.forEach(function (wheel) { return wheel.rollingFriction = value; });
                     wheelFolder_1.updateDisplay();
                 });
                 wheelFolder_1.add(control, 'slideFriction').onChange(function (value) {
-                    _this_1.wheelsList.forEach(function (wheel) { return wheel.slideFriction = value; });
+                    _this.wheelsList.forEach(function (wheel) { return wheel.slideFriction = value; });
                     wheelFolder_1.updateDisplay();
                 });
                 this.wheelsList[0]._addDebugGui(wheelFolder_1.addFolder('Wheel Left'));
                 this.wheelsList[1]._addDebugGui(wheelFolder_1.addFolder('Wheel Right'));
                 this.wheelsList[2]._addDebugGui(wheelFolder_1.addFolder('Wheel Back'));
                 DebugGui.addButton("Download Program (JSON)", function () {
-                    return (0, GlobalDebug_1.downloadFile)("program.json", [JSON.stringify(_this_1.programCode, undefined, "\t")]);
+                    return (0, GlobalDebug_1.downloadFile)("program.json", [JSON.stringify(_this.programCode, undefined, "\t")]);
                 });
             }
         };
         Robot.prototype.updatePhysicsObject = function () {
-            var _this_1 = this;
+            var _this = this;
             this.physicsWheelsList = this.wheelsList.map(function (wheel) { return wheel.physicsBody; });
             var wheels = this.physicsWheelsList;
             this.physicsComposite = matter_js_1.Composite.create({ bodies: [this.body].concat(wheels) });
@@ -215,7 +215,7 @@ define(["require", "exports", "matter-js", "./ElectricMotor", "../interpreter.co
                 //     })
                 // this.customConstraints.push(constraint1)
                 // this.customConstraints.push(constraint2)
-                _this_1.physicsComposite.addRigidBodyConstraints(_this_1.body, wheel, 0.1, 0.1);
+                _this.physicsComposite.addRigidBodyConstraints(_this.body, wheel, 0.1, 0.1);
             });
             this.body.frictionAir = 0.0;
         };
@@ -365,18 +365,9 @@ define(["require", "exports", "matter-js", "./ElectricMotor", "../interpreter.co
         Robot.prototype.velocityAlongBody = function (body) {
             return matter_js_1.Vector.dot(body.velocity, this.vectorAlongBody(body));
         };
-        Robot.prototype.setProgram = function (program, breakpoints) {
-            var _this = this;
-            this.programCode = JSON.parse(program.javaScriptProgram);
+        Robot.prototype.init = function () {
             this.robotBehaviour = new RobotSimBehaviour_1.RobotSimBehaviour(this.scene.unit);
-            this.interpreter = new interpreter_interpreter_1.Interpreter(this.programCode, this.robotBehaviour, function () {
-                _this.programTerminated();
-            }, breakpoints);
             this.resetInternalState();
-            return this.interpreter;
-        };
-        Robot.prototype.programTerminated = function () {
-            console.log("Interpreter terminated");
         };
         // TODO: (Remove) it is an old but simpler implementation than `Wheel`
         Robot.prototype.updateWheelVelocity = function (wheel, dt) {
@@ -408,22 +399,22 @@ define(["require", "exports", "matter-js", "./ElectricMotor", "../interpreter.co
          * @param dt The time step in internal units
          */
         Robot.prototype.update = function (dt) {
-            var _this_1 = this;
+            var _this = this;
             // update the forces and torques of all wheels
             var gravitationalAcceleration = this.scene.unit.getAcceleration(9.81);
             var robotBodyGravitationalForce = gravitationalAcceleration * this.body.mass / this.wheelsList.length;
             this.wheelsList.forEach(function (wheel) {
                 wheel.applyNormalForce(robotBodyGravitationalForce + wheel.physicsBody.mass * gravitationalAcceleration);
-                if (_this_1.usePseudoWheelPhysics) {
+                if (_this.usePseudoWheelPhysics) {
                     wheel.pseudoPhysicsUpdate(dt);
                 }
                 else {
                     wheel.update(dt);
                 }
-                if (_this_1.transferWheelForcesToRobotBody) {
+                if (_this.transferWheelForcesToRobotBody) {
                     var force = wheel._wheelForceVector;
                     matter_js_1.Body.applyForce(wheel.physicsBody, wheel.physicsBody.position, matter_js_1.Vector.neg(force));
-                    matter_js_1.Body.applyForce(_this_1.body, wheel.physicsBody.position, force);
+                    matter_js_1.Body.applyForce(_this.body, wheel.physicsBody.position, force);
                 }
             });
             // update internal encoders

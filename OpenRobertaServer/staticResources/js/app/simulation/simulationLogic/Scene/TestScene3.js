@@ -224,8 +224,8 @@ define(["require", "exports", "../GlobalDebug", "../Robot/Robot", "../Robot/Robo
                             : RobotProgramGenerator_1.RobotProgramGenerator.rotateOpCodes(tuple.rotateSpeed, tuple.rotateAngle, tuple.directionRight)
                     ])
                 ];
-                this.getProgramManager().setPrograms(programs);
-                this.getProgramManager().startProgram();
+                this.getProgramManager().setPrograms(programs, this.unit);
+                this.getProgramManager().startPrograms();
             }
             asyncChain.next();
         };

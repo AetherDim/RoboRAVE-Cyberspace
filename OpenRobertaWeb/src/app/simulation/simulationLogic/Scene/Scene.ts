@@ -288,7 +288,7 @@ export class Scene {
 		this.getRobotManager().configurationManager.setRobotConfigurations(
 			robotSetupData.map(setup => setup.configuration)
 		)
-		this.getProgramManager().setPrograms(robotSetupData.map(setup => setup.program))
+		this.getProgramManager().setPrograms(robotSetupData.map(setup => setup.program), this.unit)
 
 		// stop the simulation
 		this.pauseSim()
@@ -684,8 +684,6 @@ export class Scene {
 		if (this.robotManager.getNumberOfRobots() >= 1) {
 			this.waypointsManager.update(this.robotManager.getRobots()[0].body.position)
 		}
-
-		this.getProgramManager().update(); // update breakpoints, ...
 
 		// FIX Grid bucket memory consumption
 		// Remove empty buckets

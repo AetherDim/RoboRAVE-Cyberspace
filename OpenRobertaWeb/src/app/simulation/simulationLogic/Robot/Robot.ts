@@ -3,7 +3,7 @@ import { ElectricMotor } from './ElectricMotor'
 
 import "../ExtendedMatter"
 import { MAXPOWER } from '../interpreter.constants'
-import { Interpreter } from '../interpreter.interpreter'
+import { Interpreter, InterpreterCallback } from '../interpreter.interpreter'
 import { RobotSimBehaviour } from './RobotSimBehaviour'
 import { Wheel } from './Wheel'
 import { ColorSensor } from './Sensors/ColorSensor'
@@ -20,6 +20,7 @@ import { RobotProgram } from './RobotProgram'
 import { hsvToColorName, rgbToHsv } from '../Color'
 import { GyroSensor } from './Sensors/GyroSensor'
 import { RobotLED, RobotLEDColor, robotLEDColors } from './RobotLED'
+import { ProgramManager } from '../Scene/Manager/ProgramManager'
 
 export const sensorTypeStrings =  ["TOUCH", "GYRO", "COLOR", "ULTRASONIC", "INFRARED", "SOUND", "COMPASS",
 	// german description: "HT Infrarotsensor"
@@ -93,9 +94,7 @@ export class Robot implements IContainerEntity, IUpdatableEntity, IPhysicsCompos
 
 	private robotBehaviour: RobotSimBehaviour
 
-	programCode: unknown = null;
-
-	interpreter?: Interpreter
+	private programManager = new ProgramManager()
 
 	/**
 	 * Time to wait until the next command should be executed (in internal units)
@@ -493,20 +492,9 @@ export class Robot implements IContainerEntity, IUpdatableEntity, IPhysicsCompos
 		right: 0
 	};
 
-	setProgram(program: RobotProgram, breakpoints: any[]): Interpreter {
-		const _this = this;
-		this.programCode = JSON.parse(program.javaScriptProgram)
+	init() {
 		this.robotBehaviour = new RobotSimBehaviour(this.scene.unit);
-		this.interpreter = new Interpreter(this.programCode, this.robotBehaviour, () => {
-			_this.programTerminated();
-		}, breakpoints);
 		this.resetInternalState()
-		
-		return this.interpreter;
-	}
-
-	private programTerminated() {
-		console.log("Interpreter terminated");
 	}
 
 	wheelDriveFriction = 0.03

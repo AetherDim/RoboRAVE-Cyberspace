@@ -1,141 +1,135 @@
-define(["require", "exports", "../../EventManager/EventManager", "../../BlocklyDebug"], function (require, exports, EventManager_1, BlocklyDebug_1) {
+var __values = (this && this.__values) || function(o) {
+    var s = typeof Symbol === "function" && Symbol.iterator, m = s && o[s], i = 0;
+    if (m) return m.call(o);
+    if (o && typeof o.length === "number") return {
+        next: function () {
+            if (o && i >= o.length) o = void 0;
+            return { value: o && o[i++], done: !o };
+        }
+    };
+    throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
+};
+define(["require", "exports", "./../../interpreter.interpreter", "../../EventManager/EventManager", "../../BlocklyDebug", "../../Robot/RobotSimBehaviour"], function (require, exports, interpreter_interpreter_1, EventManager_1, BlocklyDebug_1, RobotSimBehaviour_1) {
     Object.defineProperty(exports, "__esModule", { value: true });
-    exports.ProgramManager = void 0;
-    var ProgramManager = /** @class */ (function () {
-        function ProgramManager(robotManager) {
-            var _this = this;
-            this.programPaused = true;
-            this.interpreters = [];
-            this.initialized = false;
-            this.cachedPrograms = [];
-            this.debugManager = BlocklyDebug_1.BlocklyDebug.getInstanceAndInit(this, function () { return _this.interpreters; });
+    exports.ProgramManager = exports.Program = void 0;
+    var Program = /** @class */ (function () {
+        function Program(program, unit) {
+            this.programState = "terminated";
+            this.debugManager = BlocklyDebug_1.BlocklyDebug.getInstance();
             this.eventManager = EventManager_1.EventManager.init({
                 onStartProgram: EventManager_1.ParameterTypes.none,
                 onPauseProgram: EventManager_1.ParameterTypes.none,
                 onStopProgram: EventManager_1.ParameterTypes.none
             });
-            this.robotManager = robotManager;
-            this.robots = robotManager.getRobots();
+            this.unit = unit;
+            this.programString = program.javaScriptProgram;
+            this.programObject = JSON.parse(program.javaScriptProgram);
         }
-        ProgramManager.prototype.hasBeenInitialized = function () {
-            return this.initialized;
+        Program.prototype.removeAllEventHandlers = function () {
+            this.eventManager.removeAllEventHandlers();
+        };
+        Program.prototype.init = function () {
+            var _this = this;
+            // Think about the consequences of changing this function!!!
+            if (this.programState == "terminated") {
+                console.log("Init program manager!");
+                this.instruction = new RobotSimBehaviour_1.RobotSimBehaviour(this.unit);
+                this.interpreter = new interpreter_interpreter_1.Interpreter(this.programObject, this.instruction, function () { return _this.pauseProgram(); }, function () { return _this.interpreterTerminated(); }, this.debugManager.getBreakpointIDs());
+                this.programState = "initialized";
+            }
+            this.debugManager.updateDebugMode();
+        };
+        Program.prototype.interpreterTerminated = function () {
+            this.clearInterpretersAndStop();
+        };
+        Program.prototype.startProgram = function () {
+            this.init();
+            this.programState = "running";
+            this.eventManager.onStartProgramCallHandlers();
+        };
+        Program.prototype.pauseProgram = function () {
+            this.programState = "paused";
+            this.eventManager.onPauseProgramCallHandlers();
+        };
+        Program.prototype.stopProgram = function () {
+            this.clearInterpretersAndStop();
+        };
+        Program.prototype.clearInterpretersAndStop = function () {
+            // remove all highlights from breakpoints
+            this.interpreter.removeHighlights();
+            // reset interpreters
+            this.interpreter = undefined;
+            this.programState = "terminated";
+            // call event handlers
+            this.eventManager.onStopProgramCallHandlers();
+        };
+        Program.prototype.getSimVariables = function () {
+            var _a, _b;
+            return (_b = (_a = this.interpreter) === null || _a === void 0 ? void 0 : _a.getVariables()) !== null && _b !== void 0 ? _b : {};
+        };
+        Program.prototype.isTerminated = function () {
+            return this.programState == "terminated";
+        };
+        /** adds an event to the interpreters */
+        Program.prototype.interpreterAddEvent = function (mode) {
+            this.interpreter.addEvent(mode);
+        };
+        /** removes an event to the interpreters */
+        Program.prototype.interpreterRemoveEvent = function (mode) {
+            this.interpreter.removeEvent(mode);
+        };
+        return Program;
+    }());
+    exports.Program = Program;
+    var ProgramManager = /** @class */ (function () {
+        function ProgramManager() {
+            this.programs = [];
+            this.eventManager = EventManager_1.EventManager.init({
+                onStartProgram: EventManager_1.ParameterTypes.none,
+                onPauseProgram: EventManager_1.ParameterTypes.none,
+                onStopProgram: EventManager_1.ParameterTypes.none
+            });
+        }
+        ProgramManager.prototype.firstProgram = function () {
+            return this.programs.length > 0 ? this.programs[0] : undefined;
         };
         ProgramManager.prototype.removeAllEventHandlers = function () {
             this.eventManager.removeAllEventHandlers();
         };
-        ProgramManager.prototype.setCachedPrograms = function () {
-            this.setPrograms(this.cachedPrograms);
+        ProgramManager.prototype.setPrograms = function (robotPrograms, unit) {
+            // save programs
+            this.programs = robotPrograms.map(function (p) { return new Program(p, unit); });
         };
-        ProgramManager.prototype.setPrograms = function (programs) {
-            if (programs.length < this.robots.length) {
-                console.warn("Not enough programs!");
-            }
-            // cache old programs
-            this.cachedPrograms = programs;
-            this.stopProgram(); // reset program manager
-            this.init();
-        };
-        ProgramManager.prototype.init = function () {
-            if (!this.initialized) {
-                console.log("Init program manager!");
-                for (var i = 0; i < this.cachedPrograms.length; i++) {
-                    if (i >= this.robots.length) {
-                        console.info('Not enough robots, too many programs!');
-                        break;
-                    }
-                    // We can use a single breakpoints array for all interpreters, because 
-                    // the breakpoint IDs are unique
-                    this.interpreters.push(this.robots[i].setProgram(this.cachedPrograms[i], this.debugManager.getBreakpointIDs()));
-                }
-                this.initialized = true;
-            }
-            this.debugManager.updateDebugMode();
-        };
-        ProgramManager.prototype.isProgramPaused = function () {
-            return this.programPaused;
-        };
-        ProgramManager.prototype.setProgramPause = function (pause) {
-            this.programPaused = pause;
-        };
-        ProgramManager.prototype.startProgram = function () {
-            this.init();
-            this.setProgramPause(false);
+        ProgramManager.prototype.startPrograms = function () {
+            this.programs.forEach(function (program) { return program.startProgram(); });
             this.eventManager.onStartProgramCallHandlers();
         };
-        ProgramManager.prototype.pauseProgram = function () {
-            this.setProgramPause(true);
+        ProgramManager.prototype.pausePrograms = function () {
+            this.programs.forEach(function (program) { return program.pauseProgram(); });
             this.eventManager.onPauseProgramCallHandlers();
         };
-        /**
-         * Stops the program and resets all interpreters
-         */
-        ProgramManager.prototype.stopProgram = function () {
-            // remove all highlights from breakpoints
-            for (var i = 0; i < this.interpreters.length; i++) {
-                this.interpreters[i].removeHighlights();
-            }
-            this.interpreters = [];
-            // reset interpreters
-            this.robots.forEach(function (robot) {
-                robot.interpreter = undefined;
-            });
-            this.initialized = false;
-            this.pauseProgram();
-            // call event handlers
+        ProgramManager.prototype.stopPrograms = function () {
+            this.programs.forEach(function (program) { return program.stopProgram(); });
             this.eventManager.onStopProgramCallHandlers();
         };
-        ProgramManager.prototype.getSimVariables = function () {
-            if (this.interpreters.length >= 1) {
-                return this.interpreters[0].getVariables();
-            }
-            else {
-                return {};
-            }
-        };
-        /**
-         * has to be called after one simulation run
-         */
-        ProgramManager.prototype.update = function () {
-            var allTerminated = this.allInterpretersTerminated();
-            if (allTerminated && this.initialized) {
-                console.log('All programs terminated');
-                this.stopProgram();
-            }
-        };
-        ProgramManager.prototype.allInterpretersTerminated = function () {
-            var allTerminated = true;
-            this.interpreters.forEach(function (ip) {
-                if (!ip.isTerminated()) {
-                    allTerminated = false;
-                    return;
-                }
-            });
-            return allTerminated;
-        };
-        /** adds an event to the interpreters */
-        ProgramManager.prototype.interpreterAddEvent = function (mode) {
-            for (var i = 0; i < this.interpreters.length; i++) {
-                if (i < this.robots.length) {
-                    this.interpreters[i].addEvent(mode);
+        ProgramManager.prototype.allProgramsTerminated = function () {
+            var e_1, _a;
+            try {
+                for (var _b = __values(this.programs), _c = _b.next(); !_c.done; _c = _b.next()) {
+                    var program = _c.value;
+                    if (!program.isTerminated()) {
+                        return false;
+                    }
                 }
             }
-        };
-        /** removes an event to the interpreters */
-        ProgramManager.prototype.interpreterRemoveEvent = function (mode) {
-            for (var i = 0; i < this.interpreters.length; i++) {
-                if (i < this.robots.length) {
-                    this.interpreters[i].removeEvent(mode);
+            catch (e_1_1) { e_1 = { error: e_1_1 }; }
+            finally {
+                try {
+                    if (_c && !_c.done && (_a = _b.return)) _a.call(_b);
                 }
+                finally { if (e_1) throw e_1.error; }
             }
-        };
-        //
-        // Debugging
-        //
-        ProgramManager.prototype.setDebugMode = function (debugMode) {
-            this.debugManager.updateDebugMode(debugMode);
-        };
-        ProgramManager.prototype.isDebugMode = function () {
-            return this.debugManager.isDebugMode();
+            return true;
         };
         return ProgramManager;
     }());

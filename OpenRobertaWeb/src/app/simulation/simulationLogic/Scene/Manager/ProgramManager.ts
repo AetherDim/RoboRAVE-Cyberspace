@@ -4,20 +4,24 @@ import { Interpreter } from "./../../interpreter.interpreter";
 import { RobotProgram } from "../../Robot/RobotProgram";
 import { EventManager, ParameterTypes } from "../../EventManager/EventManager";
 import {BlocklyDebug} from "../../BlocklyDebug";
+import { RobotSimBehaviour } from "../../Robot/RobotSimBehaviour";
+import { Unit } from "../../Unit";
+import { StringMap } from "../../Utils";
 
-export class ProgramManager {
-	
-	readonly robotManager: RobotManager;
-	readonly robots: Robot[];
+export type ProgramState = "initialized" | "running" | "paused" | "terminated"
 
-	private programPaused: boolean = true;
+export class Program {
 
-	private interpreters: Interpreter[] = [];
-	private initialized = false;
+	interpreter?: Interpreter
+	programString: string
+	programObject: any
 
-	private cachedPrograms: RobotProgram[] = []
+	instruction?: RobotSimBehaviour
 
-	private debugManager = BlocklyDebug.getInstanceAndInit(this, () => this.interpreters)
+
+	programState: ProgramState = "terminated"
+
+	debugManager = BlocklyDebug.getInstance()
 
 	readonly eventManager = EventManager.init({
 		onStartProgram: ParameterTypes.none,
@@ -25,158 +29,141 @@ export class ProgramManager {
 		onStopProgram: ParameterTypes.none
 	})
 
-	hasBeenInitialized(): boolean {
-		return this.initialized;
-	}
+	unit: Unit
 
-	constructor(robotManager: RobotManager) {
-		this.robotManager = robotManager;
-		this.robots = robotManager.getRobots();
+	constructor(program: RobotProgram, unit: Unit) {
+		this.unit = unit
+		this.programString = program.javaScriptProgram
+		this.programObject= JSON.parse(program.javaScriptProgram)
 	}
 
 	removeAllEventHandlers() {
 		this.eventManager.removeAllEventHandlers()
 	}
 
-	setCachedPrograms() {
-		this.setPrograms(this.cachedPrograms)
-	}
-
-	setPrograms(programs: RobotProgram[]) {
-		if(programs.length < this.robots.length) {
-			console.warn("Not enough programs!");
-		}
-
-		// cache old programs
-		this.cachedPrograms = programs
-
-		this.stopProgram() // reset program manager
-
-		this.init()
-	}
-
 	private init() {
-		if(!this.initialized) {
+		// Think about the consequences of changing this function!!!
+		if(this.programState == "terminated") {
 			console.log("Init program manager!")
-			for(let i = 0; i < this.cachedPrograms.length; i++) {
-				if(i >= this.robots.length) {
-					console.info('Not enough robots, too many programs!')
-					break
-				}
-				// We can use a single breakpoints array for all interpreters, because 
-				// the breakpoint IDs are unique
-				this.interpreters.push(this.robots[i].setProgram(this.cachedPrograms[i], this.debugManager.getBreakpointIDs()))
-			}
-
-			this.initialized = true
+			
+			this.instruction = new RobotSimBehaviour(this.unit)
+			this.interpreter = new Interpreter(
+				this.programObject,
+				this.instruction,
+				() => this.pauseProgram(),
+				() => this.interpreterTerminated(),
+				this.debugManager.getBreakpointIDs())
+			
+			this.programState = "initialized"
 		}
 
 		this.debugManager.updateDebugMode()
 	}
 
-	isProgramPaused(): boolean {
-		return this.programPaused
+	private interpreterTerminated() {
+		this.clearInterpretersAndStop()
 	}
 
-	private setProgramPause(pause: boolean) {
-		this.programPaused = pause
-	}
 
 	startProgram() {
 		this.init()
-		this.setProgramPause(false)
+		this.programState = "running"
 		this.eventManager.onStartProgramCallHandlers()
 	}
 
 	pauseProgram() {
-		this.setProgramPause(true)
+		this.programState = "paused"
 		this.eventManager.onPauseProgramCallHandlers()
 	}
 
-	/**
-	 * Stops the program and resets all interpreters
-	 */
 	stopProgram() {
+		this.clearInterpretersAndStop()
+	}
+
+	private clearInterpretersAndStop() {
 
 		// remove all highlights from breakpoints
-		for (var i = 0; i < this.interpreters.length; i++) {
-			this.interpreters[i].removeHighlights();
-		}
+		this.interpreter.removeHighlights()
 
-		this.interpreters = []
 
 		// reset interpreters
-		this.robots.forEach(robot => {
-			robot.interpreter = undefined
-		})
+		this.interpreter = undefined
 
-		this.initialized = false
-		this.pauseProgram()
+		this.programState = "terminated"
 
 		// call event handlers
 		this.eventManager.onStopProgramCallHandlers()
 	}
 
-	getSimVariables() {
-		if (this.interpreters.length >= 1) {
-			return this.interpreters[0].getVariables();
-		} else {
-			return {};
-		}
+	getSimVariables(): StringMap<any> {
+		return this.interpreter?.getVariables() ?? {}
 	}
+
 	
-
-	/**
-	 * has to be called after one simulation run
-	 */
-	update() {
-		const allTerminated = this.allInterpretersTerminated();
-		if(allTerminated && this.initialized) {
-			console.log('All programs terminated');
-			this.stopProgram();
-		}
-	}
-
-	allInterpretersTerminated(): boolean {
-		let allTerminated = true;
-		this.interpreters.forEach(ip => {
-			if(!ip.isTerminated()) {
-				allTerminated = false;
-				return;
-			}
-		});
-		return allTerminated;
+	isTerminated(): boolean {
+		return this.programState == "terminated"
 	}
 
 	/** adds an event to the interpreters */
 	interpreterAddEvent(mode: any) {
-		for (let i = 0; i < this.interpreters.length; i++) {
-			if(i < this.robots.length) {
-				this.interpreters[i].addEvent(mode);
-			}
-		}
+		this.interpreter.addEvent(mode);
 	}
 
 	/** removes an event to the interpreters */
 	interpreterRemoveEvent(mode: any) {
-		for (var i = 0; i < this.interpreters.length; i++) {
-			if(i < this.robots.length) {
-				this.interpreters[i].removeEvent(mode);
+		this.interpreter.removeEvent(mode);
+	}
+
+}
+export class ProgramManager {
+
+	private programs: Program[] = []
+
+	readonly eventManager = EventManager.init({
+		onStartProgram: ParameterTypes.none,
+		onPauseProgram: ParameterTypes.none,
+		onStopProgram: ParameterTypes.none
+	})
+
+	constructor() {
+	}
+
+	firstProgram(): Program | undefined {
+		return this.programs.length > 0 ? this.programs[0] : undefined
+	}
+
+	removeAllEventHandlers() {
+		this.eventManager.removeAllEventHandlers()
+	}
+
+	setPrograms(robotPrograms: RobotProgram[], unit: Unit) {
+		// save programs
+		this.programs = robotPrograms.map(p => new Program(p, unit))
+	}
+
+
+	startPrograms() {
+		this.programs.forEach(program => program.startProgram())
+		this.eventManager.onStartProgramCallHandlers()
+	}
+
+	pausePrograms() {
+		this.programs.forEach(program => program.pauseProgram())
+		this.eventManager.onPauseProgramCallHandlers()
+	}
+
+	stopPrograms() {
+		this.programs.forEach(program => program.stopProgram())
+		this.eventManager.onStopProgramCallHandlers()
+	}
+
+	allProgramsTerminated(): boolean {
+		for (const program of this.programs) {
+			if(!program.isTerminated()) {
+				return false
 			}
 		}
-	}
-
-
-	//
-	// Debugging
-	//
-
-	setDebugMode(debugMode: boolean) {
-		this.debugManager.updateDebugMode(debugMode)
-	}
-
-	isDebugMode() {
-		return this.debugManager.isDebugMode()
+		return true
 	}
 
 }

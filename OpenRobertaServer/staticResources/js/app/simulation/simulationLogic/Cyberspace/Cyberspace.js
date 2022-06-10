@@ -23,7 +23,7 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
     }
     return to.concat(ar || Array.prototype.slice.call(from));
 };
-define(["require", "exports", "./SimulationCache", "../Scene/Scene", "../RRC/Scene/RRCScoreScene", "../SceneRenderer", "./SceneManager", "../EventManager/EventManager"], function (require, exports, SimulationCache_1, Scene_1, RRCScoreScene_1, SceneRenderer_1, SceneManager_1, EventManager_1) {
+define(["require", "exports", "./SimulationCache", "../Scene/Scene", "../RRC/Scene/RRCScoreScene", "../SceneRenderer", "./SceneManager", "../EventManager/EventManager", "../BlocklyDebug"], function (require, exports, SimulationCache_1, Scene_1, RRCScoreScene_1, SceneRenderer_1, SceneManager_1, EventManager_1, BlocklyDebug_1) {
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.Cyberspace = void 0;
     var Cyberspace = /** @class */ (function () {
@@ -175,26 +175,31 @@ define(["require", "exports", "./SimulationCache", "../Scene/Scene", "../RRC/Sce
             return this.getScene().getProgramManager();
         };
         Cyberspace.prototype.startPrograms = function () {
-            this.getProgramManager().startProgram();
+            this.getProgramManager().startPrograms();
         };
         Cyberspace.prototype.stopPrograms = function () {
-            this.getProgramManager().stopProgram();
+            this.getProgramManager().stopPrograms();
         };
         Cyberspace.prototype.resumePrograms = function () {
-            this.getProgramManager().startProgram();
+            this.getProgramManager().startPrograms();
         };
         Cyberspace.prototype.pausePrograms = function () {
-            this.getProgramManager().pauseProgram();
+            this.getProgramManager().pausePrograms();
         };
         Cyberspace.prototype.setPrograms = function (programs) {
-            this.getProgramManager().setPrograms(programs);
+            this.getProgramManager().setPrograms(programs, this.getScene().unit);
         };
         Cyberspace.prototype.setDebugMode = function (state) {
-            this.getProgramManager().setDebugMode(state);
+            BlocklyDebug_1.BlocklyDebug.getInstance().updateDebugMode(state);
         };
         Cyberspace.prototype.isDebugMode = function () {
-            return this.getProgramManager().isDebugMode();
+            return BlocklyDebug_1.BlocklyDebug.getInstance().isDebugMode();
         };
+        /**
+         * Set the RobertaRobotSetupData where the first setup data can be the Blockly workspace program which is used for debugging.
+         * @param robertaRobotSetupDataList
+         * @param robotType
+         */
         Cyberspace.prototype.setRobertaRobotSetupData = function (robertaRobotSetupDataList, robotType) {
             var newSimulationCache = new SimulationCache_1.SimulationCache(robertaRobotSetupDataList, robotType);
             var oldCache = this.simulationCache;
@@ -204,7 +209,7 @@ define(["require", "exports", "./SimulationCache", "../Scene/Scene", "../RRC/Sce
                 this.resetScene();
             }
             // always set the programs
-            this.getProgramManager().setPrograms(newSimulationCache.toRobotSetupData().map(function (setup) { return setup.program; }));
+            this.getProgramManager().setPrograms(newSimulationCache.toRobotSetupData().map(function (setup) { return setup.program; }), this.getScene().unit);
         };
         /* ############################################################################################ */
         /* #################################### ScrollView control #################################### */

@@ -6,6 +6,7 @@ import { RRCScoreScene } from "../RRC/Scene/RRCScoreScene"
 import { SceneRender } from "../SceneRenderer"
 import { SceneDescriptor, SceneManager } from "./SceneManager"
 import { EventManager, ParameterTypes } from "../EventManager/EventManager"
+import { BlocklyDebug } from "../BlocklyDebug"
 
 
 export class Cyberspace {
@@ -189,34 +190,39 @@ export class Cyberspace {
 	}
 
 	startPrograms() {
-		this.getProgramManager().startProgram()
+		this.getProgramManager().startPrograms()
 	}
 
 	stopPrograms() {
-		this.getProgramManager().stopProgram()
+		this.getProgramManager().stopPrograms()
 	}
 
 	resumePrograms() {
-		this.getProgramManager().startProgram()
+		this.getProgramManager().startPrograms()
 	}
 
 	pausePrograms() {
-		this.getProgramManager().pauseProgram()
+		this.getProgramManager().pausePrograms()
 	}
 
 	setPrograms(programs: RobotProgram[]) {
-		this.getProgramManager().setPrograms(programs)
+		this.getProgramManager().setPrograms(programs, this.getScene().unit)
 	}
 
 	setDebugMode(state: boolean) {
-		this.getProgramManager().setDebugMode(state)
+		BlocklyDebug.getInstance().updateDebugMode(state)
 	}
 
 	isDebugMode() {
-		return this.getProgramManager().isDebugMode()
+		return BlocklyDebug.getInstance().isDebugMode()
 	}
 
 
+	/**
+	 * Set the RobertaRobotSetupData where the first setup data can be the Blockly workspace program which is used for debugging.
+	 * @param robertaRobotSetupDataList
+	 * @param robotType 
+	 */
 	setRobertaRobotSetupData(robertaRobotSetupDataList: RobertaRobotSetupData[], robotType: string) {
 		const newSimulationCache = new SimulationCache(robertaRobotSetupDataList, robotType)
 		const oldCache = this.simulationCache
@@ -227,7 +233,8 @@ export class Cyberspace {
 		}
 		// always set the programs
 		this.getProgramManager().setPrograms(
-			newSimulationCache.toRobotSetupData().map(setup => setup.program)
+			newSimulationCache.toRobotSetupData().map(setup => setup.program),
+			this.getScene().unit
 		)
 	}
 
