@@ -93,13 +93,14 @@ function requestSimAssemblyForProgram(callback: (result: RobertaRobotSetupData) 
 	const language = GUISTATE_C.getLanguage();
 
 	// Request simulation assembly program from server
-	PROGRAM.runInSim(GUISTATE_C.getProgramName(), configName, xmlTextProgram, xmlConfigText, language, function (result) {
+	PROGRAM.runInSim(GUISTATE_C.getProgramName(), configName, xmlTextProgram, xmlConfigText, language, function (result: RobertaRobotSetupData) {
 		callback(result);
 	});
 }
 
 function simulateProgram(callback?: () => void) {
-	requestSimAssemblyForProgram(result => {
+	// TODO: use proper 'this' type
+	requestSimAssemblyForProgram(function (this: any, result) {
 		if (result.rc == 'ok') {
 			MSG.displayMessage('MESSAGE_EDIT_START', 'TOAST', GUISTATE_C.getProgramName(), undefined, undefined);
 
@@ -238,7 +239,7 @@ UIManager.simViewButton.onClick(state => {
 	}
 })
 
-function toggleModal(id, position) {
+function toggleModal(id: string, position: JQuery.Coordinates) {
 	if ($(id).is(':hidden')) {
 		$(id).css({
 			top: position.top + 12,
@@ -265,7 +266,7 @@ UIManager.closeParentsButton.onClick(function (this: HTMLElement) {
 
 UIManager.simDebugViewButton.onClick(() => {
 	const position = $('#simDiv').position();
-	position.left = $(window).width() - ($('#simValuesModal').width() + 12);
+	position.left = $(window).width()!! - ($('#simValuesModal').width()!! + 12);
 	toggleModal('#simValuesModal', position);
 })
 
@@ -313,12 +314,12 @@ UIManager.debugStepBreakPointButton.onClick(() => {
 
 UIManager.debugVariablesButton.onClick(() => {
 	const position = $('#simDiv').position();
-	position.left = $(window).width() - ($('#simVariablesModal').width() + 12);
+	position.left = $(window).width()!! - ($('#simVariablesModal').width()!! + 12);
 	toggleModal('#simVariablesModal', position);
 })
 
 
-function buildSceneMenu(menu, addString) {
+function buildSceneMenu(menu: string, addString: string) {
 	// TODO: clear #simSelectionMenuContent??
 	// seems to work without clear
 	const scenes = cyberspace.getScenes();

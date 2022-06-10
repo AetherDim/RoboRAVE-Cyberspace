@@ -89,6 +89,9 @@ define(["require", "exports", "dat.gui", "./Timer"], function (require, exports,
     }
     function searchGUI(search, ignoreController) {
         search = search.trim().toLowerCase();
+        if (exports.DebugGuiRoot == undefined) {
+            throw "DebugGuiRoot is undefined";
+        }
         if (search.length == 0) {
             resetAllFolders(exports.DebugGuiRoot);
         }
@@ -119,7 +122,11 @@ define(["require", "exports", "dat.gui", "./Timer"], function (require, exports,
         element.style.backgroundColor = color;
     }
     function setControllerColor(controller, color) {
-        controller.domElement.parentElement.parentElement.style.backgroundColor = color;
+        var _a;
+        var parentElement = (_a = controller.domElement.parentElement) === null || _a === void 0 ? void 0 : _a.parentElement;
+        if (parentElement != null) {
+            parentElement.style.backgroundColor = color;
+        }
     }
     function _searchGUI(gui, searchParams) {
         var hasElementName = _searchGUIElements(gui, searchParams);
@@ -162,7 +169,7 @@ define(["require", "exports", "dat.gui", "./Timer"], function (require, exports,
         return hasElementName;
     }
     function initGlobalSceneDebug(sceneRenderer) {
-        if (!exports.DEBUG) {
+        if (!exports.DEBUG || exports.DebugGuiRoot == undefined) {
             return;
         }
         var rendererFolder = exports.DebugGuiRoot.addFolder('Renderer');
@@ -237,6 +244,9 @@ define(["require", "exports", "dat.gui", "./Timer"], function (require, exports,
         SceneDebug.prototype.initSceneDebug = function () {
             var scene = this.scene;
             var gui = this.debugGuiStatic;
+            if (gui == undefined) {
+                throw "gui is undefined";
+            }
             gui.add(scene, 'autostartSim');
             gui.add(scene, 'dt').min(0.001).max(0.1).step(0.001).onChange(function (dt) { return scene.setDT(dt); });
             gui.add(scene, 'simSleepTime').min(0.001).max(0.1).step(0.001).onChange(function (s) { return scene.setSimSleepTime(s); });

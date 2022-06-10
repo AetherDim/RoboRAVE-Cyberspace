@@ -87,13 +87,13 @@ define(["require", "exports", "./external/SceneDesciptorList", "./Cyberspace/Cyb
         });
     }
     function simulateProgram(callback) {
-        var _this = this;
+        // TODO: use proper 'this' type
         requestSimAssemblyForProgram(function (result) {
             if (result.rc == 'ok') {
                 MSG.displayMessage('MESSAGE_EDIT_START', 'TOAST', GUISTATE_C.getProgramName(), undefined, undefined);
                 cyberspace.setRobertaRobotSetupData([result], GUISTATE_C.getRobotGroup());
                 cyberspace.startPrograms();
-                callback === null || callback === void 0 ? void 0 : callback.call(_this);
+                callback === null || callback === void 0 ? void 0 : callback.call(this);
             }
             else {
                 MSG.displayInformation(result, '', result.message, '', undefined);

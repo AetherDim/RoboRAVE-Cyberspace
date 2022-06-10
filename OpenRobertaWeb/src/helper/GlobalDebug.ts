@@ -1,7 +1,9 @@
+import { assert } from 'console';
 import dat = require('dat.gui');
 import { Scene } from './Scene/Scene';
 import { SceneRender } from './SceneRenderer';
 import { Timer } from './Timer';
+import { StringMap } from './Utils';
 
 export const DEBUG = true
 /**
@@ -81,9 +83,9 @@ createDebugGuiRoot()
 
 function registerSearchBar() {
 	const fieldName = "Search:"
-	const search = {}
+	const search: StringMap<any> = {}
 	search[fieldName] = ""
-	const searchField = DebugGuiRoot.add(search, fieldName)
+	const searchField = DebugGuiRoot!!.add(search, fieldName)
 	searchField.onChange((search) => {
 		//console.log(search)
 		searchGUI(search, searchField)
@@ -97,6 +99,9 @@ function nameContains(searchParams: string[], name: string): boolean {
 
 function searchGUI(search: string, ignoreController: dat.GUIController) {
 	search = search.trim().toLowerCase()
+	if (DebugGuiRoot == undefined) {
+		throw "DebugGuiRoot is undefined"
+	}
 	if(search.length == 0) {
 		resetAllFolders(DebugGuiRoot)
 	} else {
@@ -124,13 +129,16 @@ function resetAllFolders(gui: dat.GUI, ignoreFirst=true) {
 	}
 }
 
-function setFolderColor(gui: dat.GUI, color: string) {
+function setFolderColor(gui: dat.GUI, color: string | null) {
 	const element = gui.domElement.getElementsByClassName("title").item(0) as HTMLElement
-	element.style.backgroundColor = color
+	element.style.backgroundColor = color as any
 }
 
-function setControllerColor(controller: dat.GUIController, color:string) {
-	controller.domElement.parentElement.parentElement.style.backgroundColor = color
+function setControllerColor(controller: dat.GUIController, color: string | null) {
+	let parentElement = controller.domElement.parentElement?.parentElement
+	if (parentElement != null) {
+		parentElement.style.backgroundColor = color as any
+	}
 }
 
 function _searchGUI(gui: dat.GUI, searchParams: string[]): boolean {
@@ -178,7 +186,7 @@ function _searchGUIElements(gui: dat.GUI, searchParams: string[], ignoreControll
 
 
 export function initGlobalSceneDebug(sceneRenderer: SceneRender) {
-	if(!DEBUG) {
+	if(!DEBUG || DebugGuiRoot == undefined) {
 		return
 	}
 
@@ -288,6 +296,9 @@ export class SceneDebug {
 	private initSceneDebug() {
 		const scene = this.scene
 		const gui = this.debugGuiStatic
+		if (gui == undefined) {
+			throw "gui is undefined"
+		}
 
 		gui.add(scene, 'autostartSim')
 		gui.add(scene, 'dt').min(0.001).max(0.1).step(0.001).onChange((dt) => scene.setDT(dt))
@@ -372,13 +383,13 @@ declare module 'dat.gui' {
 }
 
 dat.GUI.prototype.addButton = function (name: string, callback: () => void) : dat.GUIController {
-	const func = {}
+	const func: any = {}
 	func[name] = callback
 	return this.add(func, name)
 }
 
 dat.GUI.prototype.addUpdatable = function (name: string, callback: () => Object) : dat.GUIController {
-	const func = {}
+	const func: any = {}
 	func[name] = callback()
 	const gui = this.add(func, name) as dat.GUIController
 	gui.getValue = function () {
