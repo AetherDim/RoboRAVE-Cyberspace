@@ -269,20 +269,6 @@ define(["require", "exports", "dat.gui", "./Timer"], function (require, exports,
             robot.add(rm, 'numberOfRobots').min(1).step(1).max(1000);
             robot.add(rm, 'showRobotSensorValues');
             robot.addUpdatable('Actual number of robots', function () { return rm.getRobots().length; });
-            var program = robot.addFolder('Program Manager');
-            var pm = rm.getProgramManager();
-            program.add(pm, 'programPaused');
-            program.addUpdatable('debugMode', createReflectionGetter(pm, 'debugManager.debugMode'));
-            program.addUpdatable('debugObservers', function () { return Object.keys(pm.debugManager.observers).length; });
-            program.addUpdatable('initialized', createReflectionGetter(pm, 'initialized'));
-            program.addButton('Print breakpoint IDs', function () {
-                //window.alert((pm as any).debugManager.breakpointIDs)
-                console.log(pm.debugManager.breakpointIDs);
-            });
-            program.addButton('Print observers IDs', function () {
-                //window.alert((pm as any).debugManager.breakpointIDs)
-                console.log(pm.debugManager.observers);
-            });
             var entity = gui.addFolder('Entity Manager');
             var em = scene.getEntityManager();
             entity.addUpdatable('Number of entities', function () { return em.getNumberOfEntities(); });

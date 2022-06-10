@@ -78,6 +78,12 @@ define(["require", "exports", "./../../interpreter.interpreter", "../../EventMan
         Program.prototype.interpreterRemoveEvent = function (mode) {
             this.interpreter.removeEvent(mode);
         };
+        Program.prototype.isRunning = function () {
+            return this.programState == "running";
+        };
+        Program.prototype.runNOperations = function (N) {
+            return this.interpreter.runNOperations(N);
+        };
         return Program;
     }());
     exports.Program = Program;
@@ -130,6 +136,9 @@ define(["require", "exports", "./../../interpreter.interpreter", "../../EventMan
                 finally { if (e_1) throw e_1.error; }
             }
             return true;
+        };
+        ProgramManager.prototype.getPrograms = function () {
+            return this.programs;
         };
         return ProgramManager;
     }());

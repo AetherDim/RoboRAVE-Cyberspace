@@ -4,5 +4,5 @@ import { RobotProgram } from "./RobotProgram";
 
 export interface RobotSetupData {
 	configuration: RobotConfiguration
-	program: RobotProgram
+	programs: RobotProgram[]
 }

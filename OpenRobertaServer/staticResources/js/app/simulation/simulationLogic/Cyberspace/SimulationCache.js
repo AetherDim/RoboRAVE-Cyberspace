@@ -43,11 +43,16 @@ define(["require", "exports", "../Utils", "../Robot/Robot"], function (require, 
         }
         SimulationCache.prototype.toRobotSetupData = function () {
             return this.storedRobertaRobotSetupDataList.map(function (setup) {
+                var programs;
+                if (typeof (setup.javaScriptProgram) == "string") {
+                    programs = [{ javaScriptProgram: setup.javaScriptProgram }];
+                }
+                else {
+                    programs = setup.javaScriptProgram.map(function (program) { return { javaScriptProgram: program }; });
+                }
                 return {
                     configuration: setup.configuration,
-                    program: {
-                        javaScriptProgram: setup.javaScriptProgram
-                    }
+                    programs: programs
                 };
             });
         };

@@ -23,6 +23,17 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
     }
     return to.concat(ar || Array.prototype.slice.call(from));
 };
+var __values = (this && this.__values) || function(o) {
+    var s = typeof Symbol === "function" && Symbol.iterator, m = s && o[s], i = 0;
+    if (m) return m.call(o);
+    if (o && typeof o.length === "number") return {
+        next: function () {
+            if (o && i >= o.length) o = void 0;
+            return { value: o && o[i++], done: !o };
+        }
+    };
+    throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
+};
 define(["require", "exports", "./SimulationCache", "../Scene/Scene", "../RRC/Scene/RRCScoreScene", "../SceneRenderer", "./SceneManager", "../EventManager/EventManager", "../BlocklyDebug"], function (require, exports, SimulationCache_1, Scene_1, RRCScoreScene_1, SceneRenderer_1, SceneManager_1, EventManager_1, BlocklyDebug_1) {
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.Cyberspace = void 0;
@@ -86,13 +97,27 @@ define(["require", "exports", "./SimulationCache", "../Scene/Scene", "../RRC/Sce
         /* ####################################### Scene control ###################################### */
         /* ############################################################################################ */
         Cyberspace.prototype.resetEventHandlersOfScene = function (scene) {
+            var e_1, _a;
             scene.removeAllEventHandlers();
             this.specializedEventManager._setEventHandlers(scene);
             var eventHandlerLists = this.eventManager.eventHandlerLists;
-            var programManagerEventHandlerLists = scene.getProgramManager().eventManager.eventHandlerLists;
-            programManagerEventHandlerLists.onStartProgram.pushEventHandleList(eventHandlerLists.onStartPrograms);
-            programManagerEventHandlerLists.onPauseProgram.pushEventHandleList(eventHandlerLists.onPausePrograms);
-            programManagerEventHandlerLists.onStopProgram.pushEventHandleList(eventHandlerLists.onStopPrograms);
+            try {
+                for (var _b = __values(this.getScene().getRobotManager().getRobots()), _c = _b.next(); !_c.done; _c = _b.next()) {
+                    var robot = _c.value;
+                    // FIXME: first program of first robot only?
+                    var programManagerEventHandlerLists = robot.programManager.eventManager.eventHandlerLists;
+                    programManagerEventHandlerLists.onStartProgram.pushEventHandleList(eventHandlerLists.onStartPrograms);
+                    programManagerEventHandlerLists.onPauseProgram.pushEventHandleList(eventHandlerLists.onPausePrograms);
+                    programManagerEventHandlerLists.onStopProgram.pushEventHandleList(eventHandlerLists.onStopPrograms);
+                }
+            }
+            catch (e_1_1) { e_1 = { error: e_1_1 }; }
+            finally {
+                try {
+                    if (_c && !_c.done && (_a = _b.return)) _a.call(_b);
+                }
+                finally { if (e_1) throw e_1.error; }
+            }
             var sceneEventHandlerLists = scene.eventManager.eventHandlerLists;
             sceneEventHandlerLists.onStartSimulation.pushEventHandleList(eventHandlerLists.onStartSimulation);
             sceneEventHandlerLists.onPauseSimulation.pushEventHandleList(eventHandlerLists.onPauseSimulation);
@@ -171,23 +196,20 @@ define(["require", "exports", "./SimulationCache", "../Scene/Scene", "../RRC/Sce
         /* ############################################################################################ */
         /* ##################################### Program control ###################################### */
         /* ############################################################################################ */
-        Cyberspace.prototype.getProgramManager = function () {
-            return this.getScene().getProgramManager();
+        Cyberspace.prototype.getRobotManager = function () {
+            return this.getScene().getRobotManager();
         };
         Cyberspace.prototype.startPrograms = function () {
-            this.getProgramManager().startPrograms();
+            this.getRobotManager().startPrograms();
         };
         Cyberspace.prototype.stopPrograms = function () {
-            this.getProgramManager().stopPrograms();
+            this.getRobotManager().stopPrograms();
         };
         Cyberspace.prototype.resumePrograms = function () {
-            this.getProgramManager().startPrograms();
+            this.getRobotManager().startPrograms();
         };
         Cyberspace.prototype.pausePrograms = function () {
-            this.getProgramManager().pausePrograms();
-        };
-        Cyberspace.prototype.setPrograms = function (programs) {
-            this.getProgramManager().setPrograms(programs, this.getScene().unit);
+            this.getRobotManager().pausePrograms();
         };
         Cyberspace.prototype.setDebugMode = function (state) {
             BlocklyDebug_1.BlocklyDebug.getInstance().updateDebugMode(state);
@@ -196,7 +218,8 @@ define(["require", "exports", "./SimulationCache", "../Scene/Scene", "../RRC/Sce
             return BlocklyDebug_1.BlocklyDebug.getInstance().isDebugMode();
         };
         /**
-         * Set the RobertaRobotSetupData where the first setup data can be the Blockly workspace program which is used for debugging.
+         * Set the RobertaRobotSetupData where the first program in the robertaRobotSetupDataList should be the Blockly
+         * workspace program which is used for debugging. If this is not the case, debugging won't be possible.
          * @param robertaRobotSetupDataList
          * @param robotType
          */
@@ -208,8 +231,9 @@ define(["require", "exports", "./SimulationCache", "../Scene/Scene", "../RRC/Sce
                 // sets the robot programs and sensor configurations based on 'simulationCache'
                 this.resetScene();
             }
-            // always set the programs
-            this.getProgramManager().setPrograms(newSimulationCache.toRobotSetupData().map(function (setup) { return setup.program; }), this.getScene().unit);
+            else {
+                this.getScene().setPrograms(this.simulationCache.toRobotSetupData());
+            }
         };
         /* ############################################################################################ */
         /* #################################### ScrollView control #################################### */

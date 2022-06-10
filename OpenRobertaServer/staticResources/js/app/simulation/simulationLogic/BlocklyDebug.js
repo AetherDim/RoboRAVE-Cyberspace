@@ -3,10 +3,8 @@ define(["require", "exports", "blockly", "./Timer"], function (require, exports,
     exports.BlocklyDebug = void 0;
     var BlocklyDebug = /** @class */ (function () {
         function BlocklyDebug() {
-            this.observers = {};
             this.debugMode = false;
             this.breakpointIDs = [];
-            this.getInterpreters = function () { return []; };
             /**
              * sleep time before calling blockly update
              */
@@ -23,15 +21,17 @@ define(["require", "exports", "blockly", "./Timer"], function (require, exports,
         BlocklyDebug.prototype.getBreakpointIDs = function () {
             return this.breakpointIDs;
         };
+        BlocklyDebug.prototype.getWorkspaceProgram = function () {
+            return this.program;
+        };
         // singleton because Blockly is global and two debug manager would mess with stuff
         // debug manager is not destroyed correctly
         BlocklyDebug.getInstance = function () {
             return BlocklyDebug.instance;
         };
-        BlocklyDebug.getInstanceAndInit = function (programManager, getInterpreters) {
+        BlocklyDebug.init = function (program) {
             var obj = BlocklyDebug.instance;
-            obj.programManager = programManager;
-            obj.getInterpreters = getInterpreters;
+            obj.program = program;
             return obj;
         };
         BlocklyDebug.prototype.registerBlocklyChangeListener = function () {
@@ -61,12 +61,12 @@ define(["require", "exports", "blockly", "./Timer"], function (require, exports,
             this.blocklyTicker.sleepTime = simSleepTime;
         };
         BlocklyDebug.prototype.updateSimVariables = function () {
-            if (!this.programManager || this.programManager.allInterpretersTerminated()) {
+            if (!this.program || this.program.isTerminated()) {
                 return;
             }
             if ($("#simVariablesModal").is(':visible')) {
                 $("#variableValue").html("");
-                var variables = this.programManager.getSimVariables();
+                var variables = this.program.getSimVariables();
                 if (Object.keys(variables).length > 0) {
                     for (var v in variables) {
                         var value = variables[v][0];
@@ -164,12 +164,17 @@ define(["require", "exports", "blockly", "./Timer"], function (require, exports,
             this.updateBreakpointEvent()*/
         };
         BlocklyDebug.prototype.setInterpreterBreakpointIDs = function (breakpointIDs) {
-            this.getInterpreters().forEach(function (interpreter) { return interpreter.breakpoints = breakpointIDs; });
+            if (!this.program || !this.program.interpreter) {
+                return;
+            }
+            this.program.interpreter.breakpoints = breakpointIDs;
             this.updateDebugUI();
         };
         BlocklyDebug.prototype.updateDebugUI = function () {
-            var _this_1 = this;
-            this.getInterpreters().forEach(function (interpreter) { return interpreter.setDebugMode(_this_1.debugMode); });
+            if (!this.program || !this.program.interpreter) {
+                return;
+            }
+            this.program.interpreter.setDebugMode(this.debugMode);
         };
         /** removes breakpoint with breakpointID */
         BlocklyDebug.prototype.removeBreakpoint = function (breakpointID) {

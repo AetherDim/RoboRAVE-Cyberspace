@@ -133,12 +133,12 @@ define(["require", "exports", "matter-js", "../Timer", "../ScrollView", "../Unit
         Scene.prototype.getRobotManager = function () {
             return this.robotManager;
         };
-        Scene.prototype.getProgramManager = function () {
-            return this.getRobotManager().getProgramManager();
+        Scene.prototype.setPrograms = function (robotSetupData) {
+            this.getRobotManager().setPrograms(robotSetupData.map(function (setup) { return setup.programs; }));
         };
         Scene.prototype.removeAllEventHandlers = function () {
             this.eventManager.removeAllEventHandlers();
-            this.getProgramManager().removeAllEventHandlers();
+            this.robotManager.removeAllEventHandlers();
         };
         //
         // #############################################################################
@@ -299,7 +299,7 @@ define(["require", "exports", "matter-js", "../Timer", "../ScrollView", "../Unit
                 return;
             }
             this.getRobotManager().configurationManager.setRobotConfigurations(robotSetupData.map(function (setup) { return setup.configuration; }));
-            this.getProgramManager().setPrograms(robotSetupData.map(function (setup) { return setup.program; }), this.unit);
+            this.setPrograms(robotSetupData);
             // stop the simulation
             this.pauseSim();
             this.debug.clearDebugGuiDynamic(); // if dynamic debug gui exist, clear it

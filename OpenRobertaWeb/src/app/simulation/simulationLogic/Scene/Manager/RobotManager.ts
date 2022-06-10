@@ -2,6 +2,10 @@ import {Robot} from "../../Robot/Robot";
 import {ProgramManager} from "./ProgramManager";
 import {Scene} from "../Scene";
 import { RobotConfigurationManager } from "./RobotConfigurationManager";
+import {RobertaRobotSetupData} from "../../Robot/RobertaRobotSetupData";
+import {Unit} from "../../Unit";
+import {RobotProgram} from "../../Robot/RobotProgram";
+import {BlocklyDebug} from "../../BlocklyDebug";
 
 
 export class RobotManager {
@@ -27,11 +31,43 @@ export class RobotManager {
 	 */
 	private readonly robots: Array<Robot> = new Array<Robot>();
 
-	readonly programManager = new ProgramManager(this);
 	readonly configurationManager = new RobotConfigurationManager(this.robots)
 
-	getProgramManager(): ProgramManager {
-		return this.programManager;
+	setPrograms(programs: RobotProgram[][]) {
+
+		this.scene.runAfterLoading(() => {
+
+			if(this.robots.length < programs.length) {
+				console.warn("Too many programs for robots!")
+			}
+
+			if(this.robots.length > programs.length) {
+				console.warn("Not enough programs for robots!")
+			}
+
+			for (let i = 0; i < this.robots.length; i++) {
+				if(i >= programs.length) {
+					break;
+				}
+
+				this.robots[i].programManager.setPrograms(programs[i], this.scene.unit)
+				this.robots[i].init()
+
+			}
+
+			if(this.robots.length > 0) {
+				// BlocklyDebug selection
+				const programs = this.robots[0].programManager.getPrograms()
+
+				if(programs.length > 0) {
+					BlocklyDebug.init(programs[0])
+				} else {
+					BlocklyDebug.init(undefined)
+				}
+
+			}
+
+		})
 	}
 
 	getRobots(): Robot[] {
@@ -72,11 +108,40 @@ export class RobotManager {
 		return `<div><label>${label}</label><span>${value}</span></div>`
 	}
 
+	removeAllEventHandlers() {
+		this.robots.forEach(robot => robot.programManager.removeAllEventHandlers())
+	}
+
 	/**
 	 * remove all robots
 	 */
 	clear() {
 		this.robots.length = 0;
+	}
+
+
+	startPrograms() {
+		for(const robot of this.robots) {
+			robot.programManager.startPrograms()
+		}
+	}
+
+	stopPrograms() {
+		for(const robot of this.robots) {
+			robot.programManager.stopPrograms()
+		}
+	}
+
+	resumePrograms() {
+		for(const robot of this.robots) {
+			robot.programManager.startPrograms()
+		}
+	}
+
+	pausePrograms() {
+		for(const robot of this.robots) {
+			robot.programManager.pausePrograms()
+		}
 	}
 	
 }

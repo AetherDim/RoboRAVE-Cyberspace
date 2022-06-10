@@ -14,13 +14,13 @@ import { IContainerEntity, IEntity, IPhysicsCompositeEntity, IUpdatableEntity, P
 import { Scene } from '../Scene/Scene'
 import { StringMap, Utils } from '../Utils'
 // Dat Gui
-import { downloadFile } from "./../GlobalDebug";
+import {createReflectionGetter, downloadFile} from "./../GlobalDebug";
 import { BodyHelper } from "./BodyHelper";
 import { RobotProgram } from './RobotProgram'
 import { hsvToColorName, rgbToHsv } from '../Color'
 import { GyroSensor } from './Sensors/GyroSensor'
 import { RobotLED, RobotLEDColor, robotLEDColors } from './RobotLED'
-import { ProgramManager } from '../Scene/Manager/ProgramManager'
+import {Program, ProgramManager} from '../Scene/Manager/ProgramManager'
 
 export const sensorTypeStrings =  ["TOUCH", "GYRO", "COLOR", "ULTRASONIC", "INFRARED", "SOUND", "COMPASS",
 	// german description: "HT Infrarotsensor"
@@ -92,9 +92,7 @@ export class Robot implements IContainerEntity, IUpdatableEntity, IPhysicsCompos
 
 	private LEDs: RobotLED[] = []
 
-	private robotBehaviour: RobotSimBehaviour
-
-	private programManager = new ProgramManager()
+	public readonly programManager = new ProgramManager()
 
 	/**
 	 * Time to wait until the next command should be executed (in internal units)
@@ -173,7 +171,6 @@ export class Robot implements IContainerEntity, IUpdatableEntity, IPhysicsCompos
 
 		this.physicsWheelsList = []
 		this.physicsComposite = Composite.create()
-		this.robotBehaviour = new RobotSimBehaviour(this.scene.unit)
 
 		this.updatePhysicsObject()
 
@@ -182,6 +179,8 @@ export class Robot implements IContainerEntity, IUpdatableEntity, IPhysicsCompos
 		this.wheelsList.forEach(wheel => t.addChild(wheel))
 
 		this.addDebugSettings()
+
+		this.init()
 	}
 
 	private transferWheelForcesToRobotBody = false
@@ -252,8 +251,25 @@ export class Robot implements IContainerEntity, IUpdatableEntity, IPhysicsCompos
 			this.wheelsList[1]._addDebugGui(wheelFolder.addFolder('Wheel Right'))
 			this.wheelsList[2]._addDebugGui(wheelFolder.addFolder('Wheel Back'))
 
+			const program = robotFolder.addFolder('Program Manager')
+			const pm = this.programManager
+
+			// TODO:
+			/*program.add(pm, 'programPaused')
+			program.addUpdatable('debugMode', createReflectionGetter(pm, 'debugManager.debugMode'))
+			program.addUpdatable('debugObservers', () => Object.keys((pm as any).debugManager.observers).length)
+			program.addUpdatable('initialized', createReflectionGetter(pm, 'initialized'))
+			program.addButton('Print breakpoint IDs', () => {
+				//window.alert((pm as any).debugManager.breakpointIDs)
+				console.log((pm as any).debugManager.breakpointIDs)
+			})
+			program.addButton('Print observers IDs', () => {
+				//window.alert((pm as any).debugManager.breakpointIDs)
+				console.log((pm as any).debugManager.observers)
+			})*/
+
 			DebugGui.addButton("Download Program (JSON)", () => 
-				downloadFile("program.json", [JSON.stringify(this.programCode, undefined, "\t")])
+				downloadFile("program.json", [JSON.stringify(this.programManager.getPrograms(), undefined, "\t")])
 			)
 
 		}
@@ -493,7 +509,6 @@ export class Robot implements IContainerEntity, IUpdatableEntity, IPhysicsCompos
 	};
 
 	init() {
-		this.robotBehaviour = new RobotSimBehaviour(this.scene.unit);
 		this.resetInternalState()
 	}
 
@@ -537,12 +552,7 @@ export class Robot implements IContainerEntity, IUpdatableEntity, IPhysicsCompos
 
 	IUpdatableEntity(){}
 
-	/**
-	 * Updates the robot with time step 'dt'.
-	 * @param dt The time step in internal units
-	 */
 	update(dt: number) {
-
 		// update the forces and torques of all wheels
 		const gravitationalAcceleration = this.scene.unit.getAcceleration(9.81)
 		const robotBodyGravitationalForce = gravitationalAcceleration * this.body.mass / this.wheelsList.length
@@ -564,12 +574,25 @@ export class Robot implements IContainerEntity, IUpdatableEntity, IPhysicsCompos
 		this.encoder.left = this.leftDrivingWheel.wheelAngle
 		this.encoder.right = this.rightDrivingWheel.wheelAngle
 
+		for(const program of this.programManager.getPrograms()) {
+			this._update(dt, program)
+		}
+	}
+
+	/**
+	 * Updates the robot with time step 'dt'.
+	 * @param dt The time step in internal units
+	 */
+	private _update(dt: number, program: Program) {
+		const robotBehaviour = program.instruction
+
 		// update sensors
-		this.updateRobotBehaviourHardwareStateSensors()
+		this.updateRobotBehaviourHardwareStateSensors(program)
+
 
 		// update LEDs
 		const LEDActionState: { color?: string, mode: string } | undefined
-			= this.robotBehaviour.getActionState("led", true)
+			= robotBehaviour.getActionState("led", true)
 		const LEDAction =
 			Utils.flatMapOptional(LEDActionState, action => {
 				return {
@@ -586,8 +609,8 @@ export class Robot implements IContainerEntity, IUpdatableEntity, IPhysicsCompos
 			})
 		this.LEDs.forEach(LED => LED.update(dt, LEDAction))
 
-		if (!this.interpreter) {
-			this.resetInternalState()
+		if (!program.interpreter) {
+			this.resetInternalState() // TODO: check
 			return;
 		}
 
@@ -596,11 +619,11 @@ export class Robot implements IContainerEntity, IUpdatableEntity, IPhysicsCompos
 		if(this.delay > 0) {
 			this.delay -= dt; // reduce delay by dt each tick
 		} else {
-			if (this.interpreter.isTerminated()) {
+			if (program.isTerminated()) {
 				this.resetInternalState()
-			} else if(!this.scene.getProgramManager().isProgramPaused() && this.needsNewCommands) {
+			} else if(program.isRunning() && this.needsNewCommands) {
 				// get delay from operation and convert seconds to internal time unit
-				this.delay = this.scene.getUnitConverter().getTime(this.interpreter.runNOperations(1000) / 1000);
+				this.delay = this.scene.getUnitConverter().getTime(program.runNOperations(1000) / 1000);
 			}
 		}
 
@@ -630,7 +653,7 @@ export class Robot implements IContainerEntity, IUpdatableEntity, IPhysicsCompos
 			if (stopEncoder) {
 				// on end
 				t.endEncoder = undefined
-				t.robotBehaviour.resetCommands()
+				robotBehaviour.resetCommands()
 				t.needsNewCommands = true
 			} else {
 				const maxDifference = t.endEncoderSettings.maxForceControlEncoderDifference
@@ -642,7 +665,7 @@ export class Robot implements IContainerEntity, IUpdatableEntity, IPhysicsCompos
 			}
 		}
 
-		const driveData = this.robotBehaviour.drive
+		const driveData = robotBehaviour.drive
 		if (driveData) {
 			// handle `driveAction` and `curveAction`
 			if (driveData.distance && driveData.speed) {
@@ -661,11 +684,11 @@ export class Robot implements IContainerEntity, IUpdatableEntity, IPhysicsCompos
 			if (driveData.speed && driveData.distance == undefined) {
 				this.leftForce = driveData.speed.left
 				this.rightForce = driveData.speed.right
-				this.robotBehaviour.drive = undefined
+				robotBehaviour.drive = undefined
 			}
 		}
 
-		const rotateData = this.robotBehaviour.rotate
+		const rotateData = robotBehaviour.rotate
 		if (rotateData) {
 			if (rotateData.angle) {
 				if (this.endEncoder == undefined) {
@@ -690,12 +713,12 @@ export class Robot implements IContainerEntity, IUpdatableEntity, IPhysicsCompos
 					this.leftForce = rotationSpeed
 					this.rightForce = -rotationSpeed
 				}
-				this.robotBehaviour.rotate = undefined
+				robotBehaviour.rotate = undefined
 			}
 		}
 
 		// update pose
-		let motors = this.robotBehaviour.getActionState("motors", true);
+		let motors = robotBehaviour.getActionState("motors", true);
 		if (motors) {
 			const maxForce = true ? 0.01 : MAXPOWER
 			let left = motors.c;
@@ -726,7 +749,7 @@ export class Robot implements IContainerEntity, IUpdatableEntity, IPhysicsCompos
 		this.rightDrivingWheel.applyTorqueFromMotor(ElectricMotor.EV3(this.scene.unit), this.rightForce)
 
 		// reset internal encoder values if necessary
-		const encoder = this.robotBehaviour.getActionState("encoder", true);
+		const encoder = robotBehaviour.getActionState("encoder", true);
 		if (encoder) {
 			if (encoder.leftReset) {
 				this.encoder.left = 0;
@@ -923,13 +946,18 @@ export class Robot implements IContainerEntity, IUpdatableEntity, IPhysicsCompos
 			list.push({ label: label, value: Math.round(value * 1000000)/1000000 + (end ?? "")})
 		}
 
-		const sensors = this.robotBehaviour.getHardwareStateSensors()
+
 
 		append("Robot X", this.body.position.x)
 		append("Robot Y", this.body.position.y)
 		append("Robot θ", this.body.angle * 180 / Math.PI, "°")
-		append("Motor left", Utils.toDegrees(sensors.encoder?.left ?? 0), "°")
-		append("Motor right", Utils.toDegrees(sensors.encoder?.right ?? 0), "°")
+
+		for(const program of this.programManager.getPrograms()) {
+			const sensors = program.instruction.getHardwareStateSensors()
+			append("Motor left", Utils.toDegrees(sensors.encoder?.left ?? 0), "°")
+			append("Motor right", Utils.toDegrees(sensors.encoder?.right ?? 0), "°")
+		}
+
 		for (const [port, touchSensor] of this.touchSensors) {
 			appendAny("Touch Sensor "+port, touchSensor.getIsTouched())
 		}
@@ -952,9 +980,9 @@ export class Robot implements IContainerEntity, IUpdatableEntity, IPhysicsCompos
 		return Utils.vectorAdd(this.body.position, Vector.rotate(relativePosition, this.body.angle))
 	}
 
-	private updateRobotBehaviourHardwareStateSensors() {
-
-		const sensors = this.robotBehaviour.getHardwareStateSensors()
+	private updateRobotBehaviourHardwareStateSensors(program: Program) {
+		const robotBehaviour = program.instruction
+		const sensors = robotBehaviour.getHardwareStateSensors()
 
 		// encoder
 		sensors.encoder = {
@@ -970,7 +998,7 @@ export class Robot implements IContainerEntity, IUpdatableEntity, IPhysicsCompos
 		const gyroAngleDifference = Utils.toDegrees(this.body.angle - this.body.anglePrev)
 		const dt = this.scene.getDT()
 		for (const [port, gyroSensor] of this.gyroSensors) {
-			const referenceAngle = this.robotBehaviour.getGyroReferenceAngle(port) ?? 0
+			const referenceAngle = robotBehaviour.getGyroReferenceAngle(port) ?? 0
 			const angle = Utils.toDegrees(this.body.angle)
 			gyroSensor.update(angle, referenceAngle, dt)
 			// gyroData uses the 'true' angle instead of '' since the referenceAngle/"angleReset" is used

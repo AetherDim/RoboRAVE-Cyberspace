@@ -18,6 +18,7 @@ import * as TOUR_C from "tour.controller";
 import * as UTIL from "./util";
 import {DEBUG} from "./GlobalDebug";
 import {getProgramLink} from "program.controller";
+import {BlocklyDebug} from "./BlocklyDebug";
 
 //
 // init all components for a simulation
@@ -271,7 +272,8 @@ UIManager.simDebugViewButton.onClick(() => {
 })
 
 function startProgramIfRequired(callback: () => void) {
-	if(cyberspace.getProgramManager().allInterpretersTerminated()) {
+	const program = BlocklyDebug.getInstance().getWorkspaceProgram()
+	if(!program || program.isTerminated()) {
 		simulateProgram(callback)
 	} else {
 		cyberspace.startPrograms()
@@ -280,11 +282,17 @@ function startProgramIfRequired(callback: () => void) {
 }
 
 UIManager.debugStepOverButton.onClick(() => {
-	startProgramIfRequired(() => cyberspace.getProgramManager().interpreterAddEvent(CONST.default.DEBUG_STEP_OVER))
+	startProgramIfRequired(() => {
+		const program = BlocklyDebug.getInstance().getWorkspaceProgram()
+		program?.interpreterAddEvent(CONST.default.DEBUG_STEP_OVER)
+	})
 })
 
 UIManager.debugStepIntoButton.onClick(() => {
-	startProgramIfRequired(() => cyberspace.getProgramManager().interpreterAddEvent(CONST.default.DEBUG_STEP_INTO))
+	startProgramIfRequired(() => {
+		const program = BlocklyDebug.getInstance().getWorkspaceProgram()
+		program?.interpreterAddEvent(CONST.default.DEBUG_STEP_INTO)
+	})
 })
 
 function updateDebugButtons() {
@@ -309,7 +317,10 @@ UIManager.simDebugMode.onClick(() => {
 })
 
 UIManager.debugStepBreakPointButton.onClick(() => {
-	startProgramIfRequired(() => cyberspace.getProgramManager().interpreterAddEvent(CONST.default.DEBUG_BREAKPOINT))
+	startProgramIfRequired(() => {
+		const program = BlocklyDebug.getInstance().getWorkspaceProgram()
+		program?.interpreterAddEvent(CONST.default.DEBUG_BREAKPOINT)
+	})
 })
 
 UIManager.debugVariablesButton.onClick(() => {

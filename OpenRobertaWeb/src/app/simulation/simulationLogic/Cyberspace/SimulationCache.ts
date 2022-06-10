@@ -2,6 +2,8 @@ import { Utils } from "../Utils";
 import { RobertaRobotSetupData } from "../Robot/RobertaRobotSetupData";
 import { sensorTypeStrings } from "../Robot/Robot";
 import { RobotSetupData } from "../Robot/RobotSetupData";
+import {program} from "guiState.model";
+import {RobotProgram} from "../Robot/RobotProgram";
 
 export class SimulationCache {
 	
@@ -27,11 +29,17 @@ export class SimulationCache {
 
 	toRobotSetupData(): RobotSetupData[] {
 		return this.storedRobertaRobotSetupDataList.map(setup => {
+			let programs: RobotProgram[]
+
+			if(typeof(setup.javaScriptProgram) == "string") {
+				programs = [{javaScriptProgram: setup.javaScriptProgram}]
+			} else {
+				programs = setup.javaScriptProgram.map(program => {return {javaScriptProgram: program}})
+			}
+
 			return {
 				configuration: setup.configuration,
-				program: {
-					javaScriptProgram: setup.javaScriptProgram
-				}
+				programs: programs
 		}})
 	}
 

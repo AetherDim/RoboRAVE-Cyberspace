@@ -1,5 +1,3 @@
-import { Robot } from "../../Robot/Robot";
-import { RobotManager } from "./RobotManager";
 import { Interpreter } from "./../../interpreter.interpreter";
 import { RobotProgram } from "../../Robot/RobotProgram";
 import { EventManager, ParameterTypes } from "../../EventManager/EventManager";
@@ -114,6 +112,13 @@ export class Program {
 		this.interpreter.removeEvent(mode);
 	}
 
+	isRunning() {
+		return this.programState == "running"
+	}
+
+	runNOperations(N: number) : number {
+		return this.interpreter.runNOperations(N)
+	}
 }
 export class ProgramManager {
 
@@ -166,4 +171,7 @@ export class ProgramManager {
 		return true
 	}
 
+	getPrograms() {
+		return this.programs
+	}
 }

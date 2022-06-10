@@ -1,15 +1,11 @@
 import Blockly = require("blockly");
 import { Timer } from "./Timer";
-import {ProgramManager} from "./Scene/Manager/ProgramManager";
+import {Program, ProgramManager} from "./Scene/Manager/ProgramManager";
 import {Interpreter} from "interpreter.interpreter";
 
 type SpecialBlocklyBlock = Blockly.Block & { svgGroup_: any, svgPath_: any }
 
 export class BlocklyDebug {
-
-	private observers: { [key: string]: MutationObserver} = {}
-
-
 
 	private debugMode = false
 	private breakpointIDs: string[] = []
@@ -18,8 +14,11 @@ export class BlocklyDebug {
 		return this.breakpointIDs
 	}
 
-	private programManager?: ProgramManager
-	private getInterpreters: () => Interpreter[] = () => []
+	private program?: Program
+
+	getWorkspaceProgram() {
+		return this.program
+	}
 
 	private static readonly instance = new BlocklyDebug()
 
@@ -29,10 +28,9 @@ export class BlocklyDebug {
 		return BlocklyDebug.instance
 	}
 
-	static getInstanceAndInit(programManager: ProgramManager, getInterpreters: () => Interpreter[]) {
+	static init(program?: Program) {
 		const obj = BlocklyDebug.instance
-		obj.programManager = programManager
-		obj.getInterpreters = getInterpreters
+		obj.program = program
 		return obj
 	}
 
@@ -89,13 +87,13 @@ export class BlocklyDebug {
 
 
 	updateSimVariables() {
-		if(!this.programManager || this.programManager.allInterpretersTerminated()) {
+		if(!this.program || this.program.isTerminated()) {
 			return
 		}
 
 		if($("#simVariablesModal").is(':visible')) {
 			$("#variableValue").html("");
-			const variables = this.programManager.getSimVariables();
+			const variables = this.program.getSimVariables();
 			if (Object.keys(variables).length > 0) {
 				for (const v in variables) {
 					const value = variables[v][0];
@@ -198,12 +196,18 @@ export class BlocklyDebug {
 	}
 
 	private setInterpreterBreakpointIDs(breakpointIDs: string[]) {
-		this.getInterpreters().forEach(interpreter => interpreter.breakpoints = breakpointIDs)
+		if(!this.program || !this.program.interpreter) {
+			return
+		}
+		this.program.interpreter.breakpoints = breakpointIDs
 		this.updateDebugUI()
 	}
 
 	private updateDebugUI() {
-		this.getInterpreters().forEach(interpreter => interpreter.setDebugMode(this.debugMode))
+		if(!this.program || !this.program.interpreter) {
+			return
+		}
+		this.program.interpreter.setDebugMode(this.debugMode)
 	}
 
 	/** removes breakpoint with breakpointID */

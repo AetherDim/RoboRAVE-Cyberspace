@@ -80,13 +80,17 @@ export class Cyberspace {
 		this.specializedEventManager._setEventHandlers(scene)
 
 		const eventHandlerLists = this.eventManager.eventHandlerLists
-		const programManagerEventHandlerLists = scene.getProgramManager().eventManager.eventHandlerLists
-		programManagerEventHandlerLists.onStartProgram.pushEventHandleList(
-			eventHandlerLists.onStartPrograms)
-		programManagerEventHandlerLists.onPauseProgram.pushEventHandleList(
-			eventHandlerLists.onPausePrograms)
-		programManagerEventHandlerLists.onStopProgram.pushEventHandleList(
-			eventHandlerLists.onStopPrograms)
+
+		for(const robot of this.getScene().getRobotManager().getRobots()) {
+			// FIXME: first program of first robot only?
+			const programManagerEventHandlerLists = robot.programManager.eventManager.eventHandlerLists
+			programManagerEventHandlerLists.onStartProgram.pushEventHandleList(
+				eventHandlerLists.onStartPrograms)
+			programManagerEventHandlerLists.onPauseProgram.pushEventHandleList(
+				eventHandlerLists.onPausePrograms)
+			programManagerEventHandlerLists.onStopProgram.pushEventHandleList(
+				eventHandlerLists.onStopPrograms)
+		}
 
 		const sceneEventHandlerLists = scene.eventManager.eventHandlerLists
 		sceneEventHandlerLists.onStartSimulation.pushEventHandleList(
@@ -185,28 +189,24 @@ export class Cyberspace {
 	/* ##################################### Program control ###################################### */
 	/* ############################################################################################ */
 
-	getProgramManager() {
-		return this.getScene().getProgramManager()
+	getRobotManager() {
+		return this.getScene().getRobotManager()
 	}
 
 	startPrograms() {
-		this.getProgramManager().startPrograms()
+		this.getRobotManager().startPrograms()
 	}
 
 	stopPrograms() {
-		this.getProgramManager().stopPrograms()
+		this.getRobotManager().stopPrograms()
 	}
 
 	resumePrograms() {
-		this.getProgramManager().startPrograms()
+		this.getRobotManager().startPrograms()
 	}
 
 	pausePrograms() {
-		this.getProgramManager().pausePrograms()
-	}
-
-	setPrograms(programs: RobotProgram[]) {
-		this.getProgramManager().setPrograms(programs, this.getScene().unit)
+		this.getRobotManager().pausePrograms()
 	}
 
 	setDebugMode(state: boolean) {
@@ -219,7 +219,8 @@ export class Cyberspace {
 
 
 	/**
-	 * Set the RobertaRobotSetupData where the first setup data can be the Blockly workspace program which is used for debugging.
+	 * Set the RobertaRobotSetupData where the first program in the robertaRobotSetupDataList should be the Blockly
+	 * workspace program which is used for debugging. If this is not the case, debugging won't be possible.
 	 * @param robertaRobotSetupDataList
 	 * @param robotType 
 	 */
@@ -227,15 +228,13 @@ export class Cyberspace {
 		const newSimulationCache = new SimulationCache(robertaRobotSetupDataList, robotType)
 		const oldCache = this.simulationCache
 		this.simulationCache = newSimulationCache
+
 		if (!newSimulationCache.hasEqualConfiguration(oldCache)) {
 			// sets the robot programs and sensor configurations based on 'simulationCache'
 			this.resetScene()
+		} else {
+			this.getScene().setPrograms(this.simulationCache.toRobotSetupData())
 		}
-		// always set the programs
-		this.getProgramManager().setPrograms(
-			newSimulationCache.toRobotSetupData().map(setup => setup.program),
-			this.getScene().unit
-		)
 	}
 
 

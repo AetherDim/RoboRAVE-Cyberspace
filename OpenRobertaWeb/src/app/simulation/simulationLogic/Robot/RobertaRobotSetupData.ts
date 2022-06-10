@@ -6,7 +6,7 @@ export interface RobertaRobotSetupData {
 	 * value: `SensorType`
 	 */
 	 configuration: RobotConfiguration
-	 javaScriptProgram: string
+	 javaScriptProgram: string|string[]
 
 	// could be optional?
 	rc?: string // "ok" or something else

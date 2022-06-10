@@ -15,6 +15,7 @@ import {ContainerManager} from "./Manager/ContainerManager";
 import {RobotManager} from "./Manager/RobotManager";
 import { RobotSetupData } from '../Robot/RobotSetupData';
 import { EventManager, ParameterTypes } from '../EventManager/EventManager';
+import {RobertaRobotSetupData} from "../Robot/RobertaRobotSetupData";
 
 export class Scene {
 
@@ -35,8 +36,10 @@ export class Scene {
 		return this.robotManager
 	}
 
-	getProgramManager() {
-		return this.getRobotManager().getProgramManager()
+	setPrograms(robotSetupData: RobotSetupData[]) {
+		this.getRobotManager().setPrograms(
+			robotSetupData.map(setup => setup.programs)
+		)
 	}
 
 	//
@@ -50,7 +53,7 @@ export class Scene {
 
 	removeAllEventHandlers() {
 		this.eventManager.removeAllEventHandlers()
-		this.getProgramManager().removeAllEventHandlers()
+		this.robotManager.removeAllEventHandlers()
 	}
 
 	//
@@ -288,7 +291,7 @@ export class Scene {
 		this.getRobotManager().configurationManager.setRobotConfigurations(
 			robotSetupData.map(setup => setup.configuration)
 		)
-		this.getProgramManager().setPrograms(robotSetupData.map(setup => setup.program), this.unit)
+		this.setPrograms(robotSetupData)
 
 		// stop the simulation
 		this.pauseSim()
