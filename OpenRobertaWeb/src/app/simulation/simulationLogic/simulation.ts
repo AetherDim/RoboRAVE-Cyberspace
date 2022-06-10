@@ -4,7 +4,6 @@ import { cyberspaceScenes } from './external/SceneDesciptorList'
 import { RobertaRobotSetupData } from './Robot/RobertaRobotSetupData'
 import { Cyberspace } from './Cyberspace/Cyberspace';
 import { UIManager } from './UI/UIManager';
-import { interpreterSimBreakEventHandlers } from "interpreter.jsHelper"
 import { RRCScoreScene } from './RRC/Scene/RRCScoreScene';
 import { RESTState, ResultErrorType, sendStateRequest } from './external/RESTApi';
 import * as $ from "jquery";
@@ -52,9 +51,10 @@ cyberspace.specializedEventManager
 			UIManager.showScoreButton.setState(state == "hideScore" ? "showScore" : "hideScore"))
 		)
 
-interpreterSimBreakEventHandlers.push(() => {
+export function setPause() {
+	// TODO: Pause of stop?
 	cyberspace.pausePrograms()
-})
+}
 
 
 sceneManager.registerScene(...cyberspaceScenes)

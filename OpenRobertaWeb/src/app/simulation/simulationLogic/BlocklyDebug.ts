@@ -2,7 +2,6 @@ import Blockly = require("blockly");
 import { Timer } from "./Timer";
 import {ProgramManager} from "./Scene/Manager/ProgramManager";
 import {Interpreter} from "interpreter.interpreter";
-import * as CONST from "./simulation.constants";
 
 type SpecialBlocklyBlock = Blockly.Block & { svgGroup_: any, svgPath_: any }
 
@@ -40,7 +39,7 @@ export class BlocklyDebug {
 	private registerBlocklyChangeListener() {
 		const workspace = Blockly.getMainWorkspace()
 		if(workspace) {
-			workspace.addChangeListener((event) => {
+			workspace.addChangeListener((event: any) => {
 				console.log(event)
 				if(event.element == "click") {
 					// Toggle breakpoint
@@ -157,6 +156,20 @@ export class BlocklyDebug {
 			this.setInterpreterBreakpointIDs([])
 		}
 
+		// css changes the appearance of the blocks `#blockyl.debug`
+		if (this.debugMode) {
+			$('#blockly').addClass('debug')
+		} else {
+			$('#blockly').removeClass('debug')
+		}
+		const workspace = Blockly.getMainWorkspace()
+		if (workspace != null) {
+			workspace.getAllBlocks(false)
+				.forEach((block: SpecialBlocklyBlock) => {
+					$(block.svgPath_).stop(true, true).removeAttr('style')
+				})
+		}
+
 		/*for (const interpreter of this.getInterpreters()) {
 
 			if(!this.debugMode) {
@@ -190,11 +203,7 @@ export class BlocklyDebug {
 	}
 
 	private updateDebugUI() {
-		this.getInterpreters().forEach(interpreter => {
-			interpreter.removeHighlights()
-			interpreter.setDebugMode(false)
-			interpreter.setDebugMode(this.debugMode)
-		})
+		this.getInterpreters().forEach(interpreter => interpreter.setDebugMode(this.debugMode))
 	}
 
 	/** removes breakpoint with breakpointID */

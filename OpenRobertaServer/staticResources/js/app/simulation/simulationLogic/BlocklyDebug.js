@@ -123,6 +123,20 @@ define(["require", "exports", "blockly", "./Timer"], function (require, exports,
             else {
                 this.setInterpreterBreakpointIDs([]);
             }
+            // css changes the appearance of the blocks `#blockyl.debug`
+            if (this.debugMode) {
+                $('#blockly').addClass('debug');
+            }
+            else {
+                $('#blockly').removeClass('debug');
+            }
+            var workspace = Blockly.getMainWorkspace();
+            if (workspace != null) {
+                workspace.getAllBlocks(false)
+                    .forEach(function (block) {
+                    $(block.svgPath_).stop(true, true).removeAttr('style');
+                });
+            }
             /*for (const interpreter of this.getInterpreters()) {
     
                 if(!this.debugMode) {
@@ -155,11 +169,7 @@ define(["require", "exports", "blockly", "./Timer"], function (require, exports,
         };
         BlocklyDebug.prototype.updateDebugUI = function () {
             var _this_1 = this;
-            this.getInterpreters().forEach(function (interpreter) {
-                interpreter.removeHighlights();
-                interpreter.setDebugMode(false);
-                interpreter.setDebugMode(_this_1.debugMode);
-            });
+            this.getInterpreters().forEach(function (interpreter) { return interpreter.setDebugMode(_this_1.debugMode); });
         };
         /** removes breakpoint with breakpointID */
         BlocklyDebug.prototype.removeBreakpoint = function (breakpointID) {

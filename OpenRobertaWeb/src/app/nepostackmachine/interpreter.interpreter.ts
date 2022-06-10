@@ -3,11 +3,10 @@ import { State } from './interpreter.state';
 import * as C from './interpreter.constants';
 import * as U from './interpreter.util';
 import * as UI from 'neuralnetwork.ui';
-
-declare var stackmachineJsHelper;
+import * as stackmachineJsHelper from "interpreter.jsHelper"
 
 export class Interpreter {
-    public breakpoints: any[];
+    public breakpoints: string[];
     private terminated = false;
     private callbackOnTermination = undefined;
     private robotBehaviour: ARobotBehaviour;
@@ -90,14 +89,12 @@ export class Interpreter {
     }
 
     /** Sets the debug mode*/
-    public setDebugMode(mode) {
+    public setDebugMode(mode: boolean) {
         this.state.setDebugMode(mode);
         if (mode) {
-            stackmachineJsHelper.getJqueryObject('#blockly').addClass('debug');
             this.state.addHighlights(this.breakpoints);
         } else {
             this.state.removeHighlights(this.breakpoints);
-            stackmachineJsHelper.getJqueryObject('#blockly').removeClass('debug');
         }
     }
 

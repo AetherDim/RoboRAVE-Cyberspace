@@ -1,5 +1,6 @@
 {
     "compilerOptions": {
+        "strict": false,
         "outDir": "../OpenRobertaServer/staticResources/js",
         "target": "es5",
         "rootDir": "src",

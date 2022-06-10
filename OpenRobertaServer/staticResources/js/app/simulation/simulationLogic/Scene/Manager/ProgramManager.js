@@ -131,8 +131,8 @@ define(["require", "exports", "../../EventManager/EventManager", "../../BlocklyD
         //
         // Debugging
         //
-        ProgramManager.prototype.setDebugMode = function (state) {
-            this.debugManager.updateDebugMode(state);
+        ProgramManager.prototype.setDebugMode = function (debugMode) {
+            this.debugManager.updateDebugMode(debugMode);
         };
         ProgramManager.prototype.isDebugMode = function () {
             return this.debugManager.isDebugMode();

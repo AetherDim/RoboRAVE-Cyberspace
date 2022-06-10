@@ -1,7 +1,6 @@
 import * as C from './interpreter.constants';
 import * as U from './interpreter.util';
-
-declare var stackmachineJsHelper;
+import * as stackmachineJsHelper from 'interpreter.jsHelper'
 
 export class State {
     /**
@@ -275,7 +274,7 @@ export class State {
 
     /** Will add highlights from all currently blocks being currently executed and all given Breakpoints
      * @param breakPoints the array of breakpoint block id's to have their highlights added*/
-    public addHighlights(breakPoints: any[]) {
+    public addHighlights(breakPoints: string[]) {
         [...this.currentBlocks]
             .map((blockId) => stackmachineJsHelper.getBlockById(blockId))
             .forEach((block) => this.highlightBlock(block));

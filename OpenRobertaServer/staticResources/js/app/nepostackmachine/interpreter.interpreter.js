@@ -14,7 +14,7 @@ var __read = (this && this.__read) || function (o, n) {
     }
     return ar;
 };
-define(["require", "exports", "./interpreter.state", "./interpreter.constants", "./interpreter.util", "neuralnetwork.ui"], function (require, exports, interpreter_state_1, C, U, UI) {
+define(["require", "exports", "./interpreter.state", "./interpreter.constants", "./interpreter.util", "neuralnetwork.ui", "interpreter.jsHelper"], function (require, exports, interpreter_state_1, C, U, UI, stackmachineJsHelper) {
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.Interpreter = void 0;
     var Interpreter = /** @class */ (function () {
@@ -83,12 +83,10 @@ define(["require", "exports", "./interpreter.state", "./interpreter.constants", 
         Interpreter.prototype.setDebugMode = function (mode) {
             this.state.setDebugMode(mode);
             if (mode) {
-                stackmachineJsHelper.getJqueryObject('#blockly').addClass('debug');
                 this.state.addHighlights(this.breakpoints);
             }
             else {
                 this.state.removeHighlights(this.breakpoints);
-                stackmachineJsHelper.getJqueryObject('#blockly').removeClass('debug');
             }
         };
         /** sets relevant event value to true */

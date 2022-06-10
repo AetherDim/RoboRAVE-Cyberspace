@@ -23,7 +23,7 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
     }
     return to.concat(ar || Array.prototype.slice.call(from));
 };
-define(["require", "exports", "./interpreter.constants", "./interpreter.util"], function (require, exports, C, U) {
+define(["require", "exports", "./interpreter.constants", "./interpreter.util", "interpreter.jsHelper"], function (require, exports, C, U, stackmachineJsHelper) {
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.State = void 0;
     var State = /** @class */ (function () {

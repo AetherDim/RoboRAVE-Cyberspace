@@ -171,8 +171,8 @@ export class ProgramManager {
 	// Debugging
 	//
 
-	setDebugMode(state: boolean) {
-		this.debugManager.updateDebugMode(state)
+	setDebugMode(debugMode: boolean) {
+		this.debugManager.updateDebugMode(debugMode)
 	}
 
 	isDebugMode() {
