@@ -367,7 +367,7 @@ define(["require", "exports", "message", "log", "util", "guiState.controller", "
         var xml = Blockly.Xml.domToText(dom);
         //TODO this should be removed after the next release
         xml = '<export xmlns="http://de.fhg.iais.roberta.blockly"><program>' + xml + '</program><config>' + GUISTATE_C.getConfigurationXML() + '</config></export>';
-        var link = location.href + '#loadProgram';
+        var link = location.origin + '/#loadProgram';
         link += '&&' + GUISTATE_C.getRobot();
         link += '&&' + GUISTATE_C.getProgramName();
         link += '&&' + xml;
