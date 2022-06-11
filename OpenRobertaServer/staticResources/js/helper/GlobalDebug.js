@@ -188,6 +188,19 @@ define(["require", "exports", "dat.gui", "./Timer"], function (require, exports,
                 }
             }
         });
+        debug.addButton("Pace", function () {
+            $(".cover").hide();
+            $(".blocklyDraggable").addClass("pace");
+            $(".dg").addClass("pace");
+            $(".blocklyToolboxDiv").addClass("pace");
+            $(".blocklyButtons").addClass("pace");
+            $(".dropdown-toggle").addClass("pace");
+            $(".img-nepo").addClass("pace");
+            $(".rightMenuButton").addClass("pace");
+            $(".canvasSim").addClass("pace");
+            $(".typcn").addClass("pace");
+            $('.pace').show();
+        });
     }
     exports.initGlobalSceneDebug = initGlobalSceneDebug;
     var SceneDebug = /** @class */ (function () {

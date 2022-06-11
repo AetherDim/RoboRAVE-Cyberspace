@@ -207,6 +207,19 @@ export function initGlobalSceneDebug(sceneRenderer: SceneRender) {
 			}
 		}
 	})
+	debug.addButton("Pace", () => {
+		$(".cover").hide()
+		$(".blocklyDraggable").addClass("pace")
+		$(".dg").addClass("pace")
+		$(".blocklyToolboxDiv").addClass("pace")
+		$(".blocklyButtons").addClass("pace")
+		$(".dropdown-toggle").addClass("pace")
+		$(".img-nepo").addClass("pace")
+		$(".rightMenuButton").addClass("pace")
+		$(".canvasSim").addClass("pace")
+		$(".typcn").addClass("pace")
+		$('.pace').show()
+	})
 	
 }
 
