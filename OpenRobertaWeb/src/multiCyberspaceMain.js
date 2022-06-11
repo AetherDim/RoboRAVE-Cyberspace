@@ -76,9 +76,13 @@ const QUERY_ASSIGNMENT = '=';
 const LOAD_SYSTEM_CALL = 'loadSystem';
 
 function cleanUri() {
-    var uri = window.location.toString();
-    var clean_uri = uri.substring(0, uri.lastIndexOf("/"));
-    window.history.replaceState({}, document.title, clean_uri);
+    const uri = window.location.toString()
+    const indexOfSlash = uri.lastIndexOf("/")
+    const hashTagIndex = uri.indexOf("#", indexOfSlash)
+    if (hashTagIndex >= 0) {
+        const cleanURI = uri.substring(0, hashTagIndex)
+        window.history.replaceState({}, document.title, cleanURI)
+    }
 }
 
 // from https://stackoverflow.com/questions/19491336/get-url-parameter-jquery-or-how-to-get-query-string-values-in-js/21903119#21903119
