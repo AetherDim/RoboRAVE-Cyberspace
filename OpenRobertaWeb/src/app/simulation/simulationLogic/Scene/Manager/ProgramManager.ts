@@ -1,4 +1,4 @@
-import { Interpreter } from "./../../interpreter.interpreter";
+import { Interpreter, InterpreterEvent } from "./../../interpreter.interpreter";
 import { RobotProgram } from "../../Robot/RobotProgram";
 import { EventManager, ParameterTypes } from "../../EventManager/EventManager";
 import {BlocklyDebug} from "../../BlocklyDebug";
@@ -103,12 +103,12 @@ export class Program {
 	}
 
 	/** adds an event to the interpreters */
-	interpreterAddEvent(mode: any) {
+	interpreterAddEvent(mode: InterpreterEvent) {
 		this.interpreter?.addEvent(mode);
 	}
 
 	/** removes an event to the interpreters */
-	interpreterRemoveEvent(mode: any) {
+	interpreterRemoveEvent(mode: InterpreterEvent) {
 		this.interpreter?.removeEvent(mode);
 	}
 

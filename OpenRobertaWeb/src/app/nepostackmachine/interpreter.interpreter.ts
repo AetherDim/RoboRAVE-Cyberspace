@@ -1,20 +1,37 @@
 import { ARobotBehaviour } from './interpreter.aRobotBehaviour';
-import { State } from './interpreter.state';
+import {
+    ListOperation,
+    MathIntegerFunction,
+    MathOnList,
+    ArrayPosition,
+    SingleFunction,
+    Statement,
+    UnarySubOperation,
+    ImageShiftDirection
+} from './interpreter.statement';
 import * as C from './interpreter.constants';
 import * as U from './interpreter.util';
 import * as UI from 'neuralnetwork.ui';
+import * as SimConstants from "./simulation.constants"
+import { AnyAssertion, Utils } from './Utils';
+import { State, StateValue } from 'interpreter.state';
 
 export type InterpreterCallback = () => void
+export type InterpreterEvent =
+    typeof SimConstants.default.DEBUG_BREAKPOINT |
+    typeof SimConstants.default.DEBUG_STEP_INTO |
+    typeof SimConstants.default.DEBUG_STEP_OVER
+
 export class Interpreter {
     public breakpoints: string[];
     private terminated = false;
     private callbackOnTermination: (interpreter: Interpreter) => void
     private robotBehaviour: ARobotBehaviour;
     private state: State; // the state of the interpreter (ops, pc, bindings, stack, ...)
-    private events: any;
-    private stepOverBlock: any;
-    private lastStoppedBlock: any;
-    private lastBlock: any;
+    private events: { [key in InterpreterEvent]? : boolean};
+    private stepOverBlock: Statement | null;
+    private lastStoppedBlock: Statement | null;
+    private lastBlock: Statement | null;
 
     private readonly debugDelay = 2;
 
@@ -108,12 +125,12 @@ export class Interpreter {
     }
 
     /** sets relevant event value to true */
-    public addEvent(mode) {
+    public addEvent(mode: InterpreterEvent) {
         this.events[mode] = true;
     }
 
     /** sets relevant event value to false */
-    public removeEvent(mode) {
+    public removeEvent(mode: InterpreterEvent) {
         this.events[mode] = false;
     }
 
@@ -142,7 +159,7 @@ export class Interpreter {
      * and continue line-by-line debugging there.
      * -BreakPoint will continue execution until the next breakpoint is reached or the program exits.
      */
-    private evalOperation(maxRunTime: number) {
+    private evalOperation(maxRunTime: number): number {
         while (maxRunTime >= new Date().getTime() && !this.robotBehaviour.getBlocking()) {
             let op = this.state.getOp();
             this.state.evalHighlightings(op, this.lastBlock);
@@ -211,7 +228,7 @@ export class Interpreter {
      * @return whether the interpreter can continue evaluating the operation
      * @private
      */
-    private calculateDebugBehaviour(op): boolean {
+    private calculateDebugBehaviour(op: Statement): boolean {
         if (this.events[C.DEBUG_BREAKPOINT] && Interpreter.isBreakPoint(op, this.breakpoints) && op !== this.lastStoppedBlock) {
             this.breakPoint(op);
             return false;
@@ -237,20 +254,20 @@ export class Interpreter {
         return true;
     }
 
-    private stepOver(op) {
+    private stepOver(op: Statement) {
         this.onProgramBreak(this)
         this.events[C.DEBUG_STEP_OVER] = false;
         this.stepOverBlock = null;
         this.lastStoppedBlock = op;
     }
 
-    private stepInto(op) {
+    private stepInto(op: Statement) {
         this.onProgramBreak(this)
         this.events[C.DEBUG_STEP_INTO] = false;
         this.lastStoppedBlock = op;
     }
 
-    private breakPoint(op) {
+    private breakPoint(op: Statement) {
         this.onProgramBreak(this)
         this.events[C.DEBUG_BREAKPOINT] = false;
         this.lastStoppedBlock = op;
@@ -262,7 +279,7 @@ export class Interpreter {
      * @param stmt the operation to be evaluated
      * @returns [result,stop] result will be time required till next instruction and stop indicates if evalOperation should return result or not.
      */
-    private evalSingleOperation(stmt: any) {
+    private evalSingleOperation(stmt: Statement): [delay: number, stop: boolean] {
         this.state.opLog('actual ops: ');
         this.state.incrementProgramCounter();
         if (stmt === undefined) {
@@ -273,7 +290,8 @@ export class Interpreter {
             switch (opCode) {
                 case C.JUMP: {
                     const condition = stmt[C.CONDITIONAL];
-                    if (condition === C.ALWAYS || this.state.pop() === condition) {
+                    if (condition === C.ALWAYS || this.state.popStateValue() == condition) {
+                        Utils.assertTypeOf(stmt[C.TARGET], "number")
                         this.state.pc = stmt[C.TARGET];
                     }
                     break;
@@ -335,20 +353,21 @@ export class Interpreter {
                     if (durationType === C.DEGREE || durationType === C.DISTANCE || durationType === C.ROTATIONS) {
                         // if durationType is defined, then duration must be defined, too. Thus, it is never 'undefined' :-)
                         let rotationPerSecond = (C.MAX_ROTATION * Math.abs(speed)) / 100.0;
-                        duration = (duration / rotationPerSecond) * 1000;
+                        duration = (duration!! / rotationPerSecond) * 1000;
                         if (durationType === C.DEGREE) {
                             duration /= 360.0;
                         }
                     }
-                    this.robotBehaviour.motorOnAction(name, port, duration, speed);
+                    // FIXME: duration can be undefined
+                    this.robotBehaviour.motorOnAction(name, port, duration ?? 0, speed);
                     return [duration ? duration : 0, true];
                 }
                 case C.DRIVE_ACTION: {
                     const speedOnly = stmt[C.SPEED_ONLY];
                     const setTime = stmt[C.SET_TIME];
                     const name = stmt[C.NAME];
-                    let time;
-                    let distance;
+                    let time: number | undefined;
+                    let distance: number | undefined;
 
                     if (setTime) {
                         distance = undefined;
@@ -366,8 +385,8 @@ export class Interpreter {
                     const speedOnly = stmt[C.SPEED_ONLY];
                     const setTime = stmt[C.SET_TIME];
 
-                    let time;
-                    let angle;
+                    let time: number | undefined;
+                    let angle: number | undefined;
 
                     if (setTime) {
                         angle = undefined;
@@ -385,8 +404,8 @@ export class Interpreter {
                 case C.CURVE_ACTION: {
                     const speedOnly = stmt[C.SPEED_ONLY];
                     const setTime = stmt[C.SET_TIME];
-                    let time;
-                    let distance;
+                    let time: number | undefined;
+                    let distance: number | undefined;
 
                     if (setTime) {
                         distance = undefined;
@@ -428,12 +447,13 @@ export class Interpreter {
                     return [0, true];
                 }
                 case C.MOTOR_GET_POWER: {
+                    const name = stmt[C.NAME];
                     const port = stmt[C.PORT];
                     this.robotBehaviour.getMotorSpeed(this.state, name, port);
                     break;
                 }
                 case C.SHOW_TEXT_ACTION: {
-                    const text = this.state.pop();
+                    const text = this.state.popUnknown();
                     const name = stmt[C.NAME];
                     if (name === 'ev3') {
                         const x = this.state.pop();
@@ -444,11 +464,11 @@ export class Interpreter {
                     return [this.robotBehaviour.showTextAction(text, stmt[C.MODE]), true];
                 }
                 case C.SHOW_IMAGE_ACTION: {
-                    let image;
+                    let image: StateValue;
                     if (stmt[C.NAME] == 'ev3') {
                         image = stmt[C.IMAGE];
                     } else {
-                        image = this.state.pop();
+                        image = this.state.popStateValue();
                     }
                     return [this.robotBehaviour.showImageAction(image, stmt[C.MODE]), true];
                 }
@@ -459,7 +479,11 @@ export class Interpreter {
 
                 case C.IMAGE_SHIFT_ACTION: {
                     const nShift = this.state.pop();
-                    const image = this.state.pop();
+                    const image = this.state.popUnknown();
+                    
+                    const assertNumberArray: AnyAssertion<number[][]> = Utils.assertArrayOf(Utils.assertArrayOf(Utils.assertType( "number")))
+                    assertNumberArray(image)
+
                     if (stmt[C.NAME] === 'mbot') {
                         this.state.push(this.shiftImageActionMbot(image, stmt[C.DIRECTION], nShift));
                     } else {
@@ -483,11 +507,12 @@ export class Interpreter {
                 case C.LIGHT_ACTION:
                     let color;
                     if (stmt[C.NAME] === 'mbot') {
-                        const rgb = this.state.pop();
+                        const rgb = this.state.popUnknown() as number[];
                         color = 'rgb(' + rgb[0] + ',' + rgb[1] + ',' + rgb[2] + ')';
                     } else {
                         color = stmt[C.COLOR];
                     }
+                    Utils.assertTypeOf(stmt[C.PORT], "string")
                     this.robotBehaviour.lightAction(stmt[C.MODE], color, stmt[C.PORT]);
                     return [0, true];
                 case C.STATUS_LIGHT_ACTION:
@@ -511,6 +536,7 @@ export class Interpreter {
                     this.robotBehaviour.timerReset(stmt[C.PORT]);
                     break;
                 case C.ENCODER_SENSOR_RESET:
+                    Utils.assertTypeOf(stmt[C.PORT], "string")
                     this.robotBehaviour.encoderReset(stmt[C.PORT]);
                     return [0, true];
                 case C.GYRO_SENSOR_RESET:
@@ -535,7 +561,7 @@ export class Interpreter {
                 case C.SAY_TEXT_ACTION: {
                     const pitch = this.state.pop();
                     const speed = this.state.pop();
-                    const text = this.state.pop();
+                    const text = this.state.popType("string");
                     return [this.robotBehaviour.sayTextAction(text, speed, pitch), true];
                 }
                 case C.UNBIND_VAR:
@@ -561,12 +587,13 @@ export class Interpreter {
                 case C.LIST_OPERATION: {
                     const op = stmt[C.OP];
                     const loc = stmt[C.POSITION];
+                    Utils.assertTypeOf(loc, "string")
                     let ix = 0;
                     if (loc != C.LAST && loc != C.FIRST) {
                         ix = this.state.pop();
                     }
                     const value = this.state.pop();
-                    let list = this.state.pop();
+                    let list = this.state.popUnknown() as unknown[];
                     ix = this.getIndex(list, loc, ix);
                     if (op == C.SET) {
                         list[ix] = value;
@@ -594,7 +621,7 @@ export class Interpreter {
                 case C.ASSERT_ACTION: {
                     const right = this.state.pop();
                     const left = this.state.pop();
-                    const value = this.state.pop();
+                    const value = this.state.popType("boolean");
                     this.robotBehaviour.assertAction(stmt[C.MSG], left, stmt[C.OP], right, value);
                     break;
                 }
@@ -613,7 +640,7 @@ export class Interpreter {
      *
      * . @param expr to be evaluated
      */
-    private evalExpr(expr) {
+    private evalExpr(expr: Statement) {
         const kind = expr[C.EXPR];
         switch (kind) {
             case C.VAR:
@@ -663,11 +690,11 @@ export class Interpreter {
                 break;
             }
             case C.UNARY: {
-                const subOp = expr[C.OP];
+                const subOp = expr[C.OP] as UnarySubOperation;
                 switch (subOp) {
                     case C.NOT:
                         var truthy;
-                        const bool = this.state.pop();
+                        const bool = this.state.popAny();
                         if (bool === 'true') {
                             truthy = true;
                         } else if (bool === 'false' || bool === '0' || bool === '') {
@@ -717,7 +744,7 @@ export class Interpreter {
                 break;
             }
             case C.SINGLE_FUNCTION: {
-                const subOp = expr[C.OP];
+                const subOp = expr[C.OP] as SingleFunction;
                 const value = this.state.pop();
                 U.debug('---------- ' + subOp + ' with ' + value);
                 switch (subOp) {
@@ -797,7 +824,7 @@ export class Interpreter {
                 this.state.push(Math.random());
                 break;
             case C.MATH_PROP_FUNCT: {
-                const subOp = expr[C.OP];
+                const subOp = expr[C.OP] as MathIntegerFunction;
                 const value = this.state.pop();
                 switch (subOp) {
                     case 'EVEN':
@@ -828,8 +855,8 @@ export class Interpreter {
                 break;
             }
             case C.MATH_ON_LIST: {
-                const subOp = expr[C.OP];
-                const value = this.state.pop();
+                const subOp = expr[C.OP] as MathOnList;
+                const value = this.state.popUnknown() as number[];
                 switch (subOp) {
                     case C.SUM:
                         this.state.push(this.sum(value));
@@ -864,34 +891,34 @@ export class Interpreter {
                 break;
             }
             case C.CAST_CHAR: {
-                var num = this.state.pop();
+                const num = this.state.pop();
                 this.state.push(String.fromCharCode(num));
                 break;
             }
             case C.CAST_STRING_NUMBER: {
-                var value = this.state.pop();
+                const value = this.state.popType("string");
                 this.state.push(parseFloat(value));
                 break;
             }
             case C.CAST_CHAR_NUMBER: {
-                var index = this.state.pop();
-                var value = this.state.pop();
+                const index = this.state.pop();
+                const value = this.state.popType("string");
                 this.state.push(value.charCodeAt(index));
                 break;
             }
             case C.LIST_OPERATION: {
-                const subOp = expr[C.OP];
+                const subOp = expr[C.OP] as ListOperation;
                 switch (subOp) {
                     case C.LIST_IS_EMPTY:
-                        this.state.push(this.state.pop().length == 0);
+                        this.state.push(this.state.popArray().length == 0);
                         break;
                     case C.LIST_LENGTH:
-                        this.state.push(this.state.pop().length);
+                        this.state.push(this.state.popArray().length);
                         break;
                     case C.LIST_FIND_ITEM:
                         {
                             const item = this.state.pop();
-                            const list = this.state.pop();
+                            const list = this.state.popArray();
                             if (expr[C.POSITION] == C.FIRST) {
                                 this.state.push(list.indexOf(item));
                             } else {
@@ -904,11 +931,12 @@ export class Interpreter {
                     case C.GET_REMOVE:
                         {
                             const loc = expr[C.POSITION];
+                            Utils.assertTypeOf(loc, "string")
                             let ix = 0;
                             if (loc != C.LAST && loc != C.FIRST) {
                                 ix = this.state.pop();
                             }
-                            let list = this.state.pop();
+                            let list = this.state.popArray();
                             ix = this.getIndex(list, loc, ix);
                             let v = list[ix];
                             if (subOp == C.GET_REMOVE || subOp == C.GET) {
@@ -922,15 +950,18 @@ export class Interpreter {
                     case C.LIST_GET_SUBLIST:
                         {
                             const position = expr[C.POSITION];
-                            let start_ix;
-                            let end_ix;
+                            if (typeof position == "string") {
+                                throw "Position is not an array"
+                            }
+                            let start_ix: number | undefined;
+                            let end_ix: number | undefined;
                             if (position[1] != C.LAST) {
                                 end_ix = this.state.pop();
                             }
                             if (position[0] != C.FIRST) {
                                 start_ix = this.state.pop();
                             }
-                            let list = this.state.pop();
+                            let list = this.state.popArray();
                             start_ix = this.getIndex(list, position[0], start_ix);
                             end_ix = this.getIndex(list, position[1], end_ix) + 1;
                             this.state.push(list.slice(start_ix, end_ix));
@@ -1115,10 +1146,16 @@ export class Interpreter {
     //        return y - ( y % ( precision === undefined ? 1 : +precision ) );
     //    }
 
-    private getIndex(list: Array<any>, loc: string, ix: number): number {
+    
+    private getIndex(list: Array<any>, loc: ArrayPosition, ix: number | undefined): number {
         if (loc == C.FROM_START) {
-            return ix;
+            // FIXME: ix can be undefined
+            return ix ?? 0;
         } else if (loc == C.FROM_END) {
+            // FIXME: ix can be undefined
+            if (ix == undefined) {
+                return list.length - 1
+            }
             return list.length - 1 - ix;
         } else if (loc == C.FIRST) {
             return 0;
@@ -1138,7 +1175,7 @@ export class Interpreter {
         return image;
     }
 
-    private shiftImageAction(image: number[][], direction: string, nShift: number): number[][] {
+    private shiftImageAction(image: number[][], direction: "up" | "down" | "left" | "right", nShift: number): number[][] {
         nShift = Math.round(nShift);
         var shift = {
             down: function () {
@@ -1180,7 +1217,7 @@ export class Interpreter {
         return image;
     }
 
-    private shiftImageActionMbot(image: number[][], direction: string, nShift: number): number[][] {
+    private shiftImageActionMbot(image: number[][], direction: ImageShiftDirection, nShift: number): number[][] {
         nShift = Math.round(nShift);
         var shift = {
             left: function () {
@@ -1216,25 +1253,26 @@ export class Interpreter {
                 direction = 'left';
             }
         }
-        for (var i = 0; i < nShift; i++) {
+        for (let i = 0; i < nShift; i++) {
             shift[direction]();
         }
         return image;
     }
 
-    private static isPossibleStepInto(op): boolean {
-        if (op[C.POSSIBLE_DEBUG_STOP]?.length > 0) {
+    private static isPossibleStepInto(op: Statement): boolean {
+        if (op[C.POSSIBLE_DEBUG_STOP] != undefined && 
+            op[C.POSSIBLE_DEBUG_STOP].length > 0) {
             return true;
         }
         return false;
     }
 
-    private static isPossibleStepOver(op): boolean {
+    private static isPossibleStepOver(op: Statement): boolean {
         let isMethodCall = op[C.OPCODE] === C.COMMENT && op[C.TARGET] === C.METHOD_CALL;
         return op.hasOwnProperty(C.HIGHTLIGHT_PLUS) && isMethodCall;
     }
 
-    private static isBreakPoint(op: any, breakpoints: any[]): boolean {
+    private static isBreakPoint(op: Statement, breakpoints: string[]): boolean {
         if (op[C.POSSIBLE_DEBUG_STOP]?.some((blockId) => breakpoints.indexOf(blockId) >= 0)) {
             return true;
         }

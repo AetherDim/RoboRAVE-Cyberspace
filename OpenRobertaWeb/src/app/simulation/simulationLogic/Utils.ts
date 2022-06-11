@@ -142,7 +142,62 @@ export type TupleUnpackArray<T extends readonly any[]> = { [k in keyof T]: Unpac
 type RestrictedKeys<T, KeyType> = { [k in keyof T]: T[k] extends KeyType ? k : never }[keyof T]
 type RestrictedKeysType<T, KeyType> = { [k in keyof T]: T[k] extends KeyType ? T[k] : never }
 
+export type MainTypes = {
+	string : string,
+	number: number,
+	bigint: bigint,
+	boolean: boolean,
+	symbol: symbol,
+	undefined: undefined,
+	object: object,
+	function: Function
+}
+
+export type AnyAssertion<T> = (value: unknown) => asserts value is T
+
 export class Utils {
+
+	static assertTrue(value: boolean): asserts value is true {
+		if (!value) {
+			throw "The value is not `true`"
+		}
+	}
+
+	static assertNonNull<T>(value: T | undefined | null): asserts value is T {
+		if (value === undefined || value === null) {
+			throw `The value is ${value}`
+		}
+	}
+
+	static assertTypeOf<TypeName extends keyof MainTypes>(value: unknown, type: TypeName): asserts value is MainTypes[TypeName]  {
+		if (typeof value != type) {
+			throw `The value '${value}' is not of type '${type}'`
+		}
+	}
+
+	static assertType<TypeName extends keyof MainTypes>(type: TypeName): AnyAssertion<MainTypes[TypeName]>  {
+		return value => {
+			if (typeof value != type) {
+				throw `The value '${value}' is not of type '${type}'`
+			}
+		}
+	}
+
+	static assertInstanceOf<T>(value: unknown, type: new (...args: any[]) => T): asserts value is T  {
+		if (!(value instanceof type)) {
+			throw `The value '${value}' is not of type '${type}'`
+		}
+	}
+
+	static assertArrayOf<T>(elementGuard: AnyAssertion<T>): AnyAssertion<T[]> {
+		return array => {
+			if (Array.isArray(array)) {
+				array.forEach(elementGuard)
+			} else {
+				throw "The value is not an array"
+			}
+		}
+	}
 
 	/**
 	 * Checks if the `object` contains all `keys`.
@@ -667,6 +722,40 @@ export class Utils {
 
 	static cloneVector(value: Vector): Vector {
 		return { x: value.x, y: value.y }
+	}
+
+	static clone<T extends any[] | object | Date | undefined | null>(obj: T): T {
+
+		// Handle the 3 simple types, and null or undefined
+		if (obj == null || typeof obj != "object") return obj;
+
+		// Handle Date
+		if (obj instanceof Date) {
+			const copy = new Date();
+			copy.setTime(obj.getTime());
+			return copy as T;
+		}
+
+		// Handle Array
+		if (obj instanceof Array) {
+			const copy: any[] = [];
+			for (let i = 0; i < obj.length; i++) {
+				copy[i] = Utils.clone(obj[i]);
+			}
+			return copy as T
+		}
+
+		// Handle Object
+		if (obj instanceof Object) {
+			const copy: StringMap<any> = {};
+			for (const attr in obj) {
+				if (obj.hasOwnProperty(attr)) {
+					copy[attr] = Utils.clone((obj as any)[attr])
+				}
+			}
+			return copy as T
+		}
+		throw new Error("Unable to copy obj! Its type isn't supported.")
 	}
 
 	static randomElement<T>(array: T[]): T|undefined {

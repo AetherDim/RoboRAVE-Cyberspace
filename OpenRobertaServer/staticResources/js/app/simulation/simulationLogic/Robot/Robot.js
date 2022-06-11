@@ -788,7 +788,7 @@ define(["require", "exports", "matter-js", "./ElectricMotor", "../interpreter.co
         ;
         Robot.prototype.addHTMLSensorValuesTo = function (list) {
             var e_2, _a, e_3, _b, e_4, _c, e_5, _d, e_6, _e;
-            var _f, _g, _h, _j;
+            var _f, _g, _h;
             var s = this.scene;
             var appendAny = function (label, value) { list.push({ label: label, value: value }); };
             var append = function (label, value, end) {
@@ -798,69 +798,69 @@ define(["require", "exports", "matter-js", "./ElectricMotor", "../interpreter.co
             append("Robot Y", this.body.position.y);
             append("Robot θ", this.body.angle * 180 / Math.PI, "°");
             try {
-                for (var _k = __values(this.programManager.getPrograms()), _l = _k.next(); !_l.done; _l = _k.next()) {
-                    var program = _l.value;
-                    var sensors = program.instruction.getHardwareStateSensors();
-                    append("Motor left", Utils_1.Utils.toDegrees((_g = (_f = sensors.encoder) === null || _f === void 0 ? void 0 : _f.left) !== null && _g !== void 0 ? _g : 0), "°");
-                    append("Motor right", Utils_1.Utils.toDegrees((_j = (_h = sensors.encoder) === null || _h === void 0 ? void 0 : _h.right) !== null && _j !== void 0 ? _j : 0), "°");
+                for (var _j = __values(this.programManager.getPrograms()), _k = _j.next(); !_k.done; _k = _j.next()) {
+                    var program = _k.value;
+                    var encoder = (_f = program.instruction) === null || _f === void 0 ? void 0 : _f.getHardwareStateSensors().encoder;
+                    append("Motor left", Utils_1.Utils.toDegrees((_g = encoder === null || encoder === void 0 ? void 0 : encoder.left) !== null && _g !== void 0 ? _g : 0), "°");
+                    append("Motor right", Utils_1.Utils.toDegrees((_h = encoder === null || encoder === void 0 ? void 0 : encoder.right) !== null && _h !== void 0 ? _h : 0), "°");
                 }
             }
             catch (e_2_1) { e_2 = { error: e_2_1 }; }
             finally {
                 try {
-                    if (_l && !_l.done && (_a = _k.return)) _a.call(_k);
+                    if (_k && !_k.done && (_a = _j.return)) _a.call(_j);
                 }
                 finally { if (e_2) throw e_2.error; }
             }
             try {
-                for (var _m = __values(this.touchSensors), _o = _m.next(); !_o.done; _o = _m.next()) {
-                    var _p = __read(_o.value, 2), port = _p[0], touchSensor = _p[1];
+                for (var _l = __values(this.touchSensors), _m = _l.next(); !_m.done; _m = _l.next()) {
+                    var _o = __read(_m.value, 2), port = _o[0], touchSensor = _o[1];
                     appendAny("Touch Sensor " + port, touchSensor.getIsTouched());
                 }
             }
             catch (e_3_1) { e_3 = { error: e_3_1 }; }
             finally {
                 try {
-                    if (_o && !_o.done && (_b = _m.return)) _b.call(_m);
+                    if (_m && !_m.done && (_b = _l.return)) _b.call(_l);
                 }
                 finally { if (e_3) throw e_3.error; }
             }
             try {
-                for (var _q = __values(this.colorSensors), _r = _q.next(); !_r.done; _r = _q.next()) {
-                    var _s = __read(_r.value, 2), port = _s[0], colorSensor = _s[1];
+                for (var _p = __values(this.colorSensors), _q = _p.next(); !_q.done; _q = _p.next()) {
+                    var _r = __read(_q.value, 2), port = _r[0], colorSensor = _r[1];
                     append("Light Sensor " + port, colorSensor.getDetectedBrightness() * 100, "%");
                 }
             }
             catch (e_4_1) { e_4 = { error: e_4_1 }; }
             finally {
                 try {
-                    if (_r && !_r.done && (_c = _q.return)) _c.call(_q);
+                    if (_q && !_q.done && (_c = _p.return)) _c.call(_p);
                 }
                 finally { if (e_4) throw e_4.error; }
             }
             try {
-                for (var _t = __values(this.colorSensors), _u = _t.next(); !_u.done; _u = _t.next()) {
-                    var _v = __read(_u.value, 2), port = _v[0], colorSensor = _v[1];
+                for (var _s = __values(this.colorSensors), _t = _s.next(); !_t.done; _t = _s.next()) {
+                    var _u = __read(_t.value, 2), port = _u[0], colorSensor = _u[1];
                     appendAny("Color Sensor " + port, "<span style=\"width: 20px; background-color:" + colorSensor.getColorHexValueString() + "\">&nbsp;</span>");
                 }
             }
             catch (e_5_1) { e_5 = { error: e_5_1 }; }
             finally {
                 try {
-                    if (_u && !_u.done && (_d = _t.return)) _d.call(_t);
+                    if (_t && !_t.done && (_d = _s.return)) _d.call(_s);
                 }
                 finally { if (e_5) throw e_5.error; }
             }
             try {
-                for (var _w = __values(this.ultrasonicSensors), _x = _w.next(); !_x.done; _x = _w.next()) {
-                    var _y = __read(_x.value, 2), port = _y[0], ultrasonicSensor = _y[1];
+                for (var _v = __values(this.ultrasonicSensors), _w = _v.next(); !_w.done; _w = _v.next()) {
+                    var _x = __read(_w.value, 2), port = _x[0], ultrasonicSensor = _x[1];
                     append("Ultra Sensor " + port, 100 * s.unit.fromLength(ultrasonicSensor.getMeasuredDistance()), "cm");
                 }
             }
             catch (e_6_1) { e_6 = { error: e_6_1 }; }
             finally {
                 try {
-                    if (_x && !_x.done && (_e = _w.return)) _e.call(_w);
+                    if (_w && !_w.done && (_e = _v.return)) _e.call(_v);
                 }
                 finally { if (e_6) throw e_6.error; }
             }
@@ -875,6 +875,9 @@ define(["require", "exports", "matter-js", "./ElectricMotor", "../interpreter.co
             var e_7, _a, e_8, _b, e_9, _c, e_10, _d;
             var _e, _f;
             var robotBehaviour = program.instruction;
+            if (robotBehaviour == undefined) {
+                return;
+            }
             var sensors = robotBehaviour.getHardwareStateSensors();
             // encoder
             sensors.encoder = {

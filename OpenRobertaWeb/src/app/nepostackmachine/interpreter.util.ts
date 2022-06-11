@@ -1,6 +1,6 @@
 import * as C from './interpreter.constants';
 
-export function dbc(expected, actual) {
+export function dbc(expected: string, actual: any) {
     if (expected !== actual) {
         var msg = 'DBC. Expected: ' + expected + ' but got: ' + actual;
         console.trace(msg);
@@ -8,12 +8,12 @@ export function dbc(expected, actual) {
     }
 }
 
-export function dbcException(s: string) {
+export function dbcException(s: string): never {
     console.trace(s);
     throw s;
 }
 
-export function expectExc(fct, cause?: string) {
+export function expectExc(fct: Function, cause?: string) {
     try {
         fct();
         var msg = 'DBC. Expected exception was not thrown';

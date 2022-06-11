@@ -19,7 +19,7 @@ import { GyroSensor } from './Sensors/GyroSensor'
 import { RobotLED, robotLEDColors } from './RobotLED'
 import {Program, ProgramManager} from '../Scene/Manager/ProgramManager'
 
-export const sensorTypeStrings =  ["TOUCH", "GYRO", "COLOR", "ULTRASONIC", "INFRARED", "SOUND", "COMPASS",
+export const sensorTypeStrings =  ["TOUCH", "GYRO", "COLOR", "ULTRASONIC", "INFRARED", "SOUND", "COMPASS",
 	// german description: "HT Infrarotsensor"
 	"IRSEEKER",
 	// does not work in RobertaLab?!
@@ -950,9 +950,9 @@ export class Robot implements IContainerEntity, IUpdatableEntity, IPhysicsCompos
 		append("Robot θ", this.body.angle * 180 / Math.PI, "°")
 
 		for(const program of this.programManager.getPrograms()) {
-			const sensors = program.instruction.getHardwareStateSensors()
-			append("Motor left", Utils.toDegrees(sensors.encoder?.left ?? 0), "°")
-			append("Motor right", Utils.toDegrees(sensors.encoder?.right ?? 0), "°")
+			const encoder = program.instruction?.getHardwareStateSensors().encoder
+			append("Motor left", Utils.toDegrees(encoder?.left ?? 0), "°")
+			append("Motor right", Utils.toDegrees(encoder?.right ?? 0), "°")
 		}
 
 		for (const [port, touchSensor] of this.touchSensors) {
@@ -979,6 +979,9 @@ export class Robot implements IContainerEntity, IUpdatableEntity, IPhysicsCompos
 
 	private updateRobotBehaviourHardwareStateSensors(program: Program) {
 		const robotBehaviour = program.instruction
+		if (robotBehaviour == undefined) {
+			return
+		}
 		const sensors = robotBehaviour.getHardwareStateSensors()
 
 		// encoder

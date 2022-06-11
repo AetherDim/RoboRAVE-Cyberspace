@@ -13,7 +13,7 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-define(["require", "exports", "./interpreter.aRobotBehaviour", "./interpreter.constants", "./interpreter.util", "./util"], function (require, exports, interpreter_aRobotBehaviour_1, C, U, UTIL) {
+define(["require", "exports", "./interpreter.constants", "./interpreter.util", "./util", "./Utils", "interpreter.aRobotBehaviour"], function (require, exports, C, U, UTIL, Utils_1, interpreter_aRobotBehaviour_1) {
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.RobotMbedBehaviour = void 0;
     var RobotMbedBehaviour = /** @class */ (function (_super) {
@@ -29,33 +29,37 @@ define(["require", "exports", "./interpreter.aRobotBehaviour", "./interpreter.co
             U.debug(robotText + ' getsample from ' + sensor);
             var sensorName = sensor;
             if (sensorName == C.TIMER) {
+                Utils_1.Utils.assertTypeOf(port, "number");
                 s.push(this.timerGet(port));
             }
             else if (sensorName == C.ENCODER_SENSOR_SAMPLE) {
-                s.push(this.getEncoderValue(mode, port));
+                s.push(this.getEncoderValue(mode, port + ""));
             }
             else {
                 //workaround due to mbots sensor names
                 if (name == 'mbot') {
                     port = 'ORT_' + port;
                 }
-                s.push(this.getSensorValue(sensorName, port, mode));
+                s.push(this.getSensorValue(sensorName, port + "", mode));
             }
         };
         RobotMbedBehaviour.prototype.getEncoderValue = function (mode, port) {
             var sensor = this.hardwareState.sensors.encoder;
-            port = port == C.MOTOR_LEFT ? C.LEFT : C.RIGHT;
+            var realPort = port == C.MOTOR_LEFT ? C.LEFT : C.RIGHT;
             if (port != undefined) {
-                var v = sensor[port];
+                var v = sensor === null || sensor === void 0 ? void 0 : sensor[realPort];
                 if (v === undefined) {
                     return 'undefined';
                 }
                 else {
+                    Utils_1.Utils.assertTypeOf(v, "number");
                     return this.rotation2Unit(v, mode);
                 }
             }
+            Utils_1.Utils.assertNonNull(sensor);
             return sensor;
         };
+        // InterpreterConst["DEGREE" | "ROTATIONS" | "DISTANCE"]
         RobotMbedBehaviour.prototype.rotation2Unit = function (value, unit) {
             switch (unit) {
                 case C.DEGREE:
@@ -69,6 +73,7 @@ define(["require", "exports", "./interpreter.aRobotBehaviour", "./interpreter.co
             }
         };
         RobotMbedBehaviour.prototype.getSensorValue = function (sensorName, port, mode) {
+            var _a, _b, _c;
             var sensor = this.hardwareState.sensors[sensorName];
             if (sensor === undefined) {
                 return 'undefined';
@@ -76,10 +81,11 @@ define(["require", "exports", "./interpreter.aRobotBehaviour", "./interpreter.co
             var v;
             if (mode != undefined) {
                 if (port != undefined) {
-                    v = sensor[port][mode];
+                    v = (_a = sensor[port]) === null || _a === void 0 ? void 0 : _a[mode];
                     if (sensorName === 'gyro' && mode === 'angle') {
+                        v = (_c = (_b = this.hardwareState.sensors[sensorName]) === null || _b === void 0 ? void 0 : _b[port]) === null || _c === void 0 ? void 0 : _c[mode];
                         var reset = this.hardwareState['angleReset'];
-                        if (reset != undefined) {
+                        if (v != undefined && reset != undefined) {
                             var resetValue = reset[port];
                             if (resetValue != undefined) {
                                 var value = +v;
@@ -148,26 +154,24 @@ define(["require", "exports", "./interpreter.aRobotBehaviour", "./interpreter.co
                 if (!this.hardwareState.actions.leds) {
                     this.hardwareState.actions.leds = {};
                 }
-                this.hardwareState.actions.leds[port] = {};
-                this.hardwareState.actions.leds[port].mode = C.OFF;
+                this.hardwareState.actions.leds[port] = { mode: C.OFF };
             }
             else {
-                this.hardwareState.actions.led = {};
-                this.hardwareState.actions.led.mode = C.OFF;
+                this.hardwareState.actions.led = { mode: C.OFF };
             }
         };
         RobotMbedBehaviour.prototype.toneAction = function (name, frequency, duration) {
             U.debug(name + ' piezo: ' + ', frequency: ' + frequency + ', duration: ' + duration);
-            this.hardwareState.actions.tone = {};
-            this.hardwareState.actions.tone.frequency = frequency;
-            this.hardwareState.actions.tone.duration = duration;
+            this.hardwareState.actions.tone = {
+                frequency: frequency,
+                duration: duration
+            };
             this.setBlocking(duration > 0);
             return 0;
         };
         RobotMbedBehaviour.prototype.playFileAction = function (file) {
             U.debug('play file: ' + file);
-            this.hardwareState.actions.tone = {};
-            this.hardwareState.actions.tone.file = file;
+            this.hardwareState.actions.tone = { file: file };
             switch (file) {
                 case '0':
                     return 1000;
@@ -179,6 +183,8 @@ define(["require", "exports", "./interpreter.aRobotBehaviour", "./interpreter.co
                     return 700;
                 case '4':
                     return 500;
+                default:
+                    throw "Wrong file " + file;
             }
         };
         RobotMbedBehaviour.prototype.setVolumeAction = function (volume) {
@@ -195,12 +201,11 @@ define(["require", "exports", "./interpreter.aRobotBehaviour", "./interpreter.co
             this.hardwareState.actions.language = language;
         };
         RobotMbedBehaviour.prototype.sayTextAction = function (text, speed, pitch) {
-            if (this.hardwareState.actions.sayText == undefined) {
-                this.hardwareState.actions.sayText = {};
-            }
-            this.hardwareState.actions.sayText.text = text;
-            this.hardwareState.actions.sayText.speed = speed;
-            this.hardwareState.actions.sayText.pitch = pitch;
+            this.hardwareState.actions.sayText = {
+                text: text,
+                speed: speed,
+                pitch: pitch
+            };
             this.setBlocking(true);
             return 0;
         };
@@ -335,6 +340,7 @@ define(["require", "exports", "./interpreter.aRobotBehaviour", "./interpreter.co
             var robotText = 'robot: ' + name + ', port: ' + port;
             U.debug(robotText + ' motor get speed');
             var speed = this.hardwareState.motors[port];
+            Utils_1.Utils.assertNonNull(speed);
             s.push(speed);
         };
         RobotMbedBehaviour.prototype.setMotorSpeed = function (name, port, speed) {
@@ -389,9 +395,10 @@ define(["require", "exports", "./interpreter.aRobotBehaviour", "./interpreter.co
                 if (!this.hardwareState.actions.leds) {
                     this.hardwareState.actions.leds = {};
                 }
-                this.hardwareState.actions.leds[port] = {};
-                this.hardwareState.actions.leds[port][C.MODE] = mode;
-                this.hardwareState.actions.leds[port][C.COLOR] = color;
+                this.hardwareState.actions.leds[port] = {
+                    mode: mode,
+                    color: color
+                };
             }
             else {
                 this.hardwareState.actions.led = {};
@@ -402,15 +409,18 @@ define(["require", "exports", "./interpreter.aRobotBehaviour", "./interpreter.co
         RobotMbedBehaviour.prototype.displaySetPixelBrightnessAction = function (x, y, brightness) {
             U.debug('***** set pixel x="' + x + ', y=' + y + ', brightness=' + brightness + '" *****');
             this.hardwareState.actions.display = {};
-            this.hardwareState.actions.display[C.PIXEL] = {};
-            this.hardwareState.actions.display[C.PIXEL][C.X] = x;
-            this.hardwareState.actions.display[C.PIXEL][C.Y] = y;
-            this.hardwareState.actions.display[C.PIXEL][C.BRIGHTNESS] = brightness;
+            this.hardwareState.actions.display[C.PIXEL] = {
+                x: x,
+                y: y,
+                brightness: brightness
+            };
             return 0;
         };
         RobotMbedBehaviour.prototype.displayGetPixelBrightnessAction = function (s, x, y) {
+            var _a;
             U.debug('***** get pixel x="' + x + ', y=' + y + '" *****');
-            var sensor = this.hardwareState.sensors[C.DISPLAY][C.PIXEL];
+            var sensor = (_a = this.hardwareState.sensors[C.DISPLAY]) === null || _a === void 0 ? void 0 : _a[C.PIXEL];
+            Utils_1.Utils.assertNonNull(sensor);
             s.push(sensor[y][x]);
         };
         RobotMbedBehaviour.prototype.clearDisplay = function () {
@@ -419,9 +429,9 @@ define(["require", "exports", "./interpreter.aRobotBehaviour", "./interpreter.co
             this.hardwareState.actions.display.clear = true;
         };
         RobotMbedBehaviour.prototype.writePinAction = function (pin, mode, value) {
-            this.hardwareState.actions['pin' + pin] = {};
-            this.hardwareState.actions['pin' + pin][mode] = {};
-            this.hardwareState.actions['pin' + pin][mode] = value;
+            var pinString = "pin".concat(pin);
+            this.hardwareState.actions[pinString] = {};
+            this.hardwareState.actions[pinString][mode] = value;
         };
         RobotMbedBehaviour.prototype.gyroReset = function (_port) {
             var gyro = this.hardwareState.sensors['gyro'];

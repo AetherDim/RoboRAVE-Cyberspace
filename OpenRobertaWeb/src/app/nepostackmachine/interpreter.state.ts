@@ -1,6 +1,23 @@
 import * as C from './interpreter.constants';
 import * as U from './interpreter.util';
 import * as stackmachineJsHelper from 'interpreter.jsHelper'
+import { SpecialBlocklyBlock } from './SpecialBlocklyBlock';
+import { MainTypes, StringMap, Utils } from './Utils';
+import { Statement } from './interpreter.statement';
+
+
+export type StateValue =
+    number |
+    string |
+    boolean |
+    // number[] |
+    // number[][] |
+    StateValue[] |
+    StringMap<{
+        leftReset?: boolean
+        rightReset?: boolean
+    } | number>
+
 
 export class State {
     /**
@@ -10,12 +27,12 @@ export class State {
      * - pc, the program counter, is the index of the NEXT operation to be executed
      *   if either the actual array of operations is exhausted
      */
-    private operations: any[];
+    private operations: Statement[];
     public pc: number;
 
     // the hash map of function definitions
-    private bindings; // the binding of values to names (the 'environment')
-    private stack: any[]; // the stack of values
+    private bindings: StringMap<StateValue[]>; // the binding of values to names (the 'environment')
+    private stack: StateValue[]; // the stack of values
     private currentBlocks: string[]; //current blocks being executed
     private debugMode: boolean;
 
@@ -56,10 +73,10 @@ export class State {
      * . @param name the name to which a value is bound
      * . @param value the value that is bound to a name
      */
-    public bindVar(name: string, value) {
+    public bindVar(name: string, value: StateValue) {
         this.checkValidName(name);
         this.checkValidValue(value);
-        var nameBindings = this.bindings[name];
+        const nameBindings = this.bindings[name];
         if (nameBindings === undefined || nameBindings === null || nameBindings === []) {
             this.bindings[name] = [value];
             U.debug('bind new ' + name + ' with ' + value + ' of type ' + typeof value);
@@ -76,8 +93,8 @@ export class State {
      */
     public unbindVar(name: string) {
         this.checkValidName(name);
-        var oldBindings = this.bindings[name];
-        if (oldBindings.length < 1) {
+        const oldBindings = this.bindings[name];
+        if (oldBindings === undefined || oldBindings.length < 1) {
             U.dbcException('unbind failed for: ' + name);
         }
         oldBindings.shift();
@@ -91,7 +108,7 @@ export class State {
      */
     public getVar(name: string) {
         this.checkValidName(name);
-        var nameBindings = this.bindings[name];
+        const nameBindings = this.bindings[name];
         if (nameBindings === undefined || nameBindings === null || nameBindings.length < 1) {
             U.dbcException('getVar failed for: ' + name);
         }
@@ -118,7 +135,7 @@ export class State {
         if (value === undefined || value === null) {
             U.dbcException('setVar value invalid');
         }
-        var nameBindings = this.bindings[name];
+        const nameBindings = this.bindings[name];
         if (nameBindings === undefined || nameBindings === null || nameBindings.length < 1) {
             U.dbcException('setVar failed for: ' + name);
         }
@@ -131,7 +148,7 @@ export class State {
      *
      * . @param value the value to be pushed
      */
-    public push(value) {
+    public push(value: StateValue) {
         this.checkValidValue(value);
         this.stack.push(value);
         U.debug('push ' + value + ' of type ' + typeof value);
@@ -142,13 +159,47 @@ export class State {
      * - discard the value
      * - return the value
      */
-    public pop() {
+    public popUnknown(): unknown {
         if (this.stack.length < 1) {
             U.dbcException('pop failed with empty stack');
         }
-        var value = this.stack.pop();
+        const value = this.stack.pop();
         // p( 'pop ' + value );
         return value;
+    }
+
+    public popAny(): any {
+        return this.popUnknown()
+    }
+
+    public popArray(): StateValue[] {
+        const value = this.popUnknown()
+        if (!Array.isArray(value)) {
+            throw "The value not an array"
+        }
+        return value
+    }
+
+    public popInstance<T>(type: new (...arg: any[]) => T): T {
+        const value = this.popUnknown()
+        Utils.assertInstanceOf(value, type)
+        return value
+    }
+
+    public popType<Keys extends keyof MainTypes>(type: Keys): MainTypes[Keys] {
+        const value = this.popUnknown()
+        Utils.assertTypeOf(value, type)
+        return value
+    }
+
+    public popStateValue(): StateValue {
+        return this.popUnknown() as StateValue
+    }
+
+    public pop(): number {
+        const value = this.popUnknown()
+        Utils.assertTypeOf(value, "number")
+        return value
     }
 
     /**
@@ -187,7 +238,7 @@ export class State {
     /**
      * for early error detection: assert, that a name given (for a binding) is valid
      */
-    private checkValidName(name) {
+    private checkValidName(name: string) {
         if (name === undefined || name === null) {
             U.dbcException('invalid name');
         }
@@ -196,7 +247,7 @@ export class State {
     /**
      * for early error detection: assert, that a value given (for a binding) is valid
      */
-    private checkValidValue(value) {
+    private checkValidValue(value: unknown) {
         if (value === undefined || value === null) {
             U.dbcException('bindVar value invalid');
         }
@@ -218,10 +269,10 @@ export class State {
         U.opLog(msg, this.operations, this.pc);
     }
 
-    public evalHighlightings(currentStmt, lastStmt) {
+    public evalHighlightings(currentStmt: Statement, lastStmt: Statement | null) {
         if (this.debugMode) {
-            let initiations: string[] = currentStmt?.[C.HIGHTLIGHT_PLUS] || [];
-            let terminations: string[] = lastStmt?.[C.HIGHTLIGHT_MINUS]?.filter((term) => initiations.indexOf(term) < 0);
+            const initiations: string[] = currentStmt[C.HIGHTLIGHT_PLUS] || [];
+            const terminations: string[] = lastStmt?.[C.HIGHTLIGHT_MINUS]?.filter((term) => initiations.indexOf(term) < 0) ?? [];
 
             this.evalTerminations(terminations);
             this.evalInitiations(initiations);
@@ -259,16 +310,16 @@ export class State {
     }
 
     /** Returns true if the current block is currently being executed**/
-    public beingExecuted(stmt) {
-        let blockId = stmt[C.HIGHTLIGHT_PLUS].slice(-1).pop();
+    public beingExecuted(stmt: Statement) {
+        const blockId = stmt[C.HIGHTLIGHT_PLUS].slice(-1).pop();
         return blockId && this.isInCurrentBlock(blockId);
     }
 
-    private highlightBlock(block) {
+    private highlightBlock(block: SpecialBlocklyBlock) {
         stackmachineJsHelper.getJqueryObject(block.svgPath_).stop(true, true).animate({ 'fill-opacity': '1' }, 0);
     }
 
-    private removeBlockHighlight(block) {
+    private removeBlockHighlight(block: SpecialBlocklyBlock) {
         stackmachineJsHelper.getJqueryObject(block.svgPath_).stop(true, true).animate({ 'fill-opacity': '0.3' }, 50);
     }
 
@@ -277,10 +328,13 @@ export class State {
     public addHighlights(breakPoints: string[]) {
         [...this.currentBlocks]
             .map((blockId) => stackmachineJsHelper.getBlockById(blockId))
-            .forEach((block) => this.highlightBlock(block));
+            .forEach((block) => {
+                Utils.assertNonNull(block)
+                this.highlightBlock(block)
+            });
 
         breakPoints.forEach((id) => {
-            let block = stackmachineJsHelper.getBlockById(id);
+            const block = stackmachineJsHelper.getBlockById(id);
             if (block !== null) {
                 if (this.currentBlocks.hasOwnProperty(id)) {
                     stackmachineJsHelper.getJqueryObject(block.svgPath_).addClass('selectedBreakpoint');
@@ -298,7 +352,7 @@ export class State {
             .map((blockId) => stackmachineJsHelper.getBlockById(blockId))
             .forEach((block) => {
                 if (block !== null) {
-                    let object = stackmachineJsHelper.getJqueryObject(block);
+                    const object = stackmachineJsHelper.getJqueryObject(block);
                     if (object.hasClass('selectedBreakpoint')) {
                         object.removeClass('selectedBreakpoint').addClass('breakpoint');
                     }

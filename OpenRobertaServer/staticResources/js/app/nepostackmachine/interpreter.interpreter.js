@@ -14,7 +14,7 @@ var __read = (this && this.__read) || function (o, n) {
     }
     return ar;
 };
-define(["require", "exports", "./interpreter.state", "./interpreter.constants", "./interpreter.util", "neuralnetwork.ui"], function (require, exports, interpreter_state_1, C, U, UI) {
+define(["require", "exports", "./interpreter.constants", "./interpreter.util", "neuralnetwork.ui", "./Utils", "interpreter.state"], function (require, exports, C, U, UI, Utils_1, interpreter_state_1) {
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.Interpreter = void 0;
     var Interpreter = /** @class */ (function () {
@@ -240,7 +240,8 @@ define(["require", "exports", "./interpreter.state", "./interpreter.constants", 
                 switch (opCode) {
                     case C.JUMP: {
                         var condition = stmt[C.CONDITIONAL];
-                        if (condition === C.ALWAYS || this.state.pop() === condition) {
+                        if (condition === C.ALWAYS || this.state.popStateValue() == condition) {
+                            Utils_1.Utils.assertTypeOf(stmt[C.TARGET], "number");
                             this.state.pc = stmt[C.TARGET];
                         }
                         break;
@@ -307,7 +308,8 @@ define(["require", "exports", "./interpreter.state", "./interpreter.constants", 
                                 duration /= 360.0;
                             }
                         }
-                        this.robotBehaviour.motorOnAction(name_2, port, duration, speed);
+                        // FIXME: duration can be undefined
+                        this.robotBehaviour.motorOnAction(name_2, port, duration !== null && duration !== void 0 ? duration : 0, speed);
                         return [duration ? duration : 0, true];
                     }
                     case C.DRIVE_ACTION: {
@@ -394,14 +396,15 @@ define(["require", "exports", "./interpreter.state", "./interpreter.constants", 
                         return [0, true];
                     }
                     case C.MOTOR_GET_POWER: {
+                        var name_8 = stmt[C.NAME];
                         var port = stmt[C.PORT];
-                        this.robotBehaviour.getMotorSpeed(this.state, name_6, port);
+                        this.robotBehaviour.getMotorSpeed(this.state, name_8, port);
                         break;
                     }
                     case C.SHOW_TEXT_ACTION: {
-                        var text = this.state.pop();
-                        var name_8 = stmt[C.NAME];
-                        if (name_8 === 'ev3') {
+                        var text = this.state.popUnknown();
+                        var name_9 = stmt[C.NAME];
+                        if (name_9 === 'ev3') {
                             var x = this.state.pop();
                             var y = this.state.pop();
                             this.robotBehaviour.showTextActionPosition(text, x, y);
@@ -415,7 +418,7 @@ define(["require", "exports", "./interpreter.state", "./interpreter.constants", 
                             image = stmt[C.IMAGE];
                         }
                         else {
-                            image = this.state.pop();
+                            image = this.state.popStateValue();
                         }
                         return [this.robotBehaviour.showImageAction(image, stmt[C.MODE]), true];
                     }
@@ -425,7 +428,9 @@ define(["require", "exports", "./interpreter.state", "./interpreter.constants", 
                     }
                     case C.IMAGE_SHIFT_ACTION: {
                         var nShift = this.state.pop();
-                        var image = this.state.pop();
+                        var image = this.state.popUnknown();
+                        var assertNumberArray = Utils_1.Utils.assertArrayOf(Utils_1.Utils.assertArrayOf(Utils_1.Utils.assertType("number")));
+                        assertNumberArray(image);
                         if (stmt[C.NAME] === 'mbot') {
                             this.state.push(this.shiftImageActionMbot(image, stmt[C.DIRECTION], nShift));
                         }
@@ -449,12 +454,13 @@ define(["require", "exports", "./interpreter.state", "./interpreter.constants", 
                     case C.LIGHT_ACTION:
                         var color = void 0;
                         if (stmt[C.NAME] === 'mbot') {
-                            var rgb = this.state.pop();
+                            var rgb = this.state.popUnknown();
                             color = 'rgb(' + rgb[0] + ',' + rgb[1] + ',' + rgb[2] + ')';
                         }
                         else {
                             color = stmt[C.COLOR];
                         }
+                        Utils_1.Utils.assertTypeOf(stmt[C.PORT], "string");
                         this.robotBehaviour.lightAction(stmt[C.MODE], color, stmt[C.PORT]);
                         return [0, true];
                     case C.STATUS_LIGHT_ACTION:
@@ -478,6 +484,7 @@ define(["require", "exports", "./interpreter.state", "./interpreter.constants", 
                         this.robotBehaviour.timerReset(stmt[C.PORT]);
                         break;
                     case C.ENCODER_SENSOR_RESET:
+                        Utils_1.Utils.assertTypeOf(stmt[C.PORT], "string");
                         this.robotBehaviour.encoderReset(stmt[C.PORT]);
                         return [0, true];
                     case C.GYRO_SENSOR_RESET:
@@ -502,7 +509,7 @@ define(["require", "exports", "./interpreter.state", "./interpreter.constants", 
                     case C.SAY_TEXT_ACTION: {
                         var pitch = this.state.pop();
                         var speed = this.state.pop();
-                        var text = this.state.pop();
+                        var text = this.state.popType("string");
                         return [this.robotBehaviour.sayTextAction(text, speed, pitch), true];
                     }
                     case C.UNBIND_VAR:
@@ -510,8 +517,8 @@ define(["require", "exports", "./interpreter.state", "./interpreter.constants", 
                         this.state.unbindVar(variableToUnbind);
                         break;
                     case C.VAR_DECLARATION: {
-                        var name_9 = stmt[C.NAME];
-                        this.state.bindVar(name_9, this.state.pop());
+                        var name_10 = stmt[C.NAME];
+                        this.state.bindVar(name_10, this.state.pop());
                         break;
                     }
                     case C.WAIT_TIME_STMT: {
@@ -528,12 +535,13 @@ define(["require", "exports", "./interpreter.state", "./interpreter.constants", 
                     case C.LIST_OPERATION: {
                         var op = stmt[C.OP];
                         var loc = stmt[C.POSITION];
+                        Utils_1.Utils.assertTypeOf(loc, "string");
                         var ix = 0;
                         if (loc != C.LAST && loc != C.FIRST) {
                             ix = this.state.pop();
                         }
                         var value = this.state.pop();
-                        var list = this.state.pop();
+                        var list = this.state.popUnknown();
                         ix = this.getIndex(list, loc, ix);
                         if (op == C.SET) {
                             list[ix] = value;
@@ -551,8 +559,8 @@ define(["require", "exports", "./interpreter.state", "./interpreter.constants", 
                     case C.TEXT_APPEND:
                     case C.MATH_CHANGE: {
                         var value = this.state.pop();
-                        var name_10 = stmt[C.NAME];
-                        this.state.bindVar(name_10, this.state.pop() + value);
+                        var name_11 = stmt[C.NAME];
+                        this.state.bindVar(name_11, this.state.pop() + value);
                         break;
                     }
                     case C.DEBUG_ACTION: {
@@ -563,7 +571,7 @@ define(["require", "exports", "./interpreter.state", "./interpreter.constants", 
                     case C.ASSERT_ACTION: {
                         var right = this.state.pop();
                         var left = this.state.pop();
-                        var value = this.state.pop();
+                        var value = this.state.popType("boolean");
                         this.robotBehaviour.assertAction(stmt[C.MSG], left, stmt[C.OP], right, value);
                         break;
                     }
@@ -635,7 +643,7 @@ define(["require", "exports", "./interpreter.state", "./interpreter.constants", 
                     switch (subOp) {
                         case C.NOT:
                             var truthy;
-                            var bool = this.state.pop();
+                            var bool = this.state.popAny();
                             if (bool === 'true') {
                                 truthy = true;
                             }
@@ -648,8 +656,8 @@ define(["require", "exports", "./interpreter.state", "./interpreter.constants", 
                             this.state.push(!truthy);
                             break;
                         case C.NEG:
-                            var value_1 = this.state.pop();
-                            this.state.push(-value_1);
+                            var value = this.state.pop();
+                            this.state.push(-value);
                             break;
                         default:
                             U.dbcException('invalid unary expr subOp: ' + subOp);
@@ -657,8 +665,8 @@ define(["require", "exports", "./interpreter.state", "./interpreter.constants", 
                     break;
                 }
                 case C.MATH_CONST: {
-                    var value_2 = expr[C.VALUE];
-                    switch (value_2) {
+                    var value = expr[C.VALUE];
+                    switch (value) {
                         case 'PI':
                             this.state.push(Math.PI);
                             break;
@@ -688,59 +696,59 @@ define(["require", "exports", "./interpreter.state", "./interpreter.constants", 
                 }
                 case C.SINGLE_FUNCTION: {
                     var subOp = expr[C.OP];
-                    var value_3 = this.state.pop();
-                    U.debug('---------- ' + subOp + ' with ' + value_3);
+                    var value = this.state.pop();
+                    U.debug('---------- ' + subOp + ' with ' + value);
                     switch (subOp) {
                         case 'SQUARE':
-                            this.state.push(Math.pow(value_3, 2));
+                            this.state.push(Math.pow(value, 2));
                             break;
                         case 'ROOT':
-                            this.state.push(Math.sqrt(value_3));
+                            this.state.push(Math.sqrt(value));
                             break;
                         case 'ABS':
-                            this.state.push(Math.abs(value_3));
+                            this.state.push(Math.abs(value));
                             break;
                         case 'LN':
-                            this.state.push(Math.log(value_3));
+                            this.state.push(Math.log(value));
                             break;
                         case 'LOG10':
-                            this.state.push(Math.log(value_3) / Math.LN10);
+                            this.state.push(Math.log(value) / Math.LN10);
                             break;
                         case 'EXP':
-                            this.state.push(Math.exp(value_3));
+                            this.state.push(Math.exp(value));
                             break;
                         case 'POW10':
-                            this.state.push(Math.pow(10, value_3));
+                            this.state.push(Math.pow(10, value));
                             break;
                         case 'SIN':
-                            this.state.push(Math.sin(value_3));
+                            this.state.push(Math.sin(value));
                             break;
                         case 'COS':
-                            this.state.push(Math.cos(value_3));
+                            this.state.push(Math.cos(value));
                             break;
                         case 'TAN':
-                            this.state.push(Math.tan(value_3));
+                            this.state.push(Math.tan(value));
                             break;
                         case 'ASIN':
-                            this.state.push(Math.asin(value_3));
+                            this.state.push(Math.asin(value));
                             break;
                         case 'ATAN':
-                            this.state.push(Math.atan(value_3));
+                            this.state.push(Math.atan(value));
                             break;
                         case 'ACOS':
-                            this.state.push(Math.acos(value_3));
+                            this.state.push(Math.acos(value));
                             break;
                         case 'ROUND':
-                            this.state.push(Math.round(value_3));
+                            this.state.push(Math.round(value));
                             break;
                         case 'ROUNDUP':
-                            this.state.push(Math.ceil(value_3));
+                            this.state.push(Math.ceil(value));
                             break;
                         case 'ROUNDDOWN':
-                            this.state.push(Math.floor(value_3));
+                            this.state.push(Math.floor(value));
                             break;
                         case C.IMAGE_INVERT_ACTION:
-                            this.state.push(this.invertImage(value_3));
+                            this.state.push(this.invertImage(value));
                             break;
                         default:
                             throw 'Invalid Function Name';
@@ -750,8 +758,8 @@ define(["require", "exports", "./interpreter.state", "./interpreter.constants", 
                 case C.MATH_CONSTRAIN_FUNCTION: {
                     var max_1 = this.state.pop();
                     var min_1 = this.state.pop();
-                    var value_4 = this.state.pop();
-                    this.state.push(Math.min(Math.max(value_4, min_1), max_1));
+                    var value = this.state.pop();
+                    this.state.push(Math.min(Math.max(value, min_1), max_1));
                     break;
                 }
                 case C.RANDOM_INT: {
@@ -768,29 +776,29 @@ define(["require", "exports", "./interpreter.state", "./interpreter.constants", 
                     break;
                 case C.MATH_PROP_FUNCT: {
                     var subOp = expr[C.OP];
-                    var value_5 = this.state.pop();
+                    var value = this.state.pop();
                     switch (subOp) {
                         case 'EVEN':
-                            this.state.push(this.isWhole(value_5) && value_5 % 2 === 0);
+                            this.state.push(this.isWhole(value) && value % 2 === 0);
                             break;
                         case 'ODD':
-                            this.state.push(this.isWhole(value_5) && value_5 % 2 !== 0);
+                            this.state.push(this.isWhole(value) && value % 2 !== 0);
                             break;
                         case 'PRIME':
-                            this.state.push(this.isPrime(value_5));
+                            this.state.push(this.isPrime(value));
                             break;
                         case 'WHOLE':
-                            this.state.push(this.isWhole(value_5));
+                            this.state.push(this.isWhole(value));
                             break;
                         case 'POSITIVE':
-                            this.state.push(value_5 >= 0);
+                            this.state.push(value >= 0);
                             break;
                         case 'NEGATIVE':
-                            this.state.push(value_5 < 0);
+                            this.state.push(value < 0);
                             break;
                         case 'DIVISIBLE_BY':
                             var first = this.state.pop();
-                            this.state.push(first % value_5 === 0);
+                            this.state.push(first % value === 0);
                             break;
                         default:
                             throw 'Invalid Math Property Function Name';
@@ -799,28 +807,28 @@ define(["require", "exports", "./interpreter.state", "./interpreter.constants", 
                 }
                 case C.MATH_ON_LIST: {
                     var subOp = expr[C.OP];
-                    var value_6 = this.state.pop();
+                    var value = this.state.popUnknown();
                     switch (subOp) {
                         case C.SUM:
-                            this.state.push(this.sum(value_6));
+                            this.state.push(this.sum(value));
                             break;
                         case C.MIN:
-                            this.state.push(this.min(value_6));
+                            this.state.push(this.min(value));
                             break;
                         case C.MAX:
-                            this.state.push(this.max(value_6));
+                            this.state.push(this.max(value));
                             break;
                         case C.AVERAGE:
-                            this.state.push(this.mean(value_6));
+                            this.state.push(this.mean(value));
                             break;
                         case C.MEDIAN:
-                            this.state.push(this.median(value_6));
+                            this.state.push(this.median(value));
                             break;
                         case C.STD_DEV:
-                            this.state.push(this.std(value_6));
+                            this.state.push(this.std(value));
                             break;
                         case C.RANDOM:
-                            this.state.push(value_6[this.getRandomInt(value_6.length)]);
+                            this.state.push(value[this.getRandomInt(value.length)]);
                             break;
                         default:
                             throw 'Invalid Math on List Function Name';
@@ -833,18 +841,18 @@ define(["require", "exports", "./interpreter.state", "./interpreter.constants", 
                     break;
                 }
                 case C.CAST_CHAR: {
-                    var num = this.state.pop();
-                    this.state.push(String.fromCharCode(num));
+                    var num_1 = this.state.pop();
+                    this.state.push(String.fromCharCode(num_1));
                     break;
                 }
                 case C.CAST_STRING_NUMBER: {
-                    var value = this.state.pop();
+                    var value = this.state.popType("string");
                     this.state.push(parseFloat(value));
                     break;
                 }
                 case C.CAST_CHAR_NUMBER: {
                     var index = this.state.pop();
-                    var value = this.state.pop();
+                    var value = this.state.popType("string");
                     this.state.push(value.charCodeAt(index));
                     break;
                 }
@@ -852,15 +860,15 @@ define(["require", "exports", "./interpreter.state", "./interpreter.constants", 
                     var subOp = expr[C.OP];
                     switch (subOp) {
                         case C.LIST_IS_EMPTY:
-                            this.state.push(this.state.pop().length == 0);
+                            this.state.push(this.state.popArray().length == 0);
                             break;
                         case C.LIST_LENGTH:
-                            this.state.push(this.state.pop().length);
+                            this.state.push(this.state.popArray().length);
                             break;
                         case C.LIST_FIND_ITEM:
                             {
                                 var item = this.state.pop();
-                                var list = this.state.pop();
+                                var list = this.state.popArray();
                                 if (expr[C.POSITION] == C.FIRST) {
                                     this.state.push(list.indexOf(item));
                                 }
@@ -874,11 +882,12 @@ define(["require", "exports", "./interpreter.state", "./interpreter.constants", 
                         case C.GET_REMOVE:
                             {
                                 var loc = expr[C.POSITION];
+                                Utils_1.Utils.assertTypeOf(loc, "string");
                                 var ix = 0;
                                 if (loc != C.LAST && loc != C.FIRST) {
                                     ix = this.state.pop();
                                 }
-                                var list = this.state.pop();
+                                var list = this.state.popArray();
                                 ix = this.getIndex(list, loc, ix);
                                 var v = list[ix];
                                 if (subOp == C.GET_REMOVE || subOp == C.GET) {
@@ -892,6 +901,9 @@ define(["require", "exports", "./interpreter.state", "./interpreter.constants", 
                         case C.LIST_GET_SUBLIST:
                             {
                                 var position = expr[C.POSITION];
+                                if (typeof position == "string") {
+                                    throw "Position is not an array";
+                                }
                                 var start_ix = void 0;
                                 var end_ix = void 0;
                                 if (position[1] != C.LAST) {
@@ -900,7 +912,7 @@ define(["require", "exports", "./interpreter.state", "./interpreter.constants", 
                                 if (position[0] != C.FIRST) {
                                     start_ix = this.state.pop();
                                 }
-                                var list = this.state.pop();
+                                var list = this.state.popArray();
                                 start_ix = this.getIndex(list, position[0], start_ix);
                                 end_ix = this.getIndex(list, position[1], end_ix) + 1;
                                 this.state.push(list.slice(start_ix, end_ix));
@@ -1074,9 +1086,14 @@ define(["require", "exports", "./interpreter.state", "./interpreter.constants", 
         //    }
         Interpreter.prototype.getIndex = function (list, loc, ix) {
             if (loc == C.FROM_START) {
-                return ix;
+                // FIXME: ix can be undefined
+                return ix !== null && ix !== void 0 ? ix : 0;
             }
             else if (loc == C.FROM_END) {
+                // FIXME: ix can be undefined
+                if (ix == undefined) {
+                    return list.length - 1;
+                }
                 return list.length - 1 - ix;
             }
             else if (loc == C.FIRST) {
@@ -1186,8 +1203,8 @@ define(["require", "exports", "./interpreter.state", "./interpreter.constants", 
             return image;
         };
         Interpreter.isPossibleStepInto = function (op) {
-            var _a;
-            if (((_a = op[C.POSSIBLE_DEBUG_STOP]) === null || _a === void 0 ? void 0 : _a.length) > 0) {
+            if (op[C.POSSIBLE_DEBUG_STOP] != undefined &&
+                op[C.POSSIBLE_DEBUG_STOP].length > 0) {
                 return true;
             }
             return false;

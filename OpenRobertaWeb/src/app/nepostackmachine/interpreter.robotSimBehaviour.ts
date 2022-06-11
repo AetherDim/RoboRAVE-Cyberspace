@@ -1,8 +1,10 @@
-import { ARobotBehaviour } from './interpreter.aRobotBehaviour';
-import { State } from './interpreter.state';
+import { State } from 'interpreter.state';
 import * as C from './interpreter.constants';
 import * as U from './interpreter.util';
 import * as UTIL from './util';
+import { KeysOfUnion, Utils } from './Utils';
+import { ARobotBehaviour } from "interpreter.aRobotBehaviour";
+import { HardwareState, SensorMode, SensorName } from './Robot/RobotHardwareState';
 
 export class RobotMbedBehaviour extends ARobotBehaviour {
     constructor() {
@@ -11,38 +13,42 @@ export class RobotMbedBehaviour extends ARobotBehaviour {
         U.loggingEnabled(false, false);
     }
 
-    public getSample(s: State, name: string, sensor: string, port: any, mode: string) {
+    public getSample(s: State, name: string, sensor: SensorName, port: number | string, mode: SensorMode) {
         var robotText = 'robot: ' + name + ', port: ' + port + ', mode: ' + mode;
         U.debug(robotText + ' getsample from ' + sensor);
         var sensorName = sensor;
 
         if (sensorName == C.TIMER) {
+            Utils.assertTypeOf(port, "number")
             s.push(this.timerGet(port));
         } else if (sensorName == C.ENCODER_SENSOR_SAMPLE) {
-            s.push(this.getEncoderValue(mode, port));
+            s.push(this.getEncoderValue(mode, port + ""));
         } else {
             //workaround due to mbots sensor names
             if (name == 'mbot') {
                 port = 'ORT_' + port;
             }
-            s.push(this.getSensorValue(sensorName, port, mode));
+            s.push(this.getSensorValue(sensorName, port + "", mode));
         }
     }
 
     private getEncoderValue(mode: string, port: string) {
         const sensor = this.hardwareState.sensors.encoder;
-        port = port == C.MOTOR_LEFT ? C.LEFT : C.RIGHT;
+        const realPort = port == C.MOTOR_LEFT ? C.LEFT : C.RIGHT;
         if (port != undefined) {
-            const v = sensor[port];
+            const v = sensor?.[realPort];
             if (v === undefined) {
                 return 'undefined';
             } else {
+                Utils.assertTypeOf(v, "number")
                 return this.rotation2Unit(v, mode);
             }
         }
+        Utils.assertNonNull(sensor)
         return sensor;
     }
 
+    // InterpreterConst["DEGREE" | "ROTATIONS" | "DISTANCE"]
     private rotation2Unit(value: number, unit: string): number {
         switch (unit) {
             case C.DEGREE:
@@ -56,21 +62,22 @@ export class RobotMbedBehaviour extends ARobotBehaviour {
         }
     }
 
-    private getSensorValue(sensorName: string, port: string, mode: string): any {
-        const sensor = this.hardwareState.sensors[sensorName];
+    private getSensorValue(sensorName: SensorName, port: string, mode: SensorMode) {
+        const sensor = (this.hardwareState.sensors as any)[sensorName];
         if (sensor === undefined) {
             return 'undefined';
         }
-        var v: string;
+        let v: string | number | undefined;
         if (mode != undefined) {
             if (port != undefined) {
-                v = sensor[port][mode];
+                v = sensor[port]?.[mode]
                 if (sensorName === 'gyro' && mode === 'angle') {
+                    v = this.hardwareState.sensors[sensorName]?.[port]?.[mode]
                     var reset = this.hardwareState['angleReset'];
-                    if (reset != undefined) {
-                        var resetValue: number = reset[port];
+                    if (v != undefined && reset != undefined) {
+                        var resetValue = reset[port];
                         if (resetValue != undefined) {
-                            var value: number = +v;
+                            let value: number = +v;
                             value = value - resetValue;
                             if (value < 0) {
                                 value = value + 360;
@@ -137,27 +144,25 @@ export class RobotMbedBehaviour extends ARobotBehaviour {
             if (!this.hardwareState.actions.leds) {
                 this.hardwareState.actions.leds = {};
             }
-            this.hardwareState.actions.leds[port] = {};
-            this.hardwareState.actions.leds[port].mode = C.OFF;
+            this.hardwareState.actions.leds[port] = { mode: C.OFF };
         } else {
-            this.hardwareState.actions.led = {};
-            this.hardwareState.actions.led.mode = C.OFF;
+            this.hardwareState.actions.led = { mode: C.OFF };
         }
     }
 
     public toneAction(name: string, frequency: number, duration: number): number {
         U.debug(name + ' piezo: ' + ', frequency: ' + frequency + ', duration: ' + duration);
-        this.hardwareState.actions.tone = {};
-        this.hardwareState.actions.tone.frequency = frequency;
-        this.hardwareState.actions.tone.duration = duration;
+        this.hardwareState.actions.tone = {
+            frequency: frequency,
+            duration: duration
+        };
         this.setBlocking(duration > 0);
         return 0;
     }
 
     public playFileAction(file: string): number {
         U.debug('play file: ' + file);
-        this.hardwareState.actions.tone = {};
-        this.hardwareState.actions.tone.file = file;
+        this.hardwareState.actions.tone = { file: file };
         switch (file) {
             case '0':
                 return 1000;
@@ -169,6 +174,8 @@ export class RobotMbedBehaviour extends ARobotBehaviour {
                 return 700;
             case '4':
                 return 500;
+            default:
+                throw "Wrong file " + file
         }
     }
 
@@ -189,12 +196,11 @@ export class RobotMbedBehaviour extends ARobotBehaviour {
     }
 
     public sayTextAction(text: string, speed: number, pitch: number): number {
-        if (this.hardwareState.actions.sayText == undefined) {
-            this.hardwareState.actions.sayText = {};
+        this.hardwareState.actions.sayText = {
+            text: text,
+            speed: speed,
+            pitch: pitch
         }
-        this.hardwareState.actions.sayText.text = text;
-        this.hardwareState.actions.sayText.speed = speed;
-        this.hardwareState.actions.sayText.pitch = pitch;
         this.setBlocking(true);
         return 0;
     }
@@ -315,11 +321,11 @@ export class RobotMbedBehaviour extends ARobotBehaviour {
 
     private setTurnSpeed(speed: number, direction: string): void {
         if (direction == C.LEFT) {
-            this.hardwareState.actions.motors[C.MOTOR_LEFT] = -speed;
-            this.hardwareState.actions.motors[C.MOTOR_RIGHT] = speed;
+            this.hardwareState.actions.motors!![C.MOTOR_LEFT] = -speed;
+            this.hardwareState.actions.motors!![C.MOTOR_RIGHT] = speed;
         } else {
-            this.hardwareState.actions.motors[C.MOTOR_LEFT] = speed;
-            this.hardwareState.actions.motors[C.MOTOR_RIGHT] = -speed;
+            this.hardwareState.actions.motors!![C.MOTOR_LEFT] = speed;
+            this.hardwareState.actions.motors!![C.MOTOR_RIGHT] = -speed;
         }
     }
 
@@ -336,6 +342,7 @@ export class RobotMbedBehaviour extends ARobotBehaviour {
         const robotText = 'robot: ' + name + ', port: ' + port;
         U.debug(robotText + ' motor get speed');
         const speed = this.hardwareState.motors[port];
+        Utils.assertNonNull(speed)
         s.push(speed);
     }
 
@@ -349,11 +356,11 @@ export class RobotMbedBehaviour extends ARobotBehaviour {
         this.hardwareState.motors[port] = speed;
     }
 
-    public showTextAction(text: any, mode: string): number {
+    public showTextAction(text: any, mode: KeysOfUnion<HardwareState["actions"]["display"]>): number {
         const showText = '' + text;
         U.debug('***** show "' + showText + '" *****');
         this.hardwareState.actions.display = {};
-        this.hardwareState.actions.display[mode.toLowerCase()] = showText;
+        (this.hardwareState.actions.display as any)[mode.toLowerCase()] = showText;
         this.setBlocking(text.length > 0);
         return 0;
     }
@@ -390,16 +397,17 @@ export class RobotMbedBehaviour extends ARobotBehaviour {
         return 0;
     }
 
-    public lightAction(mode: string, color: string, port: string): void {
+    public lightAction(mode: "on" | "off", color: string, port: string): void {
         U.debug('***** light action mode= "' + mode + ' color=' + color + '" *****');
 
         if (port !== undefined) {
             if (!this.hardwareState.actions.leds) {
                 this.hardwareState.actions.leds = {};
             }
-            this.hardwareState.actions.leds[port] = {};
-            this.hardwareState.actions.leds[port][C.MODE] = mode;
-            this.hardwareState.actions.leds[port][C.COLOR] = color;
+            this.hardwareState.actions.leds[port] = {
+                mode: mode,
+                color: color
+            };
         } else {
             this.hardwareState.actions.led = {};
             this.hardwareState.actions.led[C.MODE] = mode;
@@ -410,16 +418,18 @@ export class RobotMbedBehaviour extends ARobotBehaviour {
     public displaySetPixelBrightnessAction(x: number, y: number, brightness: number): number {
         U.debug('***** set pixel x="' + x + ', y=' + y + ', brightness=' + brightness + '" *****');
         this.hardwareState.actions.display = {};
-        this.hardwareState.actions.display[C.PIXEL] = {};
-        this.hardwareState.actions.display[C.PIXEL][C.X] = x;
-        this.hardwareState.actions.display[C.PIXEL][C.Y] = y;
-        this.hardwareState.actions.display[C.PIXEL][C.BRIGHTNESS] = brightness;
+        this.hardwareState.actions.display[C.PIXEL] = {
+            x: x,
+            y: y,
+            brightness: brightness
+        };
         return 0;
     }
 
     public displayGetPixelBrightnessAction(s: State, x: number, y: number): void {
         U.debug('***** get pixel x="' + x + ', y=' + y + '" *****');
-        const sensor = this.hardwareState.sensors[C.DISPLAY][C.PIXEL];
+        const sensor = this.hardwareState.sensors[C.DISPLAY]?.[C.PIXEL];
+        Utils.assertNonNull(sensor)
         s.push(sensor[y][x]);
     }
 
@@ -430,9 +440,9 @@ export class RobotMbedBehaviour extends ARobotBehaviour {
     }
 
     public writePinAction(pin: any, mode: string, value: number): void {
-        this.hardwareState.actions['pin' + pin] = {};
-        this.hardwareState.actions['pin' + pin][mode] = {};
-        this.hardwareState.actions['pin' + pin][mode] = value;
+        let pinString = `pin${pin}` as const
+        this.hardwareState.actions[pinString] = {};
+        this.hardwareState.actions[pinString][mode] = value;
     }
 
     public gyroReset(_port: number): void {

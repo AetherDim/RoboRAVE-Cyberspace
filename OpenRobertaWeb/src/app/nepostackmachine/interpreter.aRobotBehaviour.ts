@@ -1,19 +1,23 @@
 import { State } from './interpreter.state';
+import { ActionType, HardwareState, SensorMode } from './Robot/RobotHardwareState';
 
 export abstract class ARobotBehaviour {
-    protected hardwareState;
+    protected hardwareState: HardwareState
     private blocking;
 
     constructor() {
-        this.hardwareState = {};
-        this.hardwareState.timers = {};
-        this.hardwareState.timers['start'] = Date.now();
-        this.hardwareState.actions = {};
-        this.hardwareState.sensors = {};
+        this.hardwareState = {
+            timers: { start: Date.now() },
+            actions: {},
+            sensors: {},
+            volume: 0,
+            motors: {},
+            angleReset: {}
+        };
         this.blocking = false;
     }
 
-    public getActionState(actionType: string, resetState = false): any {
+    public getActionState(actionType: ActionType, resetState = false): any {
         let v = this.hardwareState.actions[actionType];
         if (resetState) {
             delete this.hardwareState.actions[actionType];
@@ -31,7 +35,7 @@ export abstract class ARobotBehaviour {
 
     abstract clearDisplay(): void;
 
-    abstract getSample(s: State, name: string, sensor: string, port: number, mode: string): void;
+    abstract getSample(s: State, name: string, sensor: string, port: number, mode: SensorMode): void;
 
     abstract timerReset(port: number): void;
 
@@ -69,11 +73,11 @@ export abstract class ARobotBehaviour {
 
     abstract driveStop(name: string): void;
 
-    abstract driveAction(name: string, direction: string, speed: number, distance: number, time: number): number;
+    abstract driveAction(name: string, direction: string, speed: number, distance: number | undefined, time: number | undefined): number;
 
-    abstract curveAction(name: string, direction: string, speedL: number, speedR: number, distance: number, time: number): number;
+    abstract curveAction(name: string, direction: string, speedL: number, speedR: number, distance: number | undefined, time: number | undefined): number;
 
-    abstract turnAction(name: string, direction: string, speed: number, angle: number, time: number): number;
+    abstract turnAction(name: string, direction: string, speed: number, angle: number | undefined, time: number | undefined): number;
 
     abstract writePinAction(pin: any, mode: string, value: number): void;
 

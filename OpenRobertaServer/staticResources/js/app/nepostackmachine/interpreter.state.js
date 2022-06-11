@@ -23,7 +23,7 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
     }
     return to.concat(ar || Array.prototype.slice.call(from));
 };
-define(["require", "exports", "./interpreter.constants", "./interpreter.util", "interpreter.jsHelper"], function (require, exports, C, U, stackmachineJsHelper) {
+define(["require", "exports", "./interpreter.constants", "./interpreter.util", "interpreter.jsHelper", "./Utils"], function (require, exports, C, U, stackmachineJsHelper, Utils_1) {
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.State = void 0;
     var State = /** @class */ (function () {
@@ -81,7 +81,7 @@ define(["require", "exports", "./interpreter.constants", "./interpreter.util", "
         State.prototype.unbindVar = function (name) {
             this.checkValidName(name);
             var oldBindings = this.bindings[name];
-            if (oldBindings.length < 1) {
+            if (oldBindings === undefined || oldBindings.length < 1) {
                 U.dbcException('unbind failed for: ' + name);
             }
             oldBindings.shift();
@@ -141,12 +141,40 @@ define(["require", "exports", "./interpreter.constants", "./interpreter.util", "
          * - discard the value
          * - return the value
          */
-        State.prototype.pop = function () {
+        State.prototype.popUnknown = function () {
             if (this.stack.length < 1) {
                 U.dbcException('pop failed with empty stack');
             }
             var value = this.stack.pop();
             // p( 'pop ' + value );
+            return value;
+        };
+        State.prototype.popAny = function () {
+            return this.popUnknown();
+        };
+        State.prototype.popArray = function () {
+            var value = this.popUnknown();
+            if (!Array.isArray(value)) {
+                throw "The value not an array";
+            }
+            return value;
+        };
+        State.prototype.popInstance = function (type) {
+            var value = this.popUnknown();
+            Utils_1.Utils.assertInstanceOf(value, type);
+            return value;
+        };
+        State.prototype.popType = function (type) {
+            var value = this.popUnknown();
+            Utils_1.Utils.assertTypeOf(value, type);
+            return value;
+        };
+        State.prototype.popStateValue = function () {
+            return this.popUnknown();
+        };
+        State.prototype.pop = function () {
+            var value = this.popUnknown();
+            Utils_1.Utils.assertTypeOf(value, "number");
             return value;
         };
         /**
@@ -209,10 +237,10 @@ define(["require", "exports", "./interpreter.constants", "./interpreter.util", "
             U.opLog(msg, this.operations, this.pc);
         };
         State.prototype.evalHighlightings = function (currentStmt, lastStmt) {
-            var _a;
+            var _a, _b;
             if (this.debugMode) {
-                var initiations_1 = (currentStmt === null || currentStmt === void 0 ? void 0 : currentStmt[C.HIGHTLIGHT_PLUS]) || [];
-                var terminations = (_a = lastStmt === null || lastStmt === void 0 ? void 0 : lastStmt[C.HIGHTLIGHT_MINUS]) === null || _a === void 0 ? void 0 : _a.filter(function (term) { return initiations_1.indexOf(term) < 0; });
+                var initiations_1 = currentStmt[C.HIGHTLIGHT_PLUS] || [];
+                var terminations = (_b = (_a = lastStmt === null || lastStmt === void 0 ? void 0 : lastStmt[C.HIGHTLIGHT_MINUS]) === null || _a === void 0 ? void 0 : _a.filter(function (term) { return initiations_1.indexOf(term) < 0; })) !== null && _b !== void 0 ? _b : [];
                 this.evalTerminations(terminations);
                 this.evalInitiations(initiations_1);
             }
@@ -261,7 +289,10 @@ define(["require", "exports", "./interpreter.constants", "./interpreter.util", "
         State.prototype.addHighlights = function (breakPoints) {
             var _this = this;
             __spreadArray([], __read(this.currentBlocks), false).map(function (blockId) { return stackmachineJsHelper.getBlockById(blockId); })
-                .forEach(function (block) { return _this.highlightBlock(block); });
+                .forEach(function (block) {
+                Utils_1.Utils.assertNonNull(block);
+                _this.highlightBlock(block);
+            });
             breakPoints.forEach(function (id) {
                 var block = stackmachineJsHelper.getBlockById(id);
                 if (block !== null) {

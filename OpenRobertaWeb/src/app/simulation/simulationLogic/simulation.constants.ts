@@ -274,5 +274,5 @@ const DEFAULT = {
 	MIN_SIZE_OBJECT: 10,
 	CORNER_RADIUS: 5,
 	ANIMATION_DURATION: 750
-};
+} as const;
 export { DEFAULT as default }

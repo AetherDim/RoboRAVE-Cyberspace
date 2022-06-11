@@ -3,7 +3,8 @@ import { State } from "../interpreter.state";
 import * as C from "../interpreter.constants";
 import * as U from "../interpreter.util";
 import { Unit } from "../Unit";
-import { RobotHardwareStateSensors } from "./RobotHardwareStateSensors";
+import { HardwareState, SensorMode, SensorName } from "./RobotHardwareState";
+import { KeysOfUnion, Utils } from "../Utils";
 
 export class RobotSimBehaviour extends ARobotBehaviour {
 
@@ -38,7 +39,7 @@ export class RobotSimBehaviour extends ARobotBehaviour {
 		U.loggingEnabled(false, false);
 	}
 
-	getHardwareStateSensors(): RobotHardwareStateSensors {
+	getHardwareStateSensors() {
 		return this.hardwareState.sensors
 	}
 
@@ -61,40 +62,37 @@ export class RobotSimBehaviour extends ARobotBehaviour {
 		return Math.min(100, Math.max(-100, speed))
 	}
 
-	public getSample(s: State, name: string, sensor: string, port: any, mode: string) {
+	public getSample(s: State, name: string, sensor: SensorName, port: number | string, mode: SensorMode) {
 		var robotText = 'robot: ' + name + ', port: ' + port + ', mode: ' + mode;
 		U.debug(robotText + ' getsample from ' + sensor);
 		var sensorName = sensor;
 
-
 		if (sensorName == C.TIMER) {
+			Utils.assertTypeOf(port, "number")
 			s.push(this.timerGet(port));
 		} else if (sensorName == C.ENCODER_SENSOR_SAMPLE) {
-			s.push(this.getEncoderValue(mode, port));
+			s.push(this.getEncoderValue(mode, port + ""));
 		} else {
 			//workaround due to mbots sensor names
-			if (name == "mbot"){
-				port = "ORT_" + port;
+			if (name == 'mbot') {
+				port = 'ORT_' + port;
 			}
-			s.push(this.getSensorValue(sensorName, port, mode));
+			s.push(this.getSensorValue(sensorName, port + "", mode));
 		}
-
 	}
 
-	private getEncoderValue(mode: string, port: string) {
+	private getEncoderValue(mode: string, port: string): number | "undefined" {
 		const sensor = this.hardwareState.sensors.encoder;
-		port = port == C.MOTOR_LEFT ? C.LEFT : C.RIGHT;
-		if (port != undefined) {
-			const v = sensor[port];
-			if (v === undefined) {
-				return "undefined";
-			} else {
-				return this.rotation2Unit(v, mode);
-			}
+		const realPort = port == C.MOTOR_LEFT ? C.LEFT : C.RIGHT;
+		const v = sensor?.[realPort];
+		if (v === undefined) {
+			return 'undefined';
+		} else {
+			return this.rotation2Unit(v, mode);
 		}
-		return sensor;
 	}
 
+	// InterpreterConst["DEGREE" | "ROTATIONS" | "DISTANCE"]
 	private rotation2Unit(value: number, unit: string): number {
 		switch (unit) {
 			case C.DEGREE:
@@ -102,27 +100,28 @@ export class RobotSimBehaviour extends ARobotBehaviour {
 			case C.ROTATIONS:
 				return value / 360.0;
 			case C.DISTANCE:
-				return value * C.WHEEL_DIAMETER * Math.PI / 360.0;
+				return (value * C.WHEEL_DIAMETER * Math.PI) / 360.0;
 			default:
 				return 0;
 		}
 	}
 
-	private getSensorValue(sensorName: string, port: string, mode: string): any {
-		const sensor = this.hardwareState.sensors[sensorName];
+	private getSensorValue(sensorName: SensorName, port: string, mode: SensorMode) {
+		const sensor = (this.hardwareState.sensors as any)[sensorName];
 		if (sensor === undefined) {
-			return "undefined";
+			return 'undefined';
 		}
-		var v: string | undefined;
+		let v: string | number | undefined;
 		if (mode != undefined) {
 			if (port != undefined) {
-				v = <string>sensor[port][mode];
+				v = sensor[port]?.[mode]
 				if (sensorName === 'gyro' && mode === 'angle') {
+					v = this.hardwareState.sensors[sensorName]?.[port]?.[mode]
 					var reset = this.hardwareState['angleReset'];
-					if (reset != undefined) {
-						var resetValue : number = reset[port];
+					if (v != undefined && reset != undefined) {
+						var resetValue = reset[port];
 						if (resetValue != undefined) {
-							var value : number = +v;
+							let value: number = +v;
 							value = value - resetValue;
 							// TODO: Maybe use mathematical modulo instead
 							// if (value < 0) {
@@ -154,8 +153,7 @@ export class RobotSimBehaviour extends ARobotBehaviour {
 		this.hardwareState.actions.encoder = {};
 		if (port == C.MOTOR_LEFT) {
 			this.hardwareState.actions.encoder.leftReset = true;
-		}
-		else {
+		} else {
 			this.hardwareState.actions.encoder.rightReset = true;
 		}
 	}
@@ -188,32 +186,29 @@ export class RobotSimBehaviour extends ARobotBehaviour {
 		const robotText = 'robot: ' + name + ', port: ' + port;
 		U.debug(robotText + ' led off');
 
-		if (name === "mbot"){
-			if (!this.hardwareState.actions.leds){
+		if (name === 'mbot') {
+			if (!this.hardwareState.actions.leds) {
 				this.hardwareState.actions.leds = {};
 			}
-			this.hardwareState.actions.leds[port] = {};
-			this.hardwareState.actions.leds[port].mode = C.OFF;
-		}
-		else{
-			this.hardwareState.actions.led = {};
-			this.hardwareState.actions.led.mode = C.OFF;
+			this.hardwareState.actions.leds[port] = { mode: C.OFF };
+		} else {
+			this.hardwareState.actions.led = { mode: C.OFF };
 		}
 	}
 
 	public toneAction(name: string, frequency: number, duration: number): number {
 		U.debug(name + ' piezo: ' + ', frequency: ' + frequency + ', duration: ' + duration);
-		this.hardwareState.actions.tone = {};
-		this.hardwareState.actions.tone.frequency = frequency;
-		this.hardwareState.actions.tone.duration = duration;
-		//this.setBlocking(true);
-		return duration;
+		this.hardwareState.actions.tone = {
+			frequency: frequency,
+			duration: duration
+		};
+		this.setBlocking(duration > 0);
+		return 0;
 	}
 
 	public playFileAction(file: string): number {
 		U.debug('play file: ' + file);
-		this.hardwareState.actions.tone = {};
-		this.hardwareState.actions.tone.file = file;
+		this.hardwareState.actions.tone = { file: file };
 		switch (file) {
 			case '0':
 				return 1000;
@@ -226,8 +221,7 @@ export class RobotSimBehaviour extends ARobotBehaviour {
 			case '4':
 				return 500;
 			default:
-				console.error("Play file action: Unhandled file")
-				return 0;
+				throw "Wrong file " + file
 		}
 	}
 
@@ -248,22 +242,18 @@ export class RobotSimBehaviour extends ARobotBehaviour {
 	}
 
 	public sayTextAction(text: string, speed: number, pitch: number): number {
-		if (this.hardwareState.actions.sayText == undefined) {
-			this.hardwareState.actions.sayText = {};
+		this.hardwareState.actions.sayText = {
+			text: text,
+			speed: speed,
+			pitch: pitch
 		}
-		this.hardwareState.actions.sayText.text = text;
-		this.hardwareState.actions.sayText.speed = speed;
-		this.hardwareState.actions.sayText.pitch = pitch;
-		// TODO: Implement
-		//this.setBlocking(true);
+		this.setBlocking(true);
 		return 0;
 	}
 
 	public motorOnAction(name: string, port: any, duration: number, speed: number): number {
-		speed = this.clampSpeed(speed)
-
 		const robotText = 'robot: ' + name + ', port: ' + port;
-		const durText = duration === undefined ? ' w.o. duration' : (' for ' + duration + ' msec');
+		const durText = duration === undefined ? ' w.o. duration' : ' for ' + duration + ' msec';
 		U.debug(robotText + ' motor speed ' + speed + durText);
 		if (this.hardwareState.actions.motors == undefined) {
 			this.hardwareState.actions.motors = {};
@@ -309,7 +299,7 @@ export class RobotSimBehaviour extends ARobotBehaviour {
 		}
 	
 		const robotText = 'robot: ' + name + ', direction: ' + direction;
-		const durText = distance === undefined ? ' w.o. duration' : (' for ' + distance + ' msec');
+		const durText = distance === undefined ? ' w.o. duration' : ' for ' + distance + ' msec';
 		U.debug(robotText + ' motor speed ' + speed + durText);
 		if (this.hardwareState.actions.motors == undefined) {
 			this.hardwareState.actions.motors = {};
@@ -327,22 +317,19 @@ export class RobotSimBehaviour extends ARobotBehaviour {
 		this.hardwareState.motors[C.MOTOR_LEFT] = speed;
 		this.hardwareState.motors[C.MOTOR_RIGHT] = speed;
 
-		// TODO: time > 0
-		this.setBlocking(true);
-
-		if (time !== undefined){
+		if (time !== undefined) {
 			return time;
 		}
-		const rotationPerSecond = C.MAX_ROTATION * Math.abs(speed) / 100.0;
+		const rotationPerSecond = (C.MAX_ROTATION * Math.abs(speed)) / 100.0;
 		if (rotationPerSecond == 0.0 || distance === undefined) {
 			return 0;
 		} else {
 			const rotations = Math.abs(distance) / (C.WHEEL_DIAMETER * Math.PI);
-			return rotations / rotationPerSecond * 1000;
+			return (rotations / rotationPerSecond) * 1000;
 		}
 	}
 
-	public curveAction(name: string, direction: string, speedL: number, speedR: number, distance: number, time: number ): number {
+	public curveAction(name: string, direction: string, speedL: number, speedR: number, distance: number, time: number): number {
 		speedL = this.clampSpeed(speedL)
 		speedR = this.clampSpeed(speedR)
 
@@ -372,7 +359,7 @@ export class RobotSimBehaviour extends ARobotBehaviour {
 		}
 
 		const robotText = 'robot: ' + name + ', direction: ' + direction;
-		const durText = distance === undefined ? ' w.o. duration' : (' for ' + distance + ' msec');
+		const durText = distance === undefined ? ' w.o. duration' : ' for ' + distance + ' msec';
 		U.debug(robotText + ' left motor speed ' + speedL + ' right motor speed ' + speedR + durText);
 		if (this.hardwareState.actions.motors == undefined) {
 			this.hardwareState.actions.motors = {};
@@ -391,15 +378,12 @@ export class RobotSimBehaviour extends ARobotBehaviour {
 		this.hardwareState.actions.motors[C.MOTOR_RIGHT] = speedR;
 		this.hardwareState.motors[C.MOTOR_LEFT] = speedL;
 		this.hardwareState.motors[C.MOTOR_RIGHT] = speedR;
-		const avgSpeed = 0.5 * (Math.abs(speedL) + Math.abs(speedR))
+		const avgSpeed = 0.5 * (Math.abs(speedL) + Math.abs(speedR));
 
-		// TODO: time > 0
-		this.setBlocking(true);
-
-		if (time !== undefined){
+		if (time !== undefined) {
 			return time;
 		}
-		const rotationPerSecond = C.MAX_ROTATION * avgSpeed / 100.0;
+		const rotationPerSecond = (C.MAX_ROTATION * avgSpeed) / 100.0;
 		if (rotationPerSecond == 0.0 || distance === undefined) {
 			return 0;
 		} else {
@@ -431,12 +415,10 @@ export class RobotSimBehaviour extends ARobotBehaviour {
 				// convert speed from precent to fraction
 				speed: speed * 0.01
 			}
-
-			return 1
 		}
 		
 		const robotText = 'robot: ' + name + ', direction: ' + direction;
-		const durText = angle === undefined ? ' w.o. duration' : (' for ' + angle + ' msec');
+		const durText = angle === undefined ? ' w.o. duration' : ' for ' + angle + ' msec';
 		U.debug(robotText + ' motor speed ' + speed + durText);
 		if (this.hardwareState.actions.motors == undefined) {
 			this.hardwareState.actions.motors = {};
@@ -451,41 +433,31 @@ export class RobotSimBehaviour extends ARobotBehaviour {
 		}
 		this.setTurnSpeed(speed, direction);
 
-		// TODO: time > 0
-		this.setBlocking(true);
-
-		if (time !== undefined){
+		if (time !== undefined) {
 			return time;
 		}
-		const rotationPerSecond = C.MAX_ROTATION * Math.abs(speed) / 100.0;
+		const rotationPerSecond = (C.MAX_ROTATION * Math.abs(speed)) / 100.0;
 		if (rotationPerSecond == 0.0 || angle === undefined) {
 			return 0;
 		} else {
-			const rotations = C.TURN_RATIO * (Math.abs(angle) / 720.);
-			return rotations / rotationPerSecond * 1000;
+			const rotations = C.TURN_RATIO * (Math.abs(angle) / 720);
+			return (rotations / rotationPerSecond) * 1000;
 		}
 	}
 
-	private setTurnSpeed(speed: number, direction: string): void {
-		speed = this.clampSpeed(speed)
 
+	private setTurnSpeed(speed: number, direction: string): void {
 		if (direction == C.LEFT) {
-			this.hardwareState.actions.motors[C.MOTOR_LEFT] = -speed;
-			this.hardwareState.actions.motors[C.MOTOR_RIGHT] = speed;
+			this.hardwareState.actions.motors!![C.MOTOR_LEFT] = -speed;
+			this.hardwareState.actions.motors!![C.MOTOR_RIGHT] = speed;
 		} else {
-			this.hardwareState.actions.motors[C.MOTOR_LEFT] = speed;
-			this.hardwareState.actions.motors[C.MOTOR_RIGHT] = -speed;
+			this.hardwareState.actions.motors!![C.MOTOR_LEFT] = speed;
+			this.hardwareState.actions.motors!![C.MOTOR_RIGHT] = -speed;
 		}
 	}
 
 	public driveStop(name: string): void {
 		U.debug('robot: ' + name + ' stop motors');
-
-		const t = true
-		if (t) {
-			this.drive = { speed: { left: 0, right: 0 }}
-			return
-		}
 		if (this.hardwareState.actions.motors == undefined) {
 			this.hardwareState.actions.motors = {};
 		}
@@ -497,6 +469,7 @@ export class RobotSimBehaviour extends ARobotBehaviour {
 		const robotText = 'robot: ' + name + ', port: ' + port;
 		U.debug(robotText + ' motor get speed');
 		const speed = this.hardwareState.motors[port];
+		Utils.assertNonNull(speed)
 		s.push(speed);
 	}
 
@@ -512,19 +485,17 @@ export class RobotSimBehaviour extends ARobotBehaviour {
 		this.hardwareState.motors[port] = speed;
 	}
 
-	public showTextAction(text: any, mode: string): number {
-		const showText = "" + text;
+	public showTextAction(text: any, mode: KeysOfUnion<HardwareState["actions"]["display"]>): number {
+		const showText = '' + text;
 		U.debug('***** show "' + showText + '" *****');
 		this.hardwareState.actions.display = {};
-		this.hardwareState.actions.display[mode.toLowerCase()] = showText;
-		// FIXME: Remove? Since for "ev3" this method is not called
-		console.error("This should not be called")
-		//this.setBlocking(true);
+		(this.hardwareState.actions.display as any)[mode.toLowerCase()] = showText;
+		this.setBlocking(text.length > 0);
 		return 0;
 	}
 
 	public showTextActionPosition(text: any, x: number, y: number): void {
-		const showText = "" + text;
+		const showText = '' + text;
 		U.debug('***** show "' + showText + '" *****');
 		this.hardwareState.actions.display = {};
 		this.hardwareState.actions.display.text = showText;
@@ -533,7 +504,7 @@ export class RobotSimBehaviour extends ARobotBehaviour {
 	}
 
 	public showImageAction(image: any, mode: string): number {
-		const showImage = "" + image;
+		const showImage = '' + image;
 		U.debug('***** show "' + showImage + '" *****');
 		const imageLen = image.length;
 		let duration = 0;
@@ -541,7 +512,7 @@ export class RobotSimBehaviour extends ARobotBehaviour {
 			duration = imageLen * 200;
 		}
 		this.hardwareState.actions.display = {};
-		this.hardwareState.actions.display.picture = image;
+		this.hardwareState.actions.display.picture = Utils.clone(image);
 		if (mode) {
 			this.hardwareState.actions.display.mode = mode.toLowerCase();
 		}
@@ -555,18 +526,18 @@ export class RobotSimBehaviour extends ARobotBehaviour {
 		return 0;
 	}
 
-	public lightAction(mode: string, color: string, port: string): void {
+	public lightAction(mode: "on" | "off", color: string, port: string): void {
 		U.debug('***** light action mode= "' + mode + ' color=' + color + '" *****');
 
-		if (port !== undefined){
-			if (!this.hardwareState.actions.leds){
+		if (port !== undefined) {
+			if (!this.hardwareState.actions.leds) {
 				this.hardwareState.actions.leds = {};
 			}
-			this.hardwareState.actions.leds[port] = {};
-			this.hardwareState.actions.leds[port][C.MODE] = mode;
-			this.hardwareState.actions.leds[port][C.COLOR] = color;
-		}
-		else{
+			this.hardwareState.actions.leds[port] = {
+				mode: mode,
+				color: color
+			};
+		} else {
 			this.hardwareState.actions.led = {};
 			this.hardwareState.actions.led[C.MODE] = mode;
 			this.hardwareState.actions.led[C.COLOR] = color;
@@ -575,18 +546,20 @@ export class RobotSimBehaviour extends ARobotBehaviour {
 	}
 
 	public displaySetPixelBrightnessAction(x: number, y: number, brightness: number): number {
-		U.debug('***** set pixel x="' + x + ", y=" + y + ", brightness=" + brightness + '" *****');
+		U.debug('***** set pixel x="' + x + ', y=' + y + ', brightness=' + brightness + '" *****');
 		this.hardwareState.actions.display = {};
-		this.hardwareState.actions.display[C.PIXEL] = {};
-		this.hardwareState.actions.display[C.PIXEL][C.X] = x;
-		this.hardwareState.actions.display[C.PIXEL][C.Y] = y;
-		this.hardwareState.actions.display[C.PIXEL][C.BRIGHTNESS] = brightness;
+		this.hardwareState.actions.display[C.PIXEL] = {
+			x: x,
+			y: y,
+			brightness: brightness
+		};
 		return 0;
 	}
 
 	public displayGetPixelBrightnessAction(s: State, x: number, y: number): void {
-		U.debug('***** get pixel x="' + x + ", y=" + y + '" *****');
-		const sensor = this.hardwareState.sensors[C.DISPLAY][C.PIXEL];
+		U.debug('***** get pixel x="' + x + ', y=' + y + '" *****');
+		const sensor = this.hardwareState.sensors[C.DISPLAY]?.[C.PIXEL];
+		Utils.assertNonNull(sensor)
 		s.push(sensor[y][x]);
 	}
 
@@ -597,17 +570,17 @@ export class RobotSimBehaviour extends ARobotBehaviour {
 	}
 
 	public writePinAction(pin: any, mode: string, value: number): void {
-		this.hardwareState.actions["pin" + pin] = {};
-		this.hardwareState.actions["pin" + pin][mode] = {};
-		this.hardwareState.actions["pin" + pin][mode] = value;
+		let pinString = `pin${pin}` as const
+		this.hardwareState.actions[pinString] = {};
+		this.hardwareState.actions[pinString][mode] = value;
 	}
 
 	public gyroReset(port: number): void {
-		var gyro = this.hardwareState.sensors['gyro'];
+		const gyro = this.hardwareState.sensors['gyro'];
 		if (gyro !== undefined) {
-			var gyroSensor = gyro[port];
-			if (gyroSensor !== undefined) {
-				var angle = gyroSensor['angle'];
+			const value = gyro[port];
+			if (value !== undefined) {
+				const angle = value['angle'];
 				if (angle !== undefined) {
 					if (this.hardwareState['angleReset'] == undefined) {
 						this.hardwareState['angleReset'] = {};
@@ -630,9 +603,8 @@ export class RobotSimBehaviour extends ARobotBehaviour {
 
 	public assertAction(_msg: string, _left: any, _op: string, _right: any, value: boolean): void {
 		U.debug('***** assert action "' + value + ' ' + _msg + ' ' + _left + ' ' + _op + ' ' + _right + '" *****');
-		console.assert(value, _msg + " " + _left + " " + _op + " " + _right);
+		console.assert(value, _msg + ' ' + _left + ' ' + _op + ' ' + _right);
 	}
 
-	public close() {
-	}
+	public close() {}
 }

@@ -36,6 +36,43 @@ define(["require", "exports", "./Random"], function (require, exports, Random_1)
     var Utils = /** @class */ (function () {
         function Utils() {
         }
+        Utils.assertTrue = function (value) {
+            if (!value) {
+                throw "The value is not `true`";
+            }
+        };
+        Utils.assertNonNull = function (value) {
+            if (value === undefined || value === null) {
+                throw "The value is ".concat(value);
+            }
+        };
+        Utils.assertTypeOf = function (value, type) {
+            if (typeof value != type) {
+                throw "The value '".concat(value, "' is not of type '").concat(type, "'");
+            }
+        };
+        Utils.assertType = function (type) {
+            return function (value) {
+                if (typeof value != type) {
+                    throw "The value '".concat(value, "' is not of type '").concat(type, "'");
+                }
+            };
+        };
+        Utils.assertInstanceOf = function (value, type) {
+            if (!(value instanceof type)) {
+                throw "The value '".concat(value, "' is not of type '").concat(type, "'");
+            }
+        };
+        Utils.assertArrayOf = function (elementGuard) {
+            return function (array) {
+                if (Array.isArray(array)) {
+                    array.forEach(elementGuard);
+                }
+                else {
+                    throw "The value is not an array";
+                }
+            };
+        };
         /**
          * Checks if the `object` contains all `keys`.
          *
@@ -561,6 +598,36 @@ define(["require", "exports", "./Random"], function (require, exports, Random_1)
         };
         Utils.cloneVector = function (value) {
             return { x: value.x, y: value.y };
+        };
+        Utils.clone = function (obj) {
+            // Handle the 3 simple types, and null or undefined
+            if (obj == null || typeof obj != "object")
+                return obj;
+            // Handle Date
+            if (obj instanceof Date) {
+                var copy = new Date();
+                copy.setTime(obj.getTime());
+                return copy;
+            }
+            // Handle Array
+            if (obj instanceof Array) {
+                var copy = [];
+                for (var i = 0; i < obj.length; i++) {
+                    copy[i] = Utils.clone(obj[i]);
+                }
+                return copy;
+            }
+            // Handle Object
+            if (obj instanceof Object) {
+                var copy = {};
+                for (var attr in obj) {
+                    if (obj.hasOwnProperty(attr)) {
+                        copy[attr] = Utils.clone(obj[attr]);
+                    }
+                }
+                return copy;
+            }
+            throw new Error("Unable to copy obj! Its type isn't supported.");
         };
         Utils.randomElement = function (array) {
             if (array.length == 0) {

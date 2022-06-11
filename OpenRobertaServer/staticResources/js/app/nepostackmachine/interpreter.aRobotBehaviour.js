@@ -3,11 +3,14 @@ define(["require", "exports"], function (require, exports) {
     exports.ARobotBehaviour = void 0;
     var ARobotBehaviour = /** @class */ (function () {
         function ARobotBehaviour() {
-            this.hardwareState = {};
-            this.hardwareState.timers = {};
-            this.hardwareState.timers['start'] = Date.now();
-            this.hardwareState.actions = {};
-            this.hardwareState.sensors = {};
+            this.hardwareState = {
+                timers: { start: Date.now() },
+                actions: {},
+                sensors: {},
+                volume: 0,
+                motors: {},
+                angleReset: {}
+            };
             this.blocking = false;
         }
         ARobotBehaviour.prototype.getActionState = function (actionType, resetState) {
