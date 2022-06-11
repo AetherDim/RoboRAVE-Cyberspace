@@ -68,7 +68,8 @@ define(["require", "exports"], function (require, exports) {
                 this.userFunction(this.lastDT);
             }
             catch (error) {
-                console.trace(error);
+                this.stop();
+                console.error(error);
             }
             // error check for too long function call
             var now2 = Date.now();

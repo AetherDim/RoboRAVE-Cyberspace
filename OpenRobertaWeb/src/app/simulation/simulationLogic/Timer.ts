@@ -78,7 +78,8 @@ export class Timer {
 		try {
 			this.userFunction(this.lastDT);
 		} catch (error) {
-			console.trace(error);
+			this.stop()
+			console.error(error)
 		}
 
 		// error check for too long function call
