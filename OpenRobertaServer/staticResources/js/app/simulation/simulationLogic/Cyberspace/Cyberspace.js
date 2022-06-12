@@ -41,6 +41,7 @@ define(["require", "exports", "./SimulationCache", "../Scene/Scene", "../RRC/Sce
         function Cyberspace(canvas, autoResizeTo, scenes) {
             var _a;
             if (scenes === void 0) { scenes = []; }
+            var _this = this;
             this.sceneManager = new SceneManager_1.SceneManager();
             this.simulationCache = new SimulationCache_1.SimulationCache([], "");
             this.eventManager = EventManager_1.EventManager.init({
@@ -86,8 +87,7 @@ define(["require", "exports", "./SimulationCache", "../Scene/Scene", "../RRC/Sce
             // empty scene as default
             var emptyScene = new Scene_1.Scene("");
             this.renderer = new SceneRenderer_1.SceneRender(emptyScene, canvas, this.simulationCache.toRobotSetupData(), autoResizeTo);
-            var t = this;
-            this.renderer.onSwitchScene(function (scene) { return t.resetEventHandlersOfScene(scene); });
+            this.renderer.onSwitchScene(function (scene) { return _this.resetEventHandlersOfScene(scene); });
         }
         Cyberspace.prototype.destroy = function () {
             this.sceneManager.destroy();
@@ -97,27 +97,29 @@ define(["require", "exports", "./SimulationCache", "../Scene/Scene", "../RRC/Sce
         /* ####################################### Scene control ###################################### */
         /* ############################################################################################ */
         Cyberspace.prototype.resetEventHandlersOfScene = function (scene) {
-            var e_1, _a;
             scene.removeAllEventHandlers();
             this.specializedEventManager._setEventHandlers(scene);
             var eventHandlerLists = this.eventManager.eventHandlerLists;
-            try {
-                for (var _b = __values(this.getScene().getRobotManager().getRobots()), _c = _b.next(); !_c.done; _c = _b.next()) {
-                    var robot = _c.value;
-                    // FIXME: first program of first robot only?
-                    var programManagerEventHandlerLists = robot.programManager.eventManager.eventHandlerLists;
-                    programManagerEventHandlerLists.onStartProgram.pushEventHandleList(eventHandlerLists.onStartPrograms);
-                    programManagerEventHandlerLists.onPauseProgram.pushEventHandleList(eventHandlerLists.onPausePrograms);
-                    programManagerEventHandlerLists.onStopProgram.pushEventHandleList(eventHandlerLists.onStopPrograms);
-                }
-            }
-            catch (e_1_1) { e_1 = { error: e_1_1 }; }
-            finally {
+            scene.eventManager.onFinishedLoading(function () {
+                var e_1, _a;
                 try {
-                    if (_c && !_c.done && (_a = _b.return)) _a.call(_b);
+                    for (var _b = __values(scene.getRobotManager().getRobots()), _c = _b.next(); !_c.done; _c = _b.next()) {
+                        var robot = _c.value;
+                        // FIXME: first program of first robot only?
+                        var programManagerEventHandlerLists = robot.programManager.eventManager.eventHandlerLists;
+                        programManagerEventHandlerLists.onStartProgram.pushEventHandleList(eventHandlerLists.onStartPrograms);
+                        programManagerEventHandlerLists.onPauseProgram.pushEventHandleList(eventHandlerLists.onPausePrograms);
+                        programManagerEventHandlerLists.onStopProgram.pushEventHandleList(eventHandlerLists.onStopPrograms);
+                    }
                 }
-                finally { if (e_1) throw e_1.error; }
-            }
+                catch (e_1_1) { e_1 = { error: e_1_1 }; }
+                finally {
+                    try {
+                        if (_c && !_c.done && (_a = _b.return)) _a.call(_b);
+                    }
+                    finally { if (e_1) throw e_1.error; }
+                }
+            });
             var sceneEventHandlerLists = scene.eventManager.eventHandlerLists;
             sceneEventHandlerLists.onStartSimulation.pushEventHandleList(eventHandlerLists.onStartSimulation);
             sceneEventHandlerLists.onPauseSimulation.pushEventHandleList(eventHandlerLists.onPauseSimulation);

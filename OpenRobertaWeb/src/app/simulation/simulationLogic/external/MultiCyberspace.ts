@@ -502,16 +502,16 @@ function setSimSpeed(speedup: number) {
 	forEachCyberspace(c => c.setSimulationSpeedupFactor(speedup))
 }
 
-function setDefaultButtonState() {
+function setInitialButtonState() {
 	// do not set 'simSpeedUpButton' since the state will be preserved
-	UIManager.programControlButton.setState("start")
-	UIManager.showScoreButton.setState("showScore")
-	UIManager.physicsSimControlButton.setState("stop")
+	UIManager.programControlButton.setInitialState()
+	UIManager.showScoreButton.setInitialState()
+	UIManager.physicsSimControlButton.setInitialState()
 }
 
 export function initEvents() {
 
-	setDefaultButtonState()
+	setInitialButtonState()
 
 	UIManager.programControlButton.onClick(state => {
 		if (state == "start") {
@@ -544,7 +544,7 @@ export function initEvents() {
 		setSimSpeed(state == "fastForward" ? 10 : 1))
 
 	UIManager.resetSceneButton.onClick(() => {
-		setDefaultButtonState()
+		setInitialButtonState()
 		resetPose()
 	})
 	UIManager.zoomOutButton.onClick(zoomOut)

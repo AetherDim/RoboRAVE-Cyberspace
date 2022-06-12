@@ -48,8 +48,8 @@ export class Program {
 			this.interpreter = new Interpreter(
 				this.programObject,
 				this.instruction,
-				() => this.pauseProgram(),
 				() => this.interpreterTerminated(),
+				() => this.pauseProgram(),
 				this.debugManager.getBreakpointIDs())
 			
 			this.programState = "initialized"
@@ -69,6 +69,11 @@ export class Program {
 		this.eventManager.onStartProgramCallHandlers()
 	}
 
+	/**
+	 * This method does not actively pause the program.
+	 * 
+	 * It sets the `programState` and calls the event handlers.
+	 */
 	pauseProgram() {
 		this.programState = "paused"
 		this.eventManager.onPauseProgramCallHandlers()
@@ -117,6 +122,7 @@ export class Program {
 	}
 
 	runNOperations(N: number) : number {
+		this.startProgram()
 		return this.interpreter?.runNOperations(N) ?? 0
 	}
 }
@@ -141,9 +147,24 @@ export class ProgramManager {
 		this.eventManager.removeAllEventHandlers()
 	}
 
+	/**
+	 * Sets the converted `robotPrograms` to `this.programs`.
+	 * 
+	 * It also removes all event handlers from `this.programs` and adds new event handlers to the new programs.
+	 */
 	setPrograms(robotPrograms: RobotProgram[], unit: Unit) {
-		// save programs
+		// remove all event handlers from current programs
+		this.programs.forEach(p => p.removeAllEventHandlers())
+		// set programs
 		this.programs = robotPrograms.map(p => new Program(p, unit))
+		// add event handlers to new programs
+		this.programs.forEach(p => {
+			p.eventManager.onStopProgram(() => {
+				if (this.allProgramsTerminated()) {
+					this.eventManager.onStopProgramCallHandlers()
+				}
+			})
+		})
 	}
 
 

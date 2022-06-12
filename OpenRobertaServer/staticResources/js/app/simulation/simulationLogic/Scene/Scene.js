@@ -43,7 +43,8 @@ define(["require", "exports", "matter-js", "../Timer", "../ScrollView", "../Unit
             //
             this.eventManager = EventManager_1.EventManager.init({
                 onStartSimulation: EventManager_1.ParameterTypes.none,
-                onPauseSimulation: EventManager_1.ParameterTypes.none
+                onPauseSimulation: EventManager_1.ParameterTypes.none,
+                onFinishedLoading: EventManager_1.ParameterTypes.none
             });
             //
             // #############################################################################
@@ -240,6 +241,7 @@ define(["require", "exports", "matter-js", "../Timer", "../ScrollView", "../Unit
                 this.startSim();
             }
             console.log('Finished loading!');
+            this.eventManager.onFinishedLoadingCallHandlers();
             this.finishedLoadingQueue.forEach(function (func) { return func(_this_1); });
             chain.next(); // technically we don't need this
         };

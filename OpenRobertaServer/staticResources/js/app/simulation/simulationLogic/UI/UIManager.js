@@ -45,6 +45,7 @@ define(["require", "exports", "blockly", "./UIElement"], function (require, expo
             _this.needsOnWrapHandler = true;
             _this.stateMappingObject = buttonSettingsState;
             _this.state = initialState;
+            _this.initialState = initialState;
             return _this;
             // TODO: Convert all the 'onWrap' js code to use the 'UIManager'
             // call 'setButtonEventHandler' only for buttons on which 'onClick' is called
@@ -75,6 +76,9 @@ define(["require", "exports", "blockly", "./UIElement"], function (require, expo
                 // workaround for onWrap not loaded
                 setTimeout(function () { return _this.setButtonEventHandler(); }, 200);
             }
+        };
+        UIRobertaStateButton.prototype.setInitialState = function () {
+            this.setState(this.initialState);
         };
         /**
          * Set the state change handler.

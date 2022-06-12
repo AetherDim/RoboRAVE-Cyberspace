@@ -440,14 +440,14 @@ define(["require", "exports", "../Cyberspace/Cyberspace", "../GlobalDebug", "../
     function setSimSpeed(speedup) {
         forEachCyberspace(function (c) { return c.setSimulationSpeedupFactor(speedup); });
     }
-    function setDefaultButtonState() {
+    function setInitialButtonState() {
         // do not set 'simSpeedUpButton' since the state will be preserved
-        UIManager_1.UIManager.programControlButton.setState("start");
-        UIManager_1.UIManager.showScoreButton.setState("showScore");
-        UIManager_1.UIManager.physicsSimControlButton.setState("stop");
+        UIManager_1.UIManager.programControlButton.setInitialState();
+        UIManager_1.UIManager.showScoreButton.setInitialState();
+        UIManager_1.UIManager.physicsSimControlButton.setInitialState();
     }
     function initEvents() {
-        setDefaultButtonState();
+        setInitialButtonState();
         UIManager_1.UIManager.programControlButton.onClick(function (state) {
             if (state == "start") {
                 // run(true, ...) // cannot get robot type
@@ -478,7 +478,7 @@ define(["require", "exports", "../Cyberspace/Cyberspace", "../GlobalDebug", "../
             return setSimSpeed(state == "fastForward" ? 10 : 1);
         });
         UIManager_1.UIManager.resetSceneButton.onClick(function () {
-            setDefaultButtonState();
+            setInitialButtonState();
             resetPose();
         });
         UIManager_1.UIManager.zoomOutButton.onClick(zoomOut);

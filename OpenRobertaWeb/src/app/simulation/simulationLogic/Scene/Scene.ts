@@ -47,7 +47,8 @@ export class Scene {
 
 	readonly eventManager = EventManager.init({
 		onStartSimulation: ParameterTypes.none,
-		onPauseSimulation: ParameterTypes.none
+		onPauseSimulation: ParameterTypes.none,
+		onFinishedLoading: ParameterTypes.none
 	})
 
 	removeAllEventHandlers() {
@@ -217,6 +218,7 @@ export class Scene {
 
 		console.log('Finished loading!');
 
+		this.eventManager.onFinishedLoadingCallHandlers()
 		this.finishedLoadingQueue.forEach(func => func(this))
 
 		chain.next(); // technically we don't need this

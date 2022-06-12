@@ -31,8 +31,12 @@ define(["require", "exports", "./external/SceneDesciptorList", "./Cyberspace/Cyb
     //
     var cyberspace = new Cyberspace_1.Cyberspace('sceneCanvas', 'simDiv');
     var sceneManager = cyberspace.getSceneManager();
-    UIManager_1.UIManager.simSpeedUpButton.setState("fastForward");
-    UIManager_1.UIManager.showScoreButton.setState("showScore");
+    function setInitialButtonState() {
+        UIManager_1.UIManager.programControlButton.setInitialState();
+        UIManager_1.UIManager.physicsSimControlButton.setInitialState();
+        UIManager_1.UIManager.simSpeedUpButton.setInitialState();
+        UIManager_1.UIManager.showScoreButton.setInitialState();
+    }
     (0, RESTApi_1.sendStateRequest)(function (res) {
         if (res && res.error == RESTApi_1.ResultErrorType.NONE) {
             var result = (res.result);
@@ -151,6 +155,7 @@ define(["require", "exports", "./external/SceneDesciptorList", "./Cyberspace/Cyb
     });
     UIManager_1.UIManager.resetSceneButton.onClick(function () {
         cyberspace.resetScene();
+        setInitialButtonState();
     });
     UIManager_1.UIManager.zoomInButton.onClick(function () {
         cyberspace.zoomViewIn();

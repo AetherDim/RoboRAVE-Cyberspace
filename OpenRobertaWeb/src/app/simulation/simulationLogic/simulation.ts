@@ -26,8 +26,12 @@ import {BlocklyDebug} from "./BlocklyDebug";
 const cyberspace = new Cyberspace('sceneCanvas', 'simDiv')
 const sceneManager = cyberspace.getSceneManager()
 
-UIManager.simSpeedUpButton.setState("fastForward")
-UIManager.showScoreButton.setState("showScore")
+function setInitialButtonState() { 
+	UIManager.programControlButton.setInitialState()
+	UIManager.physicsSimControlButton.setInitialState()
+	UIManager.simSpeedUpButton.setInitialState()
+	UIManager.showScoreButton.setInitialState()
+}
 
 
 sendStateRequest(res => {
@@ -177,6 +181,7 @@ UIManager.simSpeedUpButton.onClick(state => {
 
 UIManager.resetSceneButton.onClick(() => {
 	cyberspace.resetScene()
+	setInitialButtonState()
 })
 
 UIManager.zoomInButton.onClick(() => {

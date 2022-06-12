@@ -60,8 +60,7 @@ export class Cyberspace {
 		const emptyScene = new Scene("")
 		this.renderer = new SceneRender(emptyScene, canvas, this.simulationCache.toRobotSetupData(), autoResizeTo)
 
-		const t = this
-		this.renderer.onSwitchScene(scene => t.resetEventHandlersOfScene(scene))
+		this.renderer.onSwitchScene(scene => this.resetEventHandlersOfScene(scene))
 	}
 
 	destroy() {
@@ -80,16 +79,18 @@ export class Cyberspace {
 
 		const eventHandlerLists = this.eventManager.eventHandlerLists
 
-		for(const robot of this.getScene().getRobotManager().getRobots()) {
-			// FIXME: first program of first robot only?
-			const programManagerEventHandlerLists = robot.programManager.eventManager.eventHandlerLists
-			programManagerEventHandlerLists.onStartProgram.pushEventHandleList(
-				eventHandlerLists.onStartPrograms)
-			programManagerEventHandlerLists.onPauseProgram.pushEventHandleList(
-				eventHandlerLists.onPausePrograms)
-			programManagerEventHandlerLists.onStopProgram.pushEventHandleList(
-				eventHandlerLists.onStopPrograms)
-		}
+		scene.eventManager.onFinishedLoading(() => {
+			for(const robot of scene.getRobotManager().getRobots()) {
+				// FIXME: first program of first robot only?
+				const programManagerEventHandlerLists = robot.programManager.eventManager.eventHandlerLists
+				programManagerEventHandlerLists.onStartProgram.pushEventHandleList(
+					eventHandlerLists.onStartPrograms)
+				programManagerEventHandlerLists.onPauseProgram.pushEventHandleList(
+					eventHandlerLists.onPausePrograms)
+				programManagerEventHandlerLists.onStopProgram.pushEventHandleList(
+					eventHandlerLists.onStopPrograms)
+			}
+		})
 
 		const sceneEventHandlerLists = scene.eventManager.eventHandlerLists
 		sceneEventHandlerLists.onStartSimulation.pushEventHandleList(

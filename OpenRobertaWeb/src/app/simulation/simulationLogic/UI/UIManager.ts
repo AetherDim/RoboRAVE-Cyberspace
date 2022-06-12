@@ -26,6 +26,7 @@ export class UIRobertaButton extends UIElement {
 export class UIRobertaStateButton<T extends { [key in string]: RobertaButtonSettings }> extends UIElement {
 	protected stateMappingObject: T
 	protected state: keyof T
+	readonly initialState: keyof T
 
 	private stateChangeHandler?: (state: keyof T) => keyof T
 	private clickHandlers: ((state: keyof T) => void)[] = []
@@ -38,6 +39,7 @@ export class UIRobertaStateButton<T extends { [key in string]: RobertaButtonSett
 		super({ id : buttonID })
 		this.stateMappingObject = buttonSettingsState
 		this.state = initialState
+		this.initialState = initialState
 
 		// TODO: Convert all the 'onWrap' js code to use the 'UIManager'
 		// call 'setButtonEventHandler' only for buttons on which 'onClick' is called
@@ -66,6 +68,10 @@ export class UIRobertaStateButton<T extends { [key in string]: RobertaButtonSett
 			// workaround for onWrap not loaded
 			setTimeout(() => this.setButtonEventHandler(), 200)
 		}
+	}
+
+	setInitialState() {
+		this.setState(this.initialState)
 	}
 
 	/**

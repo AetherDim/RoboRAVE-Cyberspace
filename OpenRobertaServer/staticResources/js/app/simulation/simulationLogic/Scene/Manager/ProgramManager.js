@@ -34,7 +34,7 @@ define(["require", "exports", "./../../interpreter.interpreter", "../../EventMan
             if (this.programState == "terminated") {
                 console.log("Init program manager!");
                 this.instruction = new RobotSimBehaviour_1.RobotSimBehaviour(this.unit);
-                this.interpreter = new interpreter_interpreter_1.Interpreter(this.programObject, this.instruction, function () { return _this.pauseProgram(); }, function () { return _this.interpreterTerminated(); }, this.debugManager.getBreakpointIDs());
+                this.interpreter = new interpreter_interpreter_1.Interpreter(this.programObject, this.instruction, function () { return _this.interpreterTerminated(); }, function () { return _this.pauseProgram(); }, this.debugManager.getBreakpointIDs());
                 this.programState = "initialized";
             }
             this.debugManager.updateDebugMode();
@@ -47,6 +47,11 @@ define(["require", "exports", "./../../interpreter.interpreter", "../../EventMan
             this.programState = "running";
             this.eventManager.onStartProgramCallHandlers();
         };
+        /**
+         * This method does not actively pause the program.
+         *
+         * It sets the `programState` and calls the event handlers.
+         */
         Program.prototype.pauseProgram = function () {
             this.programState = "paused";
             this.eventManager.onPauseProgramCallHandlers();
@@ -86,6 +91,7 @@ define(["require", "exports", "./../../interpreter.interpreter", "../../EventMan
         };
         Program.prototype.runNOperations = function (N) {
             var _a, _b;
+            this.startProgram();
             return (_b = (_a = this.interpreter) === null || _a === void 0 ? void 0 : _a.runNOperations(N)) !== null && _b !== void 0 ? _b : 0;
         };
         return Program;
@@ -107,8 +113,19 @@ define(["require", "exports", "./../../interpreter.interpreter", "../../EventMan
             this.eventManager.removeAllEventHandlers();
         };
         ProgramManager.prototype.setPrograms = function (robotPrograms, unit) {
-            // save programs
+            var _this = this;
+            // remove all event handlers from current programs
+            this.programs.forEach(function (p) { return p.removeAllEventHandlers(); });
+            // set programs
             this.programs = robotPrograms.map(function (p) { return new Program(p, unit); });
+            // add event handlers to new programs
+            this.programs.forEach(function (p) {
+                p.eventManager.onStopProgram(function () {
+                    if (_this.allProgramsTerminated()) {
+                        _this.eventManager.onStopProgramCallHandlers();
+                    }
+                });
+            });
         };
         ProgramManager.prototype.startPrograms = function () {
             this.programs.forEach(function (program) { return program.startProgram(); });
