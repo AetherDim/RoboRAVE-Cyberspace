@@ -14,7 +14,7 @@ import * as U from './interpreter.util';
 import * as UI from 'neuralnetwork.ui';
 import * as SimConstants from "./simulation.constants"
 import { AnyAssertion, Utils } from './Utils';
-import { State, StateValue } from 'interpreter.state';
+import { BlockHighlightManager, State, StateValue } from 'interpreter.state';
 
 export type InterpreterCallback = () => void
 export type InterpreterEvent =
@@ -23,7 +23,7 @@ export type InterpreterEvent =
     typeof SimConstants.default.DEBUG_STEP_OVER
 
 export class Interpreter {
-    public breakpoints: string[];
+    public readonly breakpoints: string[];
     private terminated = false;
     private callbackOnTermination: (interpreter: Interpreter) => void
     private robotBehaviour: ARobotBehaviour;
@@ -37,6 +37,8 @@ export class Interpreter {
 
     private readonly onProgramBreak: (interpreter: Interpreter) => void
 
+    private blockHighlightManager: BlockHighlightManager
+
     /*
      *
      * . @param generatedCode argument contains the operations and the function definitions
@@ -48,11 +50,13 @@ export class Interpreter {
         r: ARobotBehaviour,
         cbOnTermination: InterpreterCallback, 
         onProgramBreak: InterpreterCallback,
-        simBreakpoints: any[]
+        blockHighlightManager: BlockHighlightManager,
+        simBreakpoints: string[]
     ) {
         this.terminated = false;
         this.callbackOnTermination = cbOnTermination;
         this.onProgramBreak = onProgramBreak
+        this.blockHighlightManager = blockHighlightManager
         const stmts = generatedCode[C.OPS];
         this.robotBehaviour = r;
 
@@ -67,7 +71,7 @@ export class Interpreter {
         this.lastStoppedBlock = null;
         this.stepOverBlock = null;
 
-        this.state = new State(stmts);
+        this.state = new State(stmts, blockHighlightManager);
     }
 
     /**
@@ -97,7 +101,7 @@ export class Interpreter {
         this.terminated = true;
         this.callbackOnTermination(this);
         this.robotBehaviour.close();
-        this.state.removeHighlights([]);
+        this.blockHighlightManager.removeHighlights([])
     }
 
     public getRobotBehaviour() {
@@ -109,19 +113,9 @@ export class Interpreter {
         return this.state.getVariables();
     }
 
-    /** Removes all highlights from currently executing blocks*/
-    public removeHighlights() {
-        this.state.removeHighlights([]);
-    }
-
     /** Sets the debug mode*/
     public setDebugMode(mode: boolean) {
         this.state.setDebugMode(mode);
-        if (mode) {
-            this.state.addHighlights(this.breakpoints);
-        } else {
-            this.state.removeHighlights(this.breakpoints);
-        }
     }
 
     /** sets relevant event value to true */

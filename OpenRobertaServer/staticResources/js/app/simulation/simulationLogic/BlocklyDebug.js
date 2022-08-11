@@ -1,10 +1,36 @@
-define(["require", "exports", "blockly", "./Timer"], function (require, exports, Blockly, Timer_1) {
+var __read = (this && this.__read) || function (o, n) {
+    var m = typeof Symbol === "function" && o[Symbol.iterator];
+    if (!m) return o;
+    var i = m.call(o), r, ar = [], e;
+    try {
+        while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
+    }
+    catch (error) { e = { error: error }; }
+    finally {
+        try {
+            if (r && !r.done && (m = i["return"])) m.call(i);
+        }
+        finally { if (e) throw e.error; }
+    }
+    return ar;
+};
+var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
+};
+define(["require", "exports", "blockly", "./Timer", "./interpreter.jsHelper", "./Utils"], function (require, exports, Blockly, Timer_1, stackmachineJsHelper, Utils_1) {
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.BlocklyDebug = void 0;
     var BlocklyDebug = /** @class */ (function () {
         function BlocklyDebug() {
             this.debugMode = false;
             this.breakpointIDs = [];
+            this.currentBlocks = [];
             /**
              * sleep time before calling blockly update
              */
@@ -18,6 +44,10 @@ define(["require", "exports", "blockly", "./Timer"], function (require, exports,
             this.startBlocklyUpdate();
             console.log("Debug manager created!");
         }
+        BlocklyDebug.prototype.getNewCurrentBlockIDs = function () {
+            this.currentBlocks.splice(0, this.currentBlocks.length);
+            return this.currentBlocks;
+        };
         BlocklyDebug.prototype.getBreakpointIDs = function () {
             return this.breakpointIDs;
         };
@@ -116,13 +146,9 @@ define(["require", "exports", "blockly", "./Timer"], function (require, exports,
         };
         /** updates the debug mode for all interpreters */
         BlocklyDebug.prototype.updateDebugMode = function (mode) {
+            var _a, _b;
             this.debugMode = mode !== null && mode !== void 0 ? mode : this.debugMode;
-            if (this.debugMode) {
-                this.setInterpreterBreakpointIDs(this.breakpointIDs);
-            }
-            else {
-                this.setInterpreterBreakpointIDs([]);
-            }
+            (_b = (_a = this.program) === null || _a === void 0 ? void 0 : _a.interpreter) === null || _b === void 0 ? void 0 : _b.setDebugMode(this.debugMode);
             // css changes the appearance of the blocks `#blockyl.debug`
             if (this.debugMode) {
                 $('#blockly').addClass('debug');
@@ -136,6 +162,10 @@ define(["require", "exports", "blockly", "./Timer"], function (require, exports,
                     .forEach(function (block) {
                     $(block.svgPath_).stop(true, true).removeAttr('style');
                 });
+            }
+            this.removeHighlights(this.breakpointIDs);
+            if (this.debugMode) {
+                this.addHighlights(this.breakpointIDs);
             }
             /*for (const interpreter of this.getInterpreters()) {
     
@@ -163,18 +193,12 @@ define(["require", "exports", "blockly", "./Timer"], function (require, exports,
     
             this.updateBreakpointEvent()*/
         };
-        BlocklyDebug.prototype.setInterpreterBreakpointIDs = function (breakpointIDs) {
-            if (!this.program || !this.program.interpreter) {
-                return;
-            }
-            this.program.interpreter.breakpoints = breakpointIDs;
-            this.updateDebugUI();
-        };
-        BlocklyDebug.prototype.updateDebugUI = function () {
-            if (!this.program || !this.program.interpreter) {
-                return;
-            }
-            this.program.interpreter.setDebugMode(this.debugMode);
+        BlocklyDebug.prototype.setBreakpointIDs = function (breakpointIDs) {
+            var _a;
+            this.removeHighlights(this.breakpointIDs);
+            this.breakpointIDs.splice(0, this.breakpointIDs.length);
+            (_a = this.breakpointIDs).push.apply(_a, __spreadArray([], __read(breakpointIDs), false));
+            this.addHighlights(this.breakpointIDs);
         };
         /** removes breakpoint with breakpointID */
         BlocklyDebug.prototype.removeBreakpoint = function (breakpointID) {
@@ -185,15 +209,66 @@ define(["require", "exports", "blockly", "./Timer"], function (require, exports,
                     i--; // check same index again
                 }
             }
-            this.updateDebugUI();
+            this.removeHighlights([breakpointID]);
         };
         BlocklyDebug.prototype.addBreakpoint = function (breakpointID) {
             console.log("add breakpoint: " + breakpointID);
             // TODO: double includes if called from event
             if (!this.breakpointIDs.includes(breakpointID)) {
                 this.breakpointIDs.push(breakpointID);
-                this.updateDebugUI();
+                this.addHighlights([breakpointID]);
             }
+        };
+        BlocklyDebug.prototype.highlightBlock = function (block) {
+            stackmachineJsHelper.getJqueryObject(block.svgPath_).stop(true, true).animate({ 'fill-opacity': '1' }, 0);
+        };
+        BlocklyDebug.prototype.removeBlockHighlight = function (block) {
+            stackmachineJsHelper.getJqueryObject(block.svgPath_).stop(true, true).animate({ 'fill-opacity': '0.3' }, 50);
+        };
+        /** Will add highlights from all currently blocks being currently executed and all given Breakpoints
+         * @param breakPoints the array of breakpoint block id's to have their highlights added*/
+        BlocklyDebug.prototype.addHighlights = function (breakPoints) {
+            var _this_1 = this;
+            this.currentBlocks
+                .map(function (blockId) { return stackmachineJsHelper.getBlockById(blockId); })
+                .forEach(function (block) {
+                Utils_1.Utils.assertNonNull(block);
+                _this_1.highlightBlock(block);
+            });
+            breakPoints.forEach(function (id) {
+                var block = stackmachineJsHelper.getBlockById(id);
+                if (block !== null) {
+                    if (_this_1.currentBlocks.hasOwnProperty(id)) {
+                        stackmachineJsHelper.getJqueryObject(block.svgPath_).addClass('selectedBreakpoint');
+                    }
+                    else {
+                        stackmachineJsHelper.getJqueryObject(block.svgPath_).addClass('breakpoint');
+                    }
+                }
+            });
+        };
+        /** Will remove highlights from all currently blocks being currently executed and all given Breakpoints
+         * @param breakPoints the array of breakpoint block id's to have their highlights removed*/
+        BlocklyDebug.prototype.removeHighlights = function (breakPoints) {
+            var _this_1 = this;
+            this.currentBlocks
+                .map(function (blockId) { return stackmachineJsHelper.getBlockById(blockId); })
+                .forEach(function (block) {
+                if (block !== null) {
+                    var object = stackmachineJsHelper.getJqueryObject(block);
+                    if (object.hasClass('selectedBreakpoint')) {
+                        object.removeClass('selectedBreakpoint').addClass('breakpoint');
+                    }
+                    _this_1.removeBlockHighlight(block);
+                }
+            });
+            breakPoints
+                .map(function (blockId) { return stackmachineJsHelper.getBlockById(blockId); })
+                .forEach(function (block) {
+                if (block !== null) {
+                    stackmachineJsHelper.getJqueryObject(block.svgPath_).removeClass('breakpoint').removeClass('selectedBreakpoint');
+                }
+            });
         };
         BlocklyDebug.instance = new BlocklyDebug();
         return BlocklyDebug;

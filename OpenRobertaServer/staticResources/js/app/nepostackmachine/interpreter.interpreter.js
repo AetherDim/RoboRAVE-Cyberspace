@@ -24,12 +24,13 @@ define(["require", "exports", "./interpreter.constants", "./interpreter.util", "
          * . @param robotBehaviour implementation of the ARobotBehaviour class
          * . @param cbOnTermination is called when the program has terminated
          */
-        function Interpreter(generatedCode, r, cbOnTermination, onProgramBreak, simBreakpoints) {
+        function Interpreter(generatedCode, r, cbOnTermination, onProgramBreak, blockHighlightManager, simBreakpoints) {
             this.terminated = false;
             this.debugDelay = 2;
             this.terminated = false;
             this.callbackOnTermination = cbOnTermination;
             this.onProgramBreak = onProgramBreak;
+            this.blockHighlightManager = blockHighlightManager;
             var stmts = generatedCode[C.OPS];
             this.robotBehaviour = r;
             this.breakpoints = simBreakpoints;
@@ -40,7 +41,7 @@ define(["require", "exports", "./interpreter.constants", "./interpreter.util", "
             this.lastBlock = null;
             this.lastStoppedBlock = null;
             this.stepOverBlock = null;
-            this.state = new interpreter_state_1.State(stmts);
+            this.state = new interpreter_state_1.State(stmts, blockHighlightManager);
         }
         /**
          * run the operations.
@@ -66,7 +67,7 @@ define(["require", "exports", "./interpreter.constants", "./interpreter.util", "
             this.terminated = true;
             this.callbackOnTermination(this);
             this.robotBehaviour.close();
-            this.state.removeHighlights([]);
+            this.blockHighlightManager.removeHighlights([]);
         };
         Interpreter.prototype.getRobotBehaviour = function () {
             return this.robotBehaviour;
@@ -75,19 +76,9 @@ define(["require", "exports", "./interpreter.constants", "./interpreter.util", "
         Interpreter.prototype.getVariables = function () {
             return this.state.getVariables();
         };
-        /** Removes all highlights from currently executing blocks*/
-        Interpreter.prototype.removeHighlights = function () {
-            this.state.removeHighlights([]);
-        };
         /** Sets the debug mode*/
         Interpreter.prototype.setDebugMode = function (mode) {
             this.state.setDebugMode(mode);
-            if (mode) {
-                this.state.addHighlights(this.breakpoints);
-            }
-            else {
-                this.state.removeHighlights(this.breakpoints);
-            }
         };
         /** sets relevant event value to true */
         Interpreter.prototype.addEvent = function (mode) {

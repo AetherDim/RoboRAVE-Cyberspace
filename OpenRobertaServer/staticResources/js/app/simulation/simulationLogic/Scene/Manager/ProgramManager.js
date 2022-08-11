@@ -34,7 +34,7 @@ define(["require", "exports", "./../../interpreter.interpreter", "../../EventMan
             if (this.programState == "terminated") {
                 console.log("Init program manager!");
                 this.instruction = new RobotSimBehaviour_1.RobotSimBehaviour(this.unit);
-                this.interpreter = new interpreter_interpreter_1.Interpreter(this.programObject, this.instruction, function () { return _this.interpreterTerminated(); }, function () { return _this.pauseProgram(); }, this.debugManager.getBreakpointIDs());
+                this.interpreter = new interpreter_interpreter_1.Interpreter(this.programObject, this.instruction, function () { return _this.interpreterTerminated(); }, function () { return _this.pauseProgram(); }, this.debugManager, this.debugManager.getBreakpointIDs());
                 this.programState = "initialized";
             }
             this.debugManager.updateDebugMode();
@@ -60,9 +60,8 @@ define(["require", "exports", "./../../interpreter.interpreter", "../../EventMan
             this.clearInterpretersAndStop();
         };
         Program.prototype.clearInterpretersAndStop = function () {
-            var _a;
             // remove all highlights from breakpoints
-            (_a = this.interpreter) === null || _a === void 0 ? void 0 : _a.removeHighlights();
+            this.debugManager.removeHighlights([]);
             // reset interpreters
             this.interpreter = undefined;
             this.programState = "terminated";
@@ -112,6 +111,11 @@ define(["require", "exports", "./../../interpreter.interpreter", "../../EventMan
         ProgramManager.prototype.removeAllEventHandlers = function () {
             this.eventManager.removeAllEventHandlers();
         };
+        /**
+         * Sets the converted `robotPrograms` to `this.programs`.
+         *
+         * It also removes all event handlers from `this.programs` and adds new event handlers to the new programs.
+         */
         ProgramManager.prototype.setPrograms = function (robotPrograms, unit) {
             var _this = this;
             // remove all event handlers from current programs

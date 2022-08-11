@@ -50,6 +50,7 @@ export class Program {
 				this.instruction,
 				() => this.interpreterTerminated(),
 				() => this.pauseProgram(),
+				this.debugManager,
 				this.debugManager.getBreakpointIDs())
 			
 			this.programState = "initialized"
@@ -86,7 +87,7 @@ export class Program {
 	private clearInterpretersAndStop() {
 
 		// remove all highlights from breakpoints
-		this.interpreter?.removeHighlights()
+		this.debugManager.removeHighlights([])
 
 
 		// reset interpreters

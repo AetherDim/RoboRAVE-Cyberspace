@@ -1,28 +1,3 @@
-var __read = (this && this.__read) || function (o, n) {
-    var m = typeof Symbol === "function" && o[Symbol.iterator];
-    if (!m) return o;
-    var i = m.call(o), r, ar = [], e;
-    try {
-        while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
-    }
-    catch (error) { e = { error: error }; }
-    finally {
-        try {
-            if (r && !r.done && (m = i["return"])) m.call(i);
-        }
-        finally { if (e) throw e.error; }
-    }
-    return ar;
-};
-var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
-    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
-        if (ar || !(i in from)) {
-            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
-            ar[i] = from[i];
-        }
-    }
-    return to.concat(ar || Array.prototype.slice.call(from));
-};
 define(["require", "exports", "./interpreter.constants", "./interpreter.util", "interpreter.jsHelper", "./Utils"], function (require, exports, C, U, stackmachineJsHelper, Utils_1) {
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.State = void 0;
@@ -34,12 +9,13 @@ define(["require", "exports", "./interpreter.constants", "./interpreter.util", "
          * . @param ops the array of operations
          * . @param fct the function definitions
          */
-        function State(ops) {
+        function State(ops, blockHighlightManager) {
+            this.blockHighlightManager = blockHighlightManager;
             this.operations = ops;
             this.pc = 0;
             this.bindings = {};
             this.stack = [];
-            this.currentBlocks = [];
+            this.currentBlocks = blockHighlightManager.getNewCurrentBlockIDs();
             this.debugMode = false;
             // p( 'storeCode with state reset' );
         }
@@ -255,7 +231,7 @@ define(["require", "exports", "./interpreter.constants", "./interpreter.util", "
                     if (stackmachineJsHelper.getJqueryObject(block === null || block === void 0 ? void 0 : block.svgPath_).hasClass('breakpoint')) {
                         stackmachineJsHelper.getJqueryObject(block === null || block === void 0 ? void 0 : block.svgPath_).removeClass('breakpoint').addClass('selectedBreakpoint');
                     }
-                    _this.highlightBlock(block);
+                    _this.blockHighlightManager.highlightBlock(block);
                     _this.addToCurrentBlock(block.id);
                 }
             });
@@ -268,7 +244,7 @@ define(["require", "exports", "./interpreter.constants", "./interpreter.util", "
                     if (stackmachineJsHelper.getJqueryObject(block === null || block === void 0 ? void 0 : block.svgPath_).hasClass('selectedBreakpoint')) {
                         stackmachineJsHelper.getJqueryObject(block === null || block === void 0 ? void 0 : block.svgPath_).removeClass('selectedBreakpoint').addClass('breakpoint');
                     }
-                    _this.removeBlockHighlight(block);
+                    _this.blockHighlightManager.removeBlockHighlight(block);
                     _this.removeFromCurrentBlock(block.id);
                 }
             });
@@ -277,55 +253,6 @@ define(["require", "exports", "./interpreter.constants", "./interpreter.util", "
         State.prototype.beingExecuted = function (stmt) {
             var blockId = stmt[C.HIGHTLIGHT_PLUS].slice(-1).pop();
             return blockId && this.isInCurrentBlock(blockId);
-        };
-        State.prototype.highlightBlock = function (block) {
-            stackmachineJsHelper.getJqueryObject(block.svgPath_).stop(true, true).animate({ 'fill-opacity': '1' }, 0);
-        };
-        State.prototype.removeBlockHighlight = function (block) {
-            stackmachineJsHelper.getJqueryObject(block.svgPath_).stop(true, true).animate({ 'fill-opacity': '0.3' }, 50);
-        };
-        /** Will add highlights from all currently blocks being currently executed and all given Breakpoints
-         * @param breakPoints the array of breakpoint block id's to have their highlights added*/
-        State.prototype.addHighlights = function (breakPoints) {
-            var _this = this;
-            __spreadArray([], __read(this.currentBlocks), false).map(function (blockId) { return stackmachineJsHelper.getBlockById(blockId); })
-                .forEach(function (block) {
-                Utils_1.Utils.assertNonNull(block);
-                _this.highlightBlock(block);
-            });
-            breakPoints.forEach(function (id) {
-                var block = stackmachineJsHelper.getBlockById(id);
-                if (block !== null) {
-                    if (_this.currentBlocks.hasOwnProperty(id)) {
-                        stackmachineJsHelper.getJqueryObject(block.svgPath_).addClass('selectedBreakpoint');
-                    }
-                    else {
-                        stackmachineJsHelper.getJqueryObject(block.svgPath_).addClass('breakpoint');
-                    }
-                }
-            });
-        };
-        /** Will remove highlights from all currently blocks being currently executed and all given Breakpoints
-         * @param breakPoints the array of breakpoint block id's to have their highlights removed*/
-        State.prototype.removeHighlights = function (breakPoints) {
-            var _this = this;
-            __spreadArray([], __read(this.currentBlocks), false).map(function (blockId) { return stackmachineJsHelper.getBlockById(blockId); })
-                .forEach(function (block) {
-                if (block !== null) {
-                    var object = stackmachineJsHelper.getJqueryObject(block);
-                    if (object.hasClass('selectedBreakpoint')) {
-                        object.removeClass('selectedBreakpoint').addClass('breakpoint');
-                    }
-                    _this.removeBlockHighlight(block);
-                }
-            });
-            breakPoints
-                .map(function (blockId) { return stackmachineJsHelper.getBlockById(blockId); })
-                .forEach(function (block) {
-                if (block !== null) {
-                    stackmachineJsHelper.getJqueryObject(block.svgPath_).removeClass('breakpoint').removeClass('selectedBreakpoint');
-                }
-            });
         };
         State.prototype.addToCurrentBlock = function (id) {
             var index = this.currentBlocks.indexOf(id, 0);
