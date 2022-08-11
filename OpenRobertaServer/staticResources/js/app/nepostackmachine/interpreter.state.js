@@ -228,9 +228,6 @@ define(["require", "exports", "./interpreter.constants", "./interpreter.util", "
                 .map(function (blockId) { return stackmachineJsHelper.getBlockById(blockId); })
                 .forEach(function (block) {
                 if (_this.debugMode && block !== null) {
-                    if (stackmachineJsHelper.getJqueryObject(block === null || block === void 0 ? void 0 : block.svgPath_).hasClass('breakpoint')) {
-                        stackmachineJsHelper.getJqueryObject(block === null || block === void 0 ? void 0 : block.svgPath_).removeClass('breakpoint').addClass('selectedBreakpoint');
-                    }
                     _this.blockHighlightManager.highlightBlock(block);
                     _this.addToCurrentBlock(block.id);
                 }
@@ -239,11 +236,10 @@ define(["require", "exports", "./interpreter.constants", "./interpreter.util", "
         /** removes block froms currentBlocks and removes highlighting from block**/
         State.prototype.evalTerminations = function (terminations) {
             var _this = this;
-            terminations === null || terminations === void 0 ? void 0 : terminations.map(function (blockId) { return stackmachineJsHelper.getBlockById(blockId); }).forEach(function (block) {
+            terminations
+                .map(function (blockId) { return stackmachineJsHelper.getBlockById(blockId); })
+                .forEach(function (block) {
                 if (_this.debugMode && block !== null) {
-                    if (stackmachineJsHelper.getJqueryObject(block === null || block === void 0 ? void 0 : block.svgPath_).hasClass('selectedBreakpoint')) {
-                        stackmachineJsHelper.getJqueryObject(block === null || block === void 0 ? void 0 : block.svgPath_).removeClass('selectedBreakpoint').addClass('breakpoint');
-                    }
                     _this.blockHighlightManager.removeBlockHighlight(block);
                     _this.removeFromCurrentBlock(block.id);
                 }

@@ -8,7 +8,9 @@ import { Statement } from './interpreter.statement';
 export interface BlockHighlightManager {
     /** Returns currentBlocks array where all elements were removed */
     getNewCurrentBlockIDs(): string[]
+    /** Highlight the currently executed block */
     highlightBlock(block: SpecialBlocklyBlock): void
+    /** Remove highlight from a previously executing block */
     removeBlockHighlight(block: SpecialBlocklyBlock): void
 }
 
@@ -293,9 +295,6 @@ export class State {
             .map((blockId) => stackmachineJsHelper.getBlockById(blockId))
             .forEach((block) => {
                 if (this.debugMode && block !== null) {
-                    if (stackmachineJsHelper.getJqueryObject(block?.svgPath_).hasClass('breakpoint')) {
-                        stackmachineJsHelper.getJqueryObject(block?.svgPath_).removeClass('breakpoint').addClass('selectedBreakpoint');
-                    }
                     this.blockHighlightManager.highlightBlock(block);
                     this.addToCurrentBlock(block.id);
                 }
@@ -305,12 +304,9 @@ export class State {
     /** removes block froms currentBlocks and removes highlighting from block**/
     public evalTerminations(terminations: string[]) {
         terminations
-            ?.map((blockId) => stackmachineJsHelper.getBlockById(blockId))
+            .map((blockId) => stackmachineJsHelper.getBlockById(blockId))
             .forEach((block) => {
                 if (this.debugMode && block !== null) {
-                    if (stackmachineJsHelper.getJqueryObject(block?.svgPath_).hasClass('selectedBreakpoint')) {
-                        stackmachineJsHelper.getJqueryObject(block?.svgPath_).removeClass('selectedBreakpoint').addClass('breakpoint');
-                    }
                     this.blockHighlightManager.removeBlockHighlight(block);
                     this.removeFromCurrentBlock(block.id);
                 }

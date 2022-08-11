@@ -37,8 +37,6 @@ export class Interpreter {
 
     private readonly onProgramBreak: (interpreter: Interpreter) => void
 
-    private blockHighlightManager: BlockHighlightManager
-
     /*
      *
      * . @param generatedCode argument contains the operations and the function definitions
@@ -56,7 +54,6 @@ export class Interpreter {
         this.terminated = false;
         this.callbackOnTermination = cbOnTermination;
         this.onProgramBreak = onProgramBreak
-        this.blockHighlightManager = blockHighlightManager
         const stmts = generatedCode[C.OPS];
         this.robotBehaviour = r;
 

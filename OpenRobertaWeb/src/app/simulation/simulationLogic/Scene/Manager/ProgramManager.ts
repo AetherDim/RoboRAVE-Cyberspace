@@ -6,6 +6,7 @@ import { RobotSimBehaviour } from "../../Robot/RobotSimBehaviour";
 import { Unit } from "../../Unit";
 import { StringMap } from "../../Utils";
 
+// TODO: Do we need 'initialized'?
 export type ProgramState = "initialized" | "running" | "paused" | "terminated"
 
 export class Program {
@@ -39,7 +40,7 @@ export class Program {
 		this.eventManager.removeAllEventHandlers()
 	}
 
-	private init() {
+	private initIfNecessary() {
 		// Think about the consequences of changing this function!!!
 		if(this.programState == "terminated") {
 			console.log("Init program manager!")
@@ -54,9 +55,9 @@ export class Program {
 				this.debugManager.getBreakpointIDs())
 			
 			this.programState = "initialized"
-		}
 
-		this.debugManager.updateDebugMode()
+			this.debugManager.updateDebugMode()
+		}
 	}
 
 	private interpreterTerminated() {
@@ -65,7 +66,7 @@ export class Program {
 
 
 	startProgram() {
-		this.init()
+		this.initIfNecessary()
 		this.programState = "running"
 		this.eventManager.onStartProgramCallHandlers()
 	}

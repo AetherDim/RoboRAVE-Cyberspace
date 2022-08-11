@@ -30,7 +30,6 @@ define(["require", "exports", "./interpreter.constants", "./interpreter.util", "
             this.terminated = false;
             this.callbackOnTermination = cbOnTermination;
             this.onProgramBreak = onProgramBreak;
-            this.blockHighlightManager = blockHighlightManager;
             var stmts = generatedCode[C.OPS];
             this.robotBehaviour = r;
             this.breakpoints = simBreakpoints;

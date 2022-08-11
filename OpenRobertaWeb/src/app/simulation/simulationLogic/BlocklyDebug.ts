@@ -5,7 +5,7 @@ import * as stackmachineJsHelper from "./interpreter.jsHelper"
 import { BlockHighlightManager } from "interpreter.state";
 import { Utils } from "./Utils";
 
-type SpecialBlocklyBlock = Blockly.Block & { svgGroup_: any, svgPath_: any }
+type SpecialBlocklyBlock = Blockly.Block & { svgGroup_: SVGGElement, svgPath_: SVGPathElement }
 
 export class BlocklyDebug implements BlockHighlightManager {
 
@@ -169,6 +169,8 @@ export class BlocklyDebug implements BlockHighlightManager {
 		} else {
 			$('#blockly').removeClass('debug')
 		}
+
+		// remove all block styles (used for currentBlocks)
 		const workspace = Blockly.getMainWorkspace()
 		if (workspace != null) {
 			workspace.getAllBlocks(false)
@@ -176,38 +178,17 @@ export class BlocklyDebug implements BlockHighlightManager {
 					this.removeBlockStyle(block as SpecialBlocklyBlock)
 				})
 		}
+
+		// remove breakpoint highlights
 		this.removeHighlights(this.breakpointIDs)
+
 		if (this.debugMode) {
+			// add highlights for breakpoints
 			this.addHighlights(this.breakpointIDs)
 		} else {
+			// Remove currently executing blocks since they are not tracked by `class State` if debug mode is false
 			this.clearCurrentBlockIDs()
 		}
-
-		/*for (const interpreter of this.getInterpreters()) {
-
-			if(!this.debugMode) {
-				interpreter.breakpoints = []
-			} else {
-				interpreter.breakpoints = this.breakpointIDs
-			}
-
-			//interpreter.setDebugMode(false); // remove highlights, these stack
-			interpreter.setDebugMode(this.debugMode);
-		}
-
-		if(!this.debugMode) {
-			const workspace = Blockly.getMainWorkspace()
-			if (workspace != null) {
-				workspace.getAllBlocks(false)
-					.forEach((block) => {
-						$((block as any).svgPath_).stop(true, true).removeAttr('style');
-					});
-			}
-
-			this.breakpointIDs = [];
-		}
-
-		this.updateBreakpointEvent()*/
 	}
 
 	private setBreakpointIDs(breakpointIDs: string[]) {
@@ -239,32 +220,36 @@ export class BlocklyDebug implements BlockHighlightManager {
 		}
 	}
 
+	private deselectBreakpointBlock(block: SpecialBlocklyBlock) {
+		if ($(block.svgPath_).hasClass('selectedBreakpoint')) {
+			$(block.svgPath_).removeClass('selectedBreakpoint').addClass('breakpoint');
+		}
+	}
+
 	highlightBlock(block: SpecialBlocklyBlock) {
-		stackmachineJsHelper.getJqueryObject(block.svgPath_).stop(true, true).animate({ 'fill-opacity': '1' }, 0);
+		if ($(block.svgPath_).hasClass('breakpoint')) {
+			$(block.svgPath_).removeClass('breakpoint').addClass('selectedBreakpoint');
+		}
+		$(block.svgPath_).stop(true, true).animate({ 'fill-opacity': '1' }, 0);
 	}
 
 	removeBlockHighlight(block: SpecialBlocklyBlock) {
-		stackmachineJsHelper.getJqueryObject(block.svgPath_).stop(true, true).animate({ 'fill-opacity': '0.3' }, 50);
+		this.deselectBreakpointBlock(block)
+		$(block.svgPath_).stop(true, true).animate({ 'fill-opacity': '0.3' }, 50);
 	}
 
 	private removeBlockStyle(block: SpecialBlocklyBlock) {
+		this.deselectBreakpointBlock(block)
 		$(block.svgPath_).stop(true, true).removeAttr('style');
 	}
 
-	/** Will add highlights from all currently blocks being currently executed and all given Breakpoints
+	/** Will add highlights to all given Breakpoints
 	 * @param breakPoints the array of breakpoint block id's to have their highlights added*/
 	private addHighlights(breakPoints: string[]) {
-		this.currentBlocks
-			.map((blockId) => stackmachineJsHelper.getBlockById(blockId))
-			.forEach((block) => {
-				Utils.assertNonNull(block)
-				this.highlightBlock(block)
-			});
-
 		breakPoints.forEach((id) => {
 			const block = stackmachineJsHelper.getBlockById(id);
 			if (block !== null) {
-				if (this.currentBlocks.hasOwnProperty(id)) {
+				if (this.currentBlocks.includes(id)) {
 					stackmachineJsHelper.getJqueryObject(block.svgPath_).addClass('selectedBreakpoint');
 				} else {
 					stackmachineJsHelper.getJqueryObject(block.svgPath_).addClass('breakpoint');
@@ -273,28 +258,15 @@ export class BlocklyDebug implements BlockHighlightManager {
 		});
 	}
 
-	/** Will remove highlights from all currently blocks being currently executed and all given Breakpoints
+	/** Will remove highlights of all given Breakpoints
 	 * @param breakPoints the array of breakpoint block id's to have their highlights removed*/
 	removeHighlights(breakPoints: string[]) {
-		this.currentBlocks
-			.map((blockId) => stackmachineJsHelper.getBlockById(blockId))
-			.forEach((block) => {
-				if (block !== null) {
-					const object = stackmachineJsHelper.getJqueryObject(block);
-					if (object.hasClass('selectedBreakpoint')) {
-						object.removeClass('selectedBreakpoint').addClass('breakpoint');
-					}
-					this.removeBlockStyle(block);
-				}
-			});
-
-		breakPoints
-			.map((blockId) => stackmachineJsHelper.getBlockById(blockId))
-			.forEach((block) => {
-				if (block !== null) {
-					stackmachineJsHelper.getJqueryObject(block.svgPath_).removeClass('breakpoint').removeClass('selectedBreakpoint');
-				}
-			});
+		breakPoints.forEach((blockId) => {
+			const block = stackmachineJsHelper.getBlockById(blockId)
+			if (block !== null) {
+				stackmachineJsHelper.getJqueryObject(block.svgPath_).removeClass('breakpoint').removeClass('selectedBreakpoint');
+			}
+		});
 	}
 
 }

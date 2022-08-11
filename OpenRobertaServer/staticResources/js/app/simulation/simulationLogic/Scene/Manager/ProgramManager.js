@@ -28,7 +28,7 @@ define(["require", "exports", "./../../interpreter.interpreter", "../../EventMan
         Program.prototype.removeAllEventHandlers = function () {
             this.eventManager.removeAllEventHandlers();
         };
-        Program.prototype.init = function () {
+        Program.prototype.initIfNecessary = function () {
             var _this = this;
             // Think about the consequences of changing this function!!!
             if (this.programState == "terminated") {
@@ -36,14 +36,14 @@ define(["require", "exports", "./../../interpreter.interpreter", "../../EventMan
                 this.instruction = new RobotSimBehaviour_1.RobotSimBehaviour(this.unit);
                 this.interpreter = new interpreter_interpreter_1.Interpreter(this.programObject, this.instruction, function () { return _this.interpreterTerminated(); }, function () { return _this.pauseProgram(); }, this.debugManager, this.debugManager.getBreakpointIDs());
                 this.programState = "initialized";
+                this.debugManager.updateDebugMode();
             }
-            this.debugManager.updateDebugMode();
         };
         Program.prototype.interpreterTerminated = function () {
             this.clearInterpretersAndStop();
         };
         Program.prototype.startProgram = function () {
-            this.init();
+            this.initIfNecessary();
             this.programState = "running";
             this.eventManager.onStartProgramCallHandlers();
         };
