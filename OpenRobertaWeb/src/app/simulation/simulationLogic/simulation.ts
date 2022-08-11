@@ -29,7 +29,12 @@ const sceneManager = cyberspace.getSceneManager()
 function setInitialButtonState() { 
 	UIManager.programControlButton.setInitialState()
 	UIManager.physicsSimControlButton.setInitialState()
-	UIManager.simSpeedUpButton.setInitialState()
+	const scene = cyberspace.getScene()
+	if (scene.getSpeedUpFactor() > scene.getMinSpeedUpFactor()) { 
+		UIManager.simSpeedUpButton.setState("normalSpeed")
+	} else {
+		UIManager.simSpeedUpButton.setState("fastForward")
+	}
 	UIManager.showScoreButton.setInitialState()
 }
 

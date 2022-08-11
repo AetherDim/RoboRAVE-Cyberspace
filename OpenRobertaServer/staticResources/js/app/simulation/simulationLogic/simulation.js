@@ -34,7 +34,13 @@ define(["require", "exports", "./external/SceneDesciptorList", "./Cyberspace/Cyb
     function setInitialButtonState() {
         UIManager_1.UIManager.programControlButton.setInitialState();
         UIManager_1.UIManager.physicsSimControlButton.setInitialState();
-        UIManager_1.UIManager.simSpeedUpButton.setInitialState();
+        var scene = cyberspace.getScene();
+        if (scene.getSpeedUpFactor() > scene.getMinSpeedUpFactor()) {
+            UIManager_1.UIManager.simSpeedUpButton.setState("normalSpeed");
+        }
+        else {
+            UIManager_1.UIManager.simSpeedUpButton.setState("fastForward");
+        }
         UIManager_1.UIManager.showScoreButton.setInitialState();
     }
     (0, RESTApi_1.sendStateRequest)(function (res) {

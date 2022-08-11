@@ -487,6 +487,14 @@ export class Scene {
 		this.simTicker.sleepTime = this.simSleepTime;
 	}
 
+	getSpeedUpFactor(): number {
+		return this.simSpeedupFactor
+	}
+
+	getMinSpeedUpFactor(): number {
+		return this.simMinSpeedupFactor
+	}
+
 	setSpeedUpFactor(speedup: number) {
 		speedup = Math.round(speedup)
 		if(speedup < 1) {

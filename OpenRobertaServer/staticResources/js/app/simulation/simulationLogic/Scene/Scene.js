@@ -423,6 +423,12 @@ define(["require", "exports", "matter-js", "../Timer", "../ScrollView", "../Unit
             this.simSleepTime = simSleepTime;
             this.simTicker.sleepTime = this.simSleepTime;
         };
+        Scene.prototype.getSpeedUpFactor = function () {
+            return this.simSpeedupFactor;
+        };
+        Scene.prototype.getMinSpeedUpFactor = function () {
+            return this.simMinSpeedupFactor;
+        };
         Scene.prototype.setSpeedUpFactor = function (speedup) {
             speedup = Math.round(speedup);
             if (speedup < 1) {
