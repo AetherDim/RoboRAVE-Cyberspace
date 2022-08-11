@@ -67,7 +67,6 @@ define(["require", "exports", "./interpreter.constants", "./interpreter.util", "
             this.terminated = true;
             this.callbackOnTermination(this);
             this.robotBehaviour.close();
-            this.blockHighlightManager.removeHighlights([]);
         };
         Interpreter.prototype.getRobotBehaviour = function () {
             return this.robotBehaviour;

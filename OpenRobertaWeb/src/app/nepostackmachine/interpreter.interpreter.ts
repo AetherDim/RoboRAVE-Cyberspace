@@ -101,7 +101,6 @@ export class Interpreter {
         this.terminated = true;
         this.callbackOnTermination(this);
         this.robotBehaviour.close();
-        this.blockHighlightManager.removeHighlights([])
     }
 
     public getRobotBehaviour() {

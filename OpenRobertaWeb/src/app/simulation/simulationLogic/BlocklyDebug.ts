@@ -13,8 +13,12 @@ export class BlocklyDebug implements BlockHighlightManager {
 	private readonly breakpointIDs: string[] = []
 	private readonly currentBlocks: string[] = []
 
-	getNewCurrentBlockIDs(): string[] {
+	private clearCurrentBlockIDs() {
 		this.currentBlocks.splice(0, this.currentBlocks.length)
+	}
+
+	getNewCurrentBlockIDs(): string[] {
+		this.clearCurrentBlockIDs()
 		return this.currentBlocks
 	}
 
@@ -48,8 +52,10 @@ export class BlocklyDebug implements BlockHighlightManager {
 			workspace.addChangeListener((event: any) => {
 				console.log(event)
 				if(event.element == "click") {
-					// Toggle breakpoint
-					this.toggleBreakpoint(event.blockId)
+					if (this.debugMode) {
+						// Toggle breakpoint
+						this.toggleBreakpoint(event.blockId)
+					}
 				}
 			})
 		} else {
@@ -167,12 +173,14 @@ export class BlocklyDebug implements BlockHighlightManager {
 		if (workspace != null) {
 			workspace.getAllBlocks(false)
 				.forEach((block) => {
-					$((block as SpecialBlocklyBlock).svgPath_).stop(true, true).removeAttr('style')
+					this.removeBlockStyle(block as SpecialBlocklyBlock)
 				})
 		}
 		this.removeHighlights(this.breakpointIDs)
 		if (this.debugMode) {
 			this.addHighlights(this.breakpointIDs)
+		} else {
+			this.clearCurrentBlockIDs()
 		}
 
 		/*for (const interpreter of this.getInterpreters()) {
@@ -239,6 +247,10 @@ export class BlocklyDebug implements BlockHighlightManager {
 		stackmachineJsHelper.getJqueryObject(block.svgPath_).stop(true, true).animate({ 'fill-opacity': '0.3' }, 50);
 	}
 
+	private removeBlockStyle(block: SpecialBlocklyBlock) {
+		$(block.svgPath_).stop(true, true).removeAttr('style');
+	}
+
 	/** Will add highlights from all currently blocks being currently executed and all given Breakpoints
 	 * @param breakPoints the array of breakpoint block id's to have their highlights added*/
 	private addHighlights(breakPoints: string[]) {
@@ -272,7 +284,7 @@ export class BlocklyDebug implements BlockHighlightManager {
 					if (object.hasClass('selectedBreakpoint')) {
 						object.removeClass('selectedBreakpoint').addClass('breakpoint');
 					}
-					this.removeBlockHighlight(block);
+					this.removeBlockStyle(block);
 				}
 			});
 

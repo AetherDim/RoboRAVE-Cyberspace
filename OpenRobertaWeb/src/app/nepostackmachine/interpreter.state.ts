@@ -10,8 +10,6 @@ export interface BlockHighlightManager {
     getNewCurrentBlockIDs(): string[]
     highlightBlock(block: SpecialBlocklyBlock): void
     removeBlockHighlight(block: SpecialBlocklyBlock): void
-    /** Removes all highlights from currently executing blocks*/
-    removeHighlights(blockIDs: string[]): void
 }
 
 export type StateValue =
