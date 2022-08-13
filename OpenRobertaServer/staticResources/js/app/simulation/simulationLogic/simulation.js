@@ -108,7 +108,6 @@ define(["require", "exports", "./external/SceneDesciptorList", "./Cyberspace/Cyb
             else {
                 MSG.displayInformation(result, '', result.message, '', undefined);
             }
-            PROG_C.reloadProgram(result); // load to current blocky workspace
         });
     }
     // Button
