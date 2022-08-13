@@ -173,9 +173,9 @@ export class Interpreter {
                 return 0;
             }
 
-            if (this.state.getDebugMode()) {
-                return this.debugDelay;
-            }
+            // if (this.state.getDebugMode()) {
+            //     return this.debugDelay;
+            // }
         }
         return 0;
     }
@@ -204,9 +204,11 @@ export class Interpreter {
                 return 0;
             }
 
-            if (this.state.getDebugMode()) {
-                return this.debugDelay;
-            }
+            // Does not make sense for real processor
+            // Does make sense for visual debugging without Robot
+            // if (this.state.getDebugMode()) {
+            //     return this.debugDelay;
+            // }
         }
 
         return 0;
