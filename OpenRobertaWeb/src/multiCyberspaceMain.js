@@ -18,7 +18,7 @@ require(['require', 'jquery', 'wrap', 'comm', 'user.model', 'program.model', 'ro
 
     stackmachineJsHelper = require("interpreter.jsHelper"); // provide for interpreter
 
-    $(document).ready(WRAP.fn3(init, 'page init'));
+    $(init);
 });
 
 // http://localhost:1999/multiCyberspace.html#loadProgram&&[1,2,3,4]
