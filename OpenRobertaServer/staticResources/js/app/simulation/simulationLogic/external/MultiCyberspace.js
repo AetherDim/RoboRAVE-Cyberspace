@@ -69,6 +69,74 @@ define(["require", "exports", "../Cyberspace/Cyberspace", "../GlobalDebug", "../
         style.setProperty("user-drag", "none");
         style.setProperty("-webkit-user-drag", "none");
     }
+    function scoreSceneAddEventHandler(scoreScene, groupName, programID, secretKey, paragraphStyle, disqualifyButton) {
+        disqualifyButton.hidden = false;
+        var isDisqualified = false;
+        function updateButtonColor() {
+            var color = isDisqualified ?
+                (disqualifyButton.disabled ? "rgb(200, 0, 0)" : "red") :
+                (disqualifyButton.disabled ? "rgb(200, 200, 200)" : "white");
+            disqualifyButton.style.backgroundColor = color;
+        }
+        disqualifyButton.onclick = function () {
+            isDisqualified = !isDisqualified;
+            disqualifyButton.childNodes[0].remove();
+            disqualifyButton.append(isDisqualified ? "Non disqualify" : "Disqualify");
+            updateButtonColor();
+        };
+        var didSendSetScoreRequest = false;
+        function onScoreRequestError() {
+            didSendSetScoreRequest = false;
+            disqualifyButton.disabled = false;
+            paragraphStyle.backgroundColor = "red";
+            updateButtonColor();
+        }
+        scoreScene.scoreEventManager.onShowHideScore(function (state) {
+            var _a;
+            if (state == "showScore") {
+                scoreScene.pauseSim();
+            }
+            if (state == "showScore" && everyScoreSceneIsFinished()) {
+                UIManager_1.UIManager.showScoreButton.setState("hideScore");
+                UIManager_1.UIManager.physicsSimControlButton.setState("start");
+            }
+            if (state == "showScore" && !didSendSetScoreRequest) {
+                if (programID == undefined) {
+                    return;
+                }
+                if (isDisqualified) {
+                    paragraphStyle.backgroundColor = "red";
+                    return;
+                }
+                didSendSetScoreRequest = true;
+                disqualifyButton.disabled = true;
+                updateButtonColor();
+                (0, RESTApi_1.sendSetScoreRequest)({
+                    secret: { secret: secretKey },
+                    programID: programID,
+                    score: Math.round(scoreScene.score * 1000),
+                    // maximum signed int32 (2^32 - 1)
+                    // https://dev.mysql.com/doc/refman/5.6/en/integer-types.html
+                    time: Math.round((_a = Utils_1.Utils.flatMapOptional(scoreScene.getProgramRuntime(), function (runtime) { return runtime * 1000; })) !== null && _a !== void 0 ? _a : 2147483647),
+                    comment: "",
+                    modifiedBy: "Score scene " + new Date(),
+                }, function (result) {
+                    if (!result) {
+                        alert("Score set for team ".concat(groupName, " request failed"));
+                        onScoreRequestError();
+                        return;
+                    }
+                    if (result.error != RESTApi_1.ResultErrorType.NONE) {
+                        alert(result.message);
+                        onScoreRequestError();
+                        return;
+                    }
+                    paragraphStyle.backgroundColor = "rgb(0, 200, 0)";
+                    console.log("Score for team ".concat(groupName, " [ID: ").concat(programID, "] successfully sent"));
+                });
+            }
+        });
+    }
     function createCyberspaceData(sceneID, groupName, programID, secretKey) {
         var canvas = document.createElement("canvas");
         var cyberspaceDiv = document.createElement("div");
@@ -91,52 +159,20 @@ define(["require", "exports", "../Cyberspace/Cyberspace", "../GlobalDebug", "../
         paragraphStyle.paddingLeft = "3";
         paragraphStyle.paddingRight = "3";
         cyberspaceDiv.appendChild(groupNameDiv);
+        var disqualifyButton = document.createElement("button");
+        disqualifyButton.append("Disqualify");
+        disqualifyButton.hidden = true;
+        var disqualifyButtonStyle = disqualifyButton.style;
+        disqualifyButtonStyle.position = "absolute";
+        disqualifyButtonStyle.top = "2";
+        disqualifyButtonStyle.right = "2";
+        disqualifyButtonStyle.border = "none";
+        disqualifyButtonStyle.borderRadius = "5px";
+        disqualifyButtonStyle.backgroundColor = "white";
+        cyberspaceDiv.append(disqualifyButton);
         var cyberspace = new Cyberspace_1.Cyberspace(canvas, cyberspaceDiv, sceneDescriptors);
         cyberspace.specializedEventManager
-            .addEventHandlerSetter(RRCScoreScene_1.RRCScoreScene, function (scoreScene) {
-            var didSendSetScoreRequest = false;
-            scoreScene.scoreEventManager.onShowHideScore(function (state) {
-                var _a;
-                if (state == "showScore") {
-                    scoreScene.pauseSim();
-                }
-                if (state == "showScore" && everyScoreSceneIsFinished()) {
-                    UIManager_1.UIManager.showScoreButton.setState("hideScore");
-                    UIManager_1.UIManager.physicsSimControlButton.setState("start");
-                }
-                if (state == "showScore" && !didSendSetScoreRequest) {
-                    if (programID == undefined) {
-                        return;
-                    }
-                    didSendSetScoreRequest = true;
-                    (0, RESTApi_1.sendSetScoreRequest)({
-                        secret: { secret: secretKey },
-                        programID: programID,
-                        score: Math.round(scoreScene.score * 1000),
-                        // maximum signed int32 (2^32 - 1)
-                        // https://dev.mysql.com/doc/refman/5.6/en/integer-types.html
-                        time: Math.round((_a = Utils_1.Utils.flatMapOptional(scoreScene.getProgramRuntime(), function (runtime) { return runtime * 1000; })) !== null && _a !== void 0 ? _a : 2147483647),
-                        comment: "",
-                        modifiedBy: "Score scene " + new Date(),
-                    }, function (result) {
-                        if (!result) {
-                            alert("Score set for team ${groupName} request failed");
-                            didSendSetScoreRequest = false;
-                            paragraphStyle.backgroundColor = "red";
-                            return;
-                        }
-                        if (result.error != RESTApi_1.ResultErrorType.NONE) {
-                            alert(result.message);
-                            didSendSetScoreRequest = false;
-                            paragraphStyle.backgroundColor = "red";
-                            return;
-                        }
-                        paragraphStyle.backgroundColor = "rgb(0, 200, 0)";
-                        console.log("Score for team ".concat(groupName, " [ID: ").concat(programID, "] successfully sent"));
-                    });
-                }
-            });
-        });
+            .addEventHandlerSetter(RRCScoreScene_1.RRCScoreScene, function (scoreScene) { return scoreSceneAddEventHandler(scoreScene, groupName, programID, secretKey, paragraphStyle, disqualifyButton); });
         cyberspace.loadScene(sceneID);
         return new CyberspaceData(cyberspace, cyberspaceDiv);
     }
@@ -302,7 +338,7 @@ define(["require", "exports", "../Cyberspace/Cyberspace", "../GlobalDebug", "../
                 sceneID: Utils_1.Utils.randomElement(SceneDesciptorList_1.cyberspaceScenes).ID,
                 groupName: "Test group " + index,
                 robertaRobotSetupData: robertaRobotSetupData,
-                programID: undefined
+                programID: index
             };
         });
     }
