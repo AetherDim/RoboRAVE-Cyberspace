@@ -1,6 +1,6 @@
 "use strict";
 import { Composite, Events, Vector } from "matter-js";
-import { IPhysicsBodyOptions, PhysicsRectEntity } from "../Entities/Entity";
+import { IPhysicsBodyOptions } from "../Entities/Entity";
 import { LineSegment } from "../Geometry/LineSegment";
 import { Polygon } from "../Geometry/Polygon";
 import { ElectricMotor } from "../Robot/ElectricMotor";
@@ -10,6 +10,7 @@ import { Unit } from "../Unit";
 import { Scene } from "./Scene";
 import { AsyncChain } from "./AsyncChain";
 import { Utils } from "../Utils";
+import { PhysicsRectEntity } from "../Entities/PhysicsRectEntity";
 
 export class TestScene extends Scene {
 

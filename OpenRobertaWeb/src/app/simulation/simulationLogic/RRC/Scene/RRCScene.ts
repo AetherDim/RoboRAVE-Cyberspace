@@ -4,11 +4,12 @@ import {Robot} from "../../Robot/Robot";
 import {Body, Vector} from "matter-js";
 import {Unit} from "../../Unit";
 import {RRCScoreScene} from "./RRCScoreScene";
-import {PhysicsRectEntity, RectEntityOptions} from "../../Entities/Entity";
+import {RectEntityOptions} from "../../Entities/Entity";
 import {ScoreWaypoint} from "../../Waypoints/ScoreWaypoint"
 import {WaypointList} from "../../Waypoints/WaypointList";
 import {Utils} from "../../Utils";
 import { WaypointVisibilityBehavior } from "../../Waypoints/WaypointsManager";
+import { PhysicsRectEntity } from "../../Entities/PhysicsRectEntity";
 
 export class RRCScene extends RRCScoreScene {
 

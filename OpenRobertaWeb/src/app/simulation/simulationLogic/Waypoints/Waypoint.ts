@@ -1,5 +1,5 @@
 import { Vector } from "matter-js"
-import { DrawableEntity } from "../Entities/Entity"
+import { DrawableEntity } from "../Entities/DrawableEntity"
 import { Scene } from "../Scene/Scene"
 
 /**

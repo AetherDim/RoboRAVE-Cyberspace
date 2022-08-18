@@ -1,9 +1,20 @@
 import { Vector, Body, Query } from "matter-js"
+import { IPhysicsBodyOptions } from "../Entities/Entity"
 import { LineBaseClass } from "../Geometry/LineBaseClass"
 import { Polygon } from "../Geometry/Polygon"
 import { Utils } from "../Utils"
 
 export class BodyHelper {
+
+	static setPhysicsBodyOptions(body: Body, opts: IPhysicsBodyOptions | undefined) {
+		if (opts !== undefined) {
+			// TODO: Convert more properties using the unit converter
+			Utils.flatMapOptional(opts.mass, mass => Body.setMass(body, mass))
+			Utils.flatMapOptional(opts.angle, angle => Body.setAngle(body, angle))
+			Utils.flatMapOptional(opts.frictionAir, friction => body.frictionAir = friction)
+			Utils.flatMapOptional(opts.isStatic, isStatic => Body.setStatic(body, isStatic))
+		}
+	}
 
 	private static forEachBodyPartVertices(bodies: Body[], code: (vertices: Vector[]) => void) {
 		for (let i = 0; i < bodies.length; i++) {

@@ -1,5 +1,4 @@
 import { Body, Vector } from "matter-js";
-import { PhysicsRectEntity } from "../../Entities/Entity";
 import { Scene } from "../Scene";
 import { NumberIndexed, Utils } from "../../Utils";
 import { Robot, SensorType } from "../../Robot/Robot";
@@ -10,6 +9,7 @@ import { PortToSensorMap } from "../../Robot/PortToSensorMap";
 import "../../pixijs"
 import { ColorSensor } from "../../Robot/Sensors/ColorSensor";
 import { RobotConfiguration } from "../../Robot/RobotConfiguration";
+import { PhysicsRectEntity } from "../../Entities/PhysicsRectEntity";
 
 class MaxSensorCount {
 	readonly maxCount: number

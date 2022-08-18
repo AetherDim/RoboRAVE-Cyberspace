@@ -1,10 +1,11 @@
 import { range } from "d3"
 import { Body, Vector } from "matter-js"
 import { ElectricMotor } from "./ElectricMotor"
-import { DrawablePhysicsEntity, PhysicsRectEntity } from "../Entities/Entity"
+import { DrawablePhysicsEntity } from "../Entities/DrawablePhysicsEntity"
 import { Scene } from "../Scene/Scene"
 import { Utils } from "../Utils"
 import { GUI } from "dat.gui";
+import { PhysicsRectEntity } from "../Entities/PhysicsRectEntity"
 
 export class Wheel extends DrawablePhysicsEntity<PIXI.Container> {
 	

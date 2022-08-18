@@ -13,7 +13,7 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-define(["require", "exports", "../../Entities/Entity"], function (require, exports, Entity_1) {
+define(["require", "exports", "../../Entities/DrawablePhysicsEntity"], function (require, exports, DrawablePhysicsEntity_1) {
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.TouchSensor = void 0;
     var TouchSensor = /** @class */ (function (_super) {
@@ -38,6 +38,6 @@ define(["require", "exports", "../../Entities/Entity"], function (require, expor
             this.isTouched = isTouched;
         };
         return TouchSensor;
-    }(Entity_1.DrawablePhysicsEntity));
+    }(DrawablePhysicsEntity_1.DrawablePhysicsEntity));
     exports.TouchSensor = TouchSensor;
 });

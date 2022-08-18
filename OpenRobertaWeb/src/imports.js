@@ -237,7 +237,10 @@ function initRequireJS(version) {
                             "SimulationCache",
                         ]},
             { "Entities" : [
-                "Entity"
+                "Entity",
+                "DrawableEntity",
+                "DrawablePhysicsEntity",
+                "PhysicsRectEntity",
             ]},
             { "external": [
                 "MultiCyberspace",

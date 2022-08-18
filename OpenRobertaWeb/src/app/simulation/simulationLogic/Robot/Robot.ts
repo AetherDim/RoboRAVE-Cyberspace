@@ -8,7 +8,7 @@ import { ColorSensor } from './Sensors/ColorSensor'
 import { UltrasonicSensor } from './Sensors/UltrasonicSensor'
 import { Ray } from '../Geometry/Ray'
 import { TouchSensor } from './Sensors/TouchSensor'
-import { IContainerEntity, IEntity, IPhysicsCompositeEntity, IUpdatableEntity, PhysicsRectEntity } from '../Entities/Entity'
+import { IContainerEntity, IEntity, IPhysicsCompositeEntity, IUpdatableEntity } from '../Entities/Entity'
 import { Scene } from '../Scene/Scene'
 import { Utils } from '../Utils'
 // Dat Gui
@@ -18,6 +18,7 @@ import { hsvToColorName, rgbToHsv } from '../Color'
 import { GyroSensor } from './Sensors/GyroSensor'
 import { RobotLED, robotLEDColors } from './RobotLED'
 import {Program, ProgramManager} from '../Scene/Manager/ProgramManager'
+import { PhysicsRectEntity } from '../Entities/PhysicsRectEntity'
 
 export const sensorTypeStrings =  ["TOUCH", "GYRO", "COLOR", "ULTRASONIC", "INFRARED", "SOUND", "COMPASS",
 	// german description: "HT Infrarotsensor"

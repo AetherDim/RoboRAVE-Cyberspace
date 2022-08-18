@@ -2,10 +2,10 @@ import { AsyncChain } from "../../Scene/AsyncChain";
 import { AgeGroup } from "../AgeGroup";
 import {RRCScene} from "./RRCScene";
 import * as RRC from '../RRAssetLoader'
-import { PhysicsRectEntity } from "../../Entities/Entity";
 import { Body } from "matter-js";
 import {WaypointList} from "../../Waypoints/WaypointList";
 import {ScoreWaypoint} from "../../Waypoints/ScoreWaypoint";
+import { PhysicsRectEntity } from "../../Entities/PhysicsRectEntity";
 
 class LabyrinthRect {
 	x: number;

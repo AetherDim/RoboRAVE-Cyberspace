@@ -4,6 +4,15 @@ define(["require", "exports", "matter-js", "../Geometry/Polygon", "../Utils"], f
     var BodyHelper = /** @class */ (function () {
         function BodyHelper() {
         }
+        BodyHelper.setPhysicsBodyOptions = function (body, opts) {
+            if (opts !== undefined) {
+                // TODO: Convert more properties using the unit converter
+                Utils_1.Utils.flatMapOptional(opts.mass, function (mass) { return matter_js_1.Body.setMass(body, mass); });
+                Utils_1.Utils.flatMapOptional(opts.angle, function (angle) { return matter_js_1.Body.setAngle(body, angle); });
+                Utils_1.Utils.flatMapOptional(opts.frictionAir, function (friction) { return body.frictionAir = friction; });
+                Utils_1.Utils.flatMapOptional(opts.isStatic, function (isStatic) { return matter_js_1.Body.setStatic(body, isStatic); });
+            }
+        };
         BodyHelper.forEachBodyPartVertices = function (bodies, code) {
             for (var i = 0; i < bodies.length; i++) {
                 var body = bodies[i];

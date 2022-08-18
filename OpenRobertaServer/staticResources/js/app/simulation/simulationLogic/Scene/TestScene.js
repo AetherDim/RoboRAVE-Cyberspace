@@ -13,7 +13,7 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-define(["require", "exports", "matter-js", "../Entities/Entity", "../Geometry/LineSegment", "../Geometry/Polygon", "../Robot/ElectricMotor", "../Robot/Robot", "../ScrollView", "../Unit", "./Scene", "../Utils"], function (require, exports, matter_js_1, Entity_1, LineSegment_1, Polygon_1, ElectricMotor_1, Robot_1, ScrollView_1, Unit_1, Scene_1, Utils_1) {
+define(["require", "exports", "matter-js", "../Geometry/LineSegment", "../Geometry/Polygon", "../Robot/ElectricMotor", "../Robot/Robot", "../ScrollView", "../Unit", "./Scene", "../Utils", "../Entities/PhysicsRectEntity"], function (require, exports, matter_js_1, LineSegment_1, Polygon_1, ElectricMotor_1, Robot_1, ScrollView_1, Unit_1, Scene_1, Utils_1, PhysicsRectEntity_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.TestScene = void 0;
@@ -187,7 +187,7 @@ define(["require", "exports", "matter-js", "../Entities/Entity", "../Geometry/Li
             });
             var t = this;
             function makeRect(x, y, w, h, opt) {
-                return Entity_1.PhysicsRectEntity.create(t, scale * x, scale * y, scale * w, scale * h, { physics: opt });
+                return PhysicsRectEntity_1.PhysicsRectEntity.create(t, scale * x, scale * y, scale * w, scale * h, { physics: opt });
             }
             var bodies = [
                 // blocks

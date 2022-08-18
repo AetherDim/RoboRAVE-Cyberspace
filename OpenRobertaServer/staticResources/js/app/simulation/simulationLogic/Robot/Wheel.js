@@ -29,7 +29,7 @@ var __read = (this && this.__read) || function (o, n) {
     }
     return ar;
 };
-define(["require", "exports", "d3", "matter-js", "../Entities/Entity", "../Utils"], function (require, exports, d3_1, matter_js_1, Entity_1, Utils_1) {
+define(["require", "exports", "d3", "matter-js", "../Entities/DrawablePhysicsEntity", "../Utils", "../Entities/PhysicsRectEntity"], function (require, exports, d3_1, matter_js_1, DrawablePhysicsEntity_1, Utils_1, PhysicsRectEntity_1) {
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.Wheel = void 0;
     var Wheel = /** @class */ (function (_super) {
@@ -119,7 +119,7 @@ define(["require", "exports", "d3", "matter-js", "../Entities/Entity", "../Utils
          * @param mass The mass of the wheel. If it is `null`, the default physics body mass is used.
          */
         Wheel.create = function (scene, x, y, width, height, mass) {
-            return new Wheel(scene, x, y, width, height, Entity_1.PhysicsRectEntity.createWithContainer(scene, x, y, width, height, { color: 0, strokeColor: 0xffffff, strokeWidth: 1, strokeAlpha: 0.5, strokeAlignment: 1 }), mass);
+            return new Wheel(scene, x, y, width, height, PhysicsRectEntity_1.PhysicsRectEntity.createWithContainer(scene, x, y, width, height, { color: 0, strokeColor: 0xffffff, strokeWidth: 1, strokeAlpha: 0.5, strokeAlignment: 1 }), mass);
         };
         // implement abstract DrawablePhysicsEntity method 
         Wheel.prototype.getPhysicsBody = function () {
@@ -291,6 +291,6 @@ define(["require", "exports", "d3", "matter-js", "../Entities/Entity", "../Utils
             gui.add(this, 'slideFriction', 0);
         };
         return Wheel;
-    }(Entity_1.DrawablePhysicsEntity));
+    }(DrawablePhysicsEntity_1.DrawablePhysicsEntity));
     exports.Wheel = Wheel;
 });

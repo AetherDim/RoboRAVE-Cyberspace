@@ -13,7 +13,7 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-define(["require", "exports", "../AgeGroup", "./RRCScene", "../RRAssetLoader", "../../Entities/Entity", "matter-js", "../../Waypoints/WaypointList"], function (require, exports, AgeGroup_1, RRCScene_1, RRC, Entity_1, matter_js_1, WaypointList_1) {
+define(["require", "exports", "../AgeGroup", "./RRCScene", "../RRAssetLoader", "matter-js", "../../Waypoints/WaypointList", "../../Entities/PhysicsRectEntity"], function (require, exports, AgeGroup_1, RRCScene_1, RRC, matter_js_1, WaypointList_1, PhysicsRectEntity_1) {
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.RRCLabyrinthScene = void 0;
     var LabyrinthRect = /** @class */ (function () {
@@ -563,7 +563,7 @@ define(["require", "exports", "../AgeGroup", "./RRCScene", "../RRAssetLoader", "
                 var y = unit.fromLength(rect.y);
                 var w = unit.fromLength(rect.w);
                 var h = unit.fromLength(rect.h);
-                var bodyEntity = Entity_1.PhysicsRectEntity.create(_this, x, y, w, h, { color: rect.color, strokeColor: rect.color, relativeToCenter: false });
+                var bodyEntity = PhysicsRectEntity_1.PhysicsRectEntity.create(_this, x, y, w, h, { color: rect.color, strokeColor: rect.color, relativeToCenter: false });
                 _this.addEntity(bodyEntity);
                 matter_js_1.Body.setStatic(bodyEntity.getPhysicsBody(), true);
             });

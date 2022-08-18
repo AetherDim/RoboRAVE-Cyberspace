@@ -13,7 +13,7 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-define(["require", "exports", "../Entities/Entity"], function (require, exports, Entity_1) {
+define(["require", "exports", "../Entities/DrawableEntity"], function (require, exports, DrawableEntity_1) {
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.Waypoint = void 0;
     /**
@@ -66,6 +66,6 @@ define(["require", "exports", "../Entities/Entity"], function (require, exports,
             return new Waypoint(scene, scene.unit.fromPosition(this.position), scene.unit.fromLength(this.maxDistance));
         };
         return Waypoint;
-    }(Entity_1.DrawableEntity));
+    }(DrawableEntity_1.DrawableEntity));
     exports.Waypoint = Waypoint;
 });

@@ -13,7 +13,7 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-define(["require", "exports", "../../Scene/AsyncChain", "../../Robot/Robot", "matter-js", "../../Unit", "./RRCScoreScene", "../../Entities/Entity", "../../Waypoints/ScoreWaypoint", "../../Utils"], function (require, exports, AsyncChain_1, Robot_1, matter_js_1, Unit_1, RRCScoreScene_1, Entity_1, ScoreWaypoint_1, Utils_1) {
+define(["require", "exports", "../../Scene/AsyncChain", "../../Robot/Robot", "matter-js", "../../Unit", "./RRCScoreScene", "../../Entities/Entity", "../../Waypoints/ScoreWaypoint", "../../Utils", "../../Entities/PhysicsRectEntity"], function (require, exports, AsyncChain_1, Robot_1, matter_js_1, Unit_1, RRCScoreScene_1, Entity_1, ScoreWaypoint_1, Utils_1, PhysicsRectEntity_1) {
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.wp = exports.RRCScene = void 0;
     var RRCScene = /** @class */ (function (_super) {
@@ -126,7 +126,7 @@ define(["require", "exports", "../../Scene/AsyncChain", "../../Robot/Robot", "ma
             if ((options === null || options === void 0 ? void 0 : options.relativeToCenter) == undefined) {
                 opts.relativeToCenter = false;
             }
-            var entity = Entity_1.PhysicsRectEntity.create(this, x, y, w, h, opts);
+            var entity = PhysicsRectEntity_1.PhysicsRectEntity.create(this, x, y, w, h, opts);
             matter_js_1.Body.setStatic(entity.getPhysicsBody(), true);
             this.addEntity(entity);
         };
@@ -153,10 +153,10 @@ define(["require", "exports", "../../Scene/AsyncChain", "../../Robot/Robot", "ma
                 alpha: 0.2,
                 relativeToCenter: false
             };
-            var top = Entity_1.PhysicsRectEntity.create(this, x - t, y - t, w + 2 * t, t, options);
-            var bottom = Entity_1.PhysicsRectEntity.create(this, x - t, y + h, w + 2 * t, t, options);
-            var left = Entity_1.PhysicsRectEntity.create(this, x - t, y, t, h, options);
-            var right = Entity_1.PhysicsRectEntity.create(this, x + w, y, t, h, options);
+            var top = PhysicsRectEntity_1.PhysicsRectEntity.create(this, x - t, y - t, w + 2 * t, t, options);
+            var bottom = PhysicsRectEntity_1.PhysicsRectEntity.create(this, x - t, y + h, w + 2 * t, t, options);
+            var left = PhysicsRectEntity_1.PhysicsRectEntity.create(this, x - t, y, t, h, options);
+            var right = PhysicsRectEntity_1.PhysicsRectEntity.create(this, x + w, y, t, h, options);
             this.addEntity(top);
             this.addEntity(bottom);
             this.addEntity(left);

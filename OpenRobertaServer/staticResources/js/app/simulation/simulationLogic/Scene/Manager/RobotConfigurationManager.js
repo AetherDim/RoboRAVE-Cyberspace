@@ -1,4 +1,4 @@
-define(["require", "exports", "matter-js", "../../Entities/Entity", "../../Utils", "../../Robot/Sensors/TouchSensor", "../../Robot/Sensors/UltrasonicSensor", "../../Robot/Sensors/GyroSensor", "../../Robot/Sensors/ColorSensor", "../../pixijs"], function (require, exports, matter_js_1, Entity_1, Utils_1, TouchSensor_1, UltrasonicSensor_1, GyroSensor_1, ColorSensor_1) {
+define(["require", "exports", "matter-js", "../../Utils", "../../Robot/Sensors/TouchSensor", "../../Robot/Sensors/UltrasonicSensor", "../../Robot/Sensors/GyroSensor", "../../Robot/Sensors/ColorSensor", "../../Entities/PhysicsRectEntity", "../../pixijs"], function (require, exports, matter_js_1, Utils_1, TouchSensor_1, UltrasonicSensor_1, GyroSensor_1, ColorSensor_1, PhysicsRectEntity_1) {
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.RobotConfigurationManager = void 0;
     var MaxSensorCount = /** @class */ (function () {
@@ -31,7 +31,7 @@ define(["require", "exports", "matter-js", "../../Entities/Entity", "../../Utils
             robot.addColorSensor(port, colorSensor);
         };
         RobotConfigurationManager.addTouchSensor = function (robot, port, scene, configuration) {
-            var touchSensorBody = Entity_1.PhysicsRectEntity.create(scene, configuration.x, configuration.y, configuration.width, configuration.height, { color: 0xFF0000, strokeColor: 0xffffff, strokeWidth: 1, strokeAlpha: 0.5, strokeAlignment: 1 });
+            var touchSensorBody = PhysicsRectEntity_1.PhysicsRectEntity.create(scene, configuration.x, configuration.y, configuration.width, configuration.height, { color: 0xFF0000, strokeColor: 0xffffff, strokeWidth: 1, strokeAlpha: 0.5, strokeAlignment: 1 });
             matter_js_1.Body.setMass(touchSensorBody.getPhysicsBody(), scene.unit.getMass(configuration.mass));
             matter_js_1.Body.rotate(touchSensorBody.getPhysicsBody(), Utils_1.Utils.toRadians(configuration.angle));
             robot.addTouchSensor(port, new TouchSensor_1.TouchSensor(scene, touchSensorBody));

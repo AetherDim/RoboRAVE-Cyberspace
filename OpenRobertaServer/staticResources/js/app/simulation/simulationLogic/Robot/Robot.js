@@ -25,7 +25,7 @@ var __read = (this && this.__read) || function (o, n) {
     }
     return ar;
 };
-define(["require", "exports", "matter-js", "./ElectricMotor", "../interpreter.constants", "./Wheel", "./Sensors/ColorSensor", "../Geometry/Ray", "../Entities/Entity", "../Utils", "./../GlobalDebug", "./BodyHelper", "../Color", "./RobotLED", "../Scene/Manager/ProgramManager", "../ExtendedMatter"], function (require, exports, matter_js_1, ElectricMotor_1, interpreter_constants_1, Wheel_1, ColorSensor_1, Ray_1, Entity_1, Utils_1, GlobalDebug_1, BodyHelper_1, Color_1, RobotLED_1, ProgramManager_1) {
+define(["require", "exports", "matter-js", "./ElectricMotor", "../interpreter.constants", "./Wheel", "./Sensors/ColorSensor", "../Geometry/Ray", "../Utils", "./../GlobalDebug", "./BodyHelper", "../Color", "./RobotLED", "../Scene/Manager/ProgramManager", "../Entities/PhysicsRectEntity", "../ExtendedMatter"], function (require, exports, matter_js_1, ElectricMotor_1, interpreter_constants_1, Wheel_1, ColorSensor_1, Ray_1, Utils_1, GlobalDebug_1, BodyHelper_1, Color_1, RobotLED_1, ProgramManager_1, PhysicsRectEntity_1) {
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.Robot = exports.sensorTypeStrings = void 0;
     exports.sensorTypeStrings = ["TOUCH", "GYRO", "COLOR", "ULTRASONIC", "INFRARED", "SOUND", "COMPASS",
@@ -1063,7 +1063,7 @@ define(["require", "exports", "matter-js", "./ElectricMotor", "../interpreter.co
             frontWheel.rollingFriction = 0.0;
             return new Robot({
                 scene: scene,
-                body: Entity_1.PhysicsRectEntity.createWithContainer(scene, 0, 0, 40 * scale, 30 * scale),
+                body: PhysicsRectEntity_1.PhysicsRectEntity.createWithContainer(scene, 0, 0, 40 * scale, 30 * scale),
                 leftDrivingWheel: Wheel_1.Wheel.create(scene, -0, -22 * scale, 20 * scale, 10 * scale),
                 rightDrivingWheel: Wheel_1.Wheel.create(scene, -0, 22 * scale, 20 * scale, 10 * scale),
                 otherWheels: [
@@ -1077,7 +1077,7 @@ define(["require", "exports", "matter-js", "./ElectricMotor", "../interpreter.co
         Robot.default2 = function (scene) {
             return new Robot({
                 scene: scene,
-                body: Entity_1.PhysicsRectEntity.createWithContainer(scene, 0, 0, 40, 30),
+                body: PhysicsRectEntity_1.PhysicsRectEntity.createWithContainer(scene, 0, 0, 40, 30),
                 leftDrivingWheel: Wheel_1.Wheel.create(scene, -50, -20, 20, 10),
                 rightDrivingWheel: Wheel_1.Wheel.create(scene, -50, 20, 20, 10),
                 otherWheels: [
@@ -1103,7 +1103,7 @@ define(["require", "exports", "matter-js", "./ElectricMotor", "../interpreter.co
             var backWheel = Wheel_1.Wheel.create(scene, -0.09, 0, wheel.width, wheel.width, 0.30);
             backWheel.slideFriction = 0.05;
             backWheel.rollingFriction = 0.03;
-            var robotBody = Entity_1.PhysicsRectEntity.createWithContainer(scene, 0, 0, 0.15, 0.10, { color: 0xf97306, strokeColor: 0xffffff, strokeWidth: 1, strokeAlpha: 0.5, strokeAlignment: 1 });
+            var robotBody = PhysicsRectEntity_1.PhysicsRectEntity.createWithContainer(scene, 0, 0, 0.15, 0.10, { color: 0xf97306, strokeColor: 0xffffff, strokeWidth: 1, strokeAlpha: 0.5, strokeAlignment: 1 });
             matter_js_1.Body.setMass(robotBody.getPhysicsBody(), scene.unit.getMass(0.300));
             var robot = new Robot({
                 scene: scene,
