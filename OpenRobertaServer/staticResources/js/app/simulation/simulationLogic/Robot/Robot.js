@@ -913,8 +913,8 @@ define(["require", "exports", "matter-js", "./ElectricMotor", "../interpreter.co
                 finally { if (e_7) throw e_7.error; }
             }
             sensors.gyro = gyroData;
-            var robotBodies = this.getTouchSensors().map(function (touchSensor) { return touchSensor.getPhysicsBody(); })
-                .concat(this.physicsWheelsList, this.body);
+            // FIXME: How should the ultrasonic sensor interact with the jousting lance of 'this' robot
+            var robotBodies = matter_js_1.Composite.allBodies(this.physicsComposite);
             // color
             if (!sensors.color) {
                 sensors.color = {};
@@ -946,6 +946,7 @@ define(["require", "exports", "matter-js", "./ElectricMotor", "../interpreter.co
                 finally { if (e_8) throw e_8.error; }
             }
             var allBodies = this.scene.getAllPhysicsBodies();
+            var allBodiesWithoutRobot = allBodies.filter(function (body) { return !robotBodies.includes(body); });
             // ultrasonic sensor
             if (!sensors.ultrasonic) {
                 sensors.ultrasonic = {};
@@ -957,7 +958,7 @@ define(["require", "exports", "matter-js", "./ElectricMotor", "../interpreter.co
                 var sensorPosition = this_1.getAbsolutePosition(ultrasonicSensor.position);
                 var ultrasonicDistance = void 0;
                 var nearestPoint;
-                if (BodyHelper_1.BodyHelper.someBodyContains(sensorPosition, allBodies, robotBodies)) {
+                if (BodyHelper_1.BodyHelper.someBodyContains(sensorPosition, allBodiesWithoutRobot)) {
                     ultrasonicDistance = 0;
                 }
                 else {
@@ -971,12 +972,12 @@ define(["require", "exports", "matter-js", "./ElectricMotor", "../interpreter.co
                     // (point - sensorPos) * vec > 0
                     var vectors_1 = rays.map(function (r) { return matter_js_1.Vector.perp(r.directionVector); });
                     var dotProducts_1 = vectors_1.map(function (v) { return matter_js_1.Vector.dot(v, sensorPosition); });
-                    nearestPoint = BodyHelper_1.BodyHelper.getNearestPointTo(sensorPosition, allBodies, robotBodies, function (point) {
+                    nearestPoint = BodyHelper_1.BodyHelper.getNearestPointTo(sensorPosition, allBodiesWithoutRobot, function (point) {
                         return matter_js_1.Vector.dot(point, vectors_1[0]) < dotProducts_1[0]
                             && matter_js_1.Vector.dot(point, vectors_1[1]) > dotProducts_1[1];
                     });
                     var minDistanceSquared_1 = nearestPoint ? Utils_1.Utils.vectorDistanceSquared(nearestPoint, sensorPosition) : Infinity;
-                    var intersectionPoints = BodyHelper_1.BodyHelper.intersectionPointsWithLine(rays[0], allBodies, robotBodies).concat(BodyHelper_1.BodyHelper.intersectionPointsWithLine(rays[1], allBodies, robotBodies));
+                    var intersectionPoints = BodyHelper_1.BodyHelper.intersectionPointsWithLine(rays[0], allBodiesWithoutRobot).concat(BodyHelper_1.BodyHelper.intersectionPointsWithLine(rays[1], allBodiesWithoutRobot));
                     intersectionPoints.forEach(function (intersectionPoint) {
                         var distanceSquared = Utils_1.Utils.vectorDistanceSquared(intersectionPoint, sensorPosition);
                         if (distanceSquared < minDistanceSquared_1) {
@@ -1038,7 +1039,7 @@ define(["require", "exports", "matter-js", "./ElectricMotor", "../interpreter.co
             try {
                 for (var _r = __values(this.touchSensors), _s = _r.next(); !_s.done; _s = _r.next()) {
                     var _t = __read(_s.value, 2), port = _t[0], touchSensor = _t[1];
-                    touchSensor.setIsTouched(BodyHelper_1.BodyHelper.bodyIntersectsOther(touchSensor.physicsBody, allBodies));
+                    touchSensor.setIsTouched(BodyHelper_1.BodyHelper.bodyIntersectsOther(touchSensor.physicsBody, allBodiesWithoutRobot));
                     sensors.touch[port] = touchSensor.getIsTouched();
                 }
             }

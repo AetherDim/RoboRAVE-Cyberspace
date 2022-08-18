@@ -4,12 +4,9 @@ define(["require", "exports", "matter-js", "../Geometry/Polygon", "../Utils"], f
     var BodyHelper = /** @class */ (function () {
         function BodyHelper() {
         }
-        BodyHelper.forEachBodyPartVertices = function (bodies, exceptBodies, code) {
+        BodyHelper.forEachBodyPartVertices = function (bodies, code) {
             for (var i = 0; i < bodies.length; i++) {
                 var body = bodies[i];
-                if (exceptBodies.includes(body)) {
-                    continue;
-                }
                 // TODO: Use body.bounds for faster execution
                 for (var j = body.parts.length > 1 ? 1 : 0; j < body.parts.length; j++) {
                     var part = body.parts[j];
@@ -17,10 +14,10 @@ define(["require", "exports", "matter-js", "../Geometry/Polygon", "../Utils"], f
                 }
             }
         };
-        BodyHelper.getNearestPointTo = function (point, bodies, exceptBodies, includePoint) {
+        BodyHelper.getNearestPointTo = function (point, bodies, includePoint) {
             var nearestPoint;
             var minDistanceSquared = Infinity;
-            BodyHelper.forEachBodyPartVertices(bodies, exceptBodies, function (vertices) {
+            BodyHelper.forEachBodyPartVertices(bodies, function (vertices) {
                 var nearestBodyPoint = new Polygon_1.Polygon(vertices).nearestPointToPoint(point, includePoint);
                 if (nearestBodyPoint) {
                     var distanceSquared = Utils_1.Utils.vectorDistanceSquared(point, nearestBodyPoint);
@@ -32,9 +29,9 @@ define(["require", "exports", "matter-js", "../Geometry/Polygon", "../Utils"], f
             });
             return nearestPoint;
         };
-        BodyHelper.intersectionPointsWithLine = function (line, bodies, exceptBodies) {
+        BodyHelper.intersectionPointsWithLine = function (line, bodies) {
             var result = [];
-            this.forEachBodyPartVertices(bodies, exceptBodies, function (vertices) {
+            this.forEachBodyPartVertices(bodies, function (vertices) {
                 var newIntersectionPoints = new Polygon_1.Polygon(vertices).intersectionPointsWithLine(line);
                 for (var i = 0; i < newIntersectionPoints.length; i++) {
                     result.push(newIntersectionPoints[i]);
@@ -44,18 +41,11 @@ define(["require", "exports", "matter-js", "../Geometry/Polygon", "../Utils"], f
         };
         BodyHelper.bodyIntersectsOther = function (body, bodies) {
             // `body` collides with itself
-            return matter_js_1.Query.collides(body, bodies).length > 1;
+            return matter_js_1.Query.collides(body, bodies).length > (bodies.includes(body) ? 1 : 0);
         };
-        BodyHelper.someBodyContains = function (point, bodies, exceptBodies) {
-            bodies = matter_js_1.Query.point(bodies, point);
-            for (var i = 0; i < bodies.length; i++) {
-                var body = bodies[i];
-                if (exceptBodies.includes(body)) {
-                    continue;
-                }
-                return true;
-            }
-            return false;
+        BodyHelper.someBodyContains = function (point, bodies) {
+            var bodiesContainingPoint = matter_js_1.Query.point(bodies, point);
+            return bodiesContainingPoint.length > 0;
         };
         return BodyHelper;
     }());

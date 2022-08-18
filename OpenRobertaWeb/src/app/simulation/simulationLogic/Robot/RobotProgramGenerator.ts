@@ -3,17 +3,32 @@ import { RobotProgram } from "./RobotProgram";
 
 export interface OpCode {
 	opc: string
-	[others: string]: unknown
+	expr?: string
+	"+"?: string[]
+	"-"?: string[]
+	value?: string
+	speedOnly?: boolean
+	SetTime?: boolean
+	name?: string
+	driveDirection?: "FOREWARD" | "BACKWARD"
+	turnDirection?: "left" | "right" 
 }
 
 export class RobotProgramGenerator {
 
 	private constructor() {}
 
-	static generateProgram(operations: OpCode[][]): RobotProgram {
+	static generateProgram(operations: OpCode[][], addStopOpCodes: boolean = true): RobotProgram {
+		const additionalCodes = addStopOpCodes ? RobotProgramGenerator.programStopOpCodes() : []
 		return {
-			javaScriptProgram: JSON.stringify({ "ops": Utils.flattenArray(operations) }, undefined, "\t")
+			javaScriptProgram: JSON.stringify({ "ops": Utils.flattenArray(operations.concat(additionalCodes)) }, undefined, "\t")
 		}
+	}
+
+	static programStopOpCodes(): OpCode[] {
+		return [{
+			"opc": "stop",
+		}]
 	}
 
 	/**
@@ -62,10 +77,7 @@ export class RobotProgramGenerator {
 			},
 			{
 				"opc": "stopDrive",
-				"name": "ev3"
-			},
-			{
-				"opc": "stop",
+				"name": "ev3",
 				"-": [
 					uuidDriveAction
 				]
@@ -117,10 +129,7 @@ export class RobotProgramGenerator {
 			},
 			{
 				"opc": "stopDrive",
-				"name": "ev3"
-			},
-			{
-				"opc": "stop",
+				"name": "ev3",
 				"-": [
 					uuidRotateAction
 				]

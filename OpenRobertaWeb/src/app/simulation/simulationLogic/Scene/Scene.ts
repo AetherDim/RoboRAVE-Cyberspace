@@ -220,6 +220,7 @@ export class Scene {
 
 		this.eventManager.onFinishedLoadingCallHandlers()
 		this.finishedLoadingQueue.forEach(func => func(this))
+		this.finishedLoadingQueue = []
 
 		chain.next(); // technically we don't need this
 	}
@@ -288,6 +289,8 @@ export class Scene {
 			console.warn('Already loading scene... !');
 			return;
 		}
+		this.currentlyLoading = true; // this flag will start loading animation update
+		this.hasFinishedLoading = false;
 
 		this.getRobotManager().configurationManager.setRobotConfigurations(
 			robotSetupData.map(setup => setup.configuration)
@@ -298,9 +301,6 @@ export class Scene {
 		this.pauseSim()
 
 		this.debug.clearDebugGuiDynamic() // if dynamic debug gui exist, clear it
-
-		this.currentlyLoading = true; // this flag will start loading animation update
-		this.hasFinishedLoading = false;
 
 		// hide rendering containers
 		this.getContainers().setVisibility(false);

@@ -243,6 +243,7 @@ define(["require", "exports", "matter-js", "../Timer", "../ScrollView", "../Unit
             console.log('Finished loading!');
             this.eventManager.onFinishedLoadingCallHandlers();
             this.finishedLoadingQueue.forEach(function (func) { return func(_this_1); });
+            this.finishedLoadingQueue = [];
             chain.next(); // technically we don't need this
         };
         /**
@@ -300,13 +301,13 @@ define(["require", "exports", "matter-js", "../Timer", "../ScrollView", "../Unit
                 console.warn('Already loading scene... !');
                 return;
             }
+            this.currentlyLoading = true; // this flag will start loading animation update
+            this.hasFinishedLoading = false;
             this.getRobotManager().configurationManager.setRobotConfigurations(robotSetupData.map(function (setup) { return setup.configuration; }));
             this.setPrograms(robotSetupData);
             // stop the simulation
             this.pauseSim();
             this.debug.clearDebugGuiDynamic(); // if dynamic debug gui exist, clear it
-            this.currentlyLoading = true; // this flag will start loading animation update
-            this.hasFinishedLoading = false;
             // hide rendering containers
             this.getContainers().setVisibility(false);
             // build new async chain

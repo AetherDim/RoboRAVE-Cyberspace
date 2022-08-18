@@ -4,10 +4,17 @@ define(["require", "exports", "../Utils"], function (require, exports, Utils_1) 
     var RobotProgramGenerator = /** @class */ (function () {
         function RobotProgramGenerator() {
         }
-        RobotProgramGenerator.generateProgram = function (operations) {
+        RobotProgramGenerator.generateProgram = function (operations, addStopOpCodes) {
+            if (addStopOpCodes === void 0) { addStopOpCodes = true; }
+            var additionalCodes = addStopOpCodes ? RobotProgramGenerator.programStopOpCodes() : [];
             return {
-                javaScriptProgram: JSON.stringify({ "ops": Utils_1.Utils.flattenArray(operations) }, undefined, "\t")
+                javaScriptProgram: JSON.stringify({ "ops": Utils_1.Utils.flattenArray(operations.concat(additionalCodes)) }, undefined, "\t")
             };
+        };
+        RobotProgramGenerator.programStopOpCodes = function () {
+            return [{
+                    "opc": "stop",
+                }];
         };
         /**
          * @param speed from 0 to 100 (in %)
@@ -55,10 +62,7 @@ define(["require", "exports", "../Utils"], function (require, exports, Utils_1) 
                 },
                 {
                     "opc": "stopDrive",
-                    "name": "ev3"
-                },
-                {
-                    "opc": "stop",
+                    "name": "ev3",
                     "-": [
                         uuidDriveAction
                     ]
@@ -109,10 +113,7 @@ define(["require", "exports", "../Utils"], function (require, exports, Utils_1) 
                 },
                 {
                     "opc": "stopDrive",
-                    "name": "ev3"
-                },
-                {
-                    "opc": "stop",
+                    "name": "ev3",
                     "-": [
                         uuidRotateAction
                     ]

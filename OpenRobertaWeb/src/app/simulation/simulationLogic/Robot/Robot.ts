@@ -1010,8 +1010,8 @@ export class Robot implements IContainerEntity, IUpdatableEntity, IPhysicsCompos
 		}
 		sensors.gyro = gyroData
 
-		const robotBodies = this.getTouchSensors().map(touchSensor => touchSensor.getPhysicsBody())
-			.concat(this.physicsWheelsList, this.body)
+		// FIXME: How should the ultrasonic sensor interact with the jousting lance of 'this' robot
+		const robotBodies = Composite.allBodies(this.physicsComposite)
 
 		// color
 		if (!sensors.color) {
@@ -1038,6 +1038,7 @@ export class Robot implements IContainerEntity, IUpdatableEntity, IPhysicsCompos
 		}
 
 		const allBodies = this.scene.getAllPhysicsBodies()
+		const allBodiesWithoutRobot = allBodies.filter(body => !robotBodies.includes(body))
 
 		// ultrasonic sensor
 		if (!sensors.ultrasonic) {
@@ -1050,7 +1051,7 @@ export class Robot implements IContainerEntity, IUpdatableEntity, IPhysicsCompos
 			const sensorPosition = this.getAbsolutePosition(ultrasonicSensor.position)
 			let ultrasonicDistance: number
 			let nearestPoint: Vector | undefined
-			if (BodyHelper.someBodyContains(sensorPosition, allBodies, robotBodies)) {
+			if (BodyHelper.someBodyContains(sensorPosition, allBodiesWithoutRobot)) {
 				ultrasonicDistance = 0
 			} else {
 				const halfAngle = ultrasonicSensor.angularRange / 2
@@ -1062,12 +1063,12 @@ export class Robot implements IContainerEntity, IUpdatableEntity, IPhysicsCompos
 				// (point - sensorPos) * vec > 0
 				const vectors = rays.map(r => Vector.perp(r.directionVector))
 				const dotProducts = vectors.map(v => Vector.dot(v, sensorPosition))
-				nearestPoint = BodyHelper.getNearestPointTo(sensorPosition, allBodies, robotBodies, point => {
+				nearestPoint = BodyHelper.getNearestPointTo(sensorPosition, allBodiesWithoutRobot, point => {
 					return Vector.dot(point, vectors[0]) < dotProducts[0]
 						&& Vector.dot(point, vectors[1]) > dotProducts[1]
 				})
 				let minDistanceSquared = nearestPoint ? Utils.vectorDistanceSquared(nearestPoint, sensorPosition) : Infinity
-				const intersectionPoints = BodyHelper.intersectionPointsWithLine(rays[0], allBodies, robotBodies).concat(BodyHelper.intersectionPointsWithLine(rays[1], allBodies, robotBodies))
+				const intersectionPoints = BodyHelper.intersectionPointsWithLine(rays[0], allBodiesWithoutRobot).concat(BodyHelper.intersectionPointsWithLine(rays[1], allBodiesWithoutRobot))
 				intersectionPoints.forEach(intersectionPoint => {
 					const distanceSquared = Utils.vectorDistanceSquared(intersectionPoint, sensorPosition)
 					if (distanceSquared < minDistanceSquared) {
@@ -1115,7 +1116,7 @@ export class Robot implements IContainerEntity, IUpdatableEntity, IPhysicsCompos
 			sensors.touch = {}
 		}
 		for (const [port, touchSensor] of this.touchSensors) {
-			touchSensor.setIsTouched(BodyHelper.bodyIntersectsOther(touchSensor.physicsBody, allBodies))
+			touchSensor.setIsTouched(BodyHelper.bodyIntersectsOther(touchSensor.physicsBody, allBodiesWithoutRobot))
 			sensors.touch[port] = touchSensor.getIsTouched()
 		}
 	}

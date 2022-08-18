@@ -124,8 +124,11 @@ export class Program {
 	}
 
 	runNOperations(N: number) : number {
-		this.startProgram()
-		return this.interpreter?.runNOperations(N) ?? 0
+		if (this.programState = "running") {
+			return this.interpreter?.runNOperations(N) ?? 0
+		} else {
+			return 0
+		}
 	}
 }
 export class ProgramManager {
