@@ -20,7 +20,7 @@ define(["require", "exports", "../../Entity", "matter-js", "../../Utils"], funct
             entities.forEach(function (entity) { return _this.addEntity(entity); });
         };
         EntityManager.prototype.addEntity = function (entity) {
-            var _a, _b;
+            var _a;
             if (entity.getScene() != this.scene) {
                 console.warn("Entity ".concat(entity, " is not in this (").concat(this, ") scene"));
             }
@@ -31,7 +31,7 @@ define(["require", "exports", "../../Entity", "matter-js", "../../Utils"], funct
                     this.updatableEntities.push(entity);
                 }
                 if (Entity_1.Type.IDrawableEntity.isSupertypeOf(entity)) {
-                    var container = (_b = (_a = entity.getContainer) === null || _a === void 0 ? void 0 : _a.call(entity)) !== null && _b !== void 0 ? _b : this.scene.getContainers().entityContainer;
+                    var container = (_a = entity.getContainer()) !== null && _a !== void 0 ? _a : this.scene.getContainers().entityContainer;
                     container.addChild(entity.getDrawable());
                 }
                 // TODO: Think about this. There might be wrapper types.
@@ -65,7 +65,7 @@ define(["require", "exports", "../../Entity", "matter-js", "../../Utils"], funct
                     Utils_1.Utils.removeFromArray(this.updatableEntities, entity);
                 }
                 if (Entity_1.Type.IDrawableEntity.isSupertypeOf(entity)) {
-                    (_a = entity.getContainer) === null || _a === void 0 ? void 0 : _a.call(entity).removeChild(entity.getDrawable());
+                    (_a = entity.getContainer()) === null || _a === void 0 ? void 0 : _a.removeChild(entity.getDrawable());
                 }
                 if (Entity_1.Type.IDrawablePhysicsEntity.isSupertypeOf(entity)) {
                     // TODO: The entity might not be in the world and will therefore not

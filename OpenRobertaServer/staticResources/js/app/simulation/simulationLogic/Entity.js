@@ -82,6 +82,9 @@ define(["require", "exports", "matter-js", "./Utils"], function (require, export
         DrawablePhysicsEntity.prototype.getDrawable = function () {
             return this.drawable;
         };
+        DrawablePhysicsEntity.prototype.getContainer = function () {
+            return undefined;
+        };
         DrawablePhysicsEntity.prototype.IPhysicsEntity = function () { };
         DrawablePhysicsEntity.prototype.getPhysicsObject = function () {
             return this.getPhysicsBody();
@@ -111,9 +114,6 @@ define(["require", "exports", "matter-js", "./Utils"], function (require, export
         return RectOptions;
     }(DrawSettings));
     exports.RectOptions = RectOptions;
-    //
-    // Specialized Entities
-    //
     var RectEntityOptions = /** @class */ (function (_super) {
         __extends(RectEntityOptions, _super);
         function RectEntityOptions() {
@@ -124,6 +124,15 @@ define(["require", "exports", "matter-js", "./Utils"], function (require, export
         return RectEntityOptions;
     }(RectOptions));
     exports.RectEntityOptions = RectEntityOptions;
+    function setPhysicsBodyOptions(body, opts) {
+        if (opts !== undefined) {
+            // TODO: Convert more properties using the unit converter
+            Utils_1.Utils.flatMapOptional(opts.mass, function (mass) { return matter_js_1.Body.setMass(body, mass); });
+            Utils_1.Utils.flatMapOptional(opts.angle, function (angle) { return matter_js_1.Body.setAngle(body, angle); });
+            Utils_1.Utils.flatMapOptional(opts.frictionAir, function (friction) { return body.frictionAir = friction; });
+            Utils_1.Utils.flatMapOptional(opts.isStatic, function (isStatic) { return matter_js_1.Body.setStatic(body, isStatic); });
+        }
+    }
     var PhysicsRectEntity = /** @class */ (function (_super) {
         __extends(PhysicsRectEntity, _super);
         function PhysicsRectEntity(scene, x, y, width, height, drawable, opts) {
@@ -132,7 +141,8 @@ define(["require", "exports", "matter-js", "./Utils"], function (require, export
                 x += width / 2;
                 y += height / 2;
             }
-            _this.body = matter_js_1.Bodies.rectangle(x, y, width, height, opts === null || opts === void 0 ? void 0 : opts.physics);
+            _this.body = matter_js_1.Bodies.rectangle(x, y, width, height);
+            setPhysicsBodyOptions(_this.body, opts.physics);
             return _this;
         }
         PhysicsRectEntity.prototype.getPhysicsBody = function () {
@@ -174,10 +184,15 @@ define(["require", "exports", "matter-js", "./Utils"], function (require, export
     }(DrawablePhysicsEntity));
     exports.PhysicsRectEntity = PhysicsRectEntity;
     var DrawableEntity = /** @class */ (function () {
-        function DrawableEntity(scene, drawable) {
+        function DrawableEntity(scene, drawable, sceneContainer) {
             this.scene = scene;
             this.drawable = drawable;
+            this.container = sceneContainer;
         }
+        DrawableEntity.prototype.setContainer = function (container) {
+            this.container = container;
+            return this;
+        };
         DrawableEntity.prototype.IEntity = function () { };
         DrawableEntity.prototype.getScene = function () {
             return this.scene;
@@ -189,6 +204,9 @@ define(["require", "exports", "matter-js", "./Utils"], function (require, export
             this.parent = parent;
         };
         DrawableEntity.prototype.IDrawableEntity = function () { };
+        DrawableEntity.prototype.getContainer = function () {
+            return this.container;
+        };
         DrawableEntity.prototype.getDrawable = function () {
             return this.drawable;
         };

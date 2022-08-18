@@ -1,6 +1,6 @@
 "use strict";
-import { Composite, Events, IBodyDefinition, Vector } from "matter-js";
-import { PhysicsRectEntity } from "../Entity";
+import { Composite, Events, Vector } from "matter-js";
+import { IPhysicsBodyOptions, PhysicsRectEntity } from "../Entity";
 import { LineSegment } from "../Geometry/LineSegment";
 import { Polygon } from "../Geometry/Polygon";
 import { ElectricMotor } from "../Robot/ElectricMotor";
@@ -218,7 +218,7 @@ export class TestScene extends Scene {
 
 
 		const t = this
-		function makeRect(x: number, y: number, w: number, h: number, opt: IBodyDefinition): PhysicsRectEntity {
+		function makeRect(x: number, y: number, w: number, h: number, opt: IPhysicsBodyOptions): PhysicsRectEntity {
 			return PhysicsRectEntity.create(t, scale*x, scale*y, scale*w, scale*h, { physics: opt })
 		}
 		const bodies = [

@@ -37,7 +37,7 @@ export class EntityManager {
 			}
 
 			if (Type.IDrawableEntity.isSupertypeOf(entity)) {
-				const container = entity.getContainer?.() ?? this.scene.getContainers().entityContainer;
+				const container = entity.getContainer() ?? this.scene.getContainers().entityContainer;
 				container.addChild(entity.getDrawable())
 			}
 
@@ -79,7 +79,7 @@ export class EntityManager {
 			}
 
 			if (Type.IDrawableEntity.isSupertypeOf(entity)) {
-				entity.getContainer?.().removeChild(entity.getDrawable())
+				entity.getContainer()?.removeChild(entity.getDrawable())
 			}
 
 			if (Type.IDrawablePhysicsEntity.isSupertypeOf(entity)) {

@@ -64,7 +64,7 @@ export interface IDrawableEntity extends IEntity {
 	 * get container to register graphics
 	 * if function is undefined, the entity layer of the `Scene` will be used
 	 */
-	getContainer?(): PIXI.Container;
+	getContainer(): PIXI.Container | undefined;
 
 }
 
@@ -155,6 +155,9 @@ export abstract class DrawablePhysicsEntity<Drawable extends PIXI.DisplayObject>
 	getDrawable(): Drawable {
 		return this.drawable
 	}
+	getContainer(): PIXI.Container | undefined {
+		return undefined
+	}
 
 	IPhysicsEntity(){}
 	getPhysicsObject() {
@@ -206,8 +209,26 @@ export class RectOptions extends DrawSettings {
 // Specialized Entities
 //
 
+// TODO: Add more options (see IBodyDefinition of matter js)
+export interface IPhysicsBodyOptions {
+	angle?: number
+	mass?: number
+	frictionAir?: number
+	isStatic?: boolean
+}
+
 export class RectEntityOptions extends RectOptions {
-	physics: IChamferableBodyDefinition = {}
+	physics: IPhysicsBodyOptions = {}
+}
+
+function setPhysicsBodyOptions(body: Body, opts: IPhysicsBodyOptions | undefined) {
+	if (opts !== undefined) {
+		// TODO: Convert more properties using the unit converter
+		Utils.flatMapOptional(opts.mass, mass => Body.setMass(body, mass))
+		Utils.flatMapOptional(opts.angle, angle => Body.setAngle(body, angle))
+		Utils.flatMapOptional(opts.frictionAir, friction => body.frictionAir = friction)
+		Utils.flatMapOptional(opts.isStatic, isStatic => Body.setStatic(body, isStatic))
+	}
 }
 
 export class PhysicsRectEntity<Drawable extends PIXI.DisplayObject = PIXI.DisplayObject> extends DrawablePhysicsEntity<Drawable> {
@@ -222,7 +243,8 @@ export class PhysicsRectEntity<Drawable extends PIXI.DisplayObject = PIXI.Displa
 			y += height/2;
 		}
 
-		this.body = Bodies.rectangle(x, y, width, height, opts?.physics);
+		this.body = Bodies.rectangle(x, y, width, height);
+		setPhysicsBodyOptions(this.body, opts.physics)
 	}
 
 	getPhysicsBody() {
@@ -275,10 +297,17 @@ export class DrawableEntity<Drawable extends PIXI.DisplayObject = PIXI.DisplayOb
 	private scene: Scene
 	private parent?: IContainerEntity
 	private drawable: Drawable
+	private container?: PIXI.Container
 
-	constructor(scene: Scene, drawable: Drawable) {
+	constructor(scene: Scene, drawable: Drawable, sceneContainer?: PIXI.Container) {
 		this.scene = scene
 		this.drawable = drawable
+		this.container = sceneContainer
+	}
+
+	setContainer(container?: PIXI.Container): this {
+		this.container = container
+		return this
 	}
 
 	IEntity(){}
@@ -296,6 +325,10 @@ export class DrawableEntity<Drawable extends PIXI.DisplayObject = PIXI.DisplayOb
 	}
 
 	IDrawableEntity(){}
+
+	getContainer(): PIXI.Container | undefined {
+		return this.container
+	}
 
 	getDrawable(): Drawable {
 		return this.drawable
