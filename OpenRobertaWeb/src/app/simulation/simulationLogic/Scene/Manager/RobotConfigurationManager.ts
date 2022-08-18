@@ -1,5 +1,5 @@
 import { Body, Vector } from "matter-js";
-import { PhysicsRectEntity } from "../../Entity";
+import { PhysicsRectEntity } from "../../Entities/Entity";
 import { Scene } from "../Scene";
 import { NumberIndexed, Utils } from "../../Utils";
 import { Robot, SensorType } from "../../Robot/Robot";

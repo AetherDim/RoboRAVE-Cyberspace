@@ -1,5 +1,5 @@
 import { Body } from "matter-js";
-import { DrawablePhysicsEntity, IDrawablePhysicsEntity } from "../../Entity";
+import { DrawablePhysicsEntity, IDrawablePhysicsEntity } from "../../Entities/Entity";
 import { Scene } from "../../Scene/Scene";
 
 

@@ -1,6 +1,6 @@
-import {Scene} from "./Scene/Scene";
+import {Scene} from "../Scene/Scene";
 import {Body, Composite, Constraint, Bodies, IChamferableBodyDefinition} from "matter-js";
-import { Utils } from "./Utils";
+import { Utils } from "../Utils";
 
 
 export class Meta<T> {

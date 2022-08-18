@@ -236,6 +236,9 @@ function initRequireJS(version) {
                             "SceneManager",
                             "SimulationCache",
                         ]},
+            { "Entities" : [
+                "Entity"
+            ]},
             { "external": [
                 "MultiCyberspace",
                 "SceneDesciptorList",

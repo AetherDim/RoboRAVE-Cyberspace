@@ -1,4 +1,4 @@
-define(["require", "exports", "../../Entity", "matter-js", "../../Utils"], function (require, exports, Entity_1, matter_js_1, Utils_1) {
+define(["require", "exports", "../../Entities/Entity", "matter-js", "../../Utils"], function (require, exports, Entity_1, matter_js_1, Utils_1) {
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.EntityManager = void 0;
     var EntityManager = /** @class */ (function () {

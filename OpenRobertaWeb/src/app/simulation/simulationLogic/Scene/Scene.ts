@@ -3,7 +3,7 @@ import { Engine, Mouse, World, Render, MouseConstraint, Composite, Body, Constra
 import { SceneRender } from '../SceneRenderer';
 import { Timer } from '../Timer';
 import { EventType, ScrollViewEvent } from '../ScrollView';
-import { IEntity } from "../Entity";
+import { IEntity } from "../Entities/Entity";
 import { Unit } from '../Unit';
 import { Utils } from '../Utils';
 import { AsyncChain } from "./AsyncChain";

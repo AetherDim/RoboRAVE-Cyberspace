@@ -1,4 +1,4 @@
-import {IDrawablePhysicsEntity, IEntity, IUpdatableEntity, Type} from "../../Entity";
+import {IDrawablePhysicsEntity, IEntity, IUpdatableEntity, Type} from "../../Entities/Entity";
 import {Composite} from "matter-js";
 import {Utils} from "../../Utils";
 import {Scene} from "../Scene";

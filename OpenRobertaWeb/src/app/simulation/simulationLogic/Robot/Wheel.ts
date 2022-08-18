@@ -1,7 +1,7 @@
 import { range } from "d3"
 import { Body, Vector } from "matter-js"
 import { ElectricMotor } from "./ElectricMotor"
-import { DrawablePhysicsEntity, PhysicsRectEntity } from "../Entity"
+import { DrawablePhysicsEntity, PhysicsRectEntity } from "../Entities/Entity"
 import { Scene } from "../Scene/Scene"
 import { Utils } from "../Utils"
 import { GUI } from "dat.gui";

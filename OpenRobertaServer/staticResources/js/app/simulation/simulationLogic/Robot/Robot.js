@@ -25,7 +25,7 @@ var __read = (this && this.__read) || function (o, n) {
     }
     return ar;
 };
-define(["require", "exports", "matter-js", "./ElectricMotor", "../interpreter.constants", "./Wheel", "./Sensors/ColorSensor", "../Geometry/Ray", "../Entity", "../Utils", "./../GlobalDebug", "./BodyHelper", "../Color", "./RobotLED", "../Scene/Manager/ProgramManager", "../ExtendedMatter"], function (require, exports, matter_js_1, ElectricMotor_1, interpreter_constants_1, Wheel_1, ColorSensor_1, Ray_1, Entity_1, Utils_1, GlobalDebug_1, BodyHelper_1, Color_1, RobotLED_1, ProgramManager_1) {
+define(["require", "exports", "matter-js", "./ElectricMotor", "../interpreter.constants", "./Wheel", "./Sensors/ColorSensor", "../Geometry/Ray", "../Entities/Entity", "../Utils", "./../GlobalDebug", "./BodyHelper", "../Color", "./RobotLED", "../Scene/Manager/ProgramManager", "../ExtendedMatter"], function (require, exports, matter_js_1, ElectricMotor_1, interpreter_constants_1, Wheel_1, ColorSensor_1, Ray_1, Entity_1, Utils_1, GlobalDebug_1, BodyHelper_1, Color_1, RobotLED_1, ProgramManager_1) {
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.Robot = exports.sensorTypeStrings = void 0;
     exports.sensorTypeStrings = ["TOUCH", "GYRO", "COLOR", "ULTRASONIC", "INFRARED", "SOUND", "COMPASS",

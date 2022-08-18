@@ -1,6 +1,6 @@
 "use strict";
 import { Composite, Events, Vector } from "matter-js";
-import { IPhysicsBodyOptions, PhysicsRectEntity } from "../Entity";
+import { IPhysicsBodyOptions, PhysicsRectEntity } from "../Entities/Entity";
 import { LineSegment } from "../Geometry/LineSegment";
 import { Polygon } from "../Geometry/Polygon";
 import { ElectricMotor } from "../Robot/ElectricMotor";

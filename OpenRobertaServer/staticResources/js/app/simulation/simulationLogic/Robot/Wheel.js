@@ -29,7 +29,7 @@ var __read = (this && this.__read) || function (o, n) {
     }
     return ar;
 };
-define(["require", "exports", "d3", "matter-js", "../Entity", "../Utils"], function (require, exports, d3_1, matter_js_1, Entity_1, Utils_1) {
+define(["require", "exports", "d3", "matter-js", "../Entities/Entity", "../Utils"], function (require, exports, d3_1, matter_js_1, Entity_1, Utils_1) {
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.Wheel = void 0;
     var Wheel = /** @class */ (function (_super) {
