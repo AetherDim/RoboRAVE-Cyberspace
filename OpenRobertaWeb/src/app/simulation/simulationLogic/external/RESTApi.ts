@@ -1,9 +1,12 @@
+import { randomBool } from "../Random";
 import { DEBUG } from "./../GlobalDebug";
 
+type HTTPRequestEventHandler = (this: XMLHttpRequest, ev: ProgressEvent<XMLHttpRequestEventTarget>) => void
+
 function httpAsync(req: string, url: string, data: string|undefined,
-	transferComplete: (this: XMLHttpRequest) => void,
-	error: (this: XMLHttpRequest) => void,
-	abort: (this: XMLHttpRequest) => void)
+	transferComplete: HTTPRequestEventHandler,
+	error: HTTPRequestEventHandler,
+	abort: HTTPRequestEventHandler)
 {
 	var xmlHttp = new XMLHttpRequest();
 	xmlHttp.open(req, url, true);
@@ -15,17 +18,17 @@ function httpAsync(req: string, url: string, data: string|undefined,
 }
 
 function httpPostAsync(url: string, data: string,
-	transferComplete: (this: XMLHttpRequest) => void,
-	error: (this: XMLHttpRequest) => void,
-	abort: (this: XMLHttpRequest) => void)
+	transferComplete: HTTPRequestEventHandler,
+	error: HTTPRequestEventHandler,
+	abort: HTTPRequestEventHandler)
 {
 	httpAsync("POST", url, data, transferComplete, error, abort)
 }
 
 function httpGetAsync(url: string,
-	transferComplete: (this: XMLHttpRequest) => void,
-	error: (this: XMLHttpRequest) => void,
-	abort: (this: XMLHttpRequest) => void)
+	transferComplete: HTTPRequestEventHandler,
+	error: HTTPRequestEventHandler,
+	abort: HTTPRequestEventHandler)
 {
 	httpAsync("GET", url, undefined, transferComplete, error, abort)
 }
@@ -64,11 +67,13 @@ export function sendRESTRequest(url: string, programRequest: ProgramsRequest|Set
 		try {
 			const response = JSON.parse(this.responseText) as ProgramsRequestResult
 			callback(response)
+
+			// callback(randomBool() ? response : undefined)
 		} catch {
 			callback(undefined)
 		}
 	}
-	function onError(this: XMLHttpRequest) {
+	function onError(this: XMLHttpRequest, ev: ProgressEvent<XMLHttpRequestEventTarget>) {
 		callback()
 	}
 	httpPostAsync(url, JSON.stringify(programRequest), transferComplete, onError, onError)
