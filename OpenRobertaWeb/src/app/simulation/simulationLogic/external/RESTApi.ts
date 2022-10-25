@@ -34,12 +34,14 @@ function httpGetAsync(url: string,
 let PROGRAMS_URL = "/sqlrest/programs"
 let SET_SCORE_URL = "/sqlrest/setScore"
 let GET_STATUS_URL = "/sqlrest/state"
+let GET_RANDOM_JOUSTING_PROGRAM = "/sqlrest/getjousting"
 
 if ((location.hostname === "localhost" || location.hostname === "127.0.0.1") && DEBUG) {
-	// TODO: change this to a debug address
-	PROGRAMS_URL = "https://dev.cyberspace.roborave.de/sqlrest/programs"
-	SET_SCORE_URL = "https://dev.cyberspace.roborave.de/sqlrest/setScore"
-	GET_STATUS_URL = "https://dev.cyberspace.roborave.de/sqlrest/state"
+	let DEBUG_ADDRESS = "https://dev.cyberspace.roborave.de"
+	PROGRAMS_URL = DEBUG_ADDRESS + PROGRAMS_URL
+	SET_SCORE_URL = DEBUG_ADDRESS + SET_SCORE_URL
+	GET_STATUS_URL = DEBUG_ADDRESS + GET_STATUS_URL
+	GET_RANDOM_JOUSTING_PROGRAM = DEBUG_ADDRESS + GET_RANDOM_JOUSTING_PROGRAM
 }
 
 export interface ProgramSQLEntry {
@@ -130,4 +132,12 @@ export interface ProgramsRequestResult {
 
 export type RESTState = {
 	uploadEnabled: boolean
+}
+
+export type ProgramResult = {
+	id: number, team: number, agegroup: number, challenge: number, program: string, comment: "string", timestamp: string, judge: number
+}
+
+export function getRandomJoustingProgram(): ProgramResult {
+	return undefined;
 }
