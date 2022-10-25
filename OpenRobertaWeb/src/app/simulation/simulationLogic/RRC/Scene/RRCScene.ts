@@ -105,7 +105,7 @@ export class RRCScene extends RRCScoreScene {
 	 * Sets the position (matter units) and rotation (degrees; clockwise) of the robot
 	 * @param opt Options of type '{ position?: Vector, rotation?: number }'
 	 */
-	initRobot(opt?: { position?: Vector, rotation?: number }) {
+	initRobot(opt?: { position?: Vector, rotation?: number, modifyRobot?: (robot: Robot) => void }) {
 		let robot = Robot.EV3(this);
 		const position = opt?.position ?? Vector.create()
 
@@ -114,6 +114,7 @@ export class RRCScene extends RRCScoreScene {
 		position.x = unit.fromLength(position.x);
 		position.y = unit.fromLength(position.y);
 
+		opt?.modifyRobot?.(robot)
 		robot.setPose(this.unit.getPosition(position), opt?.rotation || 0, false)
 		robot.body.enableMouseInteraction = true;
 		this.addRobot(robot)

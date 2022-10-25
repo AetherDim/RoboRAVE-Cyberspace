@@ -8,7 +8,7 @@ import { ColorSensor } from './Sensors/ColorSensor'
 import { UltrasonicSensor } from './Sensors/UltrasonicSensor'
 import { Ray } from '../Geometry/Ray'
 import { TouchSensor } from './Sensors/TouchSensor'
-import { IContainerEntity, IEntity, IPhysicsCompositeEntity, IUpdatableEntity } from '../Entities/Entity'
+import { IContainerEntity, IEntity, IPhysicsBodyEntity, IPhysicsCompositeEntity, IUpdatableEntity } from '../Entities/Entity'
 import { Scene } from '../Scene/Scene'
 import { Utils } from '../Utils'
 // Dat Gui
@@ -62,6 +62,8 @@ export class Robot implements IContainerEntity, IUpdatableEntity, IPhysicsCompos
 	 * The list of all wheels
 	 */
 	physicsWheelsList: Body[]
+
+	private defaultCollisionCategory = 1
 
 	usePseudoWheelPhysics = false
 	pseudoMotorTorqueMultiplier = 6.0
@@ -274,6 +276,24 @@ export class Robot implements IContainerEntity, IUpdatableEntity, IPhysicsCompos
 
 	}
 
+	getDefaultCollisionCategory() {
+		return this.defaultCollisionCategory
+	}
+
+	// TODO: Maybe implement for adding sensors
+	setDefaultCollisionCategory(collisionCategory: number) {
+		this.defaultCollisionCategory = collisionCategory
+		Composite.allBodies(this.physicsComposite).forEach(body => body.collisionFilter.category = collisionCategory)
+	}
+
+	private updateDefaultCollisionCategoryOf(bodies: Body[]) {
+		bodies.forEach(body => body.collisionFilter.category = this.defaultCollisionCategory)
+	}
+
+	private updateDefaultCollisionCategory() {
+		this.updateDefaultCollisionCategoryOf(Composite.allBodies(this.physicsComposite))
+	}
+
 	private updatePhysicsObject() {
 
 		this.physicsWheelsList = this.wheelsList.map(wheel => wheel.physicsBody)
@@ -305,6 +325,8 @@ export class Robot implements IContainerEntity, IUpdatableEntity, IPhysicsCompos
 		});
 
 		this.body.frictionAir = 0.0;
+
+		this.updateDefaultCollisionCategory()
 	}
 
 	// IEntity and IContainerEntity
@@ -444,18 +466,7 @@ export class Robot implements IContainerEntity, IUpdatableEntity, IPhysicsCompos
 		if (this.touchSensors.has(port)) {
 			return false
 		}
-		this.addChild(touchSensor)
-		const sensorBody = touchSensor.physicsBody
-
-		Body.rotate(sensorBody, this.body.angle)
-		Body.setPosition(sensorBody,
-			Vector.add(
-				this.body.position,
-				Vector.rotate(touchSensor.physicsBody.position, this.body.angle)
-			)
-		)
-		Composite.add(this.physicsComposite, sensorBody)
-		this.physicsComposite.addRigidBodyConstraints(this.body, sensorBody, 0.3, 0.3)
+		this.addRelativePhysicsBodyEntity(touchSensor)
 		this.touchSensors.set(port, touchSensor)
 		return true
 	}
@@ -467,6 +478,39 @@ export class Robot implements IContainerEntity, IUpdatableEntity, IPhysicsCompos
 	addLED(led: RobotLED) {
 		this.LEDs.push(led)
 		this.bodyContainer.addChild(led.graphics)
+	}
+
+	addRelativePhysicsBodyEntity(physicsBodyEntity: IPhysicsBodyEntity,
+		opts?: { defaultConstraints?: "none" | { constraintStrength?: number,
+			/** Relative to robot body in matter units */
+			relativeRobotBodyOffset?: Vector,
+			/** Relative to physics body in matter units */
+			relativePhysicsBodyOffset?: Vector } }) {
+		this.addChild(physicsBodyEntity)
+		const physicsBody = physicsBodyEntity.getPhysicsBody()
+		Body.rotate(physicsBody, this.body.angle)
+		Body.setPosition(physicsBody,
+			Vector.add(
+				this.body.position,
+				Vector.rotate(physicsBody.position, this.body.angle)
+			)
+		)
+		Composite.add(this.physicsComposite, physicsBody)
+		this.updateDefaultCollisionCategoryOf([physicsBody])
+		if (opts !== undefined) {
+			if (opts.defaultConstraints === undefined) {
+				this.physicsComposite.addRigidBodyConstraints(this.body, physicsBody, 0.3, 0.3)
+			} else if (opts.defaultConstraints !== "none") {
+				const defaultConstraints = opts.defaultConstraints
+				const strength = defaultConstraints.constraintStrength ?? 0.3
+				const robotBodyOffset = Utils.flatMapOptional(defaultConstraints.relativeRobotBodyOffset, offset => Vector.rotate(offset, this.body.angle))
+				const physicsBodyOffset = Utils.flatMapOptional(defaultConstraints.relativePhysicsBodyOffset, offset => Vector.rotate(offset, physicsBody.angle))
+				this.physicsComposite.addRigidBodyConstraints(this.body, physicsBody, strength, strength, robotBodyOffset, physicsBodyOffset)
+			}
+		} else {
+			this.physicsComposite.addRigidBodyConstraints(this.body, physicsBody, 0.3, 0.3)
+		}
+		
 	}
 
 	// TODO: Remove this line

@@ -28,8 +28,8 @@ define(["require", "exports", "matter-js", "./Utils"], function (require, export
         }
         // add constraints to world or compound body
         [
-            makeConstraint(Utils_1.Utils.vectorSub(bodyB.position, bodyA.position), offsetB, rotationStiffnessA),
-            makeConstraint(offsetA, Utils_1.Utils.vectorSub(bodyA.position, bodyB.position), rotationStiffnessB)
+            makeConstraint(Utils_1.Utils.vectorAdd(Utils_1.Utils.vectorSub(bodyB.position, bodyA.position), offsetB), offsetB, rotationStiffnessA),
+            makeConstraint(offsetA, Utils_1.Utils.vectorAdd(Utils_1.Utils.vectorSub(bodyA.position, bodyB.position), offsetA), rotationStiffnessB)
         ].forEach(function (constraint) { return matter_js_1.Composite.add(_this, constraint); });
     }
     function scale(scaleX, scaleY, point, recursive) {

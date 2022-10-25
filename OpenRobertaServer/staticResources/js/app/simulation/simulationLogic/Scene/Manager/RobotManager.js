@@ -30,32 +30,29 @@ define(["require", "exports", "./RobotConfigurationManager", "../../BlocklyDebug
             this.scene = scene;
         }
         RobotManager.prototype.setPrograms = function (programs) {
-            var _this = this;
-            this.scene.runAfterLoading(function () {
-                if (_this.robots.length < programs.length) {
-                    console.warn("Too many programs for robots!");
+            if (this.robots.length < programs.length) {
+                console.warn("Too many programs for robots!");
+            }
+            if (this.robots.length > programs.length) {
+                console.warn("Not enough programs for robots!");
+            }
+            for (var i = 0; i < this.robots.length; i++) {
+                if (i >= programs.length) {
+                    break;
                 }
-                if (_this.robots.length > programs.length) {
-                    console.warn("Not enough programs for robots!");
+                this.robots[i].programManager.setPrograms(programs[i], this.scene.unit);
+                this.robots[i].init();
+            }
+            if (this.robots.length > 0) {
+                // BlocklyDebug selection
+                var programs_1 = this.robots[0].programManager.getPrograms();
+                if (programs_1.length > 0) {
+                    BlocklyDebug_1.BlocklyDebug.init(programs_1[0]);
                 }
-                for (var i = 0; i < _this.robots.length; i++) {
-                    if (i >= programs.length) {
-                        break;
-                    }
-                    _this.robots[i].programManager.setPrograms(programs[i], _this.scene.unit);
-                    _this.robots[i].init();
+                else {
+                    BlocklyDebug_1.BlocklyDebug.init(undefined);
                 }
-                if (_this.robots.length > 0) {
-                    // BlocklyDebug selection
-                    var programs_1 = _this.robots[0].programManager.getPrograms();
-                    if (programs_1.length > 0) {
-                        BlocklyDebug_1.BlocklyDebug.init(programs_1[0]);
-                    }
-                    else {
-                        BlocklyDebug_1.BlocklyDebug.init(undefined);
-                    }
-                }
-            });
+            }
         };
         RobotManager.prototype.getRobots = function () {
             return this.robots;
