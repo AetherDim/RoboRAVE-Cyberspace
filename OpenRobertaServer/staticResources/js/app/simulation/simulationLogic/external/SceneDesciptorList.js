@@ -32,11 +32,23 @@ define(["require", "exports", "../Cyberspace/SceneManager", "../GlobalDebug", ".
             1: 'idRainbowMS',
             2: 'idRainbowHS',
         },
+        // 4: {
+        // 	0: 'idJoustingES'
+        // }
     };
     //
     //  Line Following
     //
-    scenes.push(new SceneManager_1.SceneDescriptor('RRC - Line Following - ES', 'Roborave Cyberspace line following ES', function (descriptor) {
+    scenes.push(
+    // new SceneDescriptor(
+    // 	'RRC - Jousting - Test',
+    // 	'Roborave Cyberspace Jousting',
+    // 	(descriptor) => {
+    // 		return new RRCLineJoustingScene(descriptor.name, AgeGroup.ES)
+    // 	},
+    // 	sceneIDMap[4][0]
+    // ),
+    new SceneManager_1.SceneDescriptor('RRC - Line Following - ES', 'Roborave Cyberspace line following ES', function (descriptor) {
         return new RRCLineFollowingScene_1.RRCLineFollowingScene(descriptor.name, AgeGroup_1.AgeGroup.ES);
     }, exports.sceneIDMap[2][0]), new SceneManager_1.SceneDescriptor('RRC - Line Following - MS', 'Roborave Cyberspace line following MS', function (descriptor) {
         return new RRCLineFollowingScene_1.RRCLineFollowingScene(descriptor.name, AgeGroup_1.AgeGroup.MS);
