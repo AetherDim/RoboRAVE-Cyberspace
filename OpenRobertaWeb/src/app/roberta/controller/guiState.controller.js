@@ -27,7 +27,9 @@ function init(language, opt_data) {
         GUISTATE.gui.view = 'tabProgram';
         GUISTATE.gui.prevView = 'tabProgram';
         GUISTATE.gui.language = language;
-        GUISTATE.gui.startWithoutPopup = false;
+        // Roberta default: 'false' / with start popup
+        // Cyberspace default: 'true' / without start popup
+        GUISTATE.gui.startWithoutPopup = true;
 
         GUISTATE.gui.robot = GUISTATE.server.defaultRobot;
         GUISTATE.gui.defaultRobot = GUISTATE.server.defaultRobot;
