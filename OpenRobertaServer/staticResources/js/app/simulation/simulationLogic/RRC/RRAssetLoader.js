@@ -40,11 +40,11 @@ define(["require", "exports", "../SharedAssetLoader"], function (require, export
     }(SharedAssetLoader_1.FontAsset));
     var RRCMultiAsset = /** @class */ (function (_super) {
         __extends(RRCMultiAsset, _super);
-        function RRCMultiAsset(prefix, postfix, idStart, idEnd, name) {
-            return _super.call(this, exports.RRC_ASSET_PATH + prefix, postfix, idStart, idEnd, name) || this;
+        function RRCMultiAsset(prefix, postfix, idStart, idEnd, name, xScaling, yScaling) {
+            return _super.call(this, exports.RRC_ASSET_PATH + prefix, postfix, idStart, idEnd, name, xScaling, yScaling) || this;
         }
         return RRCMultiAsset;
-    }(SharedAssetLoader_1.MultiAsset));
+    }(SharedAssetLoader_1.MultiSpriteAsset));
     exports.BLANK_BACKGROUND = new RRCSpriteAsset('blank.svg');
     exports.GOAL_BACKGROUND = new RRCSpriteAsset('goal.svg');
     exports.PROGGY_TINY_FONT = new RRCFontAsset('fonts/ProggyTiny.css', ['ProggyTiny']);
@@ -57,9 +57,9 @@ define(["require", "exports", "../SharedAssetLoader"], function (require, export
     exports.LINE_FOLLOWING_BACKGROUND_MS = new RRCSpriteAsset('line-following/ms/linefollowing.jpeg', undefined, 0.25, 0.25);
     exports.LINE_FOLLOWING_BACKGROUND_HS = new RRCSpriteAsset('line-following/hs/linefollowing.jpeg', undefined, 0.25, 0.25);
     // rainbow
-    exports.RAINBOW_BACKGROUND_ES_DINO = new RRCSpriteAsset('rainbow/es/dino.svg');
-    exports.RAINBOW_BACKGROUND_ES = new RRCSpriteAsset('rainbow/es/rainbow.svg');
-    exports.RAINBOW_BACKGROUND_MS_DINO = new RRCMultiAsset('rainbow/ms/dino_', '.svg', 0, 23);
-    exports.RAINBOW_BACKGROUND_MS_SPACE_INVADERS = new RRCMultiAsset('rainbow/ms/rainbow_', '.svg', 0, 23);
-    exports.RAINBOW_BACKGROUND_HS_SPACE_INVADERS = new RRCMultiAsset('rainbow/hs/space_invaders_', '.svg', 0, 719);
+    exports.RAINBOW_BACKGROUND_ES_DINO = new RRCSpriteAsset('rainbow/es/dino.jpeg', undefined, 0.25, 0.25);
+    exports.RAINBOW_BACKGROUND_ES = new RRCSpriteAsset('rainbow/es/cloud.jpeg', undefined, 0.25, 0.25);
+    exports.RAINBOW_BACKGROUND_MS_DINO = new RRCMultiAsset('rainbow/ms/dino', '.png', 0, 23, undefined, 0.25, 0.25);
+    exports.RAINBOW_BACKGROUND_MS_SPACE_INVADERS = new RRCMultiAsset('rainbow/ms/cloud', '.png', 0, 23, undefined, 0.25, 0.25);
+    exports.RAINBOW_BACKGROUND_HS_SPACE_INVADERS = new RRCMultiAsset('rainbow/hs/rainbow', '.png', 0, 719, undefined, 0.25, 0.25);
 });

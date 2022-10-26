@@ -15,7 +15,7 @@ var __extends = (this && this.__extends) || (function () {
 })();
 define(["require", "exports", "webfontloader", "./Random", "./Utils", "./pixijs"], function (require, exports, WebFont, Random_1, Utils_1) {
     Object.defineProperty(exports, "__esModule", { value: true });
-    exports.SharedAssetLoader = exports.MultiAsset = exports.FontAsset = exports.SpriteAsset = exports.Asset = void 0;
+    exports.SharedAssetLoader = exports.MultiSpriteAsset = exports.FontAsset = exports.SpriteAsset = exports.Asset = void 0;
     var Asset = /** @class */ (function () {
         function Asset(path, name) {
             this.path = path;
@@ -63,25 +63,31 @@ define(["require", "exports", "webfontloader", "./Random", "./Utils", "./pixijs"
         return FontAsset;
     }());
     exports.FontAsset = FontAsset;
-    var MultiAsset = /** @class */ (function () {
-        function MultiAsset(prefix, postfix, idStart, idEnd, name) {
+    var MultiSpriteAsset = /** @class */ (function () {
+        function MultiSpriteAsset(prefix, postfix, idStart, idEnd, name, xScaling, yScaling) {
+            this.xScaling = 1;
+            this.yScaling = 1;
             this.prefix = prefix;
             this.postfix = postfix;
             this.idStart = idStart;
             this.idEnd = idEnd;
             this.name = name;
+            if (xScaling)
+                this.xScaling = xScaling;
+            if (yScaling)
+                this.yScaling = yScaling;
         }
-        MultiAsset.prototype.getAsset = function (id) {
+        MultiSpriteAsset.prototype.getAsset = function (id) {
             if (id >= this.idStart && id <= this.idEnd) {
                 var assetPath = this.prefix + id + this.postfix;
                 var assetName = this.getAssetName(id);
-                return new Asset(assetPath, assetName);
+                return new SpriteAsset(assetPath, assetName, this.xScaling, this.yScaling);
             }
             else {
                 return undefined;
             }
         };
-        MultiAsset.prototype.getAssetName = function (id) {
+        MultiSpriteAsset.prototype.getAssetName = function (id) {
             if (id >= this.idStart && id <= this.idEnd && this.name) {
                 return this.name + '_' + id;
             }
@@ -89,18 +95,18 @@ define(["require", "exports", "webfontloader", "./Random", "./Utils", "./pixijs"
                 return undefined;
             }
         };
-        MultiAsset.prototype.getRandomAsset = function () {
+        MultiSpriteAsset.prototype.getRandomAsset = function () {
             return this.getAsset(this.getRandomAssetID());
         };
-        MultiAsset.prototype.getRandomAssetID = function () {
+        MultiSpriteAsset.prototype.getRandomAssetID = function () {
             return (0, Random_1.randomIntBetween)(this.idStart, this.idEnd);
         };
-        MultiAsset.prototype.getNumberOfIDs = function () {
+        MultiSpriteAsset.prototype.getNumberOfIDs = function () {
             return this.idEnd - this.idStart + 1;
         };
-        return MultiAsset;
+        return MultiSpriteAsset;
     }());
-    exports.MultiAsset = MultiAsset;
+    exports.MultiSpriteAsset = MultiSpriteAsset;
     var SharedAssetLoader = /** @class */ (function () {
         function SharedAssetLoader() {
         }

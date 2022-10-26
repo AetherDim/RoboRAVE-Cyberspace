@@ -57,14 +57,20 @@ export class FontAsset {
 
 }
 
-export class MultiAsset {
+export class MultiSpriteAsset {
 
-	constructor(prefix: string, postfix: string, idStart: number, idEnd:number, name?: string) {
+	readonly xScaling: number = 1;
+	readonly yScaling: number = 1;
+
+	constructor(prefix: string, postfix: string, idStart: number, idEnd:number, name?: string, xScaling?: number, yScaling?: number) {
 		this.prefix = prefix;
 		this.postfix = postfix;
 		this.idStart = idStart;
 		this.idEnd = idEnd;
 		this.name = name;
+
+		if(xScaling) this.xScaling = xScaling;
+		if(yScaling) this.yScaling = yScaling;
 	}
 
 	readonly prefix: string;
@@ -73,11 +79,11 @@ export class MultiAsset {
 	readonly idEnd: number;
 	readonly name?: string;
 
-	getAsset(id: number): Asset | undefined {
+	getAsset(id: number): SpriteAsset | undefined {
 		if(id >= this.idStart && id <= this.idEnd) {
 			let assetPath = this.prefix + id + this.postfix;
 			let assetName = this.getAssetName(id);
-			return new Asset(assetPath, assetName);
+			return new SpriteAsset(assetPath, assetName, this.xScaling, this.yScaling);
 		} else {
 			return undefined;
 		}
@@ -92,7 +98,7 @@ export class MultiAsset {
 		}
 	}
 
-	getRandomAsset(): Asset | undefined {
+	getRandomAsset(): SpriteAsset | undefined {
 		return this.getAsset(this.getRandomAssetID());
 	}
 
@@ -105,8 +111,6 @@ export class MultiAsset {
 	}
 
 }
-
-
 
 export class SharedAssetLoader {
 

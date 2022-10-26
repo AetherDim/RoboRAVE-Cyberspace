@@ -349,8 +349,7 @@ define(["require", "exports", "./RRCScene", "../AgeGroup", "../RRAssetLoader", "
             this.initRobot({ position: { x: 402, y: 270 }, rotation: -90 });
             var containers = this.getContainers();
             if (this.backgroundAsset) {
-                var backgroundAsset = SharedAssetLoader_1.SharedAssetLoader.get(this.backgroundAsset).texture;
-                containers.groundContainer.addChild(new PIXI.Sprite(backgroundAsset));
+                containers.groundContainer.addChild(this.backgroundAsset.newSprite());
             }
             this.sortColour();
             this.getWalls().forEach(function (wall) {

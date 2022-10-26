@@ -3,7 +3,7 @@ import {AgeGroup} from "../AgeGroup";
 import * as RRC from "../RRAssetLoader";
 import {AsyncChain} from "../../Scene/AsyncChain";
 import {randomBool, randomWeightedBool} from "../../Random";
-import {Asset, SharedAssetLoader} from "../../SharedAssetLoader";
+import {Asset, SharedAssetLoader, SpriteAsset} from "../../SharedAssetLoader";
 import {WaypointList} from "../../Waypoints/WaypointList";
 import {ScoreWaypoint} from "../../Waypoints/ScoreWaypoint";
 
@@ -357,7 +357,7 @@ export class RRCRainbowScene extends RRCScene {
 		}
 	}
 
-	backgroundAsset?: Asset;
+	backgroundAsset?: SpriteAsset;
 
 	onLoadAssets(chain: AsyncChain) {
 		this.backgroundAsset = this.getAsset();
@@ -379,8 +379,7 @@ export class RRCRainbowScene extends RRCScene {
 		const containers = this.getContainers()
 
 		if (this.backgroundAsset) {
-			let backgroundAsset = SharedAssetLoader.get(this.backgroundAsset).texture;
-			containers.groundContainer.addChild(new PIXI.Sprite(backgroundAsset));
+			containers.groundContainer.addChild(this.backgroundAsset.newSprite());
 		}
 
 		this.sortColour();
