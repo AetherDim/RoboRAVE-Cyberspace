@@ -239,7 +239,7 @@ define(["require", "exports", "dat.gui", "./Timer"], function (require, exports,
         };
         SceneDebug.prototype.createDebugGuiStatic = function () {
             if (exports.DEBUG && !this.disabled && exports.DebugGuiRoot && !this.debugGuiStatic) {
-                this.debugGuiStatic = exports.DebugGuiRoot.addFolder(this.scene.getName());
+                this.debugGuiStatic = exports.DebugGuiRoot.addFolder(this.scene.name);
                 this.initSceneDebug();
             }
         };
@@ -265,7 +265,7 @@ define(["require", "exports", "dat.gui", "./Timer"], function (require, exports,
             gui.add(scene, 'simSleepTime').min(0.001).max(0.1).step(0.001).onChange(function (s) { return scene.setSimSleepTime(s); });
             gui.add(scene, 'simSpeedupFactor').min(1).max(1000).step(1).onChange(function (dt) { return scene.setDT(dt); });
             gui.addButton("Speeeeeed!!!!!", function () { return scene.setSpeedUpFactor(1000); });
-            gui.addButton("Download background image", function () { return downloadJSONFile("pixelData " + scene.getName() + ".json", scene.getContainers()._getPixelData()); });
+            gui.addButton("Download background image", function () { return downloadJSONFile("pixelData " + scene.name + ".json", scene.getContainers()._getPixelData()); });
             var unit = gui.addFolder('unit converter');
             unit.addUpdatable('m', function () { return scene.unit.getLength(1); });
             unit.addUpdatable('kg', function () { return scene.unit.getMass(1); });

@@ -161,10 +161,6 @@ export class Scene {
 
 	readonly name: string
 
-	getName() {
-		return this.name
-	}
-
 
 	//
 	// #############################################################################

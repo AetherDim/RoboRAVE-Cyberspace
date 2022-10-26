@@ -67,7 +67,7 @@ function scoreSceneAddEventHandler(
 	groupName: string,
 	programID: number | undefined,
 	secretKey: string,
-	paragraphStyle: CSSStyleDeclaration,
+	groupNameStyle: CSSStyleDeclaration,
 	disqualifyButton: HTMLButtonElement
 ) {
 
@@ -83,7 +83,7 @@ function scoreSceneAddEventHandler(
 	disqualifyButton.onclick = () => {
 		isDisqualified = !isDisqualified
 		disqualifyButton.childNodes[0].remove()
-		disqualifyButton.append(isDisqualified ? "Non disqualify" : "Disqualify")
+		disqualifyButton.append(isDisqualified ? "Requalify" : "Disqualify")
 		updateButtonColor()
 	}
 
@@ -91,7 +91,7 @@ function scoreSceneAddEventHandler(
 	function onScoreRequestError() {
 		didSendSetScoreRequest = false
 		disqualifyButton.disabled = false
-		paragraphStyle.backgroundColor = "red"
+		groupNameStyle.backgroundColor = "red"
 		updateButtonColor()
 	}
 	scoreScene.scoreEventManager.onShowHideScore(state => {
@@ -106,22 +106,28 @@ function scoreSceneAddEventHandler(
 			if (programID == undefined) {
 				return
 			}
-			if (isDisqualified) {
-				paragraphStyle.backgroundColor = "red"
-				return
-			}
 			didSendSetScoreRequest = true
 			disqualifyButton.disabled = true
 			updateButtonColor()
+			// maximum signed int32 (2^32 - 1)
+			// https://dev.mysql.com/doc/refman/5.6/en/integer-types.html
+			const maxTime = 2147483647
+			let score = Math.round(scoreScene.score * 1000)
+			let time = Math.round(Utils.flatMapOptional(scoreScene.getProgramRuntime(), runtime => runtime * 1000) ?? maxTime)
+			let comment = ""
+			if (isDisqualified) {
+				groupNameStyle.backgroundColor = "red"
+				score = 0
+				time = maxTime
+				comment = "This program is disqualified"
+			}
 			sendSetScoreRequest({
-				secret: {secret: secretKey },
+				secret: { secret: secretKey },
 				programID: programID,
-				score: Math.round(scoreScene.score * 1000),
-				// maximum signed int32 (2^32 - 1)
-				// https://dev.mysql.com/doc/refman/5.6/en/integer-types.html
-				time: Math.round(Utils.flatMapOptional(scoreScene.getProgramRuntime(), runtime => runtime * 1000) ?? 2147483647),
-				comment: "",
-				modifiedBy: "Score scene " + new Date(),
+				score: score,
+				time: time,
+				comment: comment,
+				modifiedBy: scoreScene.name + " " + new Date(),
 			 }, (result) => {
 
 				if(!result) {
@@ -136,7 +142,7 @@ function scoreSceneAddEventHandler(
 					return
 				}
 
-				paragraphStyle.backgroundColor = "rgb(0, 200, 0)"
+				groupNameStyle.backgroundColor = "rgb(0, 200, 0)"
 				console.log(`Score for team ${groupName} [ID: ${programID}] successfully sent`)
 			 })
 		}

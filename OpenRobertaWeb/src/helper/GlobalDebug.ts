@@ -287,7 +287,7 @@ export class SceneDebug {
 	
 	createDebugGuiStatic() {
 		if(DEBUG && !this.disabled && DebugGuiRoot && !this.debugGuiStatic) {
-			this.debugGuiStatic = DebugGuiRoot.addFolder(this.scene.getName())
+			this.debugGuiStatic = DebugGuiRoot.addFolder(this.scene.name)
 			this.initSceneDebug()
 		}
 	}
@@ -318,7 +318,7 @@ export class SceneDebug {
 		gui.add(scene, 'simSleepTime').min(0.001).max(0.1).step(0.001).onChange((s) => scene.setSimSleepTime(s))
 		gui.add(scene, 'simSpeedupFactor').min(1).max(1000).step(1).onChange((dt) => scene.setDT(dt))
 		gui.addButton("Speeeeeed!!!!!", () => scene.setSpeedUpFactor(1000))
-		gui.addButton("Download background image", () => downloadJSONFile("pixelData "+scene.getName()+".json", scene.getContainers()._getPixelData()))
+		gui.addButton("Download background image", () => downloadJSONFile("pixelData "+scene.name+".json", scene.getContainers()._getPixelData()))
 
 		const unit = gui.addFolder('unit converter')
 		unit.addUpdatable('m', () => scene.unit.getLength(1))
