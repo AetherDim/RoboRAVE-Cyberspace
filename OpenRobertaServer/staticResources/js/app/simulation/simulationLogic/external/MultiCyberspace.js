@@ -69,7 +69,7 @@ define(["require", "exports", "../Cyberspace/Cyberspace", "../GlobalDebug", "../
         style.setProperty("user-drag", "none");
         style.setProperty("-webkit-user-drag", "none");
     }
-    function scoreSceneAddEventHandler(scoreScene, groupName, programID, secretKey, paragraphStyle, disqualifyButton) {
+    function scoreSceneAddEventHandler(scoreScene, groupName, programID, secretKey, groupNameStyle, disqualifyButton) {
         disqualifyButton.hidden = false;
         var isDisqualified = false;
         function updateButtonColor() {
@@ -81,14 +81,14 @@ define(["require", "exports", "../Cyberspace/Cyberspace", "../GlobalDebug", "../
         disqualifyButton.onclick = function () {
             isDisqualified = !isDisqualified;
             disqualifyButton.childNodes[0].remove();
-            disqualifyButton.append(isDisqualified ? "Non disqualify" : "Disqualify");
+            disqualifyButton.append(isDisqualified ? "Requalify" : "Disqualify");
             updateButtonColor();
         };
         var didSendSetScoreRequest = false;
         function onScoreRequestError() {
             didSendSetScoreRequest = false;
             disqualifyButton.disabled = false;
-            paragraphStyle.backgroundColor = "red";
+            groupNameStyle.backgroundColor = "red";
             updateButtonColor();
         }
         scoreScene.scoreEventManager.onShowHideScore(function (state) {
@@ -104,22 +104,28 @@ define(["require", "exports", "../Cyberspace/Cyberspace", "../GlobalDebug", "../
                 if (programID == undefined) {
                     return;
                 }
-                if (isDisqualified) {
-                    paragraphStyle.backgroundColor = "red";
-                    return;
-                }
                 didSendSetScoreRequest = true;
                 disqualifyButton.disabled = true;
                 updateButtonColor();
+                // maximum signed int32 (2^32 - 1)
+                // https://dev.mysql.com/doc/refman/5.6/en/integer-types.html
+                var maxTime = 2147483647;
+                var score = Math.round(scoreScene.score * 1000);
+                var time = Math.round((_a = Utils_1.Utils.flatMapOptional(scoreScene.getProgramRuntime(), function (runtime) { return runtime * 1000; })) !== null && _a !== void 0 ? _a : maxTime);
+                var comment = "";
+                if (isDisqualified) {
+                    groupNameStyle.backgroundColor = "red";
+                    score = 0;
+                    time = maxTime;
+                    comment = "This program is disqualified";
+                }
                 (0, RESTApi_1.sendSetScoreRequest)({
                     secret: { secret: secretKey },
                     programID: programID,
-                    score: Math.round(scoreScene.score * 1000),
-                    // maximum signed int32 (2^32 - 1)
-                    // https://dev.mysql.com/doc/refman/5.6/en/integer-types.html
-                    time: Math.round((_a = Utils_1.Utils.flatMapOptional(scoreScene.getProgramRuntime(), function (runtime) { return runtime * 1000; })) !== null && _a !== void 0 ? _a : 2147483647),
-                    comment: "",
-                    modifiedBy: "Score scene " + new Date(),
+                    score: score,
+                    time: time,
+                    comment: comment,
+                    modifiedBy: scoreScene.name + " " + new Date(),
                 }, function (result) {
                     if (!result) {
                         alert("Score set for team ".concat(groupName, " request failed"));
@@ -131,7 +137,7 @@ define(["require", "exports", "../Cyberspace/Cyberspace", "../GlobalDebug", "../
                         onScoreRequestError();
                         return;
                     }
-                    paragraphStyle.backgroundColor = "rgb(0, 200, 0)";
+                    groupNameStyle.backgroundColor = "rgb(0, 200, 0)";
                     console.log("Score for team ".concat(groupName, " [ID: ").concat(programID, "] successfully sent"));
                 });
             }

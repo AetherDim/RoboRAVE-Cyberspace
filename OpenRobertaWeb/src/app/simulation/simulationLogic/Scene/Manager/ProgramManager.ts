@@ -124,7 +124,7 @@ export class Program {
 	}
 
 	runNOperations(N: number) : number {
-		if (this.programState = "running") {
+		if (this.programState == "running") {
 			return this.interpreter?.runNOperations(N) ?? 0
 		} else {
 			return 0

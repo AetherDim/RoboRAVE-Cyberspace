@@ -79,6 +79,9 @@ export const sceneIDMap = {
 		1: 'idRainbowMS',
 		2: 'idRainbowHS',
 	},
+	// 4: {
+	// 	0: 'idJoustingES'
+	// }
 }
 
 
@@ -87,6 +90,14 @@ export const sceneIDMap = {
 	//  Line Following
 	//
 scenes.push(
+	// new SceneDescriptor(
+	// 	'RRC - Jousting - Test',
+	// 	'Roborave Cyberspace Jousting',
+	// 	(descriptor) => {
+	// 		return new RRCLineJoustingScene(descriptor.name, AgeGroup.ES)
+	// 	},
+	// 	sceneIDMap[4][0]
+	// ),
 	new SceneDescriptor(
 		'RRC - Line Following - ES',
 		'Roborave Cyberspace line following ES',

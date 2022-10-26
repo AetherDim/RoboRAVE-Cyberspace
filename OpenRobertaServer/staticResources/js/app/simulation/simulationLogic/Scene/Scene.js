@@ -210,9 +210,6 @@ define(["require", "exports", "matter-js", "../Timer", "../ScrollView", "../Unit
         Scene.prototype.initDynamicDebugGui = function () {
             this.debug.createDebugGuiDynamic();
         };
-        Scene.prototype.getName = function () {
-            return this.name;
-        };
         Scene.prototype.finishedLoading = function (chain) {
             var _this_1 = this;
             var _a;

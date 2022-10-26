@@ -90,7 +90,7 @@ define(["require", "exports", "./../../interpreter.interpreter", "../../EventMan
         };
         Program.prototype.runNOperations = function (N) {
             var _a, _b;
-            if (this.programState = "running") {
+            if (this.programState == "running") {
                 return (_b = (_a = this.interpreter) === null || _a === void 0 ? void 0 : _a.runNOperations(N)) !== null && _b !== void 0 ? _b : 0;
             }
             else {

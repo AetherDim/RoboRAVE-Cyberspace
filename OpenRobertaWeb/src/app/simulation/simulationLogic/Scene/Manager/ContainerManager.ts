@@ -151,7 +151,7 @@ export class ContainerManager {
 		const pixelData = this.scene.getRenderer()?.convertToPixels(this.groundContainer)
 		if (pixelData != undefined) {
 			this.pixelData = pixelData
-			console.log("Ground container pixels checksum of " + this.scene.getName() + ": "+Utils.checksumFNV32(pixelData))
+			console.log("Ground container pixels checksum of " + this.scene.name + ": "+Utils.checksumFNV32(pixelData))
 			this.getGroundImageData = (x, y, w, h) => {
 				const newX = x - bounds.x
 				const newY = y - bounds.y

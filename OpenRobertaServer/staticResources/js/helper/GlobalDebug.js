@@ -239,7 +239,7 @@ define(["require", "exports", "dat.gui", "./Timer", "./RRC/Scene/RRCScoreScene"]
         };
         SceneDebug.prototype.createDebugGuiStatic = function () {
             if (exports.DEBUG && !this.disabled && exports.DebugGuiRoot && !this.debugGuiStatic) {
-                this.debugGuiStatic = exports.DebugGuiRoot.addFolder(this.scene.getName());
+                this.debugGuiStatic = exports.DebugGuiRoot.addFolder(this.scene.name);
                 this.initSceneDebug();
             }
         };

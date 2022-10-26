@@ -178,21 +178,18 @@ define(["require", "exports", "./interpreter.constants", "./interpreter.util", "
                 this.breakPoint(op);
                 return false;
             }
-            if (this.events[C.DEBUG_STEP_INTO] && Interpreter.isPossibleStepInto(op) && op !== this.lastStoppedBlock) {
+            if (this.events[C.DEBUG_STEP_INTO] && Interpreter.isPossibleDebugStop(op) && op !== this.lastStoppedBlock) {
                 this.stepInto(op);
                 return false;
             }
             if (this.events[C.DEBUG_STEP_OVER]) {
-                if (this.stepOverBlock !== null && !this.state.beingExecuted(this.stepOverBlock) && Interpreter.isPossibleStepInto(op)) {
-                    this.stepOver(op);
-                    return false;
-                }
-                else if (this.stepOverBlock === null && Interpreter.isPossibleStepOver(op)) {
-                    this.stepOverBlock = op;
-                }
-                else if (this.stepOverBlock === null && this.lastStoppedBlock !== op && Interpreter.isPossibleStepInto(op)) {
-                    this.stepOver(op);
-                    return false;
+                var noStepOverIsExecuting = this.stepOverBlock === null || !this.state.beingExecuted(this.stepOverBlock);
+                if (noStepOverIsExecuting) {
+                    this.stepOverBlock = Interpreter.isPossibleStepOver(op) ? op : null;
+                    if (Interpreter.isPossibleDebugStop(op) && op !== this.lastStoppedBlock) {
+                        this.stepOver(op);
+                        return false;
+                    }
                 }
             }
             return true;
@@ -200,7 +197,6 @@ define(["require", "exports", "./interpreter.constants", "./interpreter.util", "
         Interpreter.prototype.stepOver = function (op) {
             this.onProgramBreak(this);
             this.events[C.DEBUG_STEP_OVER] = false;
-            this.stepOverBlock = null;
             this.lastStoppedBlock = op;
         };
         Interpreter.prototype.stepInto = function (op) {
@@ -1193,7 +1189,7 @@ define(["require", "exports", "./interpreter.constants", "./interpreter.util", "
             }
             return image;
         };
-        Interpreter.isPossibleStepInto = function (op) {
+        Interpreter.isPossibleDebugStop = function (op) {
             if (op[C.POSSIBLE_DEBUG_STOP] != undefined &&
                 op[C.POSSIBLE_DEBUG_STOP].length > 0) {
                 return true;

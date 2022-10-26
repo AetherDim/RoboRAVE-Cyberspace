@@ -85,8 +85,8 @@ function addRigidBodyConstraints(
 
 	// add constraints to world or compound body
 	[
-		makeConstraint(Utils.vectorSub(bodyB.position, bodyA.position), offsetB, rotationStiffnessA),
-		makeConstraint(offsetA, Utils.vectorSub(bodyA.position, bodyB.position), rotationStiffnessB)
+		makeConstraint(Utils.vectorAdd(Utils.vectorSub(bodyB.position, bodyA.position), offsetB), offsetB, rotationStiffnessA),
+		makeConstraint(offsetA, Utils.vectorAdd(Utils.vectorSub(bodyA.position, bodyB.position), offsetA), rotationStiffnessB)
 	].forEach(constraint => Composite.add(this, constraint))
 }
 

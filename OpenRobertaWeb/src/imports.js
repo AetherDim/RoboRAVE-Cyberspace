@@ -223,6 +223,7 @@ function initRequireJS(version) {
                             'RRCLineFollowingScene',
                             'RRCRainbowScene',
                             'RRCLabyrinthScene',
+                            'RRCJoustingScene',
                         ]}
                 ]},
             { "Waypoints": [

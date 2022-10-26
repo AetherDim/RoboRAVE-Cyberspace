@@ -127,7 +127,7 @@ define(["require", "exports", "../../Utils"], function (require, exports, Utils_
             var pixelData = (_a = this.scene.getRenderer()) === null || _a === void 0 ? void 0 : _a.convertToPixels(this.groundContainer);
             if (pixelData != undefined) {
                 this.pixelData = pixelData;
-                console.log("Ground container pixels checksum of " + this.scene.getName() + ": " + Utils_1.Utils.checksumFNV32(pixelData));
+                console.log("Ground container pixels checksum of " + this.scene.name + ": " + Utils_1.Utils.checksumFNV32(pixelData));
                 this.getGroundImageData = function (x, y, w, h) {
                     var newX = x - bounds.x;
                     var newY = y - bounds.y;

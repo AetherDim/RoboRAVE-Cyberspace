@@ -32,12 +32,13 @@ define(["require", "exports", "./../GlobalDebug"], function (require, exports, G
             try {
                 var response = JSON.parse(this.responseText);
                 callback(response);
+                // callback(randomBool() ? response : undefined)
             }
             catch (_a) {
                 callback(undefined);
             }
         }
-        function onError() {
+        function onError(ev) {
             callback();
         }
         httpPostAsync(url, JSON.stringify(programRequest), transferComplete, onError, onError);

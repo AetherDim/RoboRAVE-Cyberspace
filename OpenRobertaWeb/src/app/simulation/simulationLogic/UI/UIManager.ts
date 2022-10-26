@@ -179,8 +179,8 @@ export class UIManager {
 	static readonly simDebugViewButton = new UIRobertaButton({ id: "simValues" })
 
 	static readonly simDebugMode = new UIRobertaButton({ id: "debugMode" })
-	static readonly debugStepOverButton = new UIRobertaButton({ id: "simControlStepInto" })
-	static readonly debugStepIntoButton = new UIRobertaButton({ id: "simControlStepOver" })
+	static readonly debugStepOverButton = new UIRobertaButton({ id: "simControlStepOver" })
+	static readonly debugStepIntoButton = new UIRobertaButton({ id: "simControlStepInto" })
 	static readonly debugStepBreakPointButton = new UIRobertaButton({ id: "simControlBreakPoint" })
 	static readonly debugVariablesButton = new UIRobertaButton({ id: "simVariables" })
 
