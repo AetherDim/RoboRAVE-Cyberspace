@@ -168,8 +168,8 @@ define(["require", "exports", "blockly", "./UIElement"], function (require, expo
         UIManager.closeParentsButton = new UIRobertaButton({ jQueryString: ".simWindow .close" });
         UIManager.simDebugViewButton = new UIRobertaButton({ id: "simValues" });
         UIManager.simDebugMode = new UIRobertaButton({ id: "debugMode" });
-        UIManager.debugStepOverButton = new UIRobertaButton({ id: "simControlStepInto" });
-        UIManager.debugStepIntoButton = new UIRobertaButton({ id: "simControlStepOver" });
+        UIManager.debugStepOverButton = new UIRobertaButton({ id: "simControlStepOver" });
+        UIManager.debugStepIntoButton = new UIRobertaButton({ id: "simControlStepInto" });
         UIManager.debugStepBreakPointButton = new UIRobertaButton({ id: "simControlBreakPoint" });
         UIManager.debugVariablesButton = new UIRobertaButton({ id: "simVariables" });
         UIManager.simViewButton = new UIRobertaToggleStateButton("simButton", "open", {

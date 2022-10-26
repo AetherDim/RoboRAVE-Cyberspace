@@ -32,39 +32,36 @@ export class RobotManager {
 
 	setPrograms(programs: RobotProgram[][]) {
 
-		this.scene.runAfterLoading(() => {
+		if(this.robots.length < programs.length) {
+			console.warn("Too many programs for robots!")
+		}
 
-			if(this.robots.length < programs.length) {
-				console.warn("Too many programs for robots!")
+		if(this.robots.length > programs.length) {
+			console.warn("Not enough programs for robots!")
+		}
+
+		for (let i = 0; i < this.robots.length; i++) {
+			if(i >= programs.length) {
+				break;
 			}
 
-			if(this.robots.length > programs.length) {
-				console.warn("Not enough programs for robots!")
+			this.robots[i].programManager.setPrograms(programs[i], this.scene.unit)
+			this.robots[i].init()
+
+		}
+
+		if(this.robots.length > 0) {
+			// BlocklyDebug selection
+			const programs = this.robots[0].programManager.getPrograms()
+
+			if(programs.length > 0) {
+				BlocklyDebug.init(programs[0])
+			} else {
+				BlocklyDebug.init(undefined)
 			}
 
-			for (let i = 0; i < this.robots.length; i++) {
-				if(i >= programs.length) {
-					break;
-				}
+		}
 
-				this.robots[i].programManager.setPrograms(programs[i], this.scene.unit)
-				this.robots[i].init()
-
-			}
-
-			if(this.robots.length > 0) {
-				// BlocklyDebug selection
-				const programs = this.robots[0].programManager.getPrograms()
-
-				if(programs.length > 0) {
-					BlocklyDebug.init(programs[0])
-				} else {
-					BlocklyDebug.init(undefined)
-				}
-
-			}
-
-		})
 	}
 
 	getRobots(): Robot[] {

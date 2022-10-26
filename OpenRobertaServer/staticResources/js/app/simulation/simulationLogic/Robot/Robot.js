@@ -36,6 +36,7 @@ define(["require", "exports", "matter-js", "./ElectricMotor", "../interpreter.co
     ];
     var Robot = /** @class */ (function () {
         function Robot(robot) {
+            this.defaultCollisionCategory = 1;
             this.usePseudoWheelPhysics = false;
             this.pseudoMotorTorqueMultiplier = 6.0;
             this.updateSensorGraphics = true;
@@ -206,6 +207,21 @@ define(["require", "exports", "matter-js", "./ElectricMotor", "../interpreter.co
                 });
             }
         };
+        Robot.prototype.getDefaultCollisionCategory = function () {
+            return this.defaultCollisionCategory;
+        };
+        // TODO: Maybe implement for adding sensors
+        Robot.prototype.setDefaultCollisionCategory = function (collisionCategory) {
+            this.defaultCollisionCategory = collisionCategory;
+            matter_js_1.Composite.allBodies(this.physicsComposite).forEach(function (body) { return body.collisionFilter.category = collisionCategory; });
+        };
+        Robot.prototype.updateDefaultCollisionCategoryOf = function (bodies) {
+            var _this = this;
+            bodies.forEach(function (body) { return body.collisionFilter.category = _this.defaultCollisionCategory; });
+        };
+        Robot.prototype.updateDefaultCollisionCategory = function () {
+            this.updateDefaultCollisionCategoryOf(matter_js_1.Composite.allBodies(this.physicsComposite));
+        };
         Robot.prototype.updatePhysicsObject = function () {
             var _this = this;
             this.physicsWheelsList = this.wheelsList.map(function (wheel) { return wheel.physicsBody; });
@@ -233,6 +249,7 @@ define(["require", "exports", "matter-js", "./ElectricMotor", "../interpreter.co
                 _this.physicsComposite.addRigidBodyConstraints(_this.body, wheel, 0.1, 0.1);
             });
             this.body.frictionAir = 0.0;
+            this.updateDefaultCollisionCategory();
         };
         Robot.prototype.IEntity = function () { };
         Robot.prototype.getScene = function () {
@@ -347,12 +364,7 @@ define(["require", "exports", "matter-js", "./ElectricMotor", "../interpreter.co
             if (this.touchSensors.has(port)) {
                 return false;
             }
-            this.addChild(touchSensor);
-            var sensorBody = touchSensor.physicsBody;
-            matter_js_1.Body.rotate(sensorBody, this.body.angle);
-            matter_js_1.Body.setPosition(sensorBody, matter_js_1.Vector.add(this.body.position, matter_js_1.Vector.rotate(touchSensor.physicsBody.position, this.body.angle)));
-            matter_js_1.Composite.add(this.physicsComposite, sensorBody);
-            this.physicsComposite.addRigidBodyConstraints(this.body, sensorBody, 0.3, 0.3);
+            this.addRelativePhysicsBodyEntity(touchSensor);
             this.touchSensors.set(port, touchSensor);
             return true;
         };
@@ -362,6 +374,31 @@ define(["require", "exports", "matter-js", "./ElectricMotor", "../interpreter.co
         Robot.prototype.addLED = function (led) {
             this.LEDs.push(led);
             this.bodyContainer.addChild(led.graphics);
+        };
+        Robot.prototype.addRelativePhysicsBodyEntity = function (physicsBodyEntity, opts) {
+            var _this = this;
+            var _a;
+            this.addChild(physicsBodyEntity);
+            var physicsBody = physicsBodyEntity.getPhysicsBody();
+            matter_js_1.Body.rotate(physicsBody, this.body.angle);
+            matter_js_1.Body.setPosition(physicsBody, matter_js_1.Vector.add(this.body.position, matter_js_1.Vector.rotate(physicsBody.position, this.body.angle)));
+            matter_js_1.Composite.add(this.physicsComposite, physicsBody);
+            this.updateDefaultCollisionCategoryOf([physicsBody]);
+            if (opts !== undefined) {
+                if (opts.defaultConstraints === undefined) {
+                    this.physicsComposite.addRigidBodyConstraints(this.body, physicsBody, 0.3, 0.3);
+                }
+                else if (opts.defaultConstraints !== "none") {
+                    var defaultConstraints = opts.defaultConstraints;
+                    var strength = (_a = defaultConstraints.constraintStrength) !== null && _a !== void 0 ? _a : 0.3;
+                    var robotBodyOffset = Utils_1.Utils.flatMapOptional(defaultConstraints.relativeRobotBodyOffset, function (offset) { return matter_js_1.Vector.rotate(offset, _this.body.angle); });
+                    var physicsBodyOffset = Utils_1.Utils.flatMapOptional(defaultConstraints.relativePhysicsBodyOffset, function (offset) { return matter_js_1.Vector.rotate(offset, physicsBody.angle); });
+                    this.physicsComposite.addRigidBodyConstraints(this.body, physicsBody, strength, strength, robotBodyOffset, physicsBodyOffset);
+                }
+            }
+            else {
+                this.physicsComposite.addRigidBodyConstraints(this.body, physicsBody, 0.3, 0.3);
+            }
         };
         Robot.prototype.setWheels = function (wheels) {
             this.leftDrivingWheel = wheels.leftDrivingWheel;

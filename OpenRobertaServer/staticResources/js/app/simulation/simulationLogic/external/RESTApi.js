@@ -1,6 +1,6 @@
 define(["require", "exports", "./../GlobalDebug"], function (require, exports, GlobalDebug_1) {
     Object.defineProperty(exports, "__esModule", { value: true });
-    exports.ResultErrorType = exports.sendSetScoreRequest = exports.sendStateRequest = exports.sendProgramRequest = exports.sendRESTRequest = void 0;
+    exports.getRandomJoustingProgram = exports.ResultErrorType = exports.sendSetScoreRequest = exports.sendStateRequest = exports.sendProgramRequest = exports.sendRESTRequest = void 0;
     function httpAsync(req, url, data, transferComplete, error, abort) {
         var xmlHttp = new XMLHttpRequest();
         xmlHttp.open(req, url, true);
@@ -19,23 +19,26 @@ define(["require", "exports", "./../GlobalDebug"], function (require, exports, G
     var PROGRAMS_URL = "/sqlrest/programs";
     var SET_SCORE_URL = "/sqlrest/setScore";
     var GET_STATUS_URL = "/sqlrest/state";
+    var GET_RANDOM_JOUSTING_PROGRAM = "/sqlrest/getjousting";
     if ((location.hostname === "localhost" || location.hostname === "127.0.0.1") && GlobalDebug_1.DEBUG) {
-        // TODO: change this to a debug address
-        PROGRAMS_URL = "https://dev.cyberspace.roborave.de/sqlrest/programs";
-        SET_SCORE_URL = "https://dev.cyberspace.roborave.de/sqlrest/setScore";
-        GET_STATUS_URL = "https://dev.cyberspace.roborave.de/sqlrest/state";
+        var DEBUG_ADDRESS = "https://dev.cyberspace.roborave.de";
+        PROGRAMS_URL = DEBUG_ADDRESS + PROGRAMS_URL;
+        SET_SCORE_URL = DEBUG_ADDRESS + SET_SCORE_URL;
+        GET_STATUS_URL = DEBUG_ADDRESS + GET_STATUS_URL;
+        GET_RANDOM_JOUSTING_PROGRAM = DEBUG_ADDRESS + GET_RANDOM_JOUSTING_PROGRAM;
     }
     function sendRESTRequest(url, programRequest, callback) {
         function transferComplete() {
             try {
                 var response = JSON.parse(this.responseText);
                 callback(response);
+                // callback(randomBool() ? response : undefined)
             }
             catch (_a) {
                 callback(undefined);
             }
         }
-        function onError() {
+        function onError(ev) {
             callback();
         }
         httpPostAsync(url, JSON.stringify(programRequest), transferComplete, onError, onError);
@@ -72,4 +75,8 @@ define(["require", "exports", "./../GlobalDebug"], function (require, exports, G
         ResultErrorType[ResultErrorType["INVALID_ARGUMENTS"] = 2] = "INVALID_ARGUMENTS";
         ResultErrorType[ResultErrorType["SQL_ERROR"] = 3] = "SQL_ERROR";
     })(ResultErrorType = exports.ResultErrorType || (exports.ResultErrorType = {}));
+    function getRandomJoustingProgram() {
+        return undefined;
+    }
+    exports.getRandomJoustingProgram = getRandomJoustingProgram;
 });

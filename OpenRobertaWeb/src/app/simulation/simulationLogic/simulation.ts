@@ -114,12 +114,14 @@ function simulateProgram(callback?: () => void) {
 		if (result.rc == 'ok') {
 			MSG.displayMessage('MESSAGE_EDIT_START', 'TOAST', GUISTATE_C.getProgramName(), undefined, undefined);
 
-			cyberspace.setRobertaRobotSetupData([result], GUISTATE_C.getRobotGroup())
+			const setupDataList = Array.from<RobertaRobotSetupData>({ length: cyberspace.robotCount() }).fill(result)
+			cyberspace.setRobertaRobotSetupData(setupDataList, GUISTATE_C.getRobotGroup())
 
-			cyberspace.startPrograms()
-
-			callback?.call(this)
-
+			// setting the robot data might reset the scene since the configuration has changed
+			cyberspace.getScene().runAfterLoading(() => {
+				cyberspace.startPrograms()
+				callback?.call(this)
+			})
 		} else {
 			MSG.displayInformation(result, '', result.message, '', undefined);
 		}
