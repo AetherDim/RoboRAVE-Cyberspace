@@ -12,6 +12,7 @@ import { RobotProgramGenerator } from "../../Robot/RobotProgramGenerator";
 import { GUIController } from "dat.gui";
 import { Utils } from "../../Utils";
 import { robot } from "guiState.model";
+import { SharedAssetLoader } from "../../SharedAssetLoader";
 
 
 export class RRCLineJoustingScene extends RRCScene {
@@ -97,7 +98,7 @@ export class RRCLineJoustingScene extends RRCScene {
 
 
 	onLoadAssets(chain: AsyncChain) {
-		this.loader.load(() => {
+		SharedAssetLoader.load(() => {
 			chain.next();
 		},
 			this.getAsset(),
@@ -191,7 +192,7 @@ export class RRCLineJoustingScene extends RRCScene {
 
 		// === set graphics ===
 
-		let backgroundAsset = this.loader.get(this.getAsset()).texture;
+		let backgroundAsset = SharedAssetLoader.get(this.getAsset()).texture;
 		//this.getContainers().groundContainer.addChild(new PIXI.Sprite(backgroundAsset));
 
 		[

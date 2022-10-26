@@ -265,7 +265,7 @@ define(["require", "exports", "dat.gui", "./Timer", "./RRC/Scene/RRCScoreScene"]
             gui.add(scene, 'simSleepTime').min(0.001).max(0.1).step(0.001).onChange(function (s) { return scene.setSimSleepTime(s); });
             gui.add(scene, 'simSpeedupFactor').min(1).max(1000).step(1).onChange(function (dt) { return scene.setSpeedUpFactor(dt); });
             gui.addButton("Speeeeeed!!!!!", function () { return scene.setSpeedUpFactor(1000); });
-            gui.addButton("Download background image", function () { return downloadJSONFile("pixelData " + scene.getName() + ".json", scene.getContainers()._getPixelData()); });
+            gui.addButton("Download background image", function () { return downloadJSONFile("pixelData " + scene.name + ".json", scene.getContainers()._getPixelData()); });
             gui.add(scene.waypointsManager, "waypointVisibilityBehavior", ["hideAll", "showAll", "showNext", "hideAllPrevious", "showHalf"]).onChange(function (v) {
                 var manager = scene.waypointsManager;
                 manager.waypointVisibilityBehavior = v;
