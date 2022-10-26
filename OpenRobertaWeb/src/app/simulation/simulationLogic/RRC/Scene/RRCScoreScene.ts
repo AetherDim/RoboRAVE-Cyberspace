@@ -8,8 +8,6 @@ import { EventManager, ParameterTypes } from "../../EventManager/EventManager";
 
 export class RRCScoreScene extends Scene {
 
-	readonly loader = new SharedAssetLoader();
-
 	private scoreContainer = new PIXI.Container()
 	private scoreTextContainer = new PIXI.Container()
 
@@ -54,7 +52,7 @@ export class RRCScoreScene extends Scene {
 	}
 
 	onLoadScoreAssets(chain: AsyncChain) {
-		this.loader.load(() => chain.next(),
+		SharedAssetLoader.load(() => chain.next(),
 			GOAL_BACKGROUND,
 			PROGGY_TINY_FONT
 		)
@@ -65,7 +63,7 @@ export class RRCScoreScene extends Scene {
 
 		this.scoreContainer.zIndex = 1000;
 
-		let goal = this.loader.get(GOAL_BACKGROUND).texture;
+		let goal = SharedAssetLoader.get(GOAL_BACKGROUND).texture;
 		this.scoreBackgroundSprite = new PIXI.Sprite(goal)
 		this.scoreContainer.addChild(this.scoreBackgroundSprite);
 

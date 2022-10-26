@@ -20,7 +20,6 @@ define(["require", "exports", "../../Scene/AsyncChain", "../../Scene/Scene", "..
         __extends(RRCScoreScene, _super);
         function RRCScoreScene(name) {
             var _this = _super.call(this, name) || this;
-            _this.loader = new SharedAssetLoader_1.SharedAssetLoader();
             _this.scoreContainer = new PIXI.Container();
             _this.scoreTextContainer = new PIXI.Container();
             _this.scoreText1 = new PIXI.Text("", new PIXI.TextStyle({
@@ -53,12 +52,12 @@ define(["require", "exports", "../../Scene/AsyncChain", "../../Scene/Scene", "..
             this.scoreEventManager.removeAllEventHandlers();
         };
         RRCScoreScene.prototype.onLoadScoreAssets = function (chain) {
-            this.loader.load(function () { return chain.next(); }, RRAssetLoader_1.GOAL_BACKGROUND, RRAssetLoader_1.PROGGY_TINY_FONT);
+            SharedAssetLoader_1.SharedAssetLoader.load(function () { return chain.next(); }, RRAssetLoader_1.GOAL_BACKGROUND, RRAssetLoader_1.PROGGY_TINY_FONT);
         };
         RRCScoreScene.prototype.onInitScore = function (chain) {
             this.showScoreScreen(false);
             this.scoreContainer.zIndex = 1000;
-            var goal = this.loader.get(RRAssetLoader_1.GOAL_BACKGROUND).texture;
+            var goal = SharedAssetLoader_1.SharedAssetLoader.get(RRAssetLoader_1.GOAL_BACKGROUND).texture;
             this.scoreBackgroundSprite = new PIXI.Sprite(goal);
             this.scoreContainer.addChild(this.scoreBackgroundSprite);
             // text

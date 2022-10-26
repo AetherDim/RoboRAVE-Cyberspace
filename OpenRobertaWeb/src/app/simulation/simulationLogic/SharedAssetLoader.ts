@@ -18,6 +18,26 @@ export class Asset {
 	readonly path: string;
 }
 
+export class SpriteAsset extends Asset {
+
+	readonly xScaling: number = 1;
+	readonly yScaling: number = 1;
+
+	constructor(path: string, name?: string, xScaling?: number, yScaling?: number) {
+		super(path, name);
+
+		if(xScaling) this.xScaling = xScaling;
+		if(yScaling) this.yScaling = yScaling;
+	}
+
+	newSprite(): PIXI.Sprite {
+		let sprite = new PIXI.Sprite(SharedAssetLoader.get(this).texture);
+		sprite.scale.set(this.xScaling, this.yScaling);
+		return sprite;
+	}
+
+}
+
 export class FontAsset {
 
 	readonly families: string[];
@@ -90,14 +110,14 @@ export class MultiAsset {
 
 export class SharedAssetLoader {
 
-	private readonly loader = new PIXI.Loader(); // you can also create your own if you want
+	private static readonly loader = new PIXI.Loader(); // you can also create your own if you want
 	private static readonly fontMap = new Map<string, FontAsset>();
 
-	get(asset: Asset): PIXI.LoaderResource {
+	static get(asset: Asset): PIXI.LoaderResource {
 		return this.loader.resources[asset.name];
 	}
 
-	load(callback:() => void, ...assets: (Asset|FontAsset|undefined)[]) {
+	static load(callback:() => void, ...assets: (Asset|FontAsset|undefined)[]) {
 		let fontsToLoad: FontAsset[] = <FontAsset[]>assets.filter(asset => {
 			return (asset instanceof FontAsset) && !SharedAssetLoader.fontMap.get(asset.name);
 		});

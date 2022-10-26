@@ -13,7 +13,7 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-define(["require", "exports", "../AgeGroup", "./RRCScene", "../RRAssetLoader", "matter-js", "../../Waypoints/WaypointList", "../../Entities/PhysicsRectEntity"], function (require, exports, AgeGroup_1, RRCScene_1, RRC, matter_js_1, WaypointList_1, PhysicsRectEntity_1) {
+define(["require", "exports", "../AgeGroup", "./RRCScene", "../RRAssetLoader", "matter-js", "../../Waypoints/WaypointList", "../../Entities/PhysicsRectEntity", "../../SharedAssetLoader"], function (require, exports, AgeGroup_1, RRCScene_1, RRC, matter_js_1, WaypointList_1, PhysicsRectEntity_1, SharedAssetLoader_1) {
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.RRCLabyrinthScene = void 0;
     var LabyrinthRect = /** @class */ (function () {
@@ -569,7 +569,7 @@ define(["require", "exports", "../AgeGroup", "./RRCScene", "../RRAssetLoader", "
             });
         };
         RRCLabyrinthScene.prototype.onLoadAssets = function (chain) {
-            this.loader.load(function () {
+            SharedAssetLoader_1.SharedAssetLoader.load(function () {
                 chain.next();
             }, this.getAsset(), RRC.GOAL_BACKGROUND);
         };
@@ -589,7 +589,7 @@ define(["require", "exports", "../AgeGroup", "./RRCScene", "../RRAssetLoader", "
         RRCLabyrinthScene.prototype.onInit = function (chain) {
             var _this = this;
             this.initRobot({ position: { x: 752, y: 490 }, rotation: -90 });
-            var backgroundAsset = this.loader.get(this.getAsset()).texture;
+            var backgroundAsset = SharedAssetLoader_1.SharedAssetLoader.get(this.getAsset()).texture;
             this.getContainers().groundContainer.addChild(new PIXI.Sprite(backgroundAsset));
             switch (this.ageGroup) {
                 case AgeGroup_1.AgeGroup.ES:

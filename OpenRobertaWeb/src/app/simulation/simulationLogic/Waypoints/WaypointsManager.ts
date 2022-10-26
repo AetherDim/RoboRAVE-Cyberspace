@@ -4,7 +4,7 @@ import { Waypoint } from "./Waypoint";
 import { WaypointList } from "./WaypointList";
 
 export type WaypointVisibilityBehavior =
-	"hideAll" | "showAll" | "showNext" | "hideAllPrevious"
+	"hideAll" | "showAll" | "showNext" | "hideAllPrevious" | "showHalf"
 
 /**
  * Manages a `WaypointList<W>` where each waypoint is checked one by one.
@@ -95,6 +95,9 @@ export class WaypointsManager<W extends Waypoint> {
 				break
 			case "showNext": 
 				isVisible = (index) => index == waypointIndex + 1
+				break
+			case "showHalf":
+				isVisible = (index) => index < waypoints.length/2
 				break
 			default:
 				Utils.exhaustiveSwitch(this.waypointVisibilityBehavior)

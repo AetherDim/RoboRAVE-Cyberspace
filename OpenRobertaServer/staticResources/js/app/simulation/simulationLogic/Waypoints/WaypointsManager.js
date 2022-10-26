@@ -73,6 +73,9 @@ define(["require", "exports", "../Utils", "./WaypointList"], function (require, 
                 case "showNext":
                     isVisible = function (index) { return index == waypointIndex + 1; };
                     break;
+                case "showHalf":
+                    isVisible = function (index) { return index < waypoints.length / 2; };
+                    break;
                 default:
                     Utils_1.Utils.exhaustiveSwitch(this.waypointVisibilityBehavior);
             }

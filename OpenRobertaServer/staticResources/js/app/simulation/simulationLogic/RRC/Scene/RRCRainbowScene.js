@@ -13,7 +13,7 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-define(["require", "exports", "./RRCScene", "../AgeGroup", "../RRAssetLoader", "../../Random", "../../Waypoints/WaypointList"], function (require, exports, RRCScene_1, AgeGroup_1, RRC, Random_1, WaypointList_1) {
+define(["require", "exports", "./RRCScene", "../AgeGroup", "../RRAssetLoader", "../../Random", "../../SharedAssetLoader", "../../Waypoints/WaypointList"], function (require, exports, RRCScene_1, AgeGroup_1, RRC, Random_1, SharedAssetLoader_1, WaypointList_1) {
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.RRCRainbowScene = void 0;
     var RRCRainbowScene = /** @class */ (function (_super) {
@@ -337,7 +337,7 @@ define(["require", "exports", "./RRCScene", "../AgeGroup", "../RRAssetLoader", "
         };
         RRCRainbowScene.prototype.onLoadAssets = function (chain) {
             this.backgroundAsset = this.getAsset();
-            this.loader.load(function () {
+            SharedAssetLoader_1.SharedAssetLoader.load(function () {
                 chain.next();
             }, this.backgroundAsset, RRC.GOAL_BACKGROUND);
         };
@@ -349,7 +349,7 @@ define(["require", "exports", "./RRCScene", "../AgeGroup", "../RRAssetLoader", "
             this.initRobot({ position: { x: 402, y: 270 }, rotation: -90 });
             var containers = this.getContainers();
             if (this.backgroundAsset) {
-                var backgroundAsset = this.loader.get(this.backgroundAsset).texture;
+                var backgroundAsset = SharedAssetLoader_1.SharedAssetLoader.get(this.backgroundAsset).texture;
                 containers.groundContainer.addChild(new PIXI.Sprite(backgroundAsset));
             }
             this.sortColour();

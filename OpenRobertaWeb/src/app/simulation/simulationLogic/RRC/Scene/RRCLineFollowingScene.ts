@@ -5,6 +5,7 @@ import {AgeGroup} from "../AgeGroup";
 import { WaypointList } from "../../Waypoints/WaypointList";
 import {ScoreWaypoint} from "../../Waypoints/ScoreWaypoint";
 import { Utils } from "../../Utils";
+import {SharedAssetLoader} from "../../SharedAssetLoader";
 
 export class RRCLineFollowingScene extends RRCScene {
 
@@ -12,113 +13,100 @@ export class RRCLineFollowingScene extends RRCScene {
 
 	// Waypoints
 	readonly waypointsES = [
-		wp( 62, 470, 0),
-		wp( 62, 360, 0),
-		wp( 62, 280, 0),
-		wp( 62, 200, 0),
-		wp(105, 128, 0),
-		wp(156, 115, 0),
-		wp(259, 154, 0),
-		wp(266, 191, 0),
-		wp(258, 237, 0),
-		wp(207, 339, 0),
-		wp(228, 399, 0),
-		wp(282, 434, 0),
-		wp(338, 435, 0),
-		wp(397, 395, 0),
-		wp(421, 346, 0),
-		wp(472, 309, 0),
-		wp(559, 307, 0),
-		wp(671, 309, 0),
-		wp(735, 280, 0),
-		wp(753, 184, 0),
-		wp(756, 121, 0),
-		wp(755,  60, 0),
+		wp( 572, 317, 0),
+		wp( 630, 317, 0),
+		wp( 578, 427, 0),
+		wp( 427, 362, 0),
+		wp( 462, 284, 0),
+		wp(575, 187, 0),
+		wp(501, 111, 0),
+		wp(372, 106, 0),
+		wp(217, 120, 0),
+		wp(121, 206, 0),
+		wp(111, 290, 0),
+		wp(136, 359, 0),
+		wp(234, 428, 0),
+		wp(324, 365, 0),
+		wp(328, 273, 0),
 	]
 
 	readonly waypointsMS = [
-		wp( 62, 470, 0),
-		wp( 62, 360, 0),
-		wp( 62, 280, 0),
-		wp( 86, 226, 0),
-		wp(146, 226, 0),
-		wp(191, 253, 0),
-		wp(245, 310, 0),
-		wp(258, 326, 0),
-		wp(300, 373, 0),
-		wp(367, 419, 0),
-		wp(432, 384, 0),
-		wp(435, 333, 0),
-		wp(434, 268, 0),
-		wp(465, 221, 0),
-		wp(519, 219, 0),
-		wp(592, 291, 0),
-		wp(608, 312, 0),
-		wp(643, 350, 0),
-		wp(706, 348, 0),
-		wp(740, 325, 0),
-		wp(751, 300, 0),
-		wp(757, 252, 0),
-		wp(753, 184, 0),
-		wp(756, 121, 0),
-		wp(755,  60, 0),
+		wp( 720, 252, 0),
+		wp( 709, 355, 0),
+		wp( 605, 418, 0),
+		wp( 509, 342, 0),
+		wp(551, 250, 0),
+		wp(644, 172, 0),
+		wp(548, 105, 0),
+		wp(484, 105, 0), // split
+		wp(361, 101, 0),
+		wp(281, 121, 0),
+		wp(332, 246, 0),
+		wp(178, 237, 0),
+		wp(163, 329, 0),
+		wp(273, 422, 0),
+		wp(344, 393, 0),
+		wp(397, 305, 0),
+		wp(433, 373, 0),
+		wp(432, 445, 0),
 	]
 
 	readonly waypointsHS = [
-		wp( 62, 470, 0),
-		wp( 62, 360, 0),
-		wp( 62, 280, 0),
-		wp( 86, 226, 0),
-		wp(146, 226, 0),
-		wp(191, 253, 0),
-		wp(245, 310, 0),
-		wp(258, 326, 0),
-		wp(253, 253, 0),
-		wp(271, 220, 0),
-		wp(319, 223, 0),
-		wp(346, 259, 0),
-		wp(378, 310, 0),
-		wp(412, 366, 0),
-		wp(469, 419, 0),
-		wp(510, 372, 0),
-		wp(509, 329, 0),
-		wp(510, 289, 0),
-		wp(512, 255, 0),
-		wp(537, 217, 0),
-		wp(586, 237, 0),
-		wp(612, 281, 0),
-		wp(652, 350, 0),
-		wp(706, 348, 0),
-		wp(740, 325, 0),
-		wp(751, 300, 0),
-		wp(757, 252, 0),
-		wp(753, 184, 0),
-		wp(756, 121, 0),
-		wp(755,  60, 0),
+		wp( 397, 272, 0),
+		wp( 373, 165, 0),
+		wp( 255, 106, 0),
+		wp( 187, 134, 0),
+		wp(247, 194, 0),
+		wp(322, 237, 0),
+		wp(258, 268, 0), // split
+		wp(180, 248, 0),
+		wp(129, 305, 0),
+		wp(155, 368, 0),
+		wp(257, 343, 0),
+		wp(293, 384, 0),
+		wp(262, 434, 0),
+		wp(281, 463, 0),
+		wp(369, 451, 0),
+		wp(440, 386, 0),
+		wp(462, 309, 0),
+		wp(451, 231, 0),
+		wp(476, 171, 0),
+		wp(556, 151, 0),
+		wp(642, 208, 0),
+		wp(642, 264, 0),
+		wp(542, 290, 0),
+		wp(515, 338, 0),
+		wp(540, 396, 0),
+		wp(649, 411, 0), // split
+		wp(725, 399, 0),
+		wp(737, 324, 0),
+		wp(692, 200, 0),
+		wp(662, 109, 0),
+		wp(731, 100, 0),
 	]
 
 	readonly obstacleColor: number = 0xf68712
 
 	// Walls
 	readonly wallES = {
-		x: 720,
-		y: 50,
+		x: 294,
+		y: 242,
 		w: 70,
 		h: 25
 	}
 
 	readonly wallMS = {
-		x: 720,
-		y: 50,
+		x: 397,
+		y: 449,
 		w: 70,
 		h: 25
 	}
 
 	readonly wallHS = {
-		x: 720,
-		y: 50,
-		w: 70,
-		h: 25
+		x: 735,
+		y: 65,
+		w: 25,
+		h: 70
 	}
 
 	getWaypoints() {
@@ -145,6 +133,17 @@ export class RRCLineFollowingScene extends RRCScene {
 		}
 	}
 
+	getRobotStartPosition() {
+		switch (this.ageGroup) {
+			case AgeGroup.ES:
+				return { position: {x: 570, y: 314 }, rotation: 0 }
+			case AgeGroup.MS:
+				return { position: {x: 718, y: 248 }, rotation: 90 }
+			case AgeGroup.HS:
+				return { position: {x: 396, y: 270 }, rotation: -90 }
+		}
+	}
+
 	getAsset() {
 		switch (this.ageGroup) {
 			case AgeGroup.ES:
@@ -160,7 +159,7 @@ export class RRCLineFollowingScene extends RRCScene {
 
 
 	onLoadAssets(chain: AsyncChain) {
-		this.loader.load(() => {
+		SharedAssetLoader.load(() => {
 			chain.next();
 		},
 			this.getAsset(),
@@ -169,7 +168,16 @@ export class RRCLineFollowingScene extends RRCScene {
 	}
 
 	getMaximumTimeBonusScore() {
-		return 60 * 2
+		switch (this.ageGroup) {
+			case AgeGroup.ES:
+				return 4*60;
+
+			case AgeGroup.MS:
+				return 5*60;
+
+			case AgeGroup.HS:
+				return 6*60;
+		}
 	}
 
 	/**
@@ -178,14 +186,14 @@ export class RRCLineFollowingScene extends RRCScene {
 	junctionIndices(): number[] {
 		switch (this.ageGroup) {
 		case AgeGroup.ES: return []
-		case AgeGroup.MS: return [17]
-		case AgeGroup.HS: return [7, 22]
+		case AgeGroup.MS: return [7]
+		case AgeGroup.HS: return [6, 25]
 		default: Utils.exhaustiveSwitch(this.ageGroup)
 		}
 	}
 
 	onInit(chain: AsyncChain) {
-		this.initRobot({ position: {x: 62, y: 450 }, rotation: -90 });
+		this.initRobot(this.getRobotStartPosition());
 
 		// TODO: Change the waypoints
 		const waypointList = new WaypointList<ScoreWaypoint>()
@@ -230,8 +238,7 @@ export class RRCLineFollowingScene extends RRCScene {
 
 		this.setWaypointList(waypointList)
 
-		let backgroundAsset = this.loader.get(this.getAsset()).texture;
-		this.getContainers().groundContainer.addChild(new PIXI.Sprite(backgroundAsset));
+		this.getContainers().groundContainer.addChild(this.getAsset().newSprite());
 
 		this.addStaticWallInPixels(this.getWall(), {color: this.obstacleColor, strokeColor: this.obstacleColor})
 

@@ -4,6 +4,7 @@ import { Scene } from './Scene/Scene';
 import { SceneRender } from './SceneRenderer';
 import { Timer } from './Timer';
 import { StringMap } from './Utils';
+import { RRCScoreScene } from "./RRC/Scene/RRCScoreScene";
 
 export const DEBUG = true
 /**
@@ -30,7 +31,7 @@ function updateDebugDisplay() {
 	updatableList.forEach(element => {
 		try {
 			element.updateDisplay()
-		} catch (e) {
+		} catch (e) {
 			console.warn("An updatable debug element threw an error:")
 			console.warn(e)
 			element.remove()
@@ -316,9 +317,21 @@ export class SceneDebug {
 		gui.add(scene, 'autostartSim')
 		gui.add(scene, 'dt').min(0.001).max(0.1).step(0.001).onChange((dt) => scene.setDT(dt))
 		gui.add(scene, 'simSleepTime').min(0.001).max(0.1).step(0.001).onChange((s) => scene.setSimSleepTime(s))
-		gui.add(scene, 'simSpeedupFactor').min(1).max(1000).step(1).onChange((dt) => scene.setDT(dt))
+		gui.add(scene, 'simSpeedupFactor').min(1).max(1000).step(1).onChange((dt) => scene.setSpeedUpFactor(dt))
 		gui.addButton("Speeeeeed!!!!!", () => scene.setSpeedUpFactor(1000))
 		gui.addButton("Download background image", () => downloadJSONFile("pixelData "+scene.getName()+".json", scene.getContainers()._getPixelData()))
+
+		gui.add((scene as any).waypointsManager, "waypointVisibilityBehavior", ["hideAll", "showAll", "showNext", "hideAllPrevious", "showHalf"]).onChange((v) => {
+			let manager = (scene as any).waypointsManager
+			manager.waypointVisibilityBehavior = v
+			manager.updateWaypointVisibility()
+		})
+
+		if(scene instanceof RRCScoreScene) {
+			const rrc = gui.addFolder('RRC')
+			rrc.addUpdatable('Program time', () => (scene.getProgramRuntime() ?? 0).toString())
+			rrc.addUpdatable('Scene score', () => (scene.getScore() ?? 0).toString())
+		}
 
 		const unit = gui.addFolder('unit converter')
 		unit.addUpdatable('m', () => scene.unit.getLength(1))
@@ -374,7 +387,6 @@ declare module 'dat.gui' {
 
 		addButton(name: string, callback: () => void) : dat.GUIController
 		addUpdatable(name: string, callback: () => Object) : dat.GUIController
-
 	}
 
 }

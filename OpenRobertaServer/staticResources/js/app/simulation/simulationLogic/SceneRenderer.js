@@ -34,7 +34,7 @@ define(["require", "exports", "jquery", "./Color", "./ScrollView", "./Utils", ".
                 resizeTo: resizeTo || undefined,
                 autoDensity: true,
                 resolution: Utils_1.Utils.getPixelRatio(),
-                forceCanvas: true
+                //forceCanvas: true
             });
             this.app.ticker.maxFPS = 30;
             // add mouse/touch control

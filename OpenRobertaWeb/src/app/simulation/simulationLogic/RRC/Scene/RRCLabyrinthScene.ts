@@ -6,6 +6,7 @@ import { Body } from "matter-js";
 import {WaypointList} from "../../Waypoints/WaypointList";
 import {ScoreWaypoint} from "../../Waypoints/ScoreWaypoint";
 import { PhysicsRectEntity } from "../../Entities/PhysicsRectEntity";
+import {SharedAssetLoader} from "../../SharedAssetLoader";
 
 class LabyrinthRect {
 	x: number;
@@ -571,7 +572,7 @@ export class RRCLabyrinthScene extends RRCScene {
 	}
 
 	onLoadAssets(chain: AsyncChain) {
-		this.loader.load(() => {
+		SharedAssetLoader.load(() => {
 			chain.next();
 		},
 			this.getAsset(),
@@ -600,7 +601,7 @@ export class RRCLabyrinthScene extends RRCScene {
 
 		this.initRobot({position: {x: 752, y: 490}, rotation: -90});
 
-		let backgroundAsset = this.loader.get(this.getAsset()).texture;
+		let backgroundAsset = SharedAssetLoader.get(this.getAsset()).texture;
 		this.getContainers().groundContainer.addChild(new PIXI.Sprite(backgroundAsset));
 
 		switch (this.ageGroup) {

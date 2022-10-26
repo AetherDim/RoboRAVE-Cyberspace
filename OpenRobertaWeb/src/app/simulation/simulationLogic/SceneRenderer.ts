@@ -75,7 +75,7 @@ export class SceneRender {
 				resizeTo: resizeTo || undefined,
 				autoDensity: true,
 				resolution: Utils.getPixelRatio(),
-				forceCanvas: true
+				//forceCanvas: true
 			}
 		);
 		this.app.ticker.maxFPS = 30

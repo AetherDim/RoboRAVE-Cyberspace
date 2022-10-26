@@ -24,6 +24,13 @@ define(["require", "exports", "../SharedAssetLoader"], function (require, export
         }
         return RRCAsset;
     }(SharedAssetLoader_1.Asset));
+    var RRCSpriteAsset = /** @class */ (function (_super) {
+        __extends(RRCSpriteAsset, _super);
+        function RRCSpriteAsset(path, name, xScaling, yScaling) {
+            return _super.call(this, exports.RRC_ASSET_PATH + path, name, xScaling, yScaling) || this;
+        }
+        return RRCSpriteAsset;
+    }(SharedAssetLoader_1.SpriteAsset));
     var RRCFontAsset = /** @class */ (function (_super) {
         __extends(RRCFontAsset, _super);
         function RRCFontAsset(css, families, name) {
@@ -38,20 +45,20 @@ define(["require", "exports", "../SharedAssetLoader"], function (require, export
         }
         return RRCMultiAsset;
     }(SharedAssetLoader_1.MultiAsset));
-    exports.BLANK_BACKGROUND = new RRCAsset('blank.svg');
-    exports.GOAL_BACKGROUND = new RRCAsset('goal.svg');
+    exports.BLANK_BACKGROUND = new RRCSpriteAsset('blank.svg');
+    exports.GOAL_BACKGROUND = new RRCSpriteAsset('goal.svg');
     exports.PROGGY_TINY_FONT = new RRCFontAsset('fonts/ProggyTiny.css', ['ProggyTiny']);
     // Labyrinth
-    exports.LABYRINTH_BLANK_BACKGROUND_ES = new RRCAsset('labyrinth/es/labyrinth.svg');
-    exports.LABYRINTH_BLANK_BACKGROUND_MS = new RRCAsset('labyrinth/ms/labyrinth.svg');
-    exports.LABYRINTH_BLANK_BACKGROUND_HS = new RRCAsset('labyrinth/hs/labyrinth.svg');
+    exports.LABYRINTH_BLANK_BACKGROUND_ES = new RRCSpriteAsset('labyrinth/es/labyrinth.svg');
+    exports.LABYRINTH_BLANK_BACKGROUND_MS = new RRCSpriteAsset('labyrinth/ms/labyrinth.svg');
+    exports.LABYRINTH_BLANK_BACKGROUND_HS = new RRCSpriteAsset('labyrinth/hs/labyrinth.svg');
     // line-following
-    exports.LINE_FOLLOWING_BACKGROUND_ES = new RRCAsset('line-following/es/linefollowing.svg');
-    exports.LINE_FOLLOWING_BACKGROUND_MS = new RRCAsset('line-following/ms/linefollowing.svg');
-    exports.LINE_FOLLOWING_BACKGROUND_HS = new RRCAsset('line-following/hs/linefollowing.svg');
+    exports.LINE_FOLLOWING_BACKGROUND_ES = new RRCSpriteAsset('line-following/es/linefollowing.jpeg', undefined, 0.25, 0.25);
+    exports.LINE_FOLLOWING_BACKGROUND_MS = new RRCSpriteAsset('line-following/ms/linefollowing.jpeg', undefined, 0.25, 0.25);
+    exports.LINE_FOLLOWING_BACKGROUND_HS = new RRCSpriteAsset('line-following/hs/linefollowing.jpeg', undefined, 0.25, 0.25);
     // rainbow
-    exports.RAINBOW_BACKGROUND_ES_DINO = new RRCAsset('rainbow/es/dino.svg');
-    exports.RAINBOW_BACKGROUND_ES = new RRCAsset('rainbow/es/rainbow.svg');
+    exports.RAINBOW_BACKGROUND_ES_DINO = new RRCSpriteAsset('rainbow/es/dino.svg');
+    exports.RAINBOW_BACKGROUND_ES = new RRCSpriteAsset('rainbow/es/rainbow.svg');
     exports.RAINBOW_BACKGROUND_MS_DINO = new RRCMultiAsset('rainbow/ms/dino_', '.svg', 0, 23);
     exports.RAINBOW_BACKGROUND_MS_SPACE_INVADERS = new RRCMultiAsset('rainbow/ms/rainbow_', '.svg', 0, 23);
     exports.RAINBOW_BACKGROUND_HS_SPACE_INVADERS = new RRCMultiAsset('rainbow/hs/space_invaders_', '.svg', 0, 719);
