@@ -233,7 +233,7 @@ define(["require", "exports", "./interpreter.constants", "./interpreter.util", "
                 }
             });
         };
-        /** removes block froms currentBlocks and removes highlighting from block**/
+        /** removes block from currentBlocks and removes highlighting from block**/
         State.prototype.evalTerminations = function (terminations) {
             var _this = this;
             terminations

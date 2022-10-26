@@ -301,7 +301,7 @@ export class State {
             });
     }
 
-    /** removes block froms currentBlocks and removes highlighting from block**/
+    /** removes block from currentBlocks and removes highlighting from block**/
     public evalTerminations(terminations: string[]) {
         terminations
             .map((blockId) => stackmachineJsHelper.getBlockById(blockId))
