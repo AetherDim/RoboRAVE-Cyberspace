@@ -323,6 +323,7 @@ define(["require", "exports", "dat.gui", "./Timer", "./RRC/Scene/RRCScoreScene"]
         };
     }
     exports.createReflectionGetter = createReflectionGetter;
+    dat.GUI.prototype.addGeneric = dat.GUI.prototype.add;
     dat.GUI.prototype.addButton = function (name, callback) {
         var func = {};
         func[name] = callback;

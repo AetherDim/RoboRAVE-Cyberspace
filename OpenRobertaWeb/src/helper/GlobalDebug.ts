@@ -1,4 +1,3 @@
-import { assert } from 'console';
 import dat = require('dat.gui');
 import { Scene } from './Scene/Scene';
 import { SceneRender } from './SceneRenderer';
@@ -387,9 +386,23 @@ declare module 'dat.gui' {
 
 		addButton(name: string, callback: () => void) : dat.GUIController
 		addUpdatable(name: string, callback: () => Object) : dat.GUIController
+
+		// used for better `propName` autocompletion
+		addGeneric<T>(target: T, propName: KeyPath<T, number | boolean | string>, a: never): GUIController;
+
+		addGeneric<T>(target: T, propName: KeyPath<T, number>, min?: number, max?: number, step?: number): GUIController;
+		addGeneric<T>(target: T, propName: KeyPath<T, boolean>, status: boolean): GUIController;
+		addGeneric<T>(target: T, propName: KeyPath<T, string>, items: string[]): GUIController;
+		addGeneric<T>(target: T, propName: KeyPath<T, number>, items: number[]): GUIController;
 	}
 
 }
+
+// type KeyPath<Root, PropertyType> = keyof { [K in keyof Root as Root[K] extends PropertyType ? K : never]: Root[K] }
+type KeyPath<Root, PropertyType> = Values<({ [K in keyof Root]: Root[K] extends PropertyType ? K : never })>
+type Values<T> = T[keyof T]
+
+dat.GUI.prototype.addGeneric = dat.GUI.prototype.add
 
 dat.GUI.prototype.addButton = function (name: string, callback: () => void) : dat.GUIController {
 	const func: any = {}
