@@ -290,11 +290,15 @@ define(["require", "exports", "./pixijs"], function (require, exports) {
          * Translates the global delta to a local delta relative to the scroll view.
          */
         EventData.prototype.getDeltaLocal = function () {
-            // TODO: Maybe wrong since delta is a relative vector and not an absolute one
-            if (!this.delta) {
+            var previousPosition = this.getPreviousLocalPosition();
+            if (previousPosition == undefined) {
                 return undefined;
             }
-            return this.scrollView.toLocal(this.delta);
+            var currentPosition = this.getCurrentLocalPosition();
+            return {
+                x: currentPosition.x - previousPosition.x,
+                y: currentPosition.y - previousPosition.y
+            };
         };
         /**
          * Calculate the current delta with the current and previous position. If the previous position is not set,

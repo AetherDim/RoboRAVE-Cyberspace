@@ -341,12 +341,16 @@ export class EventData {
 	/**
 	 * Translates the global delta to a local delta relative to the scroll view.
 	 */
-	getDeltaLocal() {
-		// TODO: Maybe wrong since delta is a relative vector and not an absolute one
-		if (!this.delta) {
+	getDeltaLocal(): PIXI.IPointData | undefined {
+		const previousPosition = this.getPreviousLocalPosition()
+		if (previousPosition == undefined) {
 			return undefined
 		}
-		return this.scrollView.toLocal(this.delta);
+		const currentPosition = this.getCurrentLocalPosition()
+		return {
+			x: currentPosition.x - previousPosition.x,
+			y: currentPosition.y - previousPosition.y
+		}
 	}
 
 	/**
