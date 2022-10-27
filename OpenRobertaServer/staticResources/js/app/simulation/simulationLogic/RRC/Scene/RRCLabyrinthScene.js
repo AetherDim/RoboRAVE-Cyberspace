@@ -295,6 +295,203 @@ define(["require", "exports", "../AgeGroup", "./RRCScene", "../RRAssetLoader", "
                     rotation: 0,
                     color: 0x000000
                 }];
+            _this.MazeEnd2 = [
+                {
+                    x: 200,
+                    y: 0,
+                    w: 5,
+                    h: 250,
+                    rotation: 0,
+                    color: 0x000000
+                }, {
+                    x: 100,
+                    y: 350,
+                    w: 200,
+                    h: 5,
+                    rotation: 0,
+                    color: 0x000000
+                }, {
+                    x: 100,
+                    y: 100,
+                    w: 5,
+                    h: 250,
+                    rotation: 0,
+                    color: 0x000000
+                }, {
+                    x: 0,
+                    y: 450,
+                    w: 200,
+                    h: 5,
+                    rotation: 0,
+                    color: 0x000000
+                }
+            ].map(_this.setZeroColor(0x00ff00));
+            _this.MazeCommon2 = [
+                {
+                    x: 600,
+                    y: 200,
+                    w: 5,
+                    h: 250,
+                    rotation: 0,
+                    color: 0x0000ff
+                },
+                {
+                    x: 300,
+                    y: 100,
+                    w: 5,
+                    h: 440,
+                    rotation: 0,
+                    color: 0x000000
+                }, {
+                    x: 600,
+                    y: 100,
+                    w: 100,
+                    h: 5,
+                    rotation: 0,
+                    color: 0x000000
+                }, {
+                    x: 700,
+                    y: 100,
+                    w: 5,
+                    h: 450,
+                    rotation: 0,
+                    color: 0x000000
+                }
+            ].map(_this.setZeroColor(0x0000ff)).concat(_this.MazeEnd2);
+            _this.MazeCommonESandMS2 = [
+                {
+                    x: 400,
+                    y: 450,
+                    w: 200,
+                    h: 5,
+                    rotation: 0,
+                    color: 0x000000
+                }, {
+                    x: 500,
+                    y: 0,
+                    w: 5,
+                    h: 200,
+                    rotation: 0,
+                    color: 0x000000
+                }, {
+                    x: 300,
+                    y: 100,
+                    w: 100,
+                    h: 5,
+                    rotation: 0,
+                    color: 0x000000
+                }, {
+                    x: 400,
+                    y: 200,
+                    w: 200,
+                    h: 5,
+                    rotation: 0,
+                    color: 0x000000
+                }
+            ].map(_this.setZeroColor(0xff0000));
+            _this.MazeObstacleList_ES2 = [
+                {
+                    x: 300,
+                    y: 300,
+                    w: 200,
+                    h: 50,
+                    rotation: 0,
+                    color: 0x000000
+                }
+            ].concat(_this.MazeCommonESandMS2, _this.MazeCommon2);
+            _this.MazeObstacleList_MS2 = [
+                {
+                    x: 300,
+                    y: 300,
+                    w: 200,
+                    h: 5,
+                    rotation: 0,
+                    color: 0x000000
+                }, {
+                    x: 400,
+                    y: 300,
+                    w: 100,
+                    h: 50,
+                    rotation: 0,
+                    color: 0x000000
+                }
+            ].concat(_this.MazeCommonESandMS2, _this.MazeCommon2);
+            _this.MazeObstacleList_HS2 = [
+                {
+                    x: 600,
+                    y: 100,
+                    w: 100,
+                    h: 5,
+                    rotation: 0,
+                    color: 0x000000
+                }, {
+                    x: 700,
+                    y: 100,
+                    w: 5,
+                    h: 450,
+                    rotation: 0,
+                    color: 0x000000
+                }, {
+                    x: 400,
+                    y: 100,
+                    w: 100,
+                    h: 5,
+                    rotation: 0,
+                    color: 0x000000
+                }, {
+                    x: 400,
+                    y: 0,
+                    w: 5,
+                    h: 100,
+                    rotation: 0,
+                    color: 0x000000
+                }, {
+                    x: 500,
+                    y: 100,
+                    w: 5,
+                    h: 100,
+                    rotation: 0,
+                    color: 0x000000
+                }, {
+                    x: 500,
+                    y: 200,
+                    w: 100,
+                    h: 5,
+                    rotation: 0,
+                    color: 0x000000
+                }, {
+                    x: 300,
+                    y: 300,
+                    w: 200,
+                    h: 50,
+                    rotation: 0,
+                    color: 0x000000
+                }, {
+                    x: 300,
+                    y: 200,
+                    w: 100,
+                    h: 5,
+                    rotation: 0,
+                    color: 0x000000
+                },
+                // lower part
+                {
+                    x: 300,
+                    y: 450,
+                    w: 100,
+                    h: 5,
+                    rotation: 0,
+                    color: 0x000000
+                },
+                {
+                    x: 500,
+                    y: 450,
+                    w: 100,
+                    h: 5,
+                    rotation: 0,
+                    color: 0x000000
+                }
+            ].concat(_this.MazeCommon2);
             _this.waypointES_MS = [
                 {
                     x: 700,
@@ -412,7 +609,10 @@ define(["require", "exports", "../AgeGroup", "./RRCScene", "../RRAssetLoader", "
                     h: 100,
                     score: 10
                 }
-            ];
+            ].map(function (w) {
+                var r = Math.sqrt(w.w * w.w + w.h * w.h) / 2;
+                (0, RRCScene_1.wp)(w.x + w.w / 2, w.y + w.h / 2, w.score, r);
+            });
             _this.waypointsHS = [
                 {
                     x: 700,
@@ -542,17 +742,82 @@ define(["require", "exports", "../AgeGroup", "./RRCScene", "../RRAssetLoader", "
                     h: 100,
                     score: 10
                 }
+            ].map(function (w) {
+                var r = Math.sqrt(w.w * w.w + w.h * w.h) / 2;
+                (0, RRCScene_1.wp)(w.x + w.w / 2, w.y + w.h / 2, w.score, r);
+            });
+            _this.waypointsESandMS2 = [
+                (0, RRCScene_1.wp)(750, 500, 0, 70),
+                (0, RRCScene_1.wp)(750, 50, 10, 70),
+                (0, RRCScene_1.wp)(550, 50, 10, 70),
+                (0, RRCScene_1.wp)(550, 150, 10, 70),
+                (0, RRCScene_1.wp)(650, 150, 10, 70),
+                (0, RRCScene_1.wp)(650, 500, 10, 70),
+                (0, RRCScene_1.wp)(350, 500, 10, 70),
+                (0, RRCScene_1.wp)(350, 390, 10, 70),
+                (0, RRCScene_1.wp)(550, 390, 10, 70),
+                (0, RRCScene_1.wp)(550, 250, 10, 70),
+                (0, RRCScene_1.wp)(350, 250, 10, 70),
+                (0, RRCScene_1.wp)(350, 150, 10, 70),
+                (0, RRCScene_1.wp)(450, 150, 10, 70),
+                (0, RRCScene_1.wp)(450, 50, 10, 70),
+                (0, RRCScene_1.wp)(250, 50, 10, 70),
+                (0, RRCScene_1.wp)(250, 300, 10, 70),
+                (0, RRCScene_1.wp)(150, 300, 10, 70),
+                (0, RRCScene_1.wp)(150, 50, 10, 70),
+                (0, RRCScene_1.wp)(50, 50, 10, 70),
+                (0, RRCScene_1.wp)(50, 400, 10, 70),
+                (0, RRCScene_1.wp)(250, 400, 10, 70),
+                (0, RRCScene_1.wp)(250, 500, 10, 70),
+                (0, RRCScene_1.wp)(50, 500, 10, 70),
+            ];
+            _this.waypointsHS2 = [
+                (0, RRCScene_1.wp)(750, 500, 0, 70),
+                (0, RRCScene_1.wp)(750, 50, 10, 70),
+                (0, RRCScene_1.wp)(550, 50, 10, 70),
+                (0, RRCScene_1.wp)(550, 150, 10, 70),
+                (0, RRCScene_1.wp)(650, 150, 10, 70),
+                (0, RRCScene_1.wp)(650, 500, 10, 70),
+                (0, RRCScene_1.wp)(450, 500, 10, 70),
+                (0, RRCScene_1.wp)(450, 400, 10, 70),
+                (0, RRCScene_1.wp)(550, 390, 10, 70),
+                (0, RRCScene_1.wp)(550, 250, 10, 70),
+                (0, RRCScene_1.wp)(450, 250, 10, 70),
+                (0, RRCScene_1.wp)(450, 150, 10, 70),
+                (0, RRCScene_1.wp)(350, 150, 10, 70),
+                (0, RRCScene_1.wp)(350, 50, 10, 70),
+                (0, RRCScene_1.wp)(250, 50, 10, 70),
+                (0, RRCScene_1.wp)(250, 300, 10, 70),
+                (0, RRCScene_1.wp)(150, 300, 10, 70),
+                (0, RRCScene_1.wp)(150, 50, 10, 70),
+                (0, RRCScene_1.wp)(50, 50, 10, 70),
+                (0, RRCScene_1.wp)(50, 400, 10, 70),
+                (0, RRCScene_1.wp)(250, 400, 10, 70),
+                (0, RRCScene_1.wp)(250, 500, 10, 70),
+                (0, RRCScene_1.wp)(50, 500, 10, 70),
             ];
             return _this;
         }
+        RRCLabyrinthScene.prototype.setZeroColor = function (color) {
+            return function (v) {
+                v.color = v.color == 0 ? color : v.color;
+                return v;
+            };
+        };
+        RRCLabyrinthScene.prototype.modify = function (f) {
+            return function (v) {
+                f(v);
+                return v;
+            };
+        };
         RRCLabyrinthScene.prototype.getWaypoints = function () {
             switch (this.ageGroup) {
                 case AgeGroup_1.AgeGroup.ES:
-                    return this.waypointES_MS;
+                    return this.waypointsESandMS2;
                 case AgeGroup_1.AgeGroup.MS:
-                    return this.waypointES_MS;
+                    return this.waypointsESandMS2;
                 case AgeGroup_1.AgeGroup.HS:
-                    return this.waypointsHS;
+                    return this.waypointsHS2;
             }
         };
         RRCLabyrinthScene.prototype.addLabyrinth = function (labyrinth) {
@@ -593,23 +858,22 @@ define(["require", "exports", "../AgeGroup", "./RRCScene", "../RRAssetLoader", "
             this.getContainers().groundContainer.addChild(new PIXI.Sprite(backgroundAsset));
             switch (this.ageGroup) {
                 case AgeGroup_1.AgeGroup.ES:
-                    this.addLabyrinth(this.MazeObstacleList_ES);
+                    this.addLabyrinth(this.MazeObstacleList_ES2);
                     break;
                 case AgeGroup_1.AgeGroup.MS:
-                    this.addLabyrinth(this.MazeObstacleList_MS);
+                    this.addLabyrinth(this.MazeObstacleList_MS2);
                     break;
                 case AgeGroup_1.AgeGroup.HS:
-                    this.addLabyrinth(this.MazeObstacleList_HS);
+                    this.addLabyrinth(this.MazeObstacleList_HS2);
                     break;
             }
             // TODO: Change the waypoints
             var waypointList = new WaypointList_1.WaypointList();
             var waypoints = this.getWaypoints();
             waypoints.forEach(function (waypoint) {
-                var x = waypoint.x + waypoint.w / 2;
-                var y = waypoint.y + waypoint.h / 2;
-                var r = Math.sqrt(Math.pow(waypoint.w, 2) + Math.pow(waypoint.h, 2)) * 0.5;
-                var wp = _this.makeWaypoint({ x: x, y: y }, waypoint.score, r);
+                var x = waypoint.x;
+                var y = waypoint.y;
+                var wp = _this.makeWaypoint({ x: x, y: y }, waypoint.score, waypoint.r);
                 waypointList.appendWaypoints(wp);
             });
             this.setWaypointList(waypointList);
