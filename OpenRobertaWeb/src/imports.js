@@ -165,6 +165,7 @@ function initRequireJS(version) {
             'Utils',
             'Entity',
             'BlocklyDebug',
+            'KeyManager',
             { 'UI': [
                 'UIElement',
                 'UIManager',

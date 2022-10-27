@@ -663,7 +663,7 @@ export class Utils {
 		return result
 	}
 
-	static getOptions<T>(init: new () => T, someOptions?: Partial<T>): T {
+	static getOptions<T extends {}>(init: new () => T, someOptions?: Partial<T>): T {
 		const options =  new init()
 		if (someOptions != undefined) {
 			Object.assign(options, someOptions)

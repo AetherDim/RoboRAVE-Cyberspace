@@ -19,12 +19,15 @@ import * as UTIL from "./util";
 import {DEBUG} from "./GlobalDebug";
 import {getProgramLink} from "program.controller";
 import {BlocklyDebug} from "./BlocklyDebug";
+import { KeyManager } from './KeyManager';
 
 //
 // init all components for a simulation
 //
 const cyberspace = new Cyberspace('sceneCanvas', 'simDiv')
 const sceneManager = cyberspace.getSceneManager()
+
+KeyManager.setup()
 
 function setInitialButtonState() { 
 	UIManager.programControlButton.setInitialState()

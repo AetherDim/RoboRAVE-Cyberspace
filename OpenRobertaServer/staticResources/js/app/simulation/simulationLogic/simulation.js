@@ -23,7 +23,7 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
     }
     return to.concat(ar || Array.prototype.slice.call(from));
 };
-define(["require", "exports", "./external/SceneDesciptorList", "./Cyberspace/Cyberspace", "./UI/UIManager", "./RRC/Scene/RRCScoreScene", "./external/RESTApi", "jquery", "blockly", "guiState.controller", "nn.controller", "program.model", "message", "program.controller", "./simulation.constants", "tour.controller", "./util", "./GlobalDebug", "program.controller", "./BlocklyDebug", "./pixijs", "./ExtendedMatter"], function (require, exports, SceneDesciptorList_1, Cyberspace_1, UIManager_1, RRCScoreScene_1, RESTApi_1, $, Blockly, GUISTATE_C, NN_CTRL, PROGRAM, MSG, PROG_C, CONST, TOUR_C, UTIL, GlobalDebug_1, program_controller_1, BlocklyDebug_1) {
+define(["require", "exports", "./external/SceneDesciptorList", "./Cyberspace/Cyberspace", "./UI/UIManager", "./RRC/Scene/RRCScoreScene", "./external/RESTApi", "jquery", "blockly", "guiState.controller", "nn.controller", "program.model", "message", "program.controller", "./simulation.constants", "tour.controller", "./util", "./GlobalDebug", "program.controller", "./BlocklyDebug", "./KeyManager", "./pixijs", "./ExtendedMatter"], function (require, exports, SceneDesciptorList_1, Cyberspace_1, UIManager_1, RRCScoreScene_1, RESTApi_1, $, Blockly, GUISTATE_C, NN_CTRL, PROGRAM, MSG, PROG_C, CONST, TOUR_C, UTIL, GlobalDebug_1, program_controller_1, BlocklyDebug_1, KeyManager_1) {
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.init = exports.setPause = void 0;
     //
@@ -31,6 +31,7 @@ define(["require", "exports", "./external/SceneDesciptorList", "./Cyberspace/Cyb
     //
     var cyberspace = new Cyberspace_1.Cyberspace('sceneCanvas', 'simDiv');
     var sceneManager = cyberspace.getSceneManager();
+    KeyManager_1.KeyManager.setup();
     function setInitialButtonState() {
         UIManager_1.UIManager.programControlButton.setInitialState();
         UIManager_1.UIManager.physicsSimControlButton.setInitialState();

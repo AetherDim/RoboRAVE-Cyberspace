@@ -9,9 +9,12 @@ import { sendProgramRequest, ProgramsRequestResult, ResultErrorType, sendSetScor
 import PROGRAM_MODEL = require("../program.model")
 import GUISTATE_MODEL = require("../guiState.model")
 import { RRCScoreScene } from "../RRC/Scene/RRCScoreScene"
+import { KeyManager } from "../KeyManager"
 
 
 const cyberspaces: Cyberspace[] = []
+
+KeyManager.setup()
 
 const simDiv = document.getElementById("simDiv")!
 if (simDiv == null) {
