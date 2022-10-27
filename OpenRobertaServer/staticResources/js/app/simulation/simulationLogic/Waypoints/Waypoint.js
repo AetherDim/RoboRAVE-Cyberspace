@@ -37,6 +37,7 @@ define(["require", "exports", "../Entities/DrawableEntity"], function (require, 
             var radius = scene.unit.getLength(maxDistance);
             var graphics = new PIXI.Graphics();
             _this = _super.call(this, scene, graphics) || this;
+            _this.lineColor = 0x0000FF;
             _this.graphics = graphics;
             _this.position = pos;
             _this.maxDistance = radius;
@@ -51,11 +52,12 @@ define(["require", "exports", "../Entities/DrawableEntity"], function (require, 
             this.updateGraphics();
         };
         Waypoint.prototype.updateGraphics = function () {
+            this.graphics.position.set(this.position.x, this.position.y);
             this.graphics
                 .clear()
-                .lineStyle(4, 0x0000FF)
+                .lineStyle(4, this.lineColor)
                 .beginFill(undefined, 0)
-                .drawCircle(this.position.x, this.position.y, this.maxDistance)
+                .drawCircle(0, 0, this.maxDistance)
                 .endFill();
         };
         Waypoint.prototype.getContainer = function () {

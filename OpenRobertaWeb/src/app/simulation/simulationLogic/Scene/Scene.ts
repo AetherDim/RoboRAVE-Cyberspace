@@ -663,6 +663,7 @@ export class Scene {
 		}
 		
 
+		this.waypointsManager.onInteractionEvent(ev)
 		this.onInteractionEvent(ev);
 	}
 

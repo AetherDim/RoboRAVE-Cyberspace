@@ -511,6 +511,7 @@ define(["require", "exports", "matter-js", "../Timer", "../ScrollView", "../Unit
                 default:
                     break;
             }
+            this.waypointsManager.onInteractionEvent(ev);
             this.onInteractionEvent(ev);
         };
         /**
