@@ -148,10 +148,35 @@ export class ContainerManager {
 		const bounds = this.groundContainer.getLocalBounds()
 		const width = this.groundContainer.width
 		const height = this.groundContainer.height
-		const pixelData = this.scene.getRenderer()?.convertToPixels(this.groundContainer)
-		if (pixelData != undefined) {
+		const resolution = 1
+		// TODO: Test performance of color change of raw pixel data
+		// this.groundContainer.removeChild(...this.groundContainer.children.filter(c => c.name == "My Texture"))
+		const textureData = this.scene.getRenderer()?.convertToPixels(this.groundContainer, resolution)
+		if (textureData != undefined) {
+			const pixelData = textureData.data
 			this.pixelData = pixelData
 			console.log("Ground container pixels checksum of " + this.scene.name + ": "+Utils.checksumFNV32(pixelData))
+			// console.time("change array colors")
+			// const w = Math.round(width)
+			// for (let x = 0; x < textureData.width; x++) {
+			// 	for (let y = 0; y < textureData.height; y++) {
+			// 		const index = 4 * (x + y * width)
+			// 		const r = this.pixelData[index]
+			// 		if (r > 100) {
+			// 			// this.pixelData.set([0], index)
+			// 			//this.pixelData[index] = 0
+			// 		}
+			// 	}
+			// }
+			// console.timeEnd("change array colors")
+			// console.time("Make sprite")
+			// const texture = PIXI.Texture.fromBuffer(this.pixelData, textureData.width, textureData.height)
+			// const sprite = new PIXI.Sprite(texture)
+			// sprite.name = "My Texture"
+			// sprite.scale.set(1/resolution, 1/resolution)
+			// this.groundContainer.addChild(sprite)
+			// console.timeEnd("Make sprite")
+			
 			this.getGroundImageData = (x, y, w, h) => {
 				const newX = x - bounds.x
 				const newY = y - bounds.y

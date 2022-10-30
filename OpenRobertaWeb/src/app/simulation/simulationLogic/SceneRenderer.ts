@@ -170,8 +170,62 @@ export class SceneRender {
 		return this.scrollView.getBounds().height;
 	}
 
-	convertToPixels(object: PIXI.DisplayObject | PIXI.RenderTexture): Uint8Array {
-		return this.rendererPlugins().extract!.pixels(object)
+	// new 'convertToPixels' which has an additional resolution parameter
+	newConvertToPixels(object: PIXI.DisplayObject, resolution: number = 1): { data: Uint8Array, width: number, height: number } {
+		const renderer = this.app.renderer
+		renderer.clear()
+
+		const bounds = object.getLocalBounds()
+
+		let texture: PIXI.RenderTexture
+
+		if (false) {
+		
+			const region = new PIXI.Rectangle(0, 0, bounds.width * resolution, bounds.height * resolution)
+			// minimum texture size is 1x1, 0x0 will throw an error
+			// if (region.width === 0) region.width = 1;
+			// if (region.height === 0) region.height = 1;
+			const renderTexture = PIXI.RenderTexture.create(
+				{
+					width: region.width,
+					height: region.height
+				});
+			let _tempMatrix = new PIXI.Matrix()
+			_tempMatrix.tx = -bounds.x;
+			_tempMatrix.ty = -bounds.y;
+			// _tempMatrix = _tempMatrix.scale(resolution, resolution)
+			const displayObject = object
+			const transform = displayObject.transform;
+			displayObject.transform = new PIXI.Transform();
+			renderer.render(displayObject,
+				renderTexture,
+				false,
+				_tempMatrix,
+				!!displayObject.parent,
+				// blit: true
+			);
+			displayObject.transform = transform;
+
+			texture = renderTexture
+		} else {
+			texture = this.app.renderer.generateTexture(object, PIXI.SCALE_MODES.LINEAR, 
+				resolution,
+				new PIXI.Rectangle(0, 0, bounds.width * resolution, bounds.height * resolution))
+		}
+		renderer.renderTexture.bind(texture)
+		const gl = renderer.gl
+		const array = new Uint8Array(4 * texture.width * texture.height)
+		// images with alpha should be post divided!!!
+		gl.readPixels(0, 0, texture.width, texture.height, gl.RGBA, gl.UNSIGNED_BYTE, array)
+		const textureData = { data: array, width: texture.width, height: texture.height }
+		texture.destroy()
+		return textureData
+	}
+
+	convertToPixels(object: PIXI.DisplayObject, resolution: number = 1): { data: Uint8Array, width: number, height: number } {
+		const bounds = object.getLocalBounds()
+		return { data: this.rendererPlugins().extract!.pixels(object), width: bounds.width, height: bounds.height }
+		// return { data: new Uint8Array(), width: 0, height: 0 }
 	}
 
 	zoomIn() {

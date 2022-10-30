@@ -124,18 +124,42 @@ define(["require", "exports", "../../Utils"], function (require, exports, Utils_
             var bounds = this.groundContainer.getLocalBounds();
             var width = this.groundContainer.width;
             var height = this.groundContainer.height;
-            var pixelData = (_a = this.scene.getRenderer()) === null || _a === void 0 ? void 0 : _a.convertToPixels(this.groundContainer);
-            if (pixelData != undefined) {
-                this.pixelData = pixelData;
-                console.log("Ground container pixels checksum of " + this.scene.name + ": " + Utils_1.Utils.checksumFNV32(pixelData));
+            var resolution = 1;
+            // TODO: Test performance of color change of raw pixel data
+            // this.groundContainer.removeChild(...this.groundContainer.children.filter(c => c.name == "My Texture"))
+            var textureData = (_a = this.scene.getRenderer()) === null || _a === void 0 ? void 0 : _a.convertToPixels(this.groundContainer, resolution);
+            if (textureData != undefined) {
+                var pixelData_1 = textureData.data;
+                this.pixelData = pixelData_1;
+                console.log("Ground container pixels checksum of " + this.scene.name + ": " + Utils_1.Utils.checksumFNV32(pixelData_1));
+                // console.time("change array colors")
+                // const w = Math.round(width)
+                // for (let x = 0; x < textureData.width; x++) {
+                // 	for (let y = 0; y < textureData.height; y++) {
+                // 		const index = 4 * (x + y * width)
+                // 		const r = this.pixelData[index]
+                // 		if (r > 100) {
+                // 			// this.pixelData.set([0], index)
+                // 			//this.pixelData[index] = 0
+                // 		}
+                // 	}
+                // }
+                // console.timeEnd("change array colors")
+                // console.time("Make sprite")
+                // const texture = PIXI.Texture.fromBuffer(this.pixelData, textureData.width, textureData.height)
+                // const sprite = new PIXI.Sprite(texture)
+                // sprite.name = "My Texture"
+                // sprite.scale.set(1/resolution, 1/resolution)
+                // this.groundContainer.addChild(sprite)
+                // console.timeEnd("Make sprite")
                 this.getGroundImageData = function (x, y, w, h) {
                     var newX = x - bounds.x;
                     var newY = y - bounds.y;
                     var index = (Math.round(newX) + Math.round(newY) * Math.round(width)) * 4;
                     if (0 <= newX && newX <= width &&
                         0 <= newY && newY <= height &&
-                        0 <= index && index + 3 < pixelData.length) {
-                        return [pixelData[index], pixelData[index + 1], pixelData[index + 2], pixelData[index + 3]];
+                        0 <= index && index + 3 < pixelData_1.length) {
+                        return [pixelData_1[index], pixelData_1[index + 1], pixelData_1[index + 2], pixelData_1[index + 3]];
                     }
                     else {
                         return [0, 0, 0, 0];
