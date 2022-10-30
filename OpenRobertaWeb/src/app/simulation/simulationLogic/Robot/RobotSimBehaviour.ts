@@ -221,7 +221,7 @@ export class RobotSimBehaviour extends ARobotBehaviour {
 			case '4':
 				return 500;
 			default:
-				throw "Wrong file " + file
+				throw new Error("Wrong file " + file)
 		}
 	}
 

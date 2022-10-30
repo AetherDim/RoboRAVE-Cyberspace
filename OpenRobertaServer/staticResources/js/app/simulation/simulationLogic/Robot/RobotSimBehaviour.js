@@ -202,7 +202,7 @@ define(["require", "exports", "../interpreter.aRobotBehaviour", "../interpreter.
                 case '4':
                     return 500;
                 default:
-                    throw "Wrong file " + file;
+                    throw new Error("Wrong file " + file);
             }
         };
         RobotSimBehaviour.prototype.setVolumeAction = function (volume) {

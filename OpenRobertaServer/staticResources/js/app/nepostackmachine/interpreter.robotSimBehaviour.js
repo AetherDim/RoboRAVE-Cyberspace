@@ -184,7 +184,7 @@ define(["require", "exports", "./interpreter.constants", "./interpreter.util", "
                 case '4':
                     return 500;
                 default:
-                    throw "Wrong file " + file;
+                    throw new Error("Wrong file " + file);
             }
         };
         RobotMbedBehaviour.prototype.setVolumeAction = function (volume) {

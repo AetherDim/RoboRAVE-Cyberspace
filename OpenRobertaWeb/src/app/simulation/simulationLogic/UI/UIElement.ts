@@ -16,7 +16,7 @@ export class UIElement {
 			this.jQueryString = arg.jQueryString
 			this.jQueryHTMLElement = $(this.jQueryString)
 		} else {
-			throw "Missing state"
+			throw new Error("Missing state")
 		}
 	}
 

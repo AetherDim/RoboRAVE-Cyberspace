@@ -100,7 +100,7 @@ function nameContains(searchParams: string[], name: string): boolean {
 function searchGUI(search: string, ignoreController: dat.GUIController) {
 	search = search.trim().toLowerCase()
 	if (DebugGuiRoot == undefined) {
-		throw "DebugGuiRoot is undefined"
+		throw new Error("DebugGuiRoot is undefined")
 	}
 	if(search.length == 0) {
 		resetAllFolders(DebugGuiRoot)
@@ -319,7 +319,7 @@ export class SceneDebug {
 		const scene = this.scene
 		const gui = this.debugGuiStatic
 		if (gui == undefined) {
-			throw "gui is undefined"
+			throw new Error("gui is undefined")
 		}
 
 		gui.add(scene, 'autostartSim')

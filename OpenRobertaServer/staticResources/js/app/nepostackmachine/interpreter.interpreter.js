@@ -889,7 +889,7 @@ define(["require", "exports", "./interpreter.constants", "./interpreter.util", "
                             {
                                 var position = expr[C.POSITION];
                                 if (typeof position == "string") {
-                                    throw "Position is not an array";
+                                    throw new Error("Position is not an array");
                                 }
                                 var start_ix = void 0;
                                 var end_ix = void 0;

@@ -38,29 +38,29 @@ define(["require", "exports", "./Random"], function (require, exports, Random_1)
         }
         Utils.assertTrue = function (value) {
             if (!value) {
-                throw "The value is not `true`";
+                throw new Error("The value is not `true`");
             }
         };
         Utils.assertNonNull = function (value) {
             if (value === undefined || value === null) {
-                throw "The value is ".concat(value);
+                throw new Error("The value is ".concat(value));
             }
         };
         Utils.assertTypeOf = function (value, type) {
             if (typeof value != type) {
-                throw "The value '".concat(value, "' is not of type '").concat(type, "'");
+                throw new Error("The value '".concat(value, "' is not of type '").concat(type, "'"));
             }
         };
         Utils.assertType = function (type) {
             return function (value) {
                 if (typeof value != type) {
-                    throw "The value '".concat(value, "' is not of type '").concat(type, "'");
+                    throw new Error("The value '".concat(value, "' is not of type '").concat(type, "'"));
                 }
             };
         };
         Utils.assertInstanceOf = function (value, type) {
             if (!(value instanceof type)) {
-                throw "The value '".concat(value, "' is not of type '").concat(type, "'");
+                throw new Error("The value '".concat(value, "' is not of type '").concat(type, "'"));
             }
         };
         Utils.assertArrayOf = function (elementGuard) {
@@ -69,7 +69,7 @@ define(["require", "exports", "./Random"], function (require, exports, Random_1)
                     array.forEach(elementGuard);
                 }
                 else {
-                    throw "The value is not an array";
+                    throw new Error("The value is not an array");
                 }
             };
         };

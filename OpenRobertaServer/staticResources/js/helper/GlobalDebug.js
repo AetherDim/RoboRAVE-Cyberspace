@@ -90,7 +90,7 @@ define(["require", "exports", "dat.gui", "./Timer", "./RRC/Scene/RRCScoreScene"]
     function searchGUI(search, ignoreController) {
         search = search.trim().toLowerCase();
         if (exports.DebugGuiRoot == undefined) {
-            throw "DebugGuiRoot is undefined";
+            throw new Error("DebugGuiRoot is undefined");
         }
         if (search.length == 0) {
             resetAllFolders(exports.DebugGuiRoot);
@@ -266,7 +266,7 @@ define(["require", "exports", "dat.gui", "./Timer", "./RRC/Scene/RRCScoreScene"]
             var scene = this.scene;
             var gui = this.debugGuiStatic;
             if (gui == undefined) {
-                throw "gui is undefined";
+                throw new Error("gui is undefined");
             }
             gui.add(scene, 'autostartSim');
             gui.add(scene, 'dt').min(0.001).max(0.1).step(0.001).onChange(function (dt) { return scene.setDT(dt); });

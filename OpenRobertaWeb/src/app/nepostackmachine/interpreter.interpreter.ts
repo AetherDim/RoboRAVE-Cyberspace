@@ -942,7 +942,7 @@ export class Interpreter {
                         {
                             const position = expr[C.POSITION];
                             if (typeof position == "string") {
-                                throw "Position is not an array"
+                                throw new Error("Position is not an array")
                             }
                             let start_ix: number | undefined;
                             let end_ix: number | undefined;

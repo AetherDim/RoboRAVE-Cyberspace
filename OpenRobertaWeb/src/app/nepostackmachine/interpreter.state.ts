@@ -185,7 +185,7 @@ export class State {
     public popArray(): StateValue[] {
         const value = this.popUnknown()
         if (!Array.isArray(value)) {
-            throw "The value not an array"
+            throw new Error("The value not an array")
         }
         return value
     }
