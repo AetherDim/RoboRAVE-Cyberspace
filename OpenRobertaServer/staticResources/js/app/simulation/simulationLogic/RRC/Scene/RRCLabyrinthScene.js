@@ -867,7 +867,6 @@ define(["require", "exports", "../AgeGroup", "./RRCScene", "../RRAssetLoader", "
                     this.addLabyrinth(this.MazeObstacleList_HS2);
                     break;
             }
-            // TODO: Change the waypoints
             var waypointList = new WaypointList_1.WaypointList();
             var waypoints = this.getWaypoints();
             waypoints.forEach(function (waypoint) {

@@ -1,5 +1,5 @@
 import { Cyberspace } from "../Cyberspace/Cyberspace"
-import { clearDebugGuiRoot, DebugGuiRoot } from "../GlobalDebug"
+import { clearDebugGuiRoot, DebugGuiRoot, initGlobalDebug } from "../GlobalDebug"
 import { RobertaRobotSetupData } from "../Robot/RobertaRobotSetupData"
 import { RobotProgramGenerator } from "../Robot/RobotProgramGenerator"
 import { UIManager } from "../UI/UIManager"
@@ -14,6 +14,7 @@ import { KeyManager } from "../KeyManager"
 
 const cyberspaces: Cyberspace[] = []
 
+initGlobalDebug()
 KeyManager.setup()
 
 const simDiv = document.getElementById("simDiv")!

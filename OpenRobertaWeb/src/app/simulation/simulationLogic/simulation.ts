@@ -16,7 +16,7 @@ import * as PROG_C from "program.controller";
 import * as CONST from "./simulation.constants"
 import * as TOUR_C from "tour.controller";
 import * as UTIL from "./util";
-import {DEBUG} from "./GlobalDebug";
+import {DEBUG, initGlobalDebug} from "./GlobalDebug";
 import {getProgramLink} from "program.controller";
 import {BlocklyDebug} from "./BlocklyDebug";
 import { KeyManager } from './KeyManager';
@@ -26,6 +26,8 @@ import { KeyManager } from './KeyManager';
 //
 const cyberspace = new Cyberspace('sceneCanvas', 'simDiv')
 const sceneManager = cyberspace.getSceneManager()
+
+initGlobalDebug()
 
 KeyManager.setup()
 

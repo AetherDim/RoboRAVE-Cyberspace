@@ -65,7 +65,7 @@ define(["require", "exports"], function (require, exports) {
             var now = Date.now();
             this.lastDT = now - this.lastCall;
             try {
-                this.userFunction(this.lastDT);
+                this.userFunction(this.lastDT, this);
             }
             catch (error) {
                 this.stop();

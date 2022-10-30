@@ -878,7 +878,8 @@ define(["require", "exports", "matter-js", "./ElectricMotor", "../interpreter.co
             try {
                 for (var _s = __values(this.colorSensors), _t = _s.next(); !_t.done; _t = _s.next()) {
                     var _u = __read(_t.value, 2), port = _u[0], colorSensor = _u[1];
-                    appendAny("Color Sensor " + port, "<span style=\"width: 20px; background-color:" + colorSensor.getColorHexValueString() + "\">&nbsp;</span>");
+                    var color = colorSensor.getDetectedColor();
+                    appendAny("Color Sensor " + port, "<span style=\"width: 20px; background-color:" + colorSensor.getColorHexValueString() + "\">&nbsp;</span>" + "<p style=\"margin:0px\">&nbsp;" + (0, Color_1.hsvToColorName)((0, Color_1.rgbToHsv)(color.red, color.green, color.blue)) + "</p>");
                 }
             }
             catch (e_5_1) { e_5 = { error: e_5_1 }; }

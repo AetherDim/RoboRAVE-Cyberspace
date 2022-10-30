@@ -13,11 +13,11 @@ export class Timer {
 	callTime: number = 0;
 	lastDT: number = 0
 
-	userFunction: (dt: number) => void;
+	userFunction: (dt: number, timer: Timer) => void;
 
 	private selfCallingFunc: () => void = () => {};
 
-	constructor(sleepTime: number, userFunction: (dt: number) => void) {
+	constructor(sleepTime: number, userFunction: (dt: number, timer: Timer) => void) {
 		this.sleepTime = sleepTime;
 		this.userFunction = userFunction;
 	}
@@ -76,7 +76,7 @@ export class Timer {
 		const now = Date.now();
 		this.lastDT = now - this.lastCall
 		try {
-			this.userFunction(this.lastDT);
+			this.userFunction(this.lastDT, this);
 		} catch (error) {
 			this.stop()
 			console.error(error)

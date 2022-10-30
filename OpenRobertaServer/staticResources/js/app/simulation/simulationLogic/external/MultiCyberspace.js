@@ -27,6 +27,7 @@ define(["require", "exports", "../Cyberspace/Cyberspace", "../GlobalDebug", "../
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.initEvents = exports.init = void 0;
     var cyberspaces = [];
+    (0, GlobalDebug_1.initGlobalDebug)();
     KeyManager_1.KeyManager.setup();
     var simDiv = document.getElementById("simDiv");
     if (simDiv == null) {

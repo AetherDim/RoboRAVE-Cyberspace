@@ -898,7 +898,6 @@ export class RRCLabyrinthScene extends RRCScene {
 				break;
 		}
 
-		// TODO: Change the waypoints
 		const waypointList = new WaypointList<ScoreWaypoint>()
 		const waypoints = this.getWaypoints()
 

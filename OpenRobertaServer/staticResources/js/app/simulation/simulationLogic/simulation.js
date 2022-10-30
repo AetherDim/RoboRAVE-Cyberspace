@@ -31,6 +31,7 @@ define(["require", "exports", "./external/SceneDesciptorList", "./Cyberspace/Cyb
     //
     var cyberspace = new Cyberspace_1.Cyberspace('sceneCanvas', 'simDiv');
     var sceneManager = cyberspace.getSceneManager();
+    (0, GlobalDebug_1.initGlobalDebug)();
     KeyManager_1.KeyManager.setup();
     function setInitialButtonState() {
         UIManager_1.UIManager.programControlButton.setInitialState();

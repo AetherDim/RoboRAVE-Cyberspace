@@ -184,6 +184,15 @@ function _searchGUIElements(gui: dat.GUI, searchParams: string[], ignoreControll
 	return hasElementName
 }
 
+export function initGlobalDebug() {
+	if (DebugGuiRoot == undefined) {
+		return
+	}
+	const globalDebugFolder = DebugGuiRoot.addFolder("GlobalDebug")
+	globalDebugFolder.addButton('PIXI clearTextureCache', () => PIXI.utils.clearTextureCache())
+
+}
+
 
 export function initGlobalSceneDebug(sceneRenderer: SceneRender) {
 	if(!DEBUG || DebugGuiRoot == undefined) {

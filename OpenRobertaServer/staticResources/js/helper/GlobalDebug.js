@@ -11,7 +11,7 @@ var __values = (this && this.__values) || function(o) {
 };
 define(["require", "exports", "dat.gui", "./Timer", "./RRC/Scene/RRCScoreScene"], function (require, exports, dat, Timer_1, RRCScoreScene_1) {
     Object.defineProperty(exports, "__esModule", { value: true });
-    exports.downloadJSONFile = exports.downloadFile = exports.createReflectionGetter = exports.SceneDebug = exports.initGlobalSceneDebug = exports.createDebugGuiRoot = exports.clearDebugGuiRoot = exports.DebugGuiRoot = exports.registerDebugUpdatable = exports.DEBUG_UPDATE_TIMER = exports.DISABLE_WRAP = exports.PRINT_NON_WRAPPED_ERROR = exports.SEND_LOG = exports.DEBUG = void 0;
+    exports.downloadJSONFile = exports.downloadFile = exports.createReflectionGetter = exports.SceneDebug = exports.initGlobalSceneDebug = exports.initGlobalDebug = exports.createDebugGuiRoot = exports.clearDebugGuiRoot = exports.DebugGuiRoot = exports.registerDebugUpdatable = exports.DEBUG_UPDATE_TIMER = exports.DISABLE_WRAP = exports.PRINT_NON_WRAPPED_ERROR = exports.SEND_LOG = exports.DEBUG = void 0;
     exports.DEBUG = true;
     /**
      * Used in log.js
@@ -168,6 +168,14 @@ define(["require", "exports", "dat.gui", "./Timer", "./RRC/Scene/RRCScoreScene"]
         });
         return hasElementName;
     }
+    function initGlobalDebug() {
+        if (exports.DebugGuiRoot == undefined) {
+            return;
+        }
+        var globalDebugFolder = exports.DebugGuiRoot.addFolder("GlobalDebug");
+        globalDebugFolder.addButton('PIXI clearTextureCache', function () { return PIXI.utils.clearTextureCache(); });
+    }
+    exports.initGlobalDebug = initGlobalDebug;
     function initGlobalSceneDebug(sceneRenderer) {
         if (!exports.DEBUG || exports.DebugGuiRoot == undefined) {
             return;

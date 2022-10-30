@@ -1007,7 +1007,8 @@ export class Robot implements IContainerEntity, IUpdatableEntity, IPhysicsCompos
 			append("Light Sensor "+port, colorSensor.getDetectedBrightness() * 100, "%")
 		}
 		for (const [port, colorSensor] of this.colorSensors) {
-			appendAny("Color Sensor "+port, "<span style=\"width: 20px; background-color:" + colorSensor.getColorHexValueString() + "\">&nbsp;</span>")
+			const color = colorSensor.getDetectedColor()
+			appendAny("Color Sensor "+port, "<span style=\"width: 20px; background-color:" + colorSensor.getColorHexValueString() + "\">&nbsp;</span>" + "<p style=\"margin:0px\">&nbsp;" + hsvToColorName(rgbToHsv(color.red, color.green, color.blue)) + "</p>")
 		}
 		for (const [port, ultrasonicSensor] of this.ultrasonicSensors) {
 			append("Ultra Sensor "+port, 100 * s.unit.fromLength(ultrasonicSensor.getMeasuredDistance()), "cm")
