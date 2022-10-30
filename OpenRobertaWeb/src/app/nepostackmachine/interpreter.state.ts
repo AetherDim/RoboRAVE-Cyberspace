@@ -206,9 +206,14 @@ export class State {
         return this.popUnknown() as StateValue
     }
 
-    public pop(): number {
+    public popNumber(): number {
         const value = this.popUnknown()
         Utils.assertTypeOf(value, "number")
+        return value
+    }
+
+    public pop(): unknown {
+        const value = this.popUnknown()
         return value
     }
 

@@ -315,13 +315,13 @@ export class Interpreter {
                     this.evalNNStep(stmt[C.ARG1], stmt[C.ARG2]);
                     break;
                 case C.NN_CHANGEWEIGHT_STMT:
-                    UI.getNetwork().changeWeight(stmt[C.FROM], stmt[C.TO], stmt[C.CHANGE], this.state.pop());
+                    UI.getNetwork().changeWeight(stmt[C.FROM], stmt[C.TO], stmt[C.CHANGE], this.state.popNumber());
                     break;
                 case C.NN_CHANGEBIAS_STMT:
-                    UI.getNetwork().changeBias(stmt[C.NAME], stmt[C.CHANGE], this.state.pop());
+                    UI.getNetwork().changeBias(stmt[C.NAME], stmt[C.CHANGE], this.state.popNumber());
                     break;
                 case C.LED_ON_ACTION: {
-                    const color = this.state.pop();
+                    const color = this.state.popNumber();
                     this.robotBehaviour.ledOnAction(stmt[C.NAME], stmt[C.PORT], color);
                     break;
                 }
@@ -329,15 +329,15 @@ export class Interpreter {
                     let returnValue: any;
                     if (stmt[C.VALUES]) returnValue = this.state.pop();
 
-                    const returnAddress = this.state.pop();
+                    const returnAddress = this.state.popNumber();
                     this.state.pc = returnAddress;
 
                     if (stmt[C.VALUES]) this.state.push(returnValue);
                     break;
                 case C.MOTOR_ON_ACTION: {
                     const speedOnly = stmt[C.SPEED_ONLY];
-                    let duration = speedOnly ? undefined : this.state.pop();
-                    const speed = this.state.pop();
+                    let duration = speedOnly ? undefined : this.state.popNumber();
+                    const speed = this.state.popNumber();
                     const name = stmt[C.NAME];
                     const port = stmt[C.PORT];
                     const durationType = stmt[C.MOTOR_DURATION];
@@ -362,12 +362,12 @@ export class Interpreter {
 
                     if (setTime) {
                         distance = undefined;
-                        time = setTime ? this.state.pop() : undefined;
+                        time = setTime ? this.state.popNumber() : undefined;
                     } else {
                         time = undefined;
-                        distance = speedOnly ? undefined : this.state.pop();
+                        distance = speedOnly ? undefined : this.state.popNumber();
                     }
-                    const speed = this.state.pop();
+                    const speed = this.state.popNumber();
                     const direction = stmt[C.DRIVE_DIRECTION];
                     const duration = this.robotBehaviour.driveAction(name, direction, speed, distance, time);
                     return [duration, true];
@@ -381,12 +381,12 @@ export class Interpreter {
 
                     if (setTime) {
                         angle = undefined;
-                        time = setTime ? this.state.pop() : undefined;
+                        time = setTime ? this.state.popNumber() : undefined;
                     } else {
                         time = undefined;
-                        angle = speedOnly ? undefined : this.state.pop();
+                        angle = speedOnly ? undefined : this.state.popNumber();
                     }
-                    const speed = this.state.pop();
+                    const speed = this.state.popNumber();
                     const name = stmt[C.NAME];
                     const direction = stmt[C.TURN_DIRECTION];
                     const duration = this.robotBehaviour.turnAction(name, direction, speed, angle, time);
@@ -400,13 +400,13 @@ export class Interpreter {
 
                     if (setTime) {
                         distance = undefined;
-                        time = setTime ? this.state.pop() : undefined;
+                        time = setTime ? this.state.popNumber() : undefined;
                     } else {
                         time = undefined;
-                        distance = speedOnly ? undefined : this.state.pop();
+                        distance = speedOnly ? undefined : this.state.popNumber();
                     }
-                    const speedR = this.state.pop();
-                    const speedL = this.state.pop();
+                    const speedR = this.state.popNumber();
+                    const speedL = this.state.popNumber();
                     const name = stmt[C.NAME];
                     const direction = stmt[C.DRIVE_DIRECTION];
                     const duration = this.robotBehaviour.curveAction(name, direction, speedL, speedR, distance, time);
@@ -417,9 +417,9 @@ export class Interpreter {
                     this.robotBehaviour.driveStop(name);
                     return [0, true];
                 case C.BOTH_MOTORS_ON_ACTION: {
-                    const duration = this.state.pop();
-                    const speedB = this.state.pop();
-                    const speedA = this.state.pop();
+                    const duration = this.state.popNumber();
+                    const speedB = this.state.popNumber();
+                    const speedA = this.state.popNumber();
                     const portA = stmt[C.PORT_A];
                     const portB = stmt[C.PORT_B];
                     this.robotBehaviour.motorOnAction(portA, portA, duration, speedA);
@@ -431,7 +431,7 @@ export class Interpreter {
                     return [0, true];
                 }
                 case C.MOTOR_SET_POWER: {
-                    const speed = this.state.pop();
+                    const speed = this.state.popNumber();
                     const name = stmt[C.NAME];
                     const port = stmt[C.PORT];
                     this.robotBehaviour.setMotorSpeed(name, port, speed);
@@ -447,8 +447,8 @@ export class Interpreter {
                     const text = this.state.popUnknown();
                     const name = stmt[C.NAME];
                     if (name === 'ev3') {
-                        const x = this.state.pop();
-                        const y = this.state.pop();
+                        const x = this.state.popNumber();
+                        const y = this.state.popNumber();
                         this.robotBehaviour.showTextActionPosition(text, x, y);
                         return [0, true];
                     }
@@ -464,12 +464,12 @@ export class Interpreter {
                     return [this.robotBehaviour.showImageAction(image, stmt[C.MODE]), true];
                 }
                 case C.DISPLAY_SET_BRIGHTNESS_ACTION: {
-                    const b = this.state.pop();
+                    const b = this.state.popNumber();
                     return [this.robotBehaviour.displaySetBrightnessAction(b), true];
                 }
 
                 case C.IMAGE_SHIFT_ACTION: {
-                    const nShift = this.state.pop();
+                    const nShift = this.state.popNumber();
                     const image = this.state.popUnknown();
                     
                     const assertNumberArray: AnyAssertion<number[][]> = Utils.assertArrayOf(Utils.assertArrayOf(Utils.assertType( "number")))
@@ -484,14 +484,14 @@ export class Interpreter {
                 }
 
                 case C.DISPLAY_SET_PIXEL_BRIGHTNESS_ACTION: {
-                    const b = this.state.pop();
-                    const y = this.state.pop();
-                    const x = this.state.pop();
+                    const b = this.state.popNumber();
+                    const y = this.state.popNumber();
+                    const x = this.state.popNumber();
                     return [this.robotBehaviour.displaySetPixelBrightnessAction(x, y, b), true];
                 }
                 case C.DISPLAY_GET_PIXEL_BRIGHTNESS_ACTION: {
-                    const y = this.state.pop();
-                    const x = this.state.pop();
+                    const y = this.state.popNumber();
+                    const x = this.state.popNumber();
                     this.robotBehaviour.displayGetPixelBrightnessAction(this.state, x, y);
                     break;
                 }
@@ -534,14 +534,14 @@ export class Interpreter {
                     this.robotBehaviour.gyroReset(stmt[C.PORT]);
                     return [0, true];
                 case C.TONE_ACTION: {
-                    const duration = this.state.pop();
-                    const frequency = this.state.pop();
+                    const duration = this.state.popNumber();
+                    const frequency = this.state.popNumber();
                     return [this.robotBehaviour.toneAction(stmt[C.NAME], frequency, duration), true];
                 }
                 case C.PLAY_FILE_ACTION:
                     return [this.robotBehaviour.playFileAction(stmt[C.FILE]), true];
                 case C.SET_VOLUME_ACTION:
-                    this.robotBehaviour.setVolumeAction(this.state.pop());
+                    this.robotBehaviour.setVolumeAction(this.state.popNumber());
                     return [0, true];
                 case C.GET_VOLUME:
                     this.robotBehaviour.getVolumeAction(this.state);
@@ -550,8 +550,8 @@ export class Interpreter {
                     this.robotBehaviour.setLanguage(stmt[C.LANGUAGE]);
                     break;
                 case C.SAY_TEXT_ACTION: {
-                    const pitch = this.state.pop();
-                    const speed = this.state.pop();
+                    const pitch = this.state.popNumber();
+                    const speed = this.state.popNumber();
                     const text = this.state.popType("string");
                     return [this.robotBehaviour.sayTextAction(text, speed, pitch), true];
                 }
@@ -561,15 +561,15 @@ export class Interpreter {
                     break;
                 case C.VAR_DECLARATION: {
                     const name = stmt[C.NAME];
-                    this.state.bindVar(name, this.state.pop());
+                    this.state.bindVar(name, this.state.popStateValue());
                     break;
                 }
                 case C.WAIT_TIME_STMT: {
-                    const time = this.state.pop();
+                    const time = this.state.popNumber();
                     return [time, true]; // wait for handler being called
                 }
                 case C.WRITE_PIN_ACTION: {
-                    const value = this.state.pop();
+                    const value = this.state.popNumber();
                     const mode = stmt[C.MODE];
                     const pin = stmt[C.PIN];
                     this.robotBehaviour.writePinAction(pin, mode, value);
@@ -581,7 +581,7 @@ export class Interpreter {
                     Utils.assertTypeOf(loc, "string")
                     let ix = 0;
                     if (loc != C.LAST && loc != C.FIRST) {
-                        ix = this.state.pop();
+                        ix = this.state.popNumber();
                     }
                     const value = this.state.pop();
                     let list = this.state.popUnknown() as unknown[];
@@ -599,7 +599,7 @@ export class Interpreter {
                 }
                 case C.TEXT_APPEND:
                 case C.MATH_CHANGE: {
-                    const value = this.state.pop();
+                    const value = this.state.pop() as any;
                     const name = stmt[C.NAME];
                     this.state.bindVar(name, this.state.pop() + value);
                     break;
@@ -674,9 +674,9 @@ export class Interpreter {
                 this.state.push(expr[C.VALUE]);
                 break;
             case C.RGB_COLOR_CONST: {
-                const b = this.state.pop();
-                const g = this.state.pop();
-                const r = this.state.pop();
+                const b = this.state.popNumber();
+                const g = this.state.popNumber();
+                const r = this.state.popNumber();
                 this.state.push([r, g, b]);
                 break;
             }
@@ -736,7 +736,7 @@ export class Interpreter {
             }
             case C.SINGLE_FUNCTION: {
                 const subOp = expr[C.OP] as SingleFunction;
-                const value = this.state.pop();
+                const value = this.state.popNumber();
                 U.debug('---------- ' + subOp + ' with ' + value);
                 switch (subOp) {
                     case 'SQUARE':
@@ -796,15 +796,15 @@ export class Interpreter {
                 break;
             }
             case C.MATH_CONSTRAIN_FUNCTION: {
-                const max = this.state.pop();
-                const min = this.state.pop();
-                const value = this.state.pop();
+                const max = this.state.popNumber();
+                const min = this.state.popNumber();
+                const value = this.state.popNumber();
                 this.state.push(Math.min(Math.max(value, min), max));
                 break;
             }
             case C.RANDOM_INT: {
-                var max = this.state.pop();
-                var min = this.state.pop();
+                var max = this.state.popNumber();
+                var min = this.state.popNumber();
                 if (min > max) {
                     [min, max] = [max, min];
                 }
@@ -816,7 +816,7 @@ export class Interpreter {
                 break;
             case C.MATH_PROP_FUNCT: {
                 const subOp = expr[C.OP] as MathIntegerFunction;
-                const value = this.state.pop();
+                const value = this.state.popNumber();
                 switch (subOp) {
                     case 'EVEN':
                         this.state.push(this.isWhole(value) && value % 2 === 0);
@@ -837,7 +837,7 @@ export class Interpreter {
                         this.state.push(value < 0);
                         break;
                     case 'DIVISIBLE_BY':
-                        const first = this.state.pop();
+                        const first = this.state.popNumber();
                         this.state.push(first % value === 0);
                         break;
                     default:
@@ -882,7 +882,7 @@ export class Interpreter {
                 break;
             }
             case C.CAST_CHAR: {
-                const num = this.state.pop();
+                const num = this.state.popNumber();
                 this.state.push(String.fromCharCode(num));
                 break;
             }
@@ -892,7 +892,7 @@ export class Interpreter {
                 break;
             }
             case C.CAST_CHAR_NUMBER: {
-                const index = this.state.pop();
+                const index = this.state.popNumber();
                 const value = this.state.popType("string");
                 this.state.push(value.charCodeAt(index));
                 break;
@@ -908,7 +908,7 @@ export class Interpreter {
                         break;
                     case C.LIST_FIND_ITEM:
                         {
-                            const item = this.state.pop();
+                            const item = this.state.popNumber();
                             const list = this.state.popArray();
                             if (expr[C.POSITION] == C.FIRST) {
                                 this.state.push(list.indexOf(item));
@@ -925,7 +925,7 @@ export class Interpreter {
                             Utils.assertTypeOf(loc, "string")
                             let ix = 0;
                             if (loc != C.LAST && loc != C.FIRST) {
-                                ix = this.state.pop();
+                                ix = this.state.popNumber();
                             }
                             let list = this.state.popArray();
                             ix = this.getIndex(list, loc, ix);
@@ -947,10 +947,10 @@ export class Interpreter {
                             let start_ix: number | undefined;
                             let end_ix: number | undefined;
                             if (position[1] != C.LAST) {
-                                end_ix = this.state.pop();
+                                end_ix = this.state.popNumber();
                             }
                             if (position[0] != C.FIRST) {
-                                start_ix = this.state.pop();
+                                start_ix = this.state.popNumber();
                             }
                             let list = this.state.popArray();
                             start_ix = this.getIndex(list, position[0], start_ix);

@@ -148,9 +148,13 @@ define(["require", "exports", "./interpreter.constants", "./interpreter.util", "
         State.prototype.popStateValue = function () {
             return this.popUnknown();
         };
-        State.prototype.pop = function () {
+        State.prototype.popNumber = function () {
             var value = this.popUnknown();
             Utils_1.Utils.assertTypeOf(value, "number");
+            return value;
+        };
+        State.prototype.pop = function () {
+            var value = this.popUnknown();
             return value;
         };
         /**
