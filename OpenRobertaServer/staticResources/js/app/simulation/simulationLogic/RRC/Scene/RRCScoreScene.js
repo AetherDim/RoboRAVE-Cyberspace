@@ -22,21 +22,9 @@ define(["require", "exports", "../../Scene/AsyncChain", "../../Scene/Scene", "..
             var _this = _super.call(this, name) || this;
             _this.scoreContainer = new PIXI.Container();
             _this.scoreTextContainer = new PIXI.Container();
-            _this.scoreText1 = new PIXI.Text("", new PIXI.TextStyle({
-                fontFamily: 'ProggyTiny',
-                fontSize: 140,
-                fill: 0xf48613
-            }));
-            _this.scoreText2 = new PIXI.Text("", new PIXI.TextStyle({
-                fontFamily: 'ProggyTiny',
-                fontSize: 140,
-                fill: 0xc00001
-            }));
-            _this.scoreText3 = new PIXI.Text("", new PIXI.TextStyle({
-                fontFamily: 'ProggyTiny',
-                fontSize: 140,
-                fill: 0x00cb01
-            }));
+            _this.scoreText1 = new PIXI.Text("");
+            _this.scoreText2 = new PIXI.Text("");
+            _this.scoreText3 = new PIXI.Text("");
             _this.score = 0;
             _this.scoreEventManager = EventManager_1.EventManager.init({
                 onShowHideScore: new EventManager_1.ParameterTypes()
@@ -56,6 +44,22 @@ define(["require", "exports", "../../Scene/AsyncChain", "../../Scene/Scene", "..
         };
         RRCScoreScene.prototype.onInitScore = function (chain) {
             this.showScoreScreen(false);
+            var textStyle = new PIXI.TextStyle({
+                fontFamily: 'ProggyTiny',
+                fontSize: 140,
+                fill: 0xf48613
+            });
+            if (this.scoreText1.parent != undefined) {
+                // if the 'scoreText' has a parent, it can be destroyed otherwise there is no
+                // gpu texture and PIXI crashes
+                // cleanup text (PIXI bug)
+                this.scoreText1.destroy();
+                this.scoreText2.destroy();
+                this.scoreText3.destroy();
+            }
+            this.scoreText1 = new PIXI.Text("", textStyle);
+            this.scoreText2 = new PIXI.Text("", textStyle);
+            this.scoreText3 = new PIXI.Text("", textStyle);
             this.scoreContainer.zIndex = 1000;
             var goal = SharedAssetLoader_1.SharedAssetLoader.get(RRAssetLoader_1.GOAL_BACKGROUND).texture;
             this.scoreBackgroundSprite = new PIXI.Sprite(goal);

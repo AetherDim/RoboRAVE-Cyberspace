@@ -87,24 +87,22 @@ define(["require", "exports", "../../Utils"], function (require, exports, Utils_
         };
         //protected removeTexturesOnUnload = true;
         //protected removeBaseTexturesOnUnload = true;
+        ContainerManager.prototype.recursiveDestroySomeObjects = function (displayObject) {
+            var _this = this;
+            // Destroy all 'PIXI.Text' objects in order to prevent a large memory leak
+            // Note: Do not reuse 'PIXI.Text' objects for this reason
+            //
+            // maybe also destroy 'PIXI.Graphics' since it could be a minor memory leak
+            if (displayObject instanceof PIXI.Text) { // || displayObject instanceof PIXI.Graphics) {
+                displayObject.destroy(true);
+            }
+            else if (displayObject instanceof PIXI.Container) {
+                displayObject.children.slice().forEach(function (c) { return _this.recursiveDestroySomeObjects(c); });
+            }
+        };
         ContainerManager.prototype.clearContainer = function (container) {
-            // remove children from parent before destroy
-            // see: https://github.com/pixijs/pixi.js/issues/2800
-            // const children: PIXI.DisplayObject[] = []
-            // for (const child of container.children) {
-            // 	children.push(child)
-            // }
+            this.recursiveDestroySomeObjects(container);
             container.removeChildren();
-            // FIXME: Should we destroy the children?
-            // Note that e.g. scoreText has to be replaced since it might be destroyed
-            // children.forEach(child => {
-            // 	child.destroy();
-            // });
-            /*container.destroy({
-                children: true,
-                texture: this.removeTexturesOnUnload,
-                baseTexture: this.removeBaseTexturesOnUnload
-            });*/
         };
         ContainerManager.prototype._initialGroundDataFunction = function (x, y, w, h) {
             this.updateGroundImageDataFunction();

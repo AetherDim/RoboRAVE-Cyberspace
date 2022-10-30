@@ -101,27 +101,21 @@ export class ContainerManager {
 	//protected removeTexturesOnUnload = true;
 	//protected removeBaseTexturesOnUnload = true;
 
+	private recursiveDestroySomeObjects(displayObject: PIXI.DisplayObject) {
+		// Destroy all 'PIXI.Text' objects in order to prevent a large memory leak
+		// Note: Do not reuse 'PIXI.Text' objects for this reason
+		//
+		// maybe also destroy 'PIXI.Graphics' since it could be a minor memory leak
+		if (displayObject instanceof PIXI.Text){// || displayObject instanceof PIXI.Graphics) {
+			displayObject.destroy(true as any)
+		} else if (displayObject instanceof PIXI.Container) {
+			displayObject.children.slice().forEach(c => this.recursiveDestroySomeObjects(c))
+		}
+	}
+
 	private clearContainer(container: PIXI.Container) {
-		// remove children from parent before destroy
-		// see: https://github.com/pixijs/pixi.js/issues/2800
-		// const children: PIXI.DisplayObject[] = []
-		// for (const child of container.children) {
-		// 	children.push(child)
-		// }
+		this.recursiveDestroySomeObjects(container)
 		container.removeChildren();
-
-		// FIXME: Should we destroy the children?
-		// Note that e.g. scoreText has to be replaced since it might be destroyed
-
-		// children.forEach(child => {
-		// 	child.destroy();
-		// });
-
-		/*container.destroy({
-			children: true,
-			texture: this.removeTexturesOnUnload,
-			baseTexture: this.removeBaseTexturesOnUnload
-		});*/
 	}
 
 

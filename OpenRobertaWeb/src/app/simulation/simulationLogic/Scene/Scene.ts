@@ -273,6 +273,9 @@ export class Scene {
 		// remove entities
 		this.getEntityManager().clear()
 
+		// TODO: Maybe clear texture cache in order to prevent a memory leak (check it!)
+		// PIXI.utils.clearTextureCache()
+
 		chain.next();
 	}
 

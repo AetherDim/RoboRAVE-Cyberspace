@@ -65,7 +65,8 @@ define(["require", "exports", "../../Entities/Entity", "matter-js", "../../Utils
                     Utils_1.Utils.removeFromArray(this.updatableEntities, entity);
                 }
                 if (Entity_1.Type.IDrawableEntity.isSupertypeOf(entity)) {
-                    (_a = entity.getContainer()) === null || _a === void 0 ? void 0 : _a.removeChild(entity.getDrawable());
+                    var container = (_a = entity.getContainer()) !== null && _a !== void 0 ? _a : this.scene.getContainers().entityContainer;
+                    container.removeChild(entity.getDrawable());
                 }
                 if (Entity_1.Type.IDrawablePhysicsEntity.isSupertypeOf(entity)) {
                     // TODO: The entity might not be in the world and will therefore not
