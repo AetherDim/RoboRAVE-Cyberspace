@@ -113,14 +113,23 @@ function requestSimAssemblyForProgram(callback: (result: RobertaRobotSetupData) 
 	});
 }
 
+/**
+ * Sets the same `robertaSetupData` for each robot.
+ * @param robertaSetupData The roberta setup data
+ */
+function setSameSetupData(robertaSetupData: RobertaRobotSetupData) {
+	const setupDataList = Array.from<RobertaRobotSetupData>({ length: cyberspace.robotCount() }).fill(robertaSetupData)
+	cyberspace.setRobertaRobotSetupData(setupDataList, GUISTATE_C.getRobotGroup())
+
+}
+
 function simulateProgram(callback?: () => void) {
 	// TODO: use proper 'this' type
 	requestSimAssemblyForProgram(function (this: any, result) {
 		if (result.rc == 'ok') {
 			MSG.displayMessage('MESSAGE_EDIT_START', 'TOAST', GUISTATE_C.getProgramName(), undefined, undefined);
 
-			const setupDataList = Array.from<RobertaRobotSetupData>({ length: cyberspace.robotCount() }).fill(result)
-			cyberspace.setRobertaRobotSetupData(setupDataList, GUISTATE_C.getRobotGroup())
+			setSameSetupData(result)
 
 			// setting the robot data might reset the scene since the configuration has changed
 			cyberspace.getScene().runAfterLoading(() => {
@@ -216,7 +225,7 @@ const INITIAL_WIDTH = 0.5;
 function openSimulationView() {
 	requestSimAssemblyForProgram(result => {
 		if (result.rc == 'ok') {
-			cyberspace.setRobertaRobotSetupData([result], GUISTATE_C.getRobotGroup())
+			setSameSetupData(result)
 
 			if (TOUR_C.getInstance() && TOUR_C.getInstance().trigger) {
 				TOUR_C.getInstance().trigger('startSim');

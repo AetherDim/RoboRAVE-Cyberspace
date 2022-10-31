@@ -119,7 +119,7 @@ define(["require", "exports", "matter-js", "../Timer", "../ScrollView", "../Unit
             if (this.constructor.name === Scene.name) {
                 // No specialized scene => finished loading
                 this.autostartSim = false;
-                this.finishedLoading(new AsyncChain_1.AsyncChain());
+                this.finishedLoading(new AsyncChain_1.AsyncChain(), []);
             }
             // has to be called after the name has been defined
             // defined 
@@ -210,7 +210,7 @@ define(["require", "exports", "matter-js", "../Timer", "../ScrollView", "../Unit
         Scene.prototype.initDynamicDebugGui = function () {
             this.debug.createDebugGuiDynamic();
         };
-        Scene.prototype.finishedLoading = function (chain) {
+        Scene.prototype.finishedLoading = function (chain, robotSetupData) {
             var _this_1 = this;
             var _a;
             // fake longer loading time for smooth animation
@@ -218,10 +218,12 @@ define(["require", "exports", "matter-js", "../Timer", "../ScrollView", "../Unit
             if (loadingTime < this.minLoadTime) {
                 var _this = this;
                 setTimeout(function () {
-                    _this_1.finishedLoading(chain);
+                    _this_1.finishedLoading(chain, robotSetupData);
                 }, this.minLoadTime - loadingTime);
                 return;
             }
+            // set the robot programs (after 'onInit')
+            this.setPrograms(robotSetupData);
             // update the scene size
             this.updateBounds();
             // reset view position
@@ -303,7 +305,6 @@ define(["require", "exports", "matter-js", "../Timer", "../ScrollView", "../Unit
             this.currentlyLoading = true; // this flag will start loading animation update
             this.hasFinishedLoading = false;
             this.getRobotManager().configurationManager.setRobotConfigurations(robotSetupData.map(function (setup) { return setup.configuration; }));
-            this.setPrograms(robotSetupData);
             // stop the simulation
             this.pauseSim();
             this.debug.clearDebugGuiDynamic(); // if dynamic debug gui exist, clear it
@@ -339,7 +340,9 @@ define(["require", "exports", "matter-js", "../Timer", "../ScrollView", "../Unit
                     chain.next();
                 }, thisContext: this }, { func: this.onInit, thisContext: this }, // init scene
             // swap from loading to scene, remove loading animation, cleanup, ...
-            { func: this.finishedLoading, thisContext: this });
+            { func: function (chain) {
+                    _this_1.finishedLoading(chain, robotSetupData);
+                }, thisContext: this });
             this.onChainCompleteListeners.forEach(function (listener) { return listener.call(_this_1, _this_1.loadingChain); });
             console.log('starting to load scene!');
             console.log('Loading stages: ' + this.loadingChain.length());

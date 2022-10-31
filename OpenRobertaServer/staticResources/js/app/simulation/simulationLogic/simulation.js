@@ -98,14 +98,21 @@ define(["require", "exports", "./external/SceneDesciptorList", "./Cyberspace/Cyb
             callback(result);
         });
     }
+    /**
+     * Sets the same `robertaSetupData` for each robot.
+     * @param robertaSetupData The roberta setup data
+     */
+    function setSameSetupData(robertaSetupData) {
+        var setupDataList = Array.from({ length: cyberspace.robotCount() }).fill(robertaSetupData);
+        cyberspace.setRobertaRobotSetupData(setupDataList, GUISTATE_C.getRobotGroup());
+    }
     function simulateProgram(callback) {
         // TODO: use proper 'this' type
         requestSimAssemblyForProgram(function (result) {
             var _this = this;
             if (result.rc == 'ok') {
                 MSG.displayMessage('MESSAGE_EDIT_START', 'TOAST', GUISTATE_C.getProgramName(), undefined, undefined);
-                var setupDataList = Array.from({ length: cyberspace.robotCount() }).fill(result);
-                cyberspace.setRobertaRobotSetupData(setupDataList, GUISTATE_C.getRobotGroup());
+                setSameSetupData(result);
                 // setting the robot data might reset the scene since the configuration has changed
                 cyberspace.getScene().runAfterLoading(function () {
                     cyberspace.startPrograms();
@@ -185,7 +192,7 @@ define(["require", "exports", "./external/SceneDesciptorList", "./Cyberspace/Cyb
     function openSimulationView() {
         requestSimAssemblyForProgram(function (result) {
             if (result.rc == 'ok') {
-                cyberspace.setRobertaRobotSetupData([result], GUISTATE_C.getRobotGroup());
+                setSameSetupData(result);
                 if (TOUR_C.getInstance() && TOUR_C.getInstance().trigger) {
                     TOUR_C.getInstance().trigger('startSim');
                 }

@@ -178,17 +178,20 @@ export class Scene {
 
 	private loadingChain?: AsyncChain;
 
-	private finishedLoading(chain: AsyncChain) {
+	private finishedLoading(chain: AsyncChain, robotSetupData: RobotSetupData[]) {
 
 		// fake longer loading time for smooth animation
 		const loadingTime = Date.now() - this.loadingStartTime;
 		if(loadingTime < this.minLoadTime) {
 			const _this = this;
 			setTimeout(() => {
-				this.finishedLoading(chain);
+				this.finishedLoading(chain, robotSetupData);
 			}, this.minLoadTime-loadingTime);
 			return;
 		}
+
+		// set the robot programs (after 'onInit')
+		this.setPrograms(robotSetupData)
 
 		// update the scene size
 		this.updateBounds()
@@ -294,7 +297,6 @@ export class Scene {
 		this.getRobotManager().configurationManager.setRobotConfigurations(
 			robotSetupData.map(setup => setup.configuration)
 		)
-		this.setPrograms(robotSetupData)
 
 		// stop the simulation
 		this.pauseSim()
@@ -349,7 +351,9 @@ export class Scene {
 			}, thisContext: this },
 			{func: this.onInit, thisContext: this}, // init scene
 			// swap from loading to scene, remove loading animation, cleanup, ...
-			{func: this.finishedLoading, thisContext: this},
+			{func: chain => {
+				this.finishedLoading(chain, robotSetupData)
+			}, thisContext: this},
 		);
 
 		this.onChainCompleteListeners.forEach(listener => listener.call(this, this.loadingChain!))
@@ -594,7 +598,7 @@ export class Scene {
 		if(this.constructor.name === Scene.name) {
 			// No specialized scene => finished loading
 			this.autostartSim = false
-			this.finishedLoading(new AsyncChain())
+			this.finishedLoading(new AsyncChain(), [])
 		}
 
 		// has to be called after the name has been defined
