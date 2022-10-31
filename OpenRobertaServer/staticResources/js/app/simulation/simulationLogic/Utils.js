@@ -253,7 +253,7 @@ define(["require", "exports", "./Random"], function (require, exports, Random_1)
         };
         ;
         Utils.genHtmlUid2 = function () {
-            var uid = 'uid:' + this.idNumber;
+            var uid = 'uid-' + this.idNumber;
             this.idNumber++;
             return uid;
         };

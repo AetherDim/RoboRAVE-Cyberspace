@@ -389,7 +389,7 @@ export class Utils {
 
 	static idNumber = 0
 	static genHtmlUid2() {
-		const uid = 'uid:' + this.idNumber
+		const uid = 'uid-' + this.idNumber
 		this.idNumber ++
 		return uid
 	}

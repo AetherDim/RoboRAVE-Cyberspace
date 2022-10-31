@@ -20,6 +20,7 @@ import {DEBUG, initGlobalDebug} from "./GlobalDebug";
 import {getProgramLink} from "program.controller";
 import {BlocklyDebug} from "./BlocklyDebug";
 import { KeyManager } from './KeyManager';
+import {selection} from "d3";
 
 //
 // init all components for a simulation
@@ -76,7 +77,7 @@ sceneManager.registerScene(...cyberspaceScenes)
 
 // switch to first scene
 cyberspace.switchToNextScene(true)
-
+buildSceneMenu();
 
 /**
  * @param programs 
@@ -207,7 +208,8 @@ UIManager.zoomResetButton.onClick(() => {
 })
 
 UIManager.switchSceneButton.onClick(() => {
-	cyberspace.switchToNextScene()
+	let description = cyberspace.switchToNextScene()
+	sceneMenuSelect(description.ID)
 })
 
 
@@ -344,8 +346,19 @@ UIManager.debugVariablesButton.onClick(() => {
 	toggleModal('#simVariablesModal', position);
 })
 
+function buildSceneMenu() {
+	_buildSceneMenu('#simSelectionMenuContentSmall', '_small_Menu_');
+	_buildSceneMenu('#simSelectionMenuContent', '');
 
-function buildSceneMenu(menu: string, addString: string) {
+	let scenes = cyberspace.getScenes()
+
+	if(scenes.length > 0) {
+		sceneMenuSelect(scenes[0].ID)
+	}
+}
+
+
+function _buildSceneMenu(menu: string, addString: string) {
 	// TODO: clear #simSelectionMenuContent??
 	// seems to work without clear
 	const scenes = cyberspace.getScenes();
@@ -359,19 +372,19 @@ function buildSceneMenu(menu: string, addString: string) {
 	}
 }
 
-buildSceneMenu('#simSelectionMenuContentSmall', '_small_Menu_');
-buildSceneMenu('#simSelectionMenuContent', '');
-
-$('.sim-nav').onWrap('click', 'li:not(.disabled) a', function(event) {
+function sceneMenuSelect(sceneID: string) {
 	$('.modal').modal('hide') // remove modal
 	$('.menuSim').parent().removeClass('disabled') // enable all items in list
 	$("#simButtonsCollapse").collapse('hide') // collapse popup list
 
+	$('#'+sceneID).parent().addClass('disabled')
+	$('#'+sceneID+'_small_Menu_').parent().addClass('disabled')
+}
+
+$('.sim-nav').onWrap('click', 'li:not(.disabled) a', function(event) {
 	const name = event.target.id.replace('_small_Menu_', '')
 	cyberspace.loadScene(name)
-	$('#'+name).parent().addClass('disabled')
-	$('#'+name+'_small_Menu_').parent().addClass('disabled')
-
+	sceneMenuSelect(name)
 }, 'sim clicked');
 
 // UPLOAD Menu
