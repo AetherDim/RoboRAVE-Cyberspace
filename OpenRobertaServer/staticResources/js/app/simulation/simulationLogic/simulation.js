@@ -72,6 +72,7 @@ define(["require", "exports", "./external/SceneDesciptorList", "./Cyberspace/Cyb
     sceneManager.registerScene.apply(sceneManager, __spreadArray([], __read(SceneDesciptorList_1.cyberspaceScenes), false));
     // switch to first scene
     cyberspace.switchToNextScene(true);
+    buildSceneMenu();
     /**
      * @param programs
      * @param refresh `true` if "SIM" is pressed, `false` if play is pressed
@@ -186,7 +187,8 @@ define(["require", "exports", "./external/SceneDesciptorList", "./Cyberspace/Cyb
         cyberspace.resetView();
     });
     UIManager_1.UIManager.switchSceneButton.onClick(function () {
-        cyberspace.switchToNextScene();
+        var description = cyberspace.switchToNextScene();
+        sceneMenuSelect(description.ID);
     });
     var INITIAL_WIDTH = 0.5;
     function openSimulationView() {
@@ -302,7 +304,15 @@ define(["require", "exports", "./external/SceneDesciptorList", "./Cyberspace/Cyb
         position.left = $(window).width() - ($('#simVariablesModal').width() + 12);
         toggleModal('#simVariablesModal', position);
     });
-    function buildSceneMenu(menu, addString) {
+    function buildSceneMenu() {
+        _buildSceneMenu('#simSelectionMenuContentSmall', '_small_Menu_');
+        _buildSceneMenu('#simSelectionMenuContent', '');
+        var scenes = cyberspace.getScenes();
+        if (scenes.length > 0) {
+            sceneMenuSelect(scenes[0].ID);
+        }
+    }
+    function _buildSceneMenu(menu, addString) {
         // TODO: clear #simSelectionMenuContent??
         // seems to work without clear
         var scenes = cyberspace.getScenes();
@@ -314,16 +324,17 @@ define(["require", "exports", "./external/SceneDesciptorList", "./Cyberspace/Cyb
             }
         }
     }
-    buildSceneMenu('#simSelectionMenuContentSmall', '_small_Menu_');
-    buildSceneMenu('#simSelectionMenuContent', '');
-    $('.sim-nav').onWrap('click', 'li:not(.disabled) a', function (event) {
+    function sceneMenuSelect(sceneID) {
         $('.modal').modal('hide'); // remove modal
         $('.menuSim').parent().removeClass('disabled'); // enable all items in list
         $("#simButtonsCollapse").collapse('hide'); // collapse popup list
+        $('#' + sceneID).parent().addClass('disabled');
+        $('#' + sceneID + '_small_Menu_').parent().addClass('disabled');
+    }
+    $('.sim-nav').onWrap('click', 'li:not(.disabled) a', function (event) {
         var name = event.target.id.replace('_small_Menu_', '');
         cyberspace.loadScene(name);
-        $('#' + name).parent().addClass('disabled');
-        $('#' + name + '_small_Menu_').parent().addClass('disabled');
+        sceneMenuSelect(name);
     }, 'sim clicked');
     // UPLOAD Menu
     $('#head-navigation-upload').onWrap('click', '.dropdown-menu li:not(.disabled) a', function (event) {
