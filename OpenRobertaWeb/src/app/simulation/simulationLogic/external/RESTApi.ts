@@ -142,7 +142,3 @@ export type RESTState = {
 export type ProgramResult = {
 	id: number, team: number, agegroup: number, challenge: number, program: string, comment: "string", timestamp: string, judge: number
 }
-
-export function getRandomJoustingProgram(): ProgramResult {
-	return undefined;
-}

@@ -637,6 +637,18 @@ define(["require", "exports", "./Random"], function (require, exports, Random_1)
                 return array[(0, Random_1.randomIntBetween)(0, array.length - 1)];
             }
         };
+        /**
+         * @param length The length of the resulting array
+         * @param mapping The method mapping over each index and returning a new element
+         * @returns An array of length `length`
+         */
+        Utils.arrayWithLength = function (length, mapping) {
+            var result = new Array(length);
+            for (var i = 0; i < length; i++) {
+                result[i] = mapping(i);
+            }
+            return result;
+        };
         Utils.getRootURL = function (ignorePort) {
             if (ignorePort === void 0) { ignorePort = false; }
             var part = window.location.protocol + '//' + window.location.hostname;

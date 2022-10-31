@@ -6,7 +6,6 @@ import { Cyberspace } from './Cyberspace/Cyberspace';
 import { UIManager } from './UI/UIManager';
 import { RRCScoreScene } from './RRC/Scene/RRCScoreScene';
 import { RESTState, ResultErrorType, sendStateRequest } from './external/RESTApi';
-import * as $ from "jquery";
 import * as Blockly from "blockly";
 import * as GUISTATE_C from "guiState.controller";
 import * as NN_CTRL from "nn.controller";
@@ -20,7 +19,6 @@ import {DEBUG, initGlobalDebug} from "./GlobalDebug";
 import {getProgramLink} from "program.controller";
 import {BlocklyDebug} from "./BlocklyDebug";
 import { KeyManager } from './KeyManager';
-import {selection} from "d3";
 
 //
 // init all components for a simulation

@@ -1,4 +1,3 @@
-import * as $ from 'jquery';
 import * as guiStateController from 'guiState.controller';
 
 const MODE = 'x3d';

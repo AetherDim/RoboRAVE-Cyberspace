@@ -1,5 +1,4 @@
 import './pixijs'
-import * as $ from "jquery";
 import { Scene } from './Scene/Scene';
 import { rgbToNumber } from './Color'
 import { ScrollView, ScrollViewEvent } from './ScrollView';

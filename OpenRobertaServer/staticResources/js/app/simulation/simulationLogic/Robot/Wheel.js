@@ -29,7 +29,7 @@ var __read = (this && this.__read) || function (o, n) {
     }
     return ar;
 };
-define(["require", "exports", "d3", "matter-js", "../Entities/DrawablePhysicsEntity", "../Utils", "../Entities/PhysicsRectEntity"], function (require, exports, d3_1, matter_js_1, DrawablePhysicsEntity_1, Utils_1, PhysicsRectEntity_1) {
+define(["require", "exports", "matter-js", "../Entities/DrawablePhysicsEntity", "../Utils", "../Entities/PhysicsRectEntity"], function (require, exports, matter_js_1, DrawablePhysicsEntity_1, Utils_1, PhysicsRectEntity_1) {
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.Wheel = void 0;
     var Wheel = /** @class */ (function (_super) {
@@ -85,7 +85,7 @@ define(["require", "exports", "d3", "matter-js", "../Entities/DrawablePhysicsEnt
             var container = _this.physicsEntity.getDrawable();
             var wheelProfileWidth = width * 0.3;
             _this.wheelProfileWidth = wheelProfileWidth;
-            _this.wheelProfile = (0, d3_1.range)(4).map(function () {
+            _this.wheelProfile = Utils_1.Utils.arrayWithLength(4, function () {
                 var graphics = new PIXI.Graphics();
                 graphics.beginFill(0xFF0000);
                 graphics.drawRect(0, -height / 2, wheelProfileWidth, height);

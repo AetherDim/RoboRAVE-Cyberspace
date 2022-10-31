@@ -3,7 +3,6 @@ import { Timer } from "./Timer";
 import {Program} from "./Scene/Manager/ProgramManager";
 import * as stackmachineJsHelper from "./interpreter.jsHelper"
 import { BlockHighlightManager } from "interpreter.state";
-import { Utils } from "./Utils";
 
 type SpecialBlocklyBlock = Blockly.Block & { svgGroup_: SVGGElement, svgPath_: SVGPathElement }
 

@@ -766,6 +766,19 @@ export class Utils {
 		}
 	}
 
+	/**
+	 * @param length The length of the resulting array
+	 * @param mapping The method mapping over each index and returning a new element
+	 * @returns An array of length `length`
+	 */
+	static arrayWithLength<T>(length: number, mapping: (index: number) => T): T[] {
+		const result = new Array<T>(length)
+		for (let i = 0; i < length; i++) {
+			result[i] = mapping(i)
+		}
+		return result
+	}
+
 	static getRootURL(ignorePort: boolean = false) {
 
 		let part = window.location.protocol + '//' + window.location.hostname
