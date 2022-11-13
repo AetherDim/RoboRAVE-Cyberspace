@@ -13,6 +13,31 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
+var __read = (this && this.__read) || function (o, n) {
+    var m = typeof Symbol === "function" && o[Symbol.iterator];
+    if (!m) return o;
+    var i = m.call(o), r, ar = [], e;
+    try {
+        while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
+    }
+    catch (error) { e = { error: error }; }
+    finally {
+        try {
+            if (r && !r.done && (m = i["return"])) m.call(i);
+        }
+        finally { if (e) throw e.error; }
+    }
+    return ar;
+};
+var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
+};
 define(["require", "exports", "webfontloader", "./Random", "./Utils", "./pixijs"], function (require, exports, WebFont, Random_1, Utils_1) {
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.SharedAssetLoader = exports.MultiSpriteAsset = exports.FontAsset = exports.SpriteAsset = exports.Asset = void 0;
@@ -114,6 +139,21 @@ define(["require", "exports", "webfontloader", "./Random", "./Utils", "./pixijs"
             return this.loader.resources[asset.name];
         };
         SharedAssetLoader.load = function (callback) {
+            var _this = this;
+            var assets = [];
+            for (var _i = 1; _i < arguments.length; _i++) {
+                assets[_i - 1] = arguments[_i];
+            }
+            if (this.loader.loading) {
+                this.loader.onComplete.once(function () {
+                    _this._load.apply(_this, __spreadArray([callback], __read(assets), false));
+                });
+            }
+            else {
+                this._load.apply(this, __spreadArray([callback], __read(assets), false));
+            }
+        };
+        SharedAssetLoader._load = function (callback) {
             var _this = this;
             var assets = [];
             for (var _i = 1; _i < arguments.length; _i++) {

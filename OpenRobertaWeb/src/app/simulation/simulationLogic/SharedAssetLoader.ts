@@ -122,6 +122,16 @@ export class SharedAssetLoader {
 	}
 
 	static load(callback:() => void, ...assets: (Asset|FontAsset|undefined)[]) {
+		if(this.loader.loading) {
+			this.loader.onComplete.once(() => {
+				this._load(callback, ...assets)
+			})
+		} else {
+			this._load(callback, ...assets)
+		}
+	}
+
+	private static _load(callback:() => void, ...assets: (Asset|FontAsset|undefined)[]) {
 		let fontsToLoad: FontAsset[] = <FontAsset[]>assets.filter(asset => {
 			return (asset instanceof FontAsset) && !SharedAssetLoader.fontMap.get(asset.name);
 		});
