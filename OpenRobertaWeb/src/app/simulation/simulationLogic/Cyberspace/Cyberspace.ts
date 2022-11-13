@@ -148,6 +148,10 @@ export class Cyberspace {
 		return this.sceneManager.getSceneDescriptorList()
 	}
 
+	onSwitchScene(handler: (scene: Scene) => void) {
+		this.renderer.onSwitchScene(handler)
+	}
+
 	private switchToScene(scene: Scene) {
 		this.stopPrograms()
 		this.renderer.switchScene(this.simulationCache.toRobotSetupData(), scene)

@@ -65,6 +65,10 @@ cyberspace.specializedEventManager
 			UIManager.showScoreButton.setState(state == "hideScore" ? "showScore" : "hideScore"))
 		)
 
+cyberspace.onSwitchScene(() => {
+	setInitialButtonState()
+})
+
 export function setPause() {
 	// TODO: Pause of stop?
 	cyberspace.pausePrograms()

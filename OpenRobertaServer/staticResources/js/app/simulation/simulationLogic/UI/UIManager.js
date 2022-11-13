@@ -51,6 +51,9 @@ define(["require", "exports", "blockly", "./UIElement"], function (require, expo
             // call 'setButtonEventHandler' only for buttons on which 'onClick' is called
             //this.setButtonEventHandler()
         }
+        UIRobertaStateButton.prototype.getState = function () {
+            return this.state;
+        };
         /**
          * Tries to set the button event handler as long 'onWrap' is not definied for `JQuery`.
          */

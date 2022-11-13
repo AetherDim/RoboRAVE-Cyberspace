@@ -165,6 +165,9 @@ define(["require", "exports", "./SimulationCache", "../Scene/Scene", "../RRC/Sce
         Cyberspace.prototype.getScenes = function () {
             return this.sceneManager.getSceneDescriptorList();
         };
+        Cyberspace.prototype.onSwitchScene = function (handler) {
+            this.renderer.onSwitchScene(handler);
+        };
         Cyberspace.prototype.switchToScene = function (scene) {
             this.stopPrograms();
             this.renderer.switchScene(this.simulationCache.toRobotSetupData(), scene);

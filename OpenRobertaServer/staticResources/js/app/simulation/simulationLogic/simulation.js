@@ -64,6 +64,9 @@ define(["require", "exports", "./external/SceneDesciptorList", "./Cyberspace/Cyb
             return UIManager_1.UIManager.showScoreButton.setState(state == "hideScore" ? "showScore" : "hideScore");
         });
     });
+    cyberspace.onSwitchScene(function () {
+        setInitialButtonState();
+    });
     function setPause() {
         // TODO: Pause of stop?
         cyberspace.pausePrograms();

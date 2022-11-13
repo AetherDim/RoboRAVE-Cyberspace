@@ -46,6 +46,10 @@ export class UIRobertaStateButton<T extends { [key in string]: RobertaButtonSett
 		//this.setButtonEventHandler()
 	}
 
+	getState(): keyof T {
+		return this.state
+	}
+
 	/**
 	 * Tries to set the button event handler as long 'onWrap' is not definied for `JQuery`.
 	 */
