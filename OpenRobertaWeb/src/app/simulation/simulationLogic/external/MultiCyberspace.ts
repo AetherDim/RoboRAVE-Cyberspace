@@ -12,7 +12,7 @@ import { RRCScoreScene } from "../RRC/Scene/RRCScoreScene"
 import { KeyManager } from "../KeyManager"
 
 
-const cyberspaces: Cyberspace[] = []
+const cyberspaceDataList: CyberspaceData[] = []
 
 initGlobalDebug()
 KeyManager.setup()
@@ -34,16 +34,18 @@ const sceneDescriptors = cyberspaceScenes
 class CyberspaceData {
 	cyberspace: Cyberspace
 	divElement: HTMLElement
+	groupNameStyle: CSSStyleDeclaration
 
-	constructor(cyberspace: Cyberspace, divElement: HTMLElement) {
+	constructor(cyberspace: Cyberspace, divElement: HTMLElement, groupNameStyle: CSSStyleDeclaration) {
 		this.cyberspace = cyberspace
 		this.divElement = divElement
+		this.groupNameStyle = groupNameStyle
 	}
 }
 
 function everyScoreSceneIsFinished(): boolean {
-	return cyberspaces.every(c => {
-		const scene = c.getScene()
+	return cyberspaceDataList.every(c => {
+		const scene = c.cyberspace.getScene()
 		if (scene instanceof RRCScoreScene) {
 			return scene.getRobotManager().allProgramsTerminated()
 		} else {
@@ -79,9 +81,7 @@ function scoreSceneAddEventHandler(
 
 	let isDisqualified = false
 	function updateButtonColor() {
-		const color = isDisqualified ?
-			(disqualifyButton.disabled ? "rgb(200, 0, 0)" : "red") :
-			(disqualifyButton.disabled ? "rgb(200, 200, 200)" : "white")
+		const color = isDisqualified ? "red" : "white"
 		disqualifyButton.style.backgroundColor = color
 	}
 	disqualifyButton.onclick = () => {
@@ -91,9 +91,7 @@ function scoreSceneAddEventHandler(
 		updateButtonColor()
 	}
 
-	let didSendSetScoreRequest = false
 	function onScoreRequestError() {
-		didSendSetScoreRequest = false
 		disqualifyButton.disabled = false
 		groupNameStyle.backgroundColor = "red"
 		updateButtonColor()
@@ -106,12 +104,10 @@ function scoreSceneAddEventHandler(
 			UIManager.showScoreButton.setState("hideScore")
 			UIManager.physicsSimControlButton.setState("start")
 		}
-		if (state == "showScore" && !didSendSetScoreRequest) {
+		if (state == "showScore") {
 			if (programID == undefined) {
 				return
 			}
-			didSendSetScoreRequest = true
-			disqualifyButton.disabled = true
 			updateButtonColor()
 			// maximum signed int32 (2^32 - 1)
 			// https://dev.mysql.com/doc/refman/5.6/en/integer-types.html
@@ -119,8 +115,9 @@ function scoreSceneAddEventHandler(
 			let score = Math.round(scoreScene.score * 1000)
 			let time = Math.round(Utils.flatMapOptional(scoreScene.getProgramRuntime(), runtime => runtime * 1000) ?? maxTime)
 			let comment = ""
+			// reset to white. In case of rescoring we see a brief white
+			groupNameStyle.backgroundColor = "white"
 			if (isDisqualified) {
-				groupNameStyle.backgroundColor = "red"
 				score = 0
 				time = maxTime
 				comment = "This program is disqualified"
@@ -168,13 +165,13 @@ function createCyberspaceData(sceneID: string, groupName: string, programID: num
 	const groupNameParagraph = document.createElement("p")
 	groupNameParagraph.textContent = groupName
 	groupNameDiv.appendChild(groupNameParagraph)
-	const paragraphStyle = groupNameParagraph.style
-	paragraphStyle.display = "inline"
-	paragraphStyle.backgroundColor = "white"
-	paragraphStyle.borderRadius = "5px"
-	paragraphStyle.fontSize = "20"
-	paragraphStyle.paddingLeft = "3"
-	paragraphStyle.paddingRight = "3"
+	const groupNameStyle = groupNameParagraph.style
+	groupNameStyle.display = "inline"
+	groupNameStyle.backgroundColor = "white"
+	groupNameStyle.borderRadius = "5px"
+	groupNameStyle.fontSize = "20"
+	groupNameStyle.paddingLeft = "3"
+	groupNameStyle.paddingRight = "3"
 
 	cyberspaceDiv.appendChild(groupNameDiv)
 
@@ -194,12 +191,12 @@ function createCyberspaceData(sceneID: string, groupName: string, programID: num
 	const cyberspace = new Cyberspace(canvas, cyberspaceDiv, sceneDescriptors)
 	cyberspace.specializedEventManager
 		.addEventHandlerSetter(RRCScoreScene,
-			scoreScene => scoreSceneAddEventHandler(scoreScene, groupName, programID, secretKey, paragraphStyle, disqualifyButton)
+			scoreScene => scoreSceneAddEventHandler(scoreScene, groupName, programID, secretKey, groupNameStyle, disqualifyButton)
 		)
 
 	cyberspace.loadScene(sceneID)
 	
-	return new CyberspaceData(cyberspace, cyberspaceDiv)
+	return new CyberspaceData(cyberspace, cyberspaceDiv, groupNameStyle)
 }
 
 function setGridStyle(gridElements: HTMLElement[][], opt?: { relativePadding?: number }) {
@@ -407,7 +404,7 @@ function generateRandomMultiSetupData(count: number): MultiCyberspaceSetupData[]
 }
 
 function startPrograms() {
-	cyberspaces.forEach(cyberspace => cyberspace.startPrograms())
+	forEachCyberspace(cyberspace => cyberspace.startPrograms())
 }
 
 function loadScenes(setupDataList: MultiCyberspaceSetupData[], secretKey: string) {
@@ -439,14 +436,14 @@ function loadScenes(setupDataList: MultiCyberspaceSetupData[], secretKey: string
 	}
 
 
-	const cyberspaceDataList = setupDataList.map(setupData => {
+	const newCyberspaceDataList = setupDataList.map(setupData => {
 		const cyberspaceData = createCyberspaceData(setupData.sceneID, setupData.groupName, setupData.programID, secretKey)
 		cyberspaceData.cyberspace.getScene().runAfterLoading(() => {
 			cyberspaceData.cyberspace.setRobertaRobotSetupData([setupData.robertaRobotSetupData], "") // TODO: Robot type???
 		})
 		return cyberspaceData
 	})
-	const divElements = cyberspaceDataList.map(data => data.divElement)
+	const divElements = newCyberspaceDataList.map(data => data.divElement)
 	// remove all cyberspace div nodes
 	while (multiCyberspaceDiv.hasChildNodes()) {
 		multiCyberspaceDiv.lastChild?.remove()
@@ -456,11 +453,11 @@ function loadScenes(setupDataList: MultiCyberspaceSetupData[], secretKey: string
 		multiCyberspaceDiv.appendChild(element)	
 	)
 	// destroy all cyberspaces
-	cyberspaces.forEach(cyberspace => {
+	forEachCyberspace(cyberspace => {
 		cyberspace.destroy()
 	})
-	cyberspaces.length = 0
-	cyberspaces.push(...cyberspaceDataList.map(data => data.cyberspace))
+	cyberspaceDataList.length = 0
+	cyberspaceDataList.push(...newCyberspaceDataList)
 
 	const windowAspectRatio = aspectRatio.window
 	const sceneAspectRatio = aspectRatio.scene
@@ -509,7 +506,7 @@ export function init(robotSetupDataIDs: number[], secretKey: string) {
 }
 
 function forEachCyberspace(block: (cyberspace: Cyberspace) => void) {
-	cyberspaces.forEach(block)
+	cyberspaceDataList.forEach(data => block(data.cyberspace))
 }
 
 function setPause(pause: boolean) {
@@ -586,7 +583,7 @@ export function initEvents() {
 
 	UIManager.showScoreButton.onClick(state => {
 		const visible = state == "showScore"
-		cyberspaces.forEach(cyberspace => {
+		forEachCyberspace(cyberspace => {
 			cyberspace.pauseSimulation()
 			const scene = cyberspace.getScene()
 			if (scene instanceof RRCScoreScene) {
@@ -607,6 +604,10 @@ export function initEvents() {
 	UIManager.resetSceneButton.onClick(() => {
 		setInitialButtonState()
 		resetPose()
+		// reset sim group name style
+		cyberspaceDataList.forEach(data => {
+			data.groupNameStyle.backgroundColor = "white"
+		})
 	})
 	UIManager.zoomOutButton.onClick(zoomOut)
 	UIManager.zoomInButton.onClick(zoomIn)
