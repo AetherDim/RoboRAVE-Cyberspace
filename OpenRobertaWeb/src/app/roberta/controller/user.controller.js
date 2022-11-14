@@ -857,6 +857,7 @@ function initValidationMessages() {
 }
 export {
     activateAccount,
+    login,
     logout,
     init,
     showUserDataForm,

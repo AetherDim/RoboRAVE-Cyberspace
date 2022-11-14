@@ -77,6 +77,11 @@ function handleQuery() {
     } else if (target[0] === '#gallery') {
         GUISTATE_C.setStartWithoutPopup();
         $('#tabGalleryList').clickWrap();
+    } else if (target[0] === "#login") {
+        GUISTATE_C.setStartWithoutPopup();
+        $("#loginAccountName").val(target[1]);
+        $('#loginPassword').val(target[2]);
+        USER_C.login();
     } else if (target[0] === '#tutorial') {
         GUISTATE_C.setStartWithoutPopup();
         $('#tabTutorialList').clickWrap();
