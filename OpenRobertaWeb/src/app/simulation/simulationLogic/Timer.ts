@@ -1,4 +1,5 @@
 import {AsyncChain, AsyncListener} from "./Scene/AsyncChain";
+import { Utils } from "./Utils";
 
 
 export class Timer {
@@ -41,7 +42,7 @@ export class Timer {
 				setTimeout(_this.selfCallingFunc, _this.sleepTime*1000);
 			} else {
 				_this.running = false;
-				console.log('Timer stopped!');
+				Utils.log('Timer stopped!');
 			}
 		};
 

@@ -116,7 +116,7 @@ define(["require", "exports", "../../Utils"], function (require, exports, Utils_
         };
         ContainerManager.prototype.updateGroundImageDataFunction = function () {
             var _a;
-            console.log('init color sensor texture');
+            Utils_1.Utils.log('init color sensor texture');
             var groundVisible = this.groundContainer.visible;
             this.groundContainer.visible = true; // the container needs to be visible for this to work
             var bounds = this.groundContainer.getLocalBounds();
@@ -129,7 +129,7 @@ define(["require", "exports", "../../Utils"], function (require, exports, Utils_
             if (textureData != undefined) {
                 var pixelData_1 = textureData.data;
                 this.pixelData = pixelData_1;
-                console.log("Ground container pixels checksum of " + this.scene.name + ": " + Utils_1.Utils.checksumFNV32(pixelData_1));
+                Utils_1.Utils.log("Ground container pixels checksum of " + this.scene.name + ": " + Utils_1.Utils.checksumFNV32(pixelData_1));
                 // console.time("change array colors")
                 // const w = Math.round(width)
                 // for (let x = 0; x < textureData.width; x++) {

@@ -1,4 +1,5 @@
 import * as C from './interpreter.constants';
+import { Utils } from './Utils';
 
 export function dbc(expected: string, actual: any) {
     if (expected !== actual) {
@@ -21,7 +22,7 @@ export function expectExc(fct: Function, cause?: string) {
         throw msg;
     } catch (e) {
         if (cause === undefined) {
-            console.log('expected exception suppressed');
+            Utils.log('expected exception suppressed');
         } else {
             dbc(cause, e);
         }
@@ -39,7 +40,7 @@ export function loggingEnabled(_opLogEnabled: boolean, _debugEnabled: boolean) {
     infoResult = '';
 }
 /**
- * FOR DEBUGGING: write the actual array of operations to the 'console.log'. The actual operation is prefixed by '*'
+ * FOR DEBUGGING: write the actual array of operations to the 'Utils.log'. The actual operation is prefixed by '*'
  *
  * . @param msg the prefix of the message (for easy reading of the logs)
  * . @param operations the array of all operations to be executed
@@ -69,11 +70,11 @@ export function debug(s: any) {
     if (!debugEnabled) {
         return;
     }
-    console.log(s);
+    Utils.log(s);
 }
 
 export function info(s: any) {
-    console.log(s);
+    Utils.log(s);
     infoResult = infoResult + s + '\n';
 }
 

@@ -3,6 +3,7 @@ import { Timer } from "./Timer";
 import {Program} from "./Scene/Manager/ProgramManager";
 import * as stackmachineJsHelper from "./interpreter.jsHelper"
 import { BlockHighlightManager } from "interpreter.state";
+import { Utils } from "./Utils";
 
 type SpecialBlocklyBlock = Blockly.Block & { svgGroup_: SVGGElement, svgPath_: SVGPathElement }
 
@@ -49,7 +50,6 @@ export class BlocklyDebug implements BlockHighlightManager {
 		const workspace = Blockly.getMainWorkspace()
 		if(workspace) {
 			workspace.addChangeListener((event: any) => {
-				console.log(event)
 				if(event.element == "click") {
 					if (this.debugMode) {
 						// Toggle breakpoint
@@ -72,7 +72,7 @@ export class BlocklyDebug implements BlockHighlightManager {
 		this.registerBlocklyChangeListener()
 
 		this.startBlocklyUpdate()
-		console.log("Debug manager created!")
+		Utils.log("Debug manager created!")
 	}
 
 	/**
@@ -199,7 +199,7 @@ export class BlocklyDebug implements BlockHighlightManager {
 
 	/** removes breakpoint with breakpointID */
 	removeBreakpoint(breakpointID: string) {
-		console.log("remove breakpoint: " + breakpointID)
+		Utils.log("remove breakpoint: " + breakpointID)
 
 		for (let i = 0; i < this.breakpointIDs.length; i++) {
 			if (this.breakpointIDs[i] === breakpointID) {
@@ -211,7 +211,7 @@ export class BlocklyDebug implements BlockHighlightManager {
 	}
 
 	addBreakpoint(breakpointID: string) {
-		console.log("add breakpoint: " + breakpointID)
+		Utils.log("add breakpoint: " + breakpointID)
 		// TODO: double includes if called from event
 		if(!this.breakpointIDs.includes(breakpointID)) {
 			this.breakpointIDs.push(breakpointID)

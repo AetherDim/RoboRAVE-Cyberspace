@@ -153,7 +153,7 @@ class WebotsSimulation extends StreamingViewer {
             } else if (text.indexOf('recognizeSpeech')) {
                 that.recognizeSpeech();
             } else {
-                // console.log(text);  // enable this maybe for debugging
+                // Utils.log(text);  // enable this maybe for debugging
             }
         };
     }

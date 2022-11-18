@@ -1,4 +1,5 @@
 import { Vector } from "matter-js"
+import { DEBUG } from "./GlobalDebug"
 import { randomIntBetween } from "./Random"
 
 export type StringMap<V> = { [key: string]: V | undefined }
@@ -156,6 +157,12 @@ export type MainTypes = {
 export type AnyAssertion<T> = (value: unknown) => asserts value is T
 
 export class Utils {
+
+	static log(value: any) {
+		if (DEBUG) {
+			console.log(value)
+		}
+	}
 
 	static assertTrue(value: boolean): asserts value is true {
 		if (!value) {

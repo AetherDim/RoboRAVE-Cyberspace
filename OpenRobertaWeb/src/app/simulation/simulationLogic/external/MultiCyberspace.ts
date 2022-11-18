@@ -144,7 +144,7 @@ function scoreSceneAddEventHandler(
 				}
 
 				groupNameStyle.backgroundColor = "rgb(0, 200, 0)"
-				console.log(`Score for team ${groupName} [ID: ${programID}] successfully sent`)
+				Utils.log(`Score for team ${groupName} [ID: ${programID}] successfully sent`)
 			 })
 		}
 	})
@@ -519,7 +519,7 @@ function setPause(pause: boolean) {
 
 // TODO: Remove?
 function run(refresh: boolean, robotType: any) {
-	console.log("run!")
+	Utils.log("run!")
 }
 
 /**

@@ -87,7 +87,7 @@ function registerSearchBar() {
 	search[fieldName] = ""
 	const searchField = DebugGuiRoot!!.add(search, fieldName)
 	searchField.onChange((search) => {
-		//console.log(search)
+		//Utils.log(search)
 		searchGUI(search, searchField)
 	})
 }
@@ -482,7 +482,7 @@ const removeFolderFromGui = dat.GUI.prototype.removeFolder
 dat.GUI.prototype.removeFolder = function(sub: dat.GUI) {
 	removeFolderFromUpdateTimer(sub)
 	removeFolderFromGui.call(this, sub)
-	//console.log('Removing dat.GUI (Folder)')
+	//Utils.log('Removing dat.GUI (Folder)')
 }
 
 const removeGUIController = dat.GUI.prototype.remove
@@ -490,6 +490,6 @@ const removeGUIController = dat.GUI.prototype.remove
 dat.GUI.prototype.remove = function(controller: dat.GUIController) {
 	removeControllerFromUpdateTimer(controller)
 	removeGUIController.call(this, controller)
-	//console.log('Removing dat.GUIController')
+	//Utils.log('Removing dat.GUIController')
 }
 

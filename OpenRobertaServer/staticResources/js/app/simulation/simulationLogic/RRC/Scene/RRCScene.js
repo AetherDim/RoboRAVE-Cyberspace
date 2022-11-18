@@ -59,7 +59,7 @@ define(["require", "exports", "../../Scene/AsyncChain", "../../Robot/Robot", "ma
                     string += ",\n";
                 });
                 string += "]";
-                console.log(string);
+                Utils_1.Utils.log(string);
             });
             debug.addGeneric(this.waypointsManager, "waypointRasterSize", 0, 100, 5);
             debug.addGeneric(this.waypointsManager, "userCanModifyWaypoints", true);

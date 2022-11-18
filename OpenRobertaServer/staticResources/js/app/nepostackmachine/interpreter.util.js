@@ -9,7 +9,7 @@ var __values = (this && this.__values) || function(o) {
     };
     throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
 };
-define(["require", "exports", "./interpreter.constants"], function (require, exports, C) {
+define(["require", "exports", "./interpreter.constants", "./Utils"], function (require, exports, C, Utils_1) {
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.getInfoResult = exports.info = exports.debug = exports.opLog = exports.loggingEnabled = exports.expectExc = exports.dbcException = exports.dbc = void 0;
     function dbc(expected, actual) {
@@ -34,7 +34,7 @@ define(["require", "exports", "./interpreter.constants"], function (require, exp
         }
         catch (e) {
             if (cause === undefined) {
-                console.log('expected exception suppressed');
+                Utils_1.Utils.log('expected exception suppressed');
             }
             else {
                 dbc(cause, e);
@@ -52,7 +52,7 @@ define(["require", "exports", "./interpreter.constants"], function (require, exp
     }
     exports.loggingEnabled = loggingEnabled;
     /**
-     * FOR DEBUGGING: write the actual array of operations to the 'console.log'. The actual operation is prefixed by '*'
+     * FOR DEBUGGING: write the actual array of operations to the 'Utils.log'. The actual operation is prefixed by '*'
      *
      * . @param msg the prefix of the message (for easy reading of the logs)
      * . @param operations the array of all operations to be executed
@@ -93,11 +93,11 @@ define(["require", "exports", "./interpreter.constants"], function (require, exp
         if (!debugEnabled) {
             return;
         }
-        console.log(s);
+        Utils_1.Utils.log(s);
     }
     exports.debug = debug;
     function info(s) {
-        console.log(s);
+        Utils_1.Utils.log(s);
         infoResult = infoResult + s + '\n';
     }
     exports.info = info;

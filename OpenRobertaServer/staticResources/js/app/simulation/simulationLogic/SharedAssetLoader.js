@@ -171,18 +171,18 @@ define(["require", "exports", "webfontloader", "./Random", "./Utils", "./pixijs"
                     assetToLoad = asset;
                 }
                 if (_this.get(assetToLoad)) {
-                    console.log('asset found!');
+                    Utils_1.Utils.log('asset found!');
                     return null;
                 }
                 else {
-                    console.log('asset not found, loading ...');
+                    Utils_1.Utils.log('asset not found, loading ...');
                     return assetToLoad;
                 }
             });
             var countToLoad = 1 + fontsToLoad.length;
             // check whether we have anything to load
             if ((assetsToLoad.length + fontsToLoad.length) == 0) {
-                console.log('nothing to load.');
+                Utils_1.Utils.log('nothing to load.');
                 callback();
                 return;
             }

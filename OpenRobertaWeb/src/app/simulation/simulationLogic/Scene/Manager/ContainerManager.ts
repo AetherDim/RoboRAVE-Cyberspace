@@ -135,7 +135,7 @@ export class ContainerManager {
 	getGroundImageData: (x: number, y: number, w: number, h: number) => number[] = this._initialGroundDataFunction
 
 	updateGroundImageDataFunction() {
-		console.log('init color sensor texture')
+		Utils.log('init color sensor texture')
 		const groundVisible = this.groundContainer.visible
 		this.groundContainer.visible = true // the container needs to be visible for this to work
 	
@@ -149,7 +149,7 @@ export class ContainerManager {
 		if (textureData != undefined) {
 			const pixelData = textureData.data
 			this.pixelData = pixelData
-			console.log("Ground container pixels checksum of " + this.scene.name + ": "+Utils.checksumFNV32(pixelData))
+			Utils.log("Ground container pixels checksum of " + this.scene.name + ": "+Utils.checksumFNV32(pixelData))
 			// console.time("change array colors")
 			// const w = Math.round(width)
 			// for (let x = 0; x < textureData.width; x++) {

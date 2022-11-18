@@ -261,11 +261,11 @@ export class Robot implements IContainerEntity, IUpdatableEntity, IPhysicsCompos
 			program.addUpdatable('initialized', createReflectionGetter(pm, 'initialized'))
 			program.addButton('Print breakpoint IDs', () => {
 				//window.alert((pm as any).debugManager.breakpointIDs)
-				console.log((pm as any).debugManager.breakpointIDs)
+				Utils.log((pm as any).debugManager.breakpointIDs)
 			})
 			program.addButton('Print observers IDs', () => {
 				//window.alert((pm as any).debugManager.breakpointIDs)
-				console.log((pm as any).debugManager.observers)
+				Utils.log((pm as any).debugManager.observers)
 			})*/
 
 			DebugGui.addButton("Download Program (JSON)", () => 

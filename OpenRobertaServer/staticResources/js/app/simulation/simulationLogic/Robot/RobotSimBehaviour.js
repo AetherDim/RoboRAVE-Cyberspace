@@ -535,7 +535,7 @@ define(["require", "exports", "../interpreter.aRobotBehaviour", "../interpreter.
         };
         RobotSimBehaviour.prototype.debugAction = function (value) {
             U.debug('***** debug action "' + value + '" *****');
-            console.log(value);
+            Utils_1.Utils.log(value);
         };
         RobotSimBehaviour.prototype.assertAction = function (_msg, _left, _op, _right, value) {
             U.debug('***** assert action "' + value + ' ' + _msg + ' ' + _left + ' ' + _op + ' ' + _right + '" *****');

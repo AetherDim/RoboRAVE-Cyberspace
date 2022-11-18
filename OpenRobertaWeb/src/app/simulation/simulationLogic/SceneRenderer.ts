@@ -253,7 +253,7 @@ export class SceneRender {
 
 		// remove all children from PIXI renderer
 		if(this.scrollView.children.length > 0) {
-			//console.log('Number of children: ' + this.scrollView.children.length);
+			//Utils.log('Number of children: ' + this.scrollView.children.length);
 			this.scrollView.removeChildren(0, this.scrollView.children.length);
 		}
 

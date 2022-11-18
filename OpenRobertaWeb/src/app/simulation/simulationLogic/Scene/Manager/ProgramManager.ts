@@ -4,7 +4,7 @@ import { EventManager, ParameterTypes } from "../../EventManager/EventManager";
 import {BlocklyDebug} from "../../BlocklyDebug";
 import { RobotSimBehaviour } from "../../Robot/RobotSimBehaviour";
 import { Unit } from "../../Unit";
-import { StringMap } from "../../Utils";
+import { StringMap, Utils } from "../../Utils";
 
 // TODO: Do we need 'initialized'?
 export type ProgramState = "initialized" | "running" | "paused" | "terminated"
@@ -43,7 +43,7 @@ export class Program {
 	private initIfNecessary() {
 		// Think about the consequences of changing this function!!!
 		if(this.programState == "terminated") {
-			console.log("Init program manager!")
+			Utils.log("Init program manager!")
 			
 			this.instruction = new RobotSimBehaviour(this.unit)
 			this.interpreter = new Interpreter(

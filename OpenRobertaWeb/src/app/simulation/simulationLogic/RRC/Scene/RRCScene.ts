@@ -52,7 +52,7 @@ export class RRCScene extends RRCScoreScene {
 				string += ",\n"
 			})
 			string += "]"
-			console.log(string)
+			Utils.log(string)
 		})
 		debug.addGeneric(this.waypointsManager, "waypointRasterSize", 0, 100, 5)
 		debug.addGeneric(this.waypointsManager, "userCanModifyWaypoints", true)

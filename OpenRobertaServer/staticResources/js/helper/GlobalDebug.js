@@ -79,7 +79,7 @@ define(["require", "exports", "dat.gui", "./Timer", "./RRC/Scene/RRCScoreScene"]
         search[fieldName] = "";
         var searchField = exports.DebugGuiRoot.add(search, fieldName);
         searchField.onChange(function (search) {
-            //console.log(search)
+            //Utils.log(search)
             searchGUI(search, searchField);
         });
     }
@@ -393,12 +393,12 @@ define(["require", "exports", "dat.gui", "./Timer", "./RRC/Scene/RRCScoreScene"]
     dat.GUI.prototype.removeFolder = function (sub) {
         removeFolderFromUpdateTimer(sub);
         removeFolderFromGui.call(this, sub);
-        //console.log('Removing dat.GUI (Folder)')
+        //Utils.log('Removing dat.GUI (Folder)')
     };
     var removeGUIController = dat.GUI.prototype.remove;
     dat.GUI.prototype.remove = function (controller) {
         removeControllerFromUpdateTimer(controller);
         removeGUIController.call(this, controller);
-        //console.log('Removing dat.GUIController')
+        //Utils.log('Removing dat.GUIController')
     };
 });

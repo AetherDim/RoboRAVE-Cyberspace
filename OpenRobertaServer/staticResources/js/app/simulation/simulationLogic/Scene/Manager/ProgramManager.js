@@ -9,7 +9,7 @@ var __values = (this && this.__values) || function(o) {
     };
     throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
 };
-define(["require", "exports", "./../../interpreter.interpreter", "../../EventManager/EventManager", "../../BlocklyDebug", "../../Robot/RobotSimBehaviour"], function (require, exports, interpreter_interpreter_1, EventManager_1, BlocklyDebug_1, RobotSimBehaviour_1) {
+define(["require", "exports", "./../../interpreter.interpreter", "../../EventManager/EventManager", "../../BlocklyDebug", "../../Robot/RobotSimBehaviour", "../../Utils"], function (require, exports, interpreter_interpreter_1, EventManager_1, BlocklyDebug_1, RobotSimBehaviour_1, Utils_1) {
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.ProgramManager = exports.Program = void 0;
     var Program = /** @class */ (function () {
@@ -32,7 +32,7 @@ define(["require", "exports", "./../../interpreter.interpreter", "../../EventMan
             var _this = this;
             // Think about the consequences of changing this function!!!
             if (this.programState == "terminated") {
-                console.log("Init program manager!");
+                Utils_1.Utils.log("Init program manager!");
                 this.instruction = new RobotSimBehaviour_1.RobotSimBehaviour(this.unit);
                 this.interpreter = new interpreter_interpreter_1.Interpreter(this.programObject, this.instruction, function () { return _this.interpreterTerminated(); }, function () { return _this.pauseProgram(); }, this.debugManager, this.debugManager.getBreakpointIDs());
                 this.programState = "initialized";

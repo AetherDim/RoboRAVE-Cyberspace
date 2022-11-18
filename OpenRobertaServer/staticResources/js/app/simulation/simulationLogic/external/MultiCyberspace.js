@@ -136,7 +136,7 @@ define(["require", "exports", "../Cyberspace/Cyberspace", "../GlobalDebug", "../
                         return;
                     }
                     groupNameStyle.backgroundColor = "rgb(0, 200, 0)";
-                    console.log("Score for team ".concat(groupName, " [ID: ").concat(programID, "] successfully sent"));
+                    Utils_1.Utils.log("Score for team ".concat(groupName, " [ID: ").concat(programID, "] successfully sent"));
                 });
             }
         });
@@ -446,7 +446,7 @@ define(["require", "exports", "../Cyberspace/Cyberspace", "../GlobalDebug", "../
     }
     // TODO: Remove?
     function run(refresh, robotType) {
-        console.log("run!");
+        Utils_1.Utils.log("run!");
     }
     /**
      * on stop program

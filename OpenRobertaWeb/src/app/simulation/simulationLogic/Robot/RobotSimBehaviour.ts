@@ -598,7 +598,7 @@ export class RobotSimBehaviour extends ARobotBehaviour {
 
 	public debugAction(value: any): void {
 		U.debug('***** debug action "' + value + '" *****');
-		console.log(value);
+		Utils.log(value);
 	}
 
 	public assertAction(_msg: string, _left: any, _op: string, _right: any, value: boolean): void {

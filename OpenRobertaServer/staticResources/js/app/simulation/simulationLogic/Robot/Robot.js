@@ -196,11 +196,11 @@ define(["require", "exports", "matter-js", "./ElectricMotor", "../interpreter.co
                 program.addUpdatable('initialized', createReflectionGetter(pm, 'initialized'))
                 program.addButton('Print breakpoint IDs', () => {
                     //window.alert((pm as any).debugManager.breakpointIDs)
-                    console.log((pm as any).debugManager.breakpointIDs)
+                    Utils.log((pm as any).debugManager.breakpointIDs)
                 })
                 program.addButton('Print observers IDs', () => {
                     //window.alert((pm as any).debugManager.breakpointIDs)
-                    console.log((pm as any).debugManager.observers)
+                    Utils.log((pm as any).debugManager.observers)
                 })*/
                 DebugGui.addButton("Download Program (JSON)", function () {
                     return (0, GlobalDebug_1.downloadFile)("program.json", [JSON.stringify(_this.programManager.getPrograms(), undefined, "\t")]);

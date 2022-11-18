@@ -146,10 +146,10 @@ export class SharedAssetLoader {
 			}
 
 			if(this.get(assetToLoad)) {
-				console.log('asset found!');
+				Utils.log('asset found!');
 				return null;
 			} else {
-				console.log('asset not found, loading ...');
+				Utils.log('asset not found, loading ...');
 				return assetToLoad;
 			}
 		});
@@ -158,7 +158,7 @@ export class SharedAssetLoader {
 
 		// check whether we have anything to load
 		if((assetsToLoad.length + fontsToLoad.length) == 0) {
-			console.log('nothing to load.')
+			Utils.log('nothing to load.')
 			callback();
 			return;
 		}

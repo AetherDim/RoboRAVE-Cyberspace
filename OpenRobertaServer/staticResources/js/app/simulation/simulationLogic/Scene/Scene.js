@@ -239,7 +239,7 @@ define(["require", "exports", "matter-js", "../Timer", "../ScrollView", "../Unit
                 // auto start simulation
                 this.startSim();
             }
-            console.log('Finished loading!');
+            Utils_1.Utils.log('Finished loading!');
             this.eventManager.onFinishedLoadingCallHandlers();
             this.finishedLoadingQueue.forEach(function (func) { return func(_this_1); });
             this.finishedLoadingQueue = [];
@@ -344,8 +344,8 @@ define(["require", "exports", "matter-js", "../Timer", "../ScrollView", "../Unit
                     _this_1.finishedLoading(chain, robotSetupData);
                 }, thisContext: this });
             this.onChainCompleteListeners.forEach(function (listener) { return listener.call(_this_1, _this_1.loadingChain); });
-            console.log('starting to load scene!');
-            console.log('Loading stages: ' + this.loadingChain.length());
+            Utils_1.Utils.log('starting to load scene!');
+            Utils_1.Utils.log('Loading stages: ' + this.loadingChain.length());
             // start time
             this.loadingStartTime = Date.now();
             this.loadingChain.next();
@@ -481,7 +481,7 @@ define(["require", "exports", "matter-js", "../Timer", "../ScrollView", "../Unit
                     var mousePosition = ev.data.getCurrentLocalPosition();
                     var bodies = this.getBodiesAt(mousePosition);
                     if (GlobalDebug_1.DEBUG) {
-                        console.log("Mouse position: ".concat(JSON.stringify(mousePosition)));
+                        Utils_1.Utils.log("Mouse position: ".concat(JSON.stringify(mousePosition)));
                     }
                     if (bodies.length >= 1) {
                         var body = bodies[0];
@@ -607,7 +607,7 @@ define(["require", "exports", "matter-js", "../Timer", "../ScrollView", "../Unit
          * unload all assets
          */
         Scene.prototype.onUnloadAssets = function (chain) {
-            console.log('on asset unload');
+            Utils_1.Utils.log('on asset unload');
             chain.next();
         };
         /**
@@ -615,7 +615,7 @@ define(["require", "exports", "matter-js", "../Timer", "../ScrollView", "../Unit
          * please do not block within this method and use the PIXI.Loader callbacks
          */
         Scene.prototype.onLoadAssets = function (chain) {
-            console.log('on asset load');
+            Utils_1.Utils.log('on asset load');
             chain.next();
         };
         /**
@@ -634,14 +634,14 @@ define(["require", "exports", "matter-js", "../Timer", "../ScrollView", "../Unit
         Scene.prototype.onInit = function (chain) {
             // create dynamic debug gui
             this.initDynamicDebugGui();
-            console.log('on init');
+            Utils_1.Utils.log('on init');
             chain.next();
         };
         /**
          * called on scene reset/unload
          */
         Scene.prototype.onDeInit = function (chain) {
-            console.log('on deinit/unload');
+            Utils_1.Utils.log('on deinit/unload');
             chain.next();
         };
         /**

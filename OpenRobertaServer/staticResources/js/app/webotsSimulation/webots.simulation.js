@@ -177,7 +177,7 @@ define(["require", "exports", "guiState.controller"], function (require, exports
                     that.recognizeSpeech();
                 }
                 else {
-                    // console.log(text);  // enable this maybe for debugging
+                    // Utils.log(text);  // enable this maybe for debugging
                 }
             };
         };

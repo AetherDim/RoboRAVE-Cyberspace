@@ -472,7 +472,7 @@ define(["require", "exports", "./pixijs"], function (require, exports) {
          * This method will be called multiple times per second!
          */
         ScrollView.prototype.onResize = function () {
-            //console.log('resize');
+            //Utils.log('resize');
             this.updateInteractionRect();
         };
         /**
@@ -480,7 +480,7 @@ define(["require", "exports", "./pixijs"], function (require, exports) {
          * @param ev interaction data
          */
         ScrollView.prototype.onDown = function (ev) {
-            //console.log('down ' + this.touchEventDataMap.size);
+            //Utils.log('down ' + this.touchEventDataMap.size);
             var data;
             if (ev.data.pointerType == 'mouse') {
                 data = this.mouseEventData;
@@ -502,7 +502,7 @@ define(["require", "exports", "./pixijs"], function (require, exports) {
          * @param ev interaction data
          */
         ScrollView.prototype.onUp = function (ev) {
-            //console.log('up ' + this.touchEventDataMap.size);
+            //Utils.log('up ' + this.touchEventDataMap.size);
             var data;
             if (ev.data.pointerType == 'mouse') {
                 data = this.mouseEventData;
@@ -536,7 +536,7 @@ define(["require", "exports", "./pixijs"], function (require, exports) {
          * @param ev  interaction data
          */
         ScrollView.prototype.onMove = function (ev) {
-            //console.log('move');
+            //Utils.log('move');
             var _a, _b;
             if (isNaN(ev.data.global.x) || isNaN(ev.data.global.y)) {
                 return;
@@ -566,7 +566,7 @@ define(["require", "exports", "./pixijs"], function (require, exports) {
                 cancel = this.fireEvent(data, type);
             }
             else { // touch
-                //console.log("id: " + ev.data.pointerId);
+                //Utils.log("id: " + ev.data.pointerId);
                 data = this.getTouchDataAndUpdatePosition(ev.data.pointerId, ev.data.global);
                 data.updateDelta();
                 data.eventFired = true;
@@ -633,7 +633,7 @@ define(["require", "exports", "./pixijs"], function (require, exports) {
                         data.deltaZoom = deltaZoom;
                         var cancelZoom = this.fireEvent(data, EventType.ZOOM);
                         if (!cancelZoom) {
-                            //console.log('zoom: ' + zoomFactor);
+                            //Utils.log('zoom: ' + zoomFactor);
                             this.zoom(deltaZoom, { x: (cp1.x + cp2.x) / 2, y: (cp1.y + cp2.y) / 2 });
                         }
                     }
@@ -671,7 +671,7 @@ define(["require", "exports", "./pixijs"], function (require, exports) {
          * @param ev  interaction data
          */
         ScrollView.prototype.onWheel = function (ev) {
-            //console.log('wheel');
+            //Utils.log('wheel');
             var data;
             if (ev.type == "wheel") {
                 var type = void 0;
@@ -737,7 +737,7 @@ define(["require", "exports", "./pixijs"], function (require, exports) {
          * @param e event data
          */
         ScrollView.prototype.onZoom = function (e) {
-            //console.log('zoom');
+            //Utils.log('zoom');
             // TODO: we could use this for other browsers if there is another with support
             if (this.browser.isSafariEvent(e)) {
                 if (this.lastTouchDistance > 0) {
@@ -767,7 +767,7 @@ define(["require", "exports", "./pixijs"], function (require, exports) {
          * @param e event data
          */
         ScrollView.prototype.onZoomBegin = function (e) {
-            //console.log('safari zoom');
+            //Utils.log('safari zoom');
             if (this.browser.isSafariEvent(e)) {
                 this.lastTouchDistance = e.scale;
             }

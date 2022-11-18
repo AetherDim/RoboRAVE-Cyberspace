@@ -25,7 +25,7 @@ var __read = (this && this.__read) || function (o, n) {
     }
     return ar;
 };
-define(["require", "exports", "./Random"], function (require, exports, Random_1) {
+define(["require", "exports", "./GlobalDebug", "./Random"], function (require, exports, GlobalDebug_1, Random_1) {
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.Utils = exports.asUniqueArray = void 0;
     var asUniqueArray = function (a) { return a; };
@@ -36,6 +36,11 @@ define(["require", "exports", "./Random"], function (require, exports, Random_1)
     var Utils = /** @class */ (function () {
         function Utils() {
         }
+        Utils.log = function (value) {
+            if (GlobalDebug_1.DEBUG) {
+                console.log(value);
+            }
+        };
         Utils.assertTrue = function (value) {
             if (!value) {
                 throw new Error("The value is not `true`");

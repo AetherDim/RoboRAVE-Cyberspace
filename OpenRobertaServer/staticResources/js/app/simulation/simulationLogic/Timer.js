@@ -1,4 +1,4 @@
-define(["require", "exports"], function (require, exports) {
+define(["require", "exports", "./Utils"], function (require, exports, Utils_1) {
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.Timer = void 0;
     var Timer = /** @class */ (function () {
@@ -30,7 +30,7 @@ define(["require", "exports"], function (require, exports) {
                 }
                 else {
                     _this.running = false;
-                    console.log('Timer stopped!');
+                    Utils_1.Utils.log('Timer stopped!');
                 }
             };
             this.lastCall = Date.now();
