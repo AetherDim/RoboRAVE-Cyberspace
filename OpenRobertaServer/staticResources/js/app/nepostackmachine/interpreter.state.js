@@ -131,7 +131,7 @@ define(["require", "exports", "./interpreter.constants", "./interpreter.util", "
         State.prototype.popArray = function () {
             var value = this.popUnknown();
             if (!Array.isArray(value)) {
-                throw "The value not an array";
+                throw new Error("The value not an array");
             }
             return value;
         };
@@ -148,9 +148,13 @@ define(["require", "exports", "./interpreter.constants", "./interpreter.util", "
         State.prototype.popStateValue = function () {
             return this.popUnknown();
         };
-        State.prototype.pop = function () {
+        State.prototype.popNumber = function () {
             var value = this.popUnknown();
             Utils_1.Utils.assertTypeOf(value, "number");
+            return value;
+        };
+        State.prototype.pop = function () {
+            var value = this.popUnknown();
             return value;
         };
         /**
@@ -205,7 +209,7 @@ define(["require", "exports", "./interpreter.constants", "./interpreter.util", "
             return this.operations[this.pc];
         };
         /**
-         * FOR DEBUGGING: write the actual array of operations to the 'console.log'. The actual operation is prefixed by '*'
+         * FOR DEBUGGING: write the actual array of operations to the 'Utils.log'. The actual operation is prefixed by '*'
          *
          * . @param msg the prefix of the message (for easy reading of the logs)
          */

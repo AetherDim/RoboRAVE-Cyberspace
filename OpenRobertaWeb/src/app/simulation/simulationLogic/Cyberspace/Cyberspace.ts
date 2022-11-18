@@ -6,6 +6,8 @@ import { SceneRender } from "../SceneRenderer"
 import { SceneDescriptor, SceneManager } from "./SceneManager"
 import { EventManager, ParameterTypes } from "../EventManager/EventManager"
 import { BlocklyDebug } from "../BlocklyDebug"
+import { DebugGuiRoot } from "../GlobalDebug"
+import { Timer } from "../Timer"
 
 
 export class Cyberspace {
@@ -61,11 +63,34 @@ export class Cyberspace {
 		this.renderer = new SceneRender(emptyScene, canvas, this.simulationCache.toRobotSetupData(), autoResizeTo)
 
 		this.renderer.onSwitchScene(scene => this.resetEventHandlersOfScene(scene))
+
+		this.initDebugGUI()
 	}
 
 	destroy() {
 		this.sceneManager.destroy()
 		this.renderer.destroy()
+	}
+
+	private initDebugGUI() {
+		if (DebugGuiRoot == undefined) {
+			return
+		}
+
+		const cyberspaceFolder = DebugGuiRoot.addFolder("Cyberspace")
+		cyberspaceFolder.addUpdatable("Scene name", () => this.getScene().name)
+		cyberspaceFolder.addButton("Reload 10 times", () => {
+			let count = 0
+			new Timer(0.1, (_, timer) => {
+				if (count < 10) {
+					this.resetScene()
+					// UIManager.resetSceneButton.jQueryHTMLElement.trigger("click")
+				} else {
+					timer.stop()
+				}
+				count++
+			}).start()
+		})
 	}
 
 	/* ############################################################################################ */
@@ -121,6 +146,10 @@ export class Cyberspace {
 
 	getScenes(): SceneDescriptor[] {
 		return this.sceneManager.getSceneDescriptorList()
+	}
+
+	onSwitchScene(handler: (scene: Scene) => void) {
+		this.renderer.onSwitchScene(handler)
 	}
 
 	private switchToScene(scene: Scene) {

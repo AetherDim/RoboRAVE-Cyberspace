@@ -34,7 +34,7 @@ var __values = (this && this.__values) || function(o) {
     };
     throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
 };
-define(["require", "exports", "./SimulationCache", "../Scene/Scene", "../RRC/Scene/RRCScoreScene", "../SceneRenderer", "./SceneManager", "../EventManager/EventManager", "../BlocklyDebug"], function (require, exports, SimulationCache_1, Scene_1, RRCScoreScene_1, SceneRenderer_1, SceneManager_1, EventManager_1, BlocklyDebug_1) {
+define(["require", "exports", "./SimulationCache", "../Scene/Scene", "../RRC/Scene/RRCScoreScene", "../SceneRenderer", "./SceneManager", "../EventManager/EventManager", "../BlocklyDebug", "../GlobalDebug", "../Timer"], function (require, exports, SimulationCache_1, Scene_1, RRCScoreScene_1, SceneRenderer_1, SceneManager_1, EventManager_1, BlocklyDebug_1, GlobalDebug_1, Timer_1) {
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.Cyberspace = void 0;
     var Cyberspace = /** @class */ (function () {
@@ -88,10 +88,32 @@ define(["require", "exports", "./SimulationCache", "../Scene/Scene", "../RRC/Sce
             var emptyScene = new Scene_1.Scene("");
             this.renderer = new SceneRenderer_1.SceneRender(emptyScene, canvas, this.simulationCache.toRobotSetupData(), autoResizeTo);
             this.renderer.onSwitchScene(function (scene) { return _this.resetEventHandlersOfScene(scene); });
+            this.initDebugGUI();
         }
         Cyberspace.prototype.destroy = function () {
             this.sceneManager.destroy();
             this.renderer.destroy();
+        };
+        Cyberspace.prototype.initDebugGUI = function () {
+            var _this = this;
+            if (GlobalDebug_1.DebugGuiRoot == undefined) {
+                return;
+            }
+            var cyberspaceFolder = GlobalDebug_1.DebugGuiRoot.addFolder("Cyberspace");
+            cyberspaceFolder.addUpdatable("Scene name", function () { return _this.getScene().name; });
+            cyberspaceFolder.addButton("Reload 10 times", function () {
+                var count = 0;
+                new Timer_1.Timer(0.1, function (_, timer) {
+                    if (count < 10) {
+                        _this.resetScene();
+                        // UIManager.resetSceneButton.jQueryHTMLElement.trigger("click")
+                    }
+                    else {
+                        timer.stop();
+                    }
+                    count++;
+                }).start();
+            });
         };
         /* ############################################################################################ */
         /* ####################################### Scene control ###################################### */
@@ -142,6 +164,9 @@ define(["require", "exports", "./SimulationCache", "../Scene/Scene", "../RRC/Sce
         };
         Cyberspace.prototype.getScenes = function () {
             return this.sceneManager.getSceneDescriptorList();
+        };
+        Cyberspace.prototype.onSwitchScene = function (handler) {
+            this.renderer.onSwitchScene(handler);
         };
         Cyberspace.prototype.switchToScene = function (scene) {
             this.stopPrograms();

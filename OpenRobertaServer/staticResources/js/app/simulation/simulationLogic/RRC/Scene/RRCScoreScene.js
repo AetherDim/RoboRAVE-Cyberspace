@@ -20,24 +20,11 @@ define(["require", "exports", "../../Scene/AsyncChain", "../../Scene/Scene", "..
         __extends(RRCScoreScene, _super);
         function RRCScoreScene(name) {
             var _this = _super.call(this, name) || this;
-            _this.loader = new SharedAssetLoader_1.SharedAssetLoader();
             _this.scoreContainer = new PIXI.Container();
             _this.scoreTextContainer = new PIXI.Container();
-            _this.scoreText1 = new PIXI.Text("", new PIXI.TextStyle({
-                fontFamily: 'ProggyTiny',
-                fontSize: 140,
-                fill: 0xf48613
-            }));
-            _this.scoreText2 = new PIXI.Text("", new PIXI.TextStyle({
-                fontFamily: 'ProggyTiny',
-                fontSize: 140,
-                fill: 0xc00001
-            }));
-            _this.scoreText3 = new PIXI.Text("", new PIXI.TextStyle({
-                fontFamily: 'ProggyTiny',
-                fontSize: 140,
-                fill: 0x00cb01
-            }));
+            _this.scoreText1 = new PIXI.Text("");
+            _this.scoreText2 = new PIXI.Text("");
+            _this.scoreText3 = new PIXI.Text("");
             _this.score = 0;
             _this.scoreEventManager = EventManager_1.EventManager.init({
                 onShowHideScore: new EventManager_1.ParameterTypes()
@@ -53,12 +40,28 @@ define(["require", "exports", "../../Scene/AsyncChain", "../../Scene/Scene", "..
             this.scoreEventManager.removeAllEventHandlers();
         };
         RRCScoreScene.prototype.onLoadScoreAssets = function (chain) {
-            this.loader.load(function () { return chain.next(); }, RRAssetLoader_1.GOAL_BACKGROUND, RRAssetLoader_1.PROGGY_TINY_FONT);
+            SharedAssetLoader_1.SharedAssetLoader.load(function () { return chain.next(); }, RRAssetLoader_1.GOAL_BACKGROUND, RRAssetLoader_1.PROGGY_TINY_FONT);
         };
         RRCScoreScene.prototype.onInitScore = function (chain) {
             this.showScoreScreen(false);
+            var textStyle = new PIXI.TextStyle({
+                fontFamily: 'ProggyTiny',
+                fontSize: 140,
+                fill: 0xf48613
+            });
+            if (this.scoreText1.parent != undefined) {
+                // if the 'scoreText' has a parent, it can be destroyed otherwise there is no
+                // gpu texture and PIXI crashes
+                // cleanup text (PIXI bug)
+                this.scoreText1.destroy();
+                this.scoreText2.destroy();
+                this.scoreText3.destroy();
+            }
+            this.scoreText1 = new PIXI.Text("", textStyle);
+            this.scoreText2 = new PIXI.Text("", textStyle);
+            this.scoreText3 = new PIXI.Text("", textStyle);
             this.scoreContainer.zIndex = 1000;
-            var goal = this.loader.get(RRAssetLoader_1.GOAL_BACKGROUND).texture;
+            var goal = SharedAssetLoader_1.SharedAssetLoader.get(RRAssetLoader_1.GOAL_BACKGROUND).texture;
             this.scoreBackgroundSprite = new PIXI.Sprite(goal);
             this.scoreContainer.addChild(this.scoreBackgroundSprite);
             // text

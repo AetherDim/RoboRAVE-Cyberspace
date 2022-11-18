@@ -16,7 +16,6 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 -->
-
 <head>
 <meta http-equiv="content-type" content="text/html; charset=utf-8" />
 <meta name="description" content="Open Roberta Lab - Online-Programmierumgebung für Roboter mit der grafischen Programmiersprache NEPO®" />
@@ -31,7 +30,7 @@ limitations under the License.
 
     if (msie > 0 || !!navigator.userAgent.match(/Trident.*rv\:11\./))  // If Internet Explorer, return version number
     {
-        alert("Sorry, Internet Explorer is not supported :(\n please use another browser like Firefox, Chrome or Edge");
+        alert("Sorry, Internet Explorer is not supported :(\n please use another browser like Firefox, Chrome or Edge\nAnything chrome related is the officially supported.");
         window.location.href = "https://www.roborave.de/";
     }
 </script>
@@ -55,7 +54,7 @@ limitations under the License.
 <script src="js/require.js"></script>
 <script src="js/imports.js"></script>
 <script>
-    initRequireJS("v0.11");
+    initRequireJS("v0.12");
     require(['main']);
 </script>
 
@@ -221,10 +220,12 @@ limitations under the License.
                             class="head-navi-icons typcn typcn-mortar-board"></span><span class="head-navi-title hidden-sm hidden-md hidden-lg"
                             lkey="Blockly.Msg.MENU_TUTORIAL">tutorial</span>
                     </a></li>
+                    <!--
                     <li id="head-navigation-gallery"><a href="#" id="head-navi-tooltip-gallery" lkey="Blockly.Msg.MENU_GALLERY_TOOLTIP" rel="tooltip"
                         data-original-title="" title=""> <span id="head-navi-icon-gallery" class="head-navi-icons typcn typcn-th-large-outline"></span><span
                             class="head-navi-title hidden-sm hidden-md hidden-lg" lkey="Blockly.Msg.MENU_GALLERY">gallery</span>
                     </a></li>
+                    -->
                     <!-- Menu Languages -->
                     <li class="dropdown" id="head-navigation-language"><a href="#" data-toggle="dropdown" class="dropdown-toggle"
                         id="head-navi-tooltip-program" lkey="Blockly.Msg.MENU_LANGUAGE_TOOLTIP" rel="tooltip" data-original-title="" title=""> <span

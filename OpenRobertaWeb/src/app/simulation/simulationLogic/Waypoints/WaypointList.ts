@@ -23,6 +23,42 @@ export class WaypointList<W extends Waypoint> {
 	}
 
 	/**
+	 * Push the `waypoint` to the end of the list
+	 * @param waypoint The waypoint which is pushed to the end of the list
+	 */
+	push(waypoint: W) {
+		this.waypoints.push(waypoint)
+	}
+
+	/**
+	 * Insert the `waypoint` at the `index`
+	 * @param waypoint The waypoint which is inserted
+	 * @param index The index where the waypoint is inserted
+	 */
+	insert(waypoint: W, index: number) {
+		this.waypoints.splice(index, 0, waypoint)
+	}
+
+	/**
+	 * Remove the waypoint at `index`
+	 * @param index Index of the waypoint
+	 */
+	removeAt(index: number) {
+		this.waypoints.splice(index, 1)
+	}
+
+	/**
+	 * Remove the `waypoint`
+	 * @param waypoint The waypoint which will be removed
+	 */
+	remove(waypoint: W) {
+		const index = this.waypoints.indexOf(waypoint)
+		if (index >= 0) {
+			this.removeAt(index)
+		}
+	}
+
+	/**
 	 * Get the number of waypoints in the list
 	 */
 	getLength(): number {

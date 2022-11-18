@@ -1,6 +1,46 @@
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var __read = (this && this.__read) || function (o, n) {
+    var m = typeof Symbol === "function" && o[Symbol.iterator];
+    if (!m) return o;
+    var i = m.call(o), r, ar = [], e;
+    try {
+        while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
+    }
+    catch (error) { e = { error: error }; }
+    finally {
+        try {
+            if (r && !r.done && (m = i["return"])) m.call(i);
+        }
+        finally { if (e) throw e.error; }
+    }
+    return ar;
+};
+var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
+};
 define(["require", "exports", "webfontloader", "./Random", "./Utils", "./pixijs"], function (require, exports, WebFont, Random_1, Utils_1) {
     Object.defineProperty(exports, "__esModule", { value: true });
-    exports.SharedAssetLoader = exports.MultiAsset = exports.FontAsset = exports.Asset = void 0;
+    exports.SharedAssetLoader = exports.MultiSpriteAsset = exports.FontAsset = exports.SpriteAsset = exports.Asset = void 0;
     var Asset = /** @class */ (function () {
         function Asset(path, name) {
             this.path = path;
@@ -14,6 +54,26 @@ define(["require", "exports", "webfontloader", "./Random", "./Utils", "./pixijs"
         return Asset;
     }());
     exports.Asset = Asset;
+    var SpriteAsset = /** @class */ (function (_super) {
+        __extends(SpriteAsset, _super);
+        function SpriteAsset(path, name, xScaling, yScaling) {
+            var _this = _super.call(this, path, name) || this;
+            _this.xScaling = 1;
+            _this.yScaling = 1;
+            if (xScaling)
+                _this.xScaling = xScaling;
+            if (yScaling)
+                _this.yScaling = yScaling;
+            return _this;
+        }
+        SpriteAsset.prototype.newSprite = function () {
+            var sprite = new PIXI.Sprite(SharedAssetLoader.get(this).texture);
+            sprite.scale.set(this.xScaling, this.yScaling);
+            return sprite;
+        };
+        return SpriteAsset;
+    }(Asset));
+    exports.SpriteAsset = SpriteAsset;
     var FontAsset = /** @class */ (function () {
         function FontAsset(css, families, name) {
             this.families = families;
@@ -28,25 +88,31 @@ define(["require", "exports", "webfontloader", "./Random", "./Utils", "./pixijs"
         return FontAsset;
     }());
     exports.FontAsset = FontAsset;
-    var MultiAsset = /** @class */ (function () {
-        function MultiAsset(prefix, postfix, idStart, idEnd, name) {
+    var MultiSpriteAsset = /** @class */ (function () {
+        function MultiSpriteAsset(prefix, postfix, idStart, idEnd, name, xScaling, yScaling) {
+            this.xScaling = 1;
+            this.yScaling = 1;
             this.prefix = prefix;
             this.postfix = postfix;
             this.idStart = idStart;
             this.idEnd = idEnd;
             this.name = name;
+            if (xScaling)
+                this.xScaling = xScaling;
+            if (yScaling)
+                this.yScaling = yScaling;
         }
-        MultiAsset.prototype.getAsset = function (id) {
+        MultiSpriteAsset.prototype.getAsset = function (id) {
             if (id >= this.idStart && id <= this.idEnd) {
                 var assetPath = this.prefix + id + this.postfix;
                 var assetName = this.getAssetName(id);
-                return new Asset(assetPath, assetName);
+                return new SpriteAsset(assetPath, assetName, this.xScaling, this.yScaling);
             }
             else {
                 return undefined;
             }
         };
-        MultiAsset.prototype.getAssetName = function (id) {
+        MultiSpriteAsset.prototype.getAssetName = function (id) {
             if (id >= this.idStart && id <= this.idEnd && this.name) {
                 return this.name + '_' + id;
             }
@@ -54,26 +120,40 @@ define(["require", "exports", "webfontloader", "./Random", "./Utils", "./pixijs"
                 return undefined;
             }
         };
-        MultiAsset.prototype.getRandomAsset = function () {
+        MultiSpriteAsset.prototype.getRandomAsset = function () {
             return this.getAsset(this.getRandomAssetID());
         };
-        MultiAsset.prototype.getRandomAssetID = function () {
+        MultiSpriteAsset.prototype.getRandomAssetID = function () {
             return (0, Random_1.randomIntBetween)(this.idStart, this.idEnd);
         };
-        MultiAsset.prototype.getNumberOfIDs = function () {
+        MultiSpriteAsset.prototype.getNumberOfIDs = function () {
             return this.idEnd - this.idStart + 1;
         };
-        return MultiAsset;
+        return MultiSpriteAsset;
     }());
-    exports.MultiAsset = MultiAsset;
+    exports.MultiSpriteAsset = MultiSpriteAsset;
     var SharedAssetLoader = /** @class */ (function () {
         function SharedAssetLoader() {
-            this.loader = new PIXI.Loader(); // you can also create your own if you want
         }
-        SharedAssetLoader.prototype.get = function (asset) {
+        SharedAssetLoader.get = function (asset) {
             return this.loader.resources[asset.name];
         };
-        SharedAssetLoader.prototype.load = function (callback) {
+        SharedAssetLoader.load = function (callback) {
+            var _this = this;
+            var assets = [];
+            for (var _i = 1; _i < arguments.length; _i++) {
+                assets[_i - 1] = arguments[_i];
+            }
+            if (this.loader.loading) {
+                this.loader.onComplete.once(function () {
+                    _this._load.apply(_this, __spreadArray([callback], __read(assets), false));
+                });
+            }
+            else {
+                this._load.apply(this, __spreadArray([callback], __read(assets), false));
+            }
+        };
+        SharedAssetLoader._load = function (callback) {
             var _this = this;
             var assets = [];
             for (var _i = 1; _i < arguments.length; _i++) {
@@ -91,18 +171,18 @@ define(["require", "exports", "webfontloader", "./Random", "./Utils", "./pixijs"
                     assetToLoad = asset;
                 }
                 if (_this.get(assetToLoad)) {
-                    console.log('asset found!');
+                    Utils_1.Utils.log('asset found!');
                     return null;
                 }
                 else {
-                    console.log('asset not found, loading ...');
+                    Utils_1.Utils.log('asset not found, loading ...');
                     return assetToLoad;
                 }
             });
             var countToLoad = 1 + fontsToLoad.length;
             // check whether we have anything to load
             if ((assetsToLoad.length + fontsToLoad.length) == 0) {
-                console.log('nothing to load.');
+                Utils_1.Utils.log('nothing to load.');
                 callback();
                 return;
             }
@@ -148,6 +228,7 @@ define(["require", "exports", "webfontloader", "./Random", "./Utils", "./pixijs"
                 }
             });
         };
+        SharedAssetLoader.loader = new PIXI.Loader(); // you can also create your own if you want
         SharedAssetLoader.fontMap = new Map();
         return SharedAssetLoader;
     }());

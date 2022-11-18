@@ -161,10 +161,6 @@ export class Scene {
 
 	readonly name: string
 
-	getName() {
-		return this.name
-	}
-
 
 	//
 	// #############################################################################
@@ -182,17 +178,20 @@ export class Scene {
 
 	private loadingChain?: AsyncChain;
 
-	private finishedLoading(chain: AsyncChain) {
+	private finishedLoading(chain: AsyncChain, robotSetupData: RobotSetupData[]) {
 
 		// fake longer loading time for smooth animation
 		const loadingTime = Date.now() - this.loadingStartTime;
 		if(loadingTime < this.minLoadTime) {
 			const _this = this;
 			setTimeout(() => {
-				this.finishedLoading(chain);
+				this.finishedLoading(chain, robotSetupData);
 			}, this.minLoadTime-loadingTime);
 			return;
 		}
+
+		// set the robot programs (after 'onInit')
+		this.setPrograms(robotSetupData)
 
 		// update the scene size
 		this.updateBounds()
@@ -216,7 +215,7 @@ export class Scene {
 			this.startSim();
 		}
 
-		console.log('Finished loading!');
+		Utils.log('Finished loading!');
 
 		this.eventManager.onFinishedLoadingCallHandlers()
 		this.finishedLoadingQueue.forEach(func => func(this))
@@ -277,6 +276,9 @@ export class Scene {
 		// remove entities
 		this.getEntityManager().clear()
 
+		// TODO: Maybe clear texture cache in order to prevent a memory leak (check it!)
+		// PIXI.utils.clearTextureCache()
+
 		chain.next();
 	}
 
@@ -295,7 +297,6 @@ export class Scene {
 		this.getRobotManager().configurationManager.setRobotConfigurations(
 			robotSetupData.map(setup => setup.configuration)
 		)
-		this.setPrograms(robotSetupData)
 
 		// stop the simulation
 		this.pauseSim()
@@ -350,13 +351,15 @@ export class Scene {
 			}, thisContext: this },
 			{func: this.onInit, thisContext: this}, // init scene
 			// swap from loading to scene, remove loading animation, cleanup, ...
-			{func: this.finishedLoading, thisContext: this},
+			{func: chain => {
+				this.finishedLoading(chain, robotSetupData)
+			}, thisContext: this},
 		);
 
 		this.onChainCompleteListeners.forEach(listener => listener.call(this, this.loadingChain!))
 
-		console.log('starting to load scene!');
-		console.log('Loading stages: ' + this.loadingChain.length());
+		Utils.log('starting to load scene!');
+		Utils.log('Loading stages: ' + this.loadingChain.length());
 
 		// start time
 		this.loadingStartTime = Date.now();
@@ -595,7 +598,7 @@ export class Scene {
 		if(this.constructor.name === Scene.name) {
 			// No specialized scene => finished loading
 			this.autostartSim = false
-			this.finishedLoading(new AsyncChain())
+			this.finishedLoading(new AsyncChain(), [])
 		}
 
 		// has to be called after the name has been defined
@@ -626,7 +629,7 @@ export class Scene {
 				const bodies = this.getBodiesAt(mousePosition);
 
 				if(DEBUG) {
-					console.log(`Mouse position: ${JSON.stringify(mousePosition)}`)
+					Utils.log(`Mouse position: ${JSON.stringify(mousePosition)}`)
 				}
 
 				if (bodies.length >= 1) {
@@ -667,6 +670,7 @@ export class Scene {
 		}
 		
 
+		this.waypointsManager.onInteractionEvent(ev)
 		this.onInteractionEvent(ev);
 	}
 
@@ -782,7 +786,7 @@ export class Scene {
 	 * unload all assets
 	 */
 	onUnloadAssets(chain: AsyncChain) {
-		console.log('on asset unload');
+		Utils.log('on asset unload');
 		chain.next();
 	}
 
@@ -791,7 +795,7 @@ export class Scene {
 	 * please do not block within this method and use the PIXI.Loader callbacks
 	 */
 	onLoadAssets(chain: AsyncChain) {
-		console.log('on asset load');
+		Utils.log('on asset load');
 		chain.next();
 	}
 
@@ -813,7 +817,7 @@ export class Scene {
 		// create dynamic debug gui
 		this.initDynamicDebugGui()
 		
-		console.log('on init');
+		Utils.log('on init');
 		chain.next();
 	}
 
@@ -821,7 +825,7 @@ export class Scene {
 	 * called on scene reset/unload
 	 */
 	onDeInit(chain: AsyncChain) {
-		console.log('on deinit/unload');
+		Utils.log('on deinit/unload');
 		chain.next();
 	}
 

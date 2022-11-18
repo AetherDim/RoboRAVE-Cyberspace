@@ -175,7 +175,7 @@ export class RobotMbedBehaviour extends ARobotBehaviour {
             case '4':
                 return 500;
             default:
-                throw "Wrong file " + file
+                throw new Error("Wrong file " + file)
         }
     }
 
@@ -467,7 +467,7 @@ export class RobotMbedBehaviour extends ARobotBehaviour {
 
     public debugAction(value: any): void {
         U.debug('***** debug action "' + value + '" *****');
-        console.log(value);
+        Utils.log(value);
     }
 
     public assertAction(_msg: string, _left: any, _op: string, _right: any, value: boolean): void {

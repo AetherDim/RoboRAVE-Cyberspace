@@ -1,4 +1,5 @@
 import { Vector } from "matter-js"
+import { DEBUG } from "./GlobalDebug"
 import { randomIntBetween } from "./Random"
 
 export type StringMap<V> = { [key: string]: V | undefined }
@@ -157,35 +158,41 @@ export type AnyAssertion<T> = (value: unknown) => asserts value is T
 
 export class Utils {
 
+	static log(value: any) {
+		if (DEBUG) {
+			console.log(value)
+		}
+	}
+
 	static assertTrue(value: boolean): asserts value is true {
 		if (!value) {
-			throw "The value is not `true`"
+			throw new Error("The value is not `true`")
 		}
 	}
 
 	static assertNonNull<T>(value: T | undefined | null): asserts value is T {
 		if (value === undefined || value === null) {
-			throw `The value is ${value}`
+			throw new Error(`The value is ${value}`)
 		}
 	}
 
 	static assertTypeOf<TypeName extends keyof MainTypes>(value: unknown, type: TypeName): asserts value is MainTypes[TypeName]  {
 		if (typeof value != type) {
-			throw `The value '${value}' is not of type '${type}'`
+			throw new Error(`The value '${value}' is not of type '${type}'`)
 		}
 	}
 
 	static assertType<TypeName extends keyof MainTypes>(type: TypeName): AnyAssertion<MainTypes[TypeName]>  {
 		return value => {
 			if (typeof value != type) {
-				throw `The value '${value}' is not of type '${type}'`
+				throw new Error(`The value '${value}' is not of type '${type}'`)
 			}
 		}
 	}
 
 	static assertInstanceOf<T>(value: unknown, type: new (...args: any[]) => T): asserts value is T  {
 		if (!(value instanceof type)) {
-			throw `The value '${value}' is not of type '${type}'`
+			throw new Error(`The value '${value}' is not of type '${type}'`)
 		}
 	}
 
@@ -194,7 +201,7 @@ export class Utils {
 			if (Array.isArray(array)) {
 				array.forEach(elementGuard)
 			} else {
-				throw "The value is not an array"
+				throw new Error("The value is not an array")
 			}
 		}
 	}
@@ -389,7 +396,7 @@ export class Utils {
 
 	static idNumber = 0
 	static genHtmlUid2() {
-		const uid = 'uid:' + this.idNumber
+		const uid = 'uid-' + this.idNumber
 		this.idNumber ++
 		return uid
 	}
@@ -663,7 +670,7 @@ export class Utils {
 		return result
 	}
 
-	static getOptions<T>(init: new () => T, someOptions?: Partial<T>): T {
+	static getOptions<T extends {}>(init: new () => T, someOptions?: Partial<T>): T {
 		const options =  new init()
 		if (someOptions != undefined) {
 			Object.assign(options, someOptions)
@@ -764,6 +771,19 @@ export class Utils {
 		} else {
 			return array[randomIntBetween(0, array.length-1)]
 		}
+	}
+
+	/**
+	 * @param length The length of the resulting array
+	 * @param mapping The method mapping over each index and returning a new element
+	 * @returns An array of length `length`
+	 */
+	static arrayWithLength<T>(length: number, mapping: (index: number) => T): T[] {
+		const result = new Array<T>(length)
+		for (let i = 0; i < length; i++) {
+			result[i] = mapping(i)
+		}
+		return result
 	}
 
 	static getRootURL(ignorePort: boolean = false) {

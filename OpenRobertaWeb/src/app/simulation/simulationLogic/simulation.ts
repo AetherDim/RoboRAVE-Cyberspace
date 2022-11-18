@@ -6,7 +6,6 @@ import { Cyberspace } from './Cyberspace/Cyberspace';
 import { UIManager } from './UI/UIManager';
 import { RRCScoreScene } from './RRC/Scene/RRCScoreScene';
 import { RESTState, ResultErrorType, sendStateRequest } from './external/RESTApi';
-import * as $ from "jquery";
 import * as Blockly from "blockly";
 import * as GUISTATE_C from "guiState.controller";
 import * as NN_CTRL from "nn.controller";
@@ -16,15 +15,20 @@ import * as PROG_C from "program.controller";
 import * as CONST from "./simulation.constants"
 import * as TOUR_C from "tour.controller";
 import * as UTIL from "./util";
-import {DEBUG} from "./GlobalDebug";
+import {DEBUG, initGlobalDebug} from "./GlobalDebug";
 import {getProgramLink} from "program.controller";
 import {BlocklyDebug} from "./BlocklyDebug";
+import { KeyManager } from './KeyManager';
 
 //
 // init all components for a simulation
 //
 const cyberspace = new Cyberspace('sceneCanvas', 'simDiv')
 const sceneManager = cyberspace.getSceneManager()
+
+initGlobalDebug()
+
+KeyManager.setup()
 
 function setInitialButtonState() { 
 	UIManager.programControlButton.setInitialState()
@@ -61,6 +65,10 @@ cyberspace.specializedEventManager
 			UIManager.showScoreButton.setState(state == "hideScore" ? "showScore" : "hideScore"))
 		)
 
+cyberspace.onSwitchScene(() => {
+	setInitialButtonState()
+})
+
 export function setPause() {
 	// TODO: Pause of stop?
 	cyberspace.pausePrograms()
@@ -71,7 +79,7 @@ sceneManager.registerScene(...cyberspaceScenes)
 
 // switch to first scene
 cyberspace.switchToNextScene(true)
-
+buildSceneMenu();
 
 /**
  * @param programs 
@@ -108,14 +116,23 @@ function requestSimAssemblyForProgram(callback: (result: RobertaRobotSetupData) 
 	});
 }
 
+/**
+ * Sets the same `robertaSetupData` for each robot.
+ * @param robertaSetupData The roberta setup data
+ */
+function setSameSetupData(robertaSetupData: RobertaRobotSetupData) {
+	const setupDataList = Array.from<RobertaRobotSetupData>({ length: cyberspace.robotCount() }).fill(robertaSetupData)
+	cyberspace.setRobertaRobotSetupData(setupDataList, GUISTATE_C.getRobotGroup())
+
+}
+
 function simulateProgram(callback?: () => void) {
 	// TODO: use proper 'this' type
 	requestSimAssemblyForProgram(function (this: any, result) {
 		if (result.rc == 'ok') {
 			MSG.displayMessage('MESSAGE_EDIT_START', 'TOAST', GUISTATE_C.getProgramName(), undefined, undefined);
 
-			const setupDataList = Array.from<RobertaRobotSetupData>({ length: cyberspace.robotCount() }).fill(result)
-			cyberspace.setRobertaRobotSetupData(setupDataList, GUISTATE_C.getRobotGroup())
+			setSameSetupData(result)
 
 			// setting the robot data might reset the scene since the configuration has changed
 			cyberspace.getScene().runAfterLoading(() => {
@@ -202,7 +219,8 @@ UIManager.zoomResetButton.onClick(() => {
 })
 
 UIManager.switchSceneButton.onClick(() => {
-	cyberspace.switchToNextScene()
+	let description = cyberspace.switchToNextScene()
+	sceneMenuSelect(description.ID)
 })
 
 
@@ -211,7 +229,7 @@ const INITIAL_WIDTH = 0.5;
 function openSimulationView() {
 	requestSimAssemblyForProgram(result => {
 		if (result.rc == 'ok') {
-			cyberspace.setRobertaRobotSetupData([result], GUISTATE_C.getRobotGroup())
+			setSameSetupData(result)
 
 			if (TOUR_C.getInstance() && TOUR_C.getInstance().trigger) {
 				TOUR_C.getInstance().trigger('startSim');
@@ -339,8 +357,19 @@ UIManager.debugVariablesButton.onClick(() => {
 	toggleModal('#simVariablesModal', position);
 })
 
+function buildSceneMenu() {
+	_buildSceneMenu('#simSelectionMenuContentSmall', '_small_Menu_');
+	_buildSceneMenu('#simSelectionMenuContent', '');
 
-function buildSceneMenu(menu: string, addString: string) {
+	let scenes = cyberspace.getScenes()
+
+	if(scenes.length > 0) {
+		sceneMenuSelect(scenes[0].ID)
+	}
+}
+
+
+function _buildSceneMenu(menu: string, addString: string) {
 	// TODO: clear #simSelectionMenuContent??
 	// seems to work without clear
 	const scenes = cyberspace.getScenes();
@@ -354,19 +383,19 @@ function buildSceneMenu(menu: string, addString: string) {
 	}
 }
 
-buildSceneMenu('#simSelectionMenuContentSmall', '_small_Menu_');
-buildSceneMenu('#simSelectionMenuContent', '');
-
-$('.sim-nav').onWrap('click', 'li:not(.disabled) a', function(event) {
+function sceneMenuSelect(sceneID: string) {
 	$('.modal').modal('hide') // remove modal
 	$('.menuSim').parent().removeClass('disabled') // enable all items in list
 	$("#simButtonsCollapse").collapse('hide') // collapse popup list
 
+	$('#'+sceneID).parent().addClass('disabled')
+	$('#'+sceneID+'_small_Menu_').parent().addClass('disabled')
+}
+
+$('.sim-nav').onWrap('click', 'li:not(.disabled) a', function(event) {
 	const name = event.target.id.replace('_small_Menu_', '')
 	cyberspace.loadScene(name)
-	$('#'+name).parent().addClass('disabled')
-	$('#'+name+'_small_Menu_').parent().addClass('disabled')
-
+	sceneMenuSelect(name)
 }, 'sim clicked');
 
 // UPLOAD Menu

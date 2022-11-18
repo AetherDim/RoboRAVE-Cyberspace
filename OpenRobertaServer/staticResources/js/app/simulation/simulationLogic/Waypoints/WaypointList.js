@@ -19,6 +19,38 @@ define(["require", "exports"], function (require, exports) {
             return this.waypoints[index];
         };
         /**
+         * Push the `waypoint` to the end of the list
+         * @param waypoint The waypoint which is pushed to the end of the list
+         */
+        WaypointList.prototype.push = function (waypoint) {
+            this.waypoints.push(waypoint);
+        };
+        /**
+         * Insert the `waypoint` at the `index`
+         * @param waypoint The waypoint which is inserted
+         * @param index The index where the waypoint is inserted
+         */
+        WaypointList.prototype.insert = function (waypoint, index) {
+            this.waypoints.splice(index, 0, waypoint);
+        };
+        /**
+         * Remove the waypoint at `index`
+         * @param index Index of the waypoint
+         */
+        WaypointList.prototype.removeAt = function (index) {
+            this.waypoints.splice(index, 1);
+        };
+        /**
+         * Remove the `waypoint`
+         * @param waypoint The waypoint which will be removed
+         */
+        WaypointList.prototype.remove = function (waypoint) {
+            var index = this.waypoints.indexOf(waypoint);
+            if (index >= 0) {
+                this.removeAt(index);
+            }
+        };
+        /**
          * Get the number of waypoints in the list
          */
         WaypointList.prototype.getLength = function () {

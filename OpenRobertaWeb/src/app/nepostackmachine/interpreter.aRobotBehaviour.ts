@@ -3,7 +3,7 @@ import { ActionType, HardwareState, SensorMode } from './Robot/RobotHardwareStat
 
 export abstract class ARobotBehaviour {
     protected hardwareState: HardwareState
-    private blocking;
+    private blocking: boolean;
 
     constructor() {
         this.hardwareState = {

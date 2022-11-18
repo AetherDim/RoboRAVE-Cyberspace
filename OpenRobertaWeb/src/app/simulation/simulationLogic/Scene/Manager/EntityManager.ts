@@ -79,7 +79,8 @@ export class EntityManager {
 			}
 
 			if (Type.IDrawableEntity.isSupertypeOf(entity)) {
-				entity.getContainer()?.removeChild(entity.getDrawable())
+				const container = entity.getContainer() ?? this.scene.getContainers().entityContainer
+				container.removeChild(entity.getDrawable())
 			}
 
 			if (Type.IDrawablePhysicsEntity.isSupertypeOf(entity)) {

@@ -1,4 +1,3 @@
-import { range } from "d3"
 import { Body, Vector } from "matter-js"
 import { ElectricMotor } from "./ElectricMotor"
 import { DrawablePhysicsEntity } from "../Entities/DrawablePhysicsEntity"
@@ -74,7 +73,7 @@ export class Wheel extends DrawablePhysicsEntity<PIXI.Container> {
 
 		const wheelProfileWidth = width * 0.3
 		this.wheelProfileWidth = wheelProfileWidth
-		this.wheelProfile = range(4).map(() => {
+		this.wheelProfile = Utils.arrayWithLength(4, () => {
 			const graphics = new PIXI.Graphics()
 			graphics.beginFill(0xFF0000)
 			graphics.drawRect(0, -height/2, wheelProfileWidth, height)

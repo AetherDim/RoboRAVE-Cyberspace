@@ -341,12 +341,16 @@ export class EventData {
 	/**
 	 * Translates the global delta to a local delta relative to the scroll view.
 	 */
-	getDeltaLocal() {
-		// TODO: Maybe wrong since delta is a relative vector and not an absolute one
-		if (!this.delta) {
+	getDeltaLocal(): PIXI.IPointData | undefined {
+		const previousPosition = this.getPreviousLocalPosition()
+		if (previousPosition == undefined) {
 			return undefined
 		}
-		return this.scrollView.toLocal(this.delta);
+		const currentPosition = this.getCurrentLocalPosition()
+		return {
+			x: currentPosition.x - previousPosition.x,
+			y: currentPosition.y - previousPosition.y
+		}
 	}
 
 	/**
@@ -564,7 +568,7 @@ export class ScrollView extends PIXI.Container {
 	 * This method will be called multiple times per second!
 	 */
 	private onResize() {
-		//console.log('resize');
+		//Utils.log('resize');
 		this.updateInteractionRect();
 	}
 
@@ -573,7 +577,7 @@ export class ScrollView extends PIXI.Container {
 	 * @param ev interaction data
 	 */
 	private onDown(ev: PIXI.InteractionEvent) {
-		//console.log('down ' + this.touchEventDataMap.size);
+		//Utils.log('down ' + this.touchEventDataMap.size);
 
 		let data: EventData;
 
@@ -601,7 +605,7 @@ export class ScrollView extends PIXI.Container {
 	 * @param ev interaction data
 	 */
 	private onUp(ev: PIXI.InteractionEvent) {
-		//console.log('up ' + this.touchEventDataMap.size);
+		//Utils.log('up ' + this.touchEventDataMap.size);
 		
 		let data: EventData;
 
@@ -640,7 +644,7 @@ export class ScrollView extends PIXI.Container {
 	 * @param ev  interaction data
 	 */
 	private onMove(ev: PIXI.InteractionEvent) {
-		//console.log('move');
+		//Utils.log('move');
 
 		if(isNaN(ev.data.global.x) || isNaN(ev.data.global.y)) {
 			return;
@@ -676,7 +680,7 @@ export class ScrollView extends PIXI.Container {
 			cancel = this.fireEvent(data, type);
 
 		} else { // touch
-			//console.log("id: " + ev.data.pointerId);
+			//Utils.log("id: " + ev.data.pointerId);
 
 			data = this.getTouchDataAndUpdatePosition(ev.data.pointerId, ev.data.global);
 			data.updateDelta();
@@ -762,7 +766,7 @@ export class ScrollView extends PIXI.Container {
 					let cancelZoom =  this.fireEvent(data, EventType.ZOOM);
 
 					if(!cancelZoom) {
-						//console.log('zoom: ' + zoomFactor);
+						//Utils.log('zoom: ' + zoomFactor);
 						this.zoom(deltaZoom, {x: (cp1.x + cp2.x)/2, y: (cp1.y + cp2.y)/2});
 					}
 				}
@@ -809,7 +813,7 @@ export class ScrollView extends PIXI.Container {
 	 * @param ev  interaction data
 	 */
 	private onWheel(ev: WheelEvent) {
-		//console.log('wheel');
+		//Utils.log('wheel');
 
 		let data: EventData;
 
@@ -893,7 +897,7 @@ export class ScrollView extends PIXI.Container {
 	 * @param e event data
 	 */
 	private onZoom(e: Event) {
-		//console.log('zoom');
+		//Utils.log('zoom');
 
 		// TODO: we could use this for other browsers if there is another with support
 		if(this.browser.isSafariEvent(e)) {
@@ -932,7 +936,7 @@ export class ScrollView extends PIXI.Container {
 	 * @param e event data
 	 */
 	private onZoomBegin(e: Event) {
-		//console.log('safari zoom');
+		//Utils.log('safari zoom');
 		if (this.browser.isSafariEvent(e)) {
 			this.lastTouchDistance = e.scale;
 		}

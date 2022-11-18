@@ -101,27 +101,21 @@ export class ContainerManager {
 	//protected removeTexturesOnUnload = true;
 	//protected removeBaseTexturesOnUnload = true;
 
+	private recursiveDestroySomeObjects(displayObject: PIXI.DisplayObject) {
+		// Destroy all 'PIXI.Text' objects in order to prevent a large memory leak
+		// Note: Do not reuse 'PIXI.Text' objects for this reason
+		//
+		// maybe also destroy 'PIXI.Graphics' since it could be a minor memory leak
+		if (displayObject instanceof PIXI.Text){// || displayObject instanceof PIXI.Graphics) {
+			displayObject.destroy(true as any)
+		} else if (displayObject instanceof PIXI.Container) {
+			displayObject.children.slice().forEach(c => this.recursiveDestroySomeObjects(c))
+		}
+	}
+
 	private clearContainer(container: PIXI.Container) {
-		// remove children from parent before destroy
-		// see: https://github.com/pixijs/pixi.js/issues/2800
-		// const children: PIXI.DisplayObject[] = []
-		// for (const child of container.children) {
-		// 	children.push(child)
-		// }
+		this.recursiveDestroySomeObjects(container)
 		container.removeChildren();
-
-		// FIXME: Should we destroy the children?
-		// Note that e.g. scoreText has to be replaced since it might be destroyed
-
-		// children.forEach(child => {
-		// 	child.destroy();
-		// });
-
-		/*container.destroy({
-			children: true,
-			texture: this.removeTexturesOnUnload,
-			baseTexture: this.removeBaseTexturesOnUnload
-		});*/
 	}
 
 
@@ -141,17 +135,42 @@ export class ContainerManager {
 	getGroundImageData: (x: number, y: number, w: number, h: number) => number[] = this._initialGroundDataFunction
 
 	updateGroundImageDataFunction() {
-		console.log('init color sensor texture')
+		Utils.log('init color sensor texture')
 		const groundVisible = this.groundContainer.visible
 		this.groundContainer.visible = true // the container needs to be visible for this to work
 	
 		const bounds = this.groundContainer.getLocalBounds()
 		const width = this.groundContainer.width
 		const height = this.groundContainer.height
-		const pixelData = this.scene.getRenderer()?.convertToPixels(this.groundContainer)
-		if (pixelData != undefined) {
+		const resolution = 1
+		// TODO: Test performance of color change of raw pixel data
+		// this.groundContainer.removeChild(...this.groundContainer.children.filter(c => c.name == "My Texture"))
+		const textureData = this.scene.getRenderer()?.convertToPixels(this.groundContainer, resolution)
+		if (textureData != undefined) {
+			const pixelData = textureData.data
 			this.pixelData = pixelData
-			console.log("Ground container pixels checksum of " + this.scene.getName() + ": "+Utils.checksumFNV32(pixelData))
+			Utils.log("Ground container pixels checksum of " + this.scene.name + ": "+Utils.checksumFNV32(pixelData))
+			// console.time("change array colors")
+			// const w = Math.round(width)
+			// for (let x = 0; x < textureData.width; x++) {
+			// 	for (let y = 0; y < textureData.height; y++) {
+			// 		const index = 4 * (x + y * width)
+			// 		const r = this.pixelData[index]
+			// 		if (r > 100) {
+			// 			// this.pixelData.set([0], index)
+			// 			//this.pixelData[index] = 0
+			// 		}
+			// 	}
+			// }
+			// console.timeEnd("change array colors")
+			// console.time("Make sprite")
+			// const texture = PIXI.Texture.fromBuffer(this.pixelData, textureData.width, textureData.height)
+			// const sprite = new PIXI.Sprite(texture)
+			// sprite.name = "My Texture"
+			// sprite.scale.set(1/resolution, 1/resolution)
+			// this.groundContainer.addChild(sprite)
+			// console.timeEnd("Make sprite")
+			
 			this.getGroundImageData = (x, y, w, h) => {
 				const newX = x - bounds.x
 				const newY = y - bounds.y

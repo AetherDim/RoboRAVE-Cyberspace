@@ -261,13 +261,13 @@ define(["require", "exports", "./interpreter.constants", "./interpreter.util", "
                         this.evalNNStep(stmt[C.ARG1], stmt[C.ARG2]);
                         break;
                     case C.NN_CHANGEWEIGHT_STMT:
-                        UI.getNetwork().changeWeight(stmt[C.FROM], stmt[C.TO], stmt[C.CHANGE], this.state.pop());
+                        UI.getNetwork().changeWeight(stmt[C.FROM], stmt[C.TO], stmt[C.CHANGE], this.state.popNumber());
                         break;
                     case C.NN_CHANGEBIAS_STMT:
-                        UI.getNetwork().changeBias(stmt[C.NAME], stmt[C.CHANGE], this.state.pop());
+                        UI.getNetwork().changeBias(stmt[C.NAME], stmt[C.CHANGE], this.state.popNumber());
                         break;
                     case C.LED_ON_ACTION: {
-                        var color_1 = this.state.pop();
+                        var color_1 = this.state.popNumber();
                         this.robotBehaviour.ledOnAction(stmt[C.NAME], stmt[C.PORT], color_1);
                         break;
                     }
@@ -275,15 +275,15 @@ define(["require", "exports", "./interpreter.constants", "./interpreter.util", "
                         var returnValue = void 0;
                         if (stmt[C.VALUES])
                             returnValue = this.state.pop();
-                        var returnAddress = this.state.pop();
+                        var returnAddress = this.state.popNumber();
                         this.state.pc = returnAddress;
                         if (stmt[C.VALUES])
                             this.state.push(returnValue);
                         break;
                     case C.MOTOR_ON_ACTION: {
                         var speedOnly = stmt[C.SPEED_ONLY];
-                        var duration = speedOnly ? undefined : this.state.pop();
-                        var speed = this.state.pop();
+                        var duration = speedOnly ? undefined : this.state.popNumber();
+                        var speed = this.state.popNumber();
                         var name_2 = stmt[C.NAME];
                         var port = stmt[C.PORT];
                         var durationType = stmt[C.MOTOR_DURATION];
@@ -307,13 +307,13 @@ define(["require", "exports", "./interpreter.constants", "./interpreter.util", "
                         var distance = void 0;
                         if (setTime) {
                             distance = undefined;
-                            time = setTime ? this.state.pop() : undefined;
+                            time = setTime ? this.state.popNumber() : undefined;
                         }
                         else {
                             time = undefined;
-                            distance = speedOnly ? undefined : this.state.pop();
+                            distance = speedOnly ? undefined : this.state.popNumber();
                         }
-                        var speed = this.state.pop();
+                        var speed = this.state.popNumber();
                         var direction = stmt[C.DRIVE_DIRECTION];
                         var duration = this.robotBehaviour.driveAction(name_3, direction, speed, distance, time);
                         return [duration, true];
@@ -325,13 +325,13 @@ define(["require", "exports", "./interpreter.constants", "./interpreter.util", "
                         var angle = void 0;
                         if (setTime) {
                             angle = undefined;
-                            time = setTime ? this.state.pop() : undefined;
+                            time = setTime ? this.state.popNumber() : undefined;
                         }
                         else {
                             time = undefined;
-                            angle = speedOnly ? undefined : this.state.pop();
+                            angle = speedOnly ? undefined : this.state.popNumber();
                         }
-                        var speed = this.state.pop();
+                        var speed = this.state.popNumber();
                         var name_4 = stmt[C.NAME];
                         var direction = stmt[C.TURN_DIRECTION];
                         var duration = this.robotBehaviour.turnAction(name_4, direction, speed, angle, time);
@@ -344,14 +344,14 @@ define(["require", "exports", "./interpreter.constants", "./interpreter.util", "
                         var distance = void 0;
                         if (setTime) {
                             distance = undefined;
-                            time = setTime ? this.state.pop() : undefined;
+                            time = setTime ? this.state.popNumber() : undefined;
                         }
                         else {
                             time = undefined;
-                            distance = speedOnly ? undefined : this.state.pop();
+                            distance = speedOnly ? undefined : this.state.popNumber();
                         }
-                        var speedR = this.state.pop();
-                        var speedL = this.state.pop();
+                        var speedR = this.state.popNumber();
+                        var speedL = this.state.popNumber();
                         var name_5 = stmt[C.NAME];
                         var direction = stmt[C.DRIVE_DIRECTION];
                         var duration = this.robotBehaviour.curveAction(name_5, direction, speedL, speedR, distance, time);
@@ -362,9 +362,9 @@ define(["require", "exports", "./interpreter.constants", "./interpreter.util", "
                         this.robotBehaviour.driveStop(name_6);
                         return [0, true];
                     case C.BOTH_MOTORS_ON_ACTION: {
-                        var duration = this.state.pop();
-                        var speedB = this.state.pop();
-                        var speedA = this.state.pop();
+                        var duration = this.state.popNumber();
+                        var speedB = this.state.popNumber();
+                        var speedA = this.state.popNumber();
                         var portA = stmt[C.PORT_A];
                         var portB = stmt[C.PORT_B];
                         this.robotBehaviour.motorOnAction(portA, portA, duration, speedA);
@@ -376,7 +376,7 @@ define(["require", "exports", "./interpreter.constants", "./interpreter.util", "
                         return [0, true];
                     }
                     case C.MOTOR_SET_POWER: {
-                        var speed = this.state.pop();
+                        var speed = this.state.popNumber();
                         var name_7 = stmt[C.NAME];
                         var port = stmt[C.PORT];
                         this.robotBehaviour.setMotorSpeed(name_7, port, speed);
@@ -392,8 +392,8 @@ define(["require", "exports", "./interpreter.constants", "./interpreter.util", "
                         var text = this.state.popUnknown();
                         var name_9 = stmt[C.NAME];
                         if (name_9 === 'ev3') {
-                            var x = this.state.pop();
-                            var y = this.state.pop();
+                            var x = this.state.popNumber();
+                            var y = this.state.popNumber();
                             this.robotBehaviour.showTextActionPosition(text, x, y);
                             return [0, true];
                         }
@@ -410,11 +410,11 @@ define(["require", "exports", "./interpreter.constants", "./interpreter.util", "
                         return [this.robotBehaviour.showImageAction(image, stmt[C.MODE]), true];
                     }
                     case C.DISPLAY_SET_BRIGHTNESS_ACTION: {
-                        var b = this.state.pop();
+                        var b = this.state.popNumber();
                         return [this.robotBehaviour.displaySetBrightnessAction(b), true];
                     }
                     case C.IMAGE_SHIFT_ACTION: {
-                        var nShift = this.state.pop();
+                        var nShift = this.state.popNumber();
                         var image = this.state.popUnknown();
                         var assertNumberArray = Utils_1.Utils.assertArrayOf(Utils_1.Utils.assertArrayOf(Utils_1.Utils.assertType("number")));
                         assertNumberArray(image);
@@ -427,14 +427,14 @@ define(["require", "exports", "./interpreter.constants", "./interpreter.util", "
                         break;
                     }
                     case C.DISPLAY_SET_PIXEL_BRIGHTNESS_ACTION: {
-                        var b = this.state.pop();
-                        var y = this.state.pop();
-                        var x = this.state.pop();
+                        var b = this.state.popNumber();
+                        var y = this.state.popNumber();
+                        var x = this.state.popNumber();
                         return [this.robotBehaviour.displaySetPixelBrightnessAction(x, y, b), true];
                     }
                     case C.DISPLAY_GET_PIXEL_BRIGHTNESS_ACTION: {
-                        var y = this.state.pop();
-                        var x = this.state.pop();
+                        var y = this.state.popNumber();
+                        var x = this.state.popNumber();
                         this.robotBehaviour.displayGetPixelBrightnessAction(this.state, x, y);
                         break;
                     }
@@ -478,14 +478,14 @@ define(["require", "exports", "./interpreter.constants", "./interpreter.util", "
                         this.robotBehaviour.gyroReset(stmt[C.PORT]);
                         return [0, true];
                     case C.TONE_ACTION: {
-                        var duration = this.state.pop();
-                        var frequency = this.state.pop();
+                        var duration = this.state.popNumber();
+                        var frequency = this.state.popNumber();
                         return [this.robotBehaviour.toneAction(stmt[C.NAME], frequency, duration), true];
                     }
                     case C.PLAY_FILE_ACTION:
                         return [this.robotBehaviour.playFileAction(stmt[C.FILE]), true];
                     case C.SET_VOLUME_ACTION:
-                        this.robotBehaviour.setVolumeAction(this.state.pop());
+                        this.robotBehaviour.setVolumeAction(this.state.popNumber());
                         return [0, true];
                     case C.GET_VOLUME:
                         this.robotBehaviour.getVolumeAction(this.state);
@@ -494,8 +494,8 @@ define(["require", "exports", "./interpreter.constants", "./interpreter.util", "
                         this.robotBehaviour.setLanguage(stmt[C.LANGUAGE]);
                         break;
                     case C.SAY_TEXT_ACTION: {
-                        var pitch = this.state.pop();
-                        var speed = this.state.pop();
+                        var pitch = this.state.popNumber();
+                        var speed = this.state.popNumber();
                         var text = this.state.popType("string");
                         return [this.robotBehaviour.sayTextAction(text, speed, pitch), true];
                     }
@@ -505,15 +505,15 @@ define(["require", "exports", "./interpreter.constants", "./interpreter.util", "
                         break;
                     case C.VAR_DECLARATION: {
                         var name_10 = stmt[C.NAME];
-                        this.state.bindVar(name_10, this.state.pop());
+                        this.state.bindVar(name_10, this.state.popStateValue());
                         break;
                     }
                     case C.WAIT_TIME_STMT: {
-                        var time = this.state.pop();
+                        var time = this.state.popNumber();
                         return [time, true]; // wait for handler being called
                     }
                     case C.WRITE_PIN_ACTION: {
-                        var value = this.state.pop();
+                        var value = this.state.popNumber();
                         var mode = stmt[C.MODE];
                         var pin = stmt[C.PIN];
                         this.robotBehaviour.writePinAction(pin, mode, value);
@@ -525,7 +525,7 @@ define(["require", "exports", "./interpreter.constants", "./interpreter.util", "
                         Utils_1.Utils.assertTypeOf(loc, "string");
                         var ix = 0;
                         if (loc != C.LAST && loc != C.FIRST) {
-                            ix = this.state.pop();
+                            ix = this.state.popNumber();
                         }
                         var value = this.state.pop();
                         var list = this.state.popUnknown();
@@ -619,9 +619,9 @@ define(["require", "exports", "./interpreter.constants", "./interpreter.util", "
                     this.state.push(expr[C.VALUE]);
                     break;
                 case C.RGB_COLOR_CONST: {
-                    var b = this.state.pop();
-                    var g = this.state.pop();
-                    var r = this.state.pop();
+                    var b = this.state.popNumber();
+                    var g = this.state.popNumber();
+                    var r = this.state.popNumber();
                     this.state.push([r, g, b]);
                     break;
                 }
@@ -683,7 +683,7 @@ define(["require", "exports", "./interpreter.constants", "./interpreter.util", "
                 }
                 case C.SINGLE_FUNCTION: {
                     var subOp = expr[C.OP];
-                    var value = this.state.pop();
+                    var value = this.state.popNumber();
                     U.debug('---------- ' + subOp + ' with ' + value);
                     switch (subOp) {
                         case 'SQUARE':
@@ -743,15 +743,15 @@ define(["require", "exports", "./interpreter.constants", "./interpreter.util", "
                     break;
                 }
                 case C.MATH_CONSTRAIN_FUNCTION: {
-                    var max_1 = this.state.pop();
-                    var min_1 = this.state.pop();
-                    var value = this.state.pop();
+                    var max_1 = this.state.popNumber();
+                    var min_1 = this.state.popNumber();
+                    var value = this.state.popNumber();
                     this.state.push(Math.min(Math.max(value, min_1), max_1));
                     break;
                 }
                 case C.RANDOM_INT: {
-                    var max = this.state.pop();
-                    var min = this.state.pop();
+                    var max = this.state.popNumber();
+                    var min = this.state.popNumber();
                     if (min > max) {
                         _a = __read([max, min], 2), min = _a[0], max = _a[1];
                     }
@@ -763,7 +763,7 @@ define(["require", "exports", "./interpreter.constants", "./interpreter.util", "
                     break;
                 case C.MATH_PROP_FUNCT: {
                     var subOp = expr[C.OP];
-                    var value = this.state.pop();
+                    var value = this.state.popNumber();
                     switch (subOp) {
                         case 'EVEN':
                             this.state.push(this.isWhole(value) && value % 2 === 0);
@@ -784,7 +784,7 @@ define(["require", "exports", "./interpreter.constants", "./interpreter.util", "
                             this.state.push(value < 0);
                             break;
                         case 'DIVISIBLE_BY':
-                            var first = this.state.pop();
+                            var first = this.state.popNumber();
                             this.state.push(first % value === 0);
                             break;
                         default:
@@ -828,7 +828,7 @@ define(["require", "exports", "./interpreter.constants", "./interpreter.util", "
                     break;
                 }
                 case C.CAST_CHAR: {
-                    var num_1 = this.state.pop();
+                    var num_1 = this.state.popNumber();
                     this.state.push(String.fromCharCode(num_1));
                     break;
                 }
@@ -838,7 +838,7 @@ define(["require", "exports", "./interpreter.constants", "./interpreter.util", "
                     break;
                 }
                 case C.CAST_CHAR_NUMBER: {
-                    var index = this.state.pop();
+                    var index = this.state.popNumber();
                     var value = this.state.popType("string");
                     this.state.push(value.charCodeAt(index));
                     break;
@@ -854,7 +854,7 @@ define(["require", "exports", "./interpreter.constants", "./interpreter.util", "
                             break;
                         case C.LIST_FIND_ITEM:
                             {
-                                var item = this.state.pop();
+                                var item = this.state.popNumber();
                                 var list = this.state.popArray();
                                 if (expr[C.POSITION] == C.FIRST) {
                                     this.state.push(list.indexOf(item));
@@ -872,7 +872,7 @@ define(["require", "exports", "./interpreter.constants", "./interpreter.util", "
                                 Utils_1.Utils.assertTypeOf(loc, "string");
                                 var ix = 0;
                                 if (loc != C.LAST && loc != C.FIRST) {
-                                    ix = this.state.pop();
+                                    ix = this.state.popNumber();
                                 }
                                 var list = this.state.popArray();
                                 ix = this.getIndex(list, loc, ix);
@@ -889,15 +889,15 @@ define(["require", "exports", "./interpreter.constants", "./interpreter.util", "
                             {
                                 var position = expr[C.POSITION];
                                 if (typeof position == "string") {
-                                    throw "Position is not an array";
+                                    throw new Error("Position is not an array");
                                 }
                                 var start_ix = void 0;
                                 var end_ix = void 0;
                                 if (position[1] != C.LAST) {
-                                    end_ix = this.state.pop();
+                                    end_ix = this.state.popNumber();
                                 }
                                 if (position[0] != C.FIRST) {
-                                    start_ix = this.state.pop();
+                                    start_ix = this.state.popNumber();
                                 }
                                 var list = this.state.popArray();
                                 start_ix = this.getIndex(list, position[0], start_ix);

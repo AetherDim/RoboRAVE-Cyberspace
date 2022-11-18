@@ -1,4 +1,4 @@
-define(["require", "exports", "jquery", "./Color", "./ScrollView", "./Utils", "./GlobalDebug", "./pixijs"], function (require, exports, $, Color_1, ScrollView_1, Utils_1, GlobalDebug_1) {
+define(["require", "exports", "./Color", "./ScrollView", "./Utils", "./GlobalDebug", "./pixijs"], function (require, exports, Color_1, ScrollView_1, Utils_1, GlobalDebug_1) {
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.SceneRender = void 0;
     // physics and graphics
@@ -34,7 +34,7 @@ define(["require", "exports", "jquery", "./Color", "./ScrollView", "./Utils", ".
                 resizeTo: resizeTo || undefined,
                 autoDensity: true,
                 resolution: Utils_1.Utils.getPixelRatio(),
-                forceCanvas: true
+                //forceCanvas: true
             });
             this.app.ticker.maxFPS = 30;
             // add mouse/touch control
@@ -101,8 +101,50 @@ define(["require", "exports", "jquery", "./Color", "./ScrollView", "./Utils", ".
         SceneRender.prototype.getViewHeight = function () {
             return this.scrollView.getBounds().height;
         };
-        SceneRender.prototype.convertToPixels = function (object) {
-            return this.rendererPlugins().extract.pixels(object);
+        // new 'convertToPixels' which has an additional resolution parameter
+        SceneRender.prototype.newConvertToPixels = function (object, resolution) {
+            if (resolution === void 0) { resolution = 1; }
+            var renderer = this.app.renderer;
+            renderer.clear();
+            var bounds = object.getLocalBounds();
+            var texture;
+            if (false) {
+                var region = new PIXI.Rectangle(0, 0, bounds.width * resolution, bounds.height * resolution);
+                // minimum texture size is 1x1, 0x0 will throw an error
+                // if (region.width === 0) region.width = 1;
+                // if (region.height === 0) region.height = 1;
+                var renderTexture = PIXI.RenderTexture.create({
+                    width: region.width,
+                    height: region.height
+                });
+                var _tempMatrix = new PIXI.Matrix();
+                _tempMatrix.tx = -bounds.x;
+                _tempMatrix.ty = -bounds.y;
+                // _tempMatrix = _tempMatrix.scale(resolution, resolution)
+                var displayObject = object;
+                var transform = displayObject.transform;
+                displayObject.transform = new PIXI.Transform();
+                renderer.render(displayObject, renderTexture, false, _tempMatrix, !!displayObject.parent);
+                displayObject.transform = transform;
+                texture = renderTexture;
+            }
+            else {
+                texture = this.app.renderer.generateTexture(object, PIXI.SCALE_MODES.LINEAR, resolution, new PIXI.Rectangle(0, 0, bounds.width * resolution, bounds.height * resolution));
+            }
+            renderer.renderTexture.bind(texture);
+            var gl = renderer.gl;
+            var array = new Uint8Array(4 * texture.width * texture.height);
+            // images with alpha should be post divided!!!
+            gl.readPixels(0, 0, texture.width, texture.height, gl.RGBA, gl.UNSIGNED_BYTE, array);
+            var textureData = { data: array, width: texture.width, height: texture.height };
+            texture.destroy();
+            return textureData;
+        };
+        SceneRender.prototype.convertToPixels = function (object, resolution) {
+            if (resolution === void 0) { resolution = 1; }
+            var bounds = object.getLocalBounds();
+            return { data: this.rendererPlugins().extract.pixels(object), width: bounds.width, height: bounds.height };
+            // return { data: new Uint8Array(), width: 0, height: 0 }
         };
         SceneRender.prototype.zoomIn = function () {
             this.scrollView.zoomCenter(Math.sqrt(2));
@@ -125,7 +167,7 @@ define(["require", "exports", "jquery", "./Color", "./ScrollView", "./Utils", ".
             this.scene.setSceneRenderer(robotSetupData, undefined); // unregister this renderer
             // remove all children from PIXI renderer
             if (this.scrollView.children.length > 0) {
-                //console.log('Number of children: ' + this.scrollView.children.length);
+                //Utils.log('Number of children: ' + this.scrollView.children.length);
                 this.scrollView.removeChildren(0, this.scrollView.children.length);
             }
             this.scene = scene;

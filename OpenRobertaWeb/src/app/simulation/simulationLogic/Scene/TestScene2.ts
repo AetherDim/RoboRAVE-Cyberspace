@@ -1,5 +1,5 @@
 import { RRCScene } from "../RRC/Scene/RRCScene";
-import { Asset } from "../SharedAssetLoader";
+import {Asset, SharedAssetLoader} from "../SharedAssetLoader";
 import { Unit } from "../Unit";
 import { AsyncChain } from "./AsyncChain";
 import * as RRC from '../RRC/RRAssetLoader'
@@ -80,7 +80,7 @@ export class TestScene2 extends RRCScene {
 	}
 
 	onLoadAssets(chain: AsyncChain) {
-		this.loader.load(()=>chain.next(),
+		SharedAssetLoader.load(()=>chain.next(),
 			...this.assets,
 			RRC.GOAL_BACKGROUND
 		)
@@ -100,7 +100,7 @@ export class TestScene2 extends RRCScene {
 			}
 		])
 
-		const textures = this.assets.map(asset => this.loader.get(asset).texture)
+		const textures = this.assets.map(asset => SharedAssetLoader.get(asset).texture)
 		
 		textures.forEach(texture => {
 			const sprite = new PIXI.Sprite(texture)

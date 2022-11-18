@@ -13,7 +13,7 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-define(["require", "exports", "./RRCScene", "../RRAssetLoader", "../AgeGroup", "../../Waypoints/WaypointList", "../../Utils"], function (require, exports, RRCScene_1, RRC, AgeGroup_1, WaypointList_1, Utils_1) {
+define(["require", "exports", "./RRCScene", "../RRAssetLoader", "../AgeGroup", "../../Waypoints/WaypointList", "../../Utils", "../../SharedAssetLoader"], function (require, exports, RRCScene_1, RRC, AgeGroup_1, WaypointList_1, Utils_1, SharedAssetLoader_1) {
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.RRCLineFollowingScene = void 0;
     var RRCLineFollowingScene = /** @class */ (function (_super) {
@@ -23,107 +23,94 @@ define(["require", "exports", "./RRCScene", "../RRAssetLoader", "../AgeGroup", "
             _this.bigWaypointSize = 70;
             // Waypoints
             _this.waypointsES = [
-                (0, RRCScene_1.wp)(62, 470, 0),
-                (0, RRCScene_1.wp)(62, 360, 0),
-                (0, RRCScene_1.wp)(62, 280, 0),
-                (0, RRCScene_1.wp)(62, 200, 0),
-                (0, RRCScene_1.wp)(105, 128, 0),
-                (0, RRCScene_1.wp)(156, 115, 0),
-                (0, RRCScene_1.wp)(259, 154, 0),
-                (0, RRCScene_1.wp)(266, 191, 0),
-                (0, RRCScene_1.wp)(258, 237, 0),
-                (0, RRCScene_1.wp)(207, 339, 0),
-                (0, RRCScene_1.wp)(228, 399, 0),
-                (0, RRCScene_1.wp)(282, 434, 0),
-                (0, RRCScene_1.wp)(338, 435, 0),
-                (0, RRCScene_1.wp)(397, 395, 0),
-                (0, RRCScene_1.wp)(421, 346, 0),
-                (0, RRCScene_1.wp)(472, 309, 0),
-                (0, RRCScene_1.wp)(559, 307, 0),
-                (0, RRCScene_1.wp)(671, 309, 0),
-                (0, RRCScene_1.wp)(735, 280, 0),
-                (0, RRCScene_1.wp)(753, 184, 0),
-                (0, RRCScene_1.wp)(756, 121, 0),
-                (0, RRCScene_1.wp)(755, 60, 0),
+                (0, RRCScene_1.wp)(572, 317, 0),
+                (0, RRCScene_1.wp)(630, 317, 0),
+                (0, RRCScene_1.wp)(578, 427, 0),
+                (0, RRCScene_1.wp)(427, 362, 0),
+                (0, RRCScene_1.wp)(462, 284, 0),
+                (0, RRCScene_1.wp)(575, 187, 0),
+                (0, RRCScene_1.wp)(501, 111, 0),
+                (0, RRCScene_1.wp)(372, 106, 0),
+                (0, RRCScene_1.wp)(217, 120, 0),
+                (0, RRCScene_1.wp)(121, 206, 0),
+                (0, RRCScene_1.wp)(111, 290, 0),
+                (0, RRCScene_1.wp)(136, 359, 0),
+                (0, RRCScene_1.wp)(234, 428, 0),
+                (0, RRCScene_1.wp)(324, 365, 0),
+                (0, RRCScene_1.wp)(328, 273, 0),
             ];
             _this.waypointsMS = [
-                (0, RRCScene_1.wp)(62, 470, 0),
-                (0, RRCScene_1.wp)(62, 360, 0),
-                (0, RRCScene_1.wp)(62, 280, 0),
-                (0, RRCScene_1.wp)(86, 226, 0),
-                (0, RRCScene_1.wp)(146, 226, 0),
-                (0, RRCScene_1.wp)(191, 253, 0),
-                (0, RRCScene_1.wp)(245, 310, 0),
-                (0, RRCScene_1.wp)(258, 326, 0),
-                (0, RRCScene_1.wp)(300, 373, 0),
-                (0, RRCScene_1.wp)(367, 419, 0),
-                (0, RRCScene_1.wp)(432, 384, 0),
-                (0, RRCScene_1.wp)(435, 333, 0),
-                (0, RRCScene_1.wp)(434, 268, 0),
-                (0, RRCScene_1.wp)(465, 221, 0),
-                (0, RRCScene_1.wp)(519, 219, 0),
-                (0, RRCScene_1.wp)(592, 291, 0),
-                (0, RRCScene_1.wp)(608, 312, 0),
-                (0, RRCScene_1.wp)(643, 350, 0),
-                (0, RRCScene_1.wp)(706, 348, 0),
-                (0, RRCScene_1.wp)(740, 325, 0),
-                (0, RRCScene_1.wp)(751, 300, 0),
-                (0, RRCScene_1.wp)(757, 252, 0),
-                (0, RRCScene_1.wp)(753, 184, 0),
-                (0, RRCScene_1.wp)(756, 121, 0),
-                (0, RRCScene_1.wp)(755, 60, 0),
+                (0, RRCScene_1.wp)(720, 252, 0),
+                (0, RRCScene_1.wp)(709, 355, 0),
+                (0, RRCScene_1.wp)(605, 418, 0),
+                (0, RRCScene_1.wp)(509, 342, 0),
+                (0, RRCScene_1.wp)(551, 250, 0),
+                (0, RRCScene_1.wp)(644, 172, 0),
+                (0, RRCScene_1.wp)(548, 105, 0),
+                (0, RRCScene_1.wp)(484, 105, 0),
+                (0, RRCScene_1.wp)(361, 101, 0),
+                (0, RRCScene_1.wp)(281, 121, 0),
+                (0, RRCScene_1.wp)(332, 246, 0),
+                (0, RRCScene_1.wp)(178, 237, 0),
+                (0, RRCScene_1.wp)(163, 329, 0),
+                (0, RRCScene_1.wp)(273, 422, 0),
+                (0, RRCScene_1.wp)(344, 393, 0),
+                (0, RRCScene_1.wp)(397, 305, 0),
+                (0, RRCScene_1.wp)(433, 373, 0),
+                (0, RRCScene_1.wp)(432, 445, 0),
             ];
             _this.waypointsHS = [
-                (0, RRCScene_1.wp)(62, 470, 0),
-                (0, RRCScene_1.wp)(62, 360, 0),
-                (0, RRCScene_1.wp)(62, 280, 0),
-                (0, RRCScene_1.wp)(86, 226, 0),
-                (0, RRCScene_1.wp)(146, 226, 0),
-                (0, RRCScene_1.wp)(191, 253, 0),
-                (0, RRCScene_1.wp)(245, 310, 0),
-                (0, RRCScene_1.wp)(258, 326, 0),
-                (0, RRCScene_1.wp)(253, 253, 0),
-                (0, RRCScene_1.wp)(271, 220, 0),
-                (0, RRCScene_1.wp)(319, 223, 0),
-                (0, RRCScene_1.wp)(346, 259, 0),
-                (0, RRCScene_1.wp)(378, 310, 0),
-                (0, RRCScene_1.wp)(412, 366, 0),
-                (0, RRCScene_1.wp)(469, 419, 0),
-                (0, RRCScene_1.wp)(510, 372, 0),
-                (0, RRCScene_1.wp)(509, 329, 0),
-                (0, RRCScene_1.wp)(510, 289, 0),
-                (0, RRCScene_1.wp)(512, 255, 0),
-                (0, RRCScene_1.wp)(537, 217, 0),
-                (0, RRCScene_1.wp)(586, 237, 0),
-                (0, RRCScene_1.wp)(612, 281, 0),
-                (0, RRCScene_1.wp)(652, 350, 0),
-                (0, RRCScene_1.wp)(706, 348, 0),
-                (0, RRCScene_1.wp)(740, 325, 0),
-                (0, RRCScene_1.wp)(751, 300, 0),
-                (0, RRCScene_1.wp)(757, 252, 0),
-                (0, RRCScene_1.wp)(753, 184, 0),
-                (0, RRCScene_1.wp)(756, 121, 0),
-                (0, RRCScene_1.wp)(755, 60, 0),
+                (0, RRCScene_1.wp)(397, 272, 0),
+                (0, RRCScene_1.wp)(373, 165, 0),
+                (0, RRCScene_1.wp)(255, 106, 0),
+                (0, RRCScene_1.wp)(187, 134, 0),
+                (0, RRCScene_1.wp)(247, 194, 0),
+                (0, RRCScene_1.wp)(322, 237, 0),
+                (0, RRCScene_1.wp)(258, 268, 0),
+                (0, RRCScene_1.wp)(180, 248, 0),
+                (0, RRCScene_1.wp)(129, 305, 0),
+                (0, RRCScene_1.wp)(155, 368, 0),
+                (0, RRCScene_1.wp)(257, 343, 0),
+                (0, RRCScene_1.wp)(293, 384, 0),
+                (0, RRCScene_1.wp)(262, 434, 0),
+                (0, RRCScene_1.wp)(281, 463, 0),
+                (0, RRCScene_1.wp)(369, 451, 0),
+                (0, RRCScene_1.wp)(440, 386, 0),
+                (0, RRCScene_1.wp)(462, 309, 0),
+                (0, RRCScene_1.wp)(451, 231, 0),
+                (0, RRCScene_1.wp)(476, 171, 0),
+                (0, RRCScene_1.wp)(556, 151, 0),
+                (0, RRCScene_1.wp)(642, 208, 0),
+                (0, RRCScene_1.wp)(642, 264, 0),
+                (0, RRCScene_1.wp)(542, 290, 0),
+                (0, RRCScene_1.wp)(515, 338, 0),
+                (0, RRCScene_1.wp)(540, 396, 0),
+                (0, RRCScene_1.wp)(649, 411, 0),
+                (0, RRCScene_1.wp)(725, 399, 0),
+                (0, RRCScene_1.wp)(737, 324, 0),
+                (0, RRCScene_1.wp)(692, 200, 0),
+                (0, RRCScene_1.wp)(662, 109, 0),
+                (0, RRCScene_1.wp)(731, 100, 0),
             ];
             _this.obstacleColor = 0xf68712;
             // Walls
             _this.wallES = {
-                x: 720,
-                y: 50,
+                x: 294,
+                y: 242,
                 w: 70,
                 h: 25
             };
             _this.wallMS = {
-                x: 720,
-                y: 50,
+                x: 397,
+                y: 449,
                 w: 70,
                 h: 25
             };
             _this.wallHS = {
-                x: 720,
-                y: 50,
-                w: 70,
-                h: 25
+                x: 735,
+                y: 65,
+                w: 25,
+                h: 70
             };
             return _this;
         }
@@ -147,6 +134,16 @@ define(["require", "exports", "./RRCScene", "../RRAssetLoader", "../AgeGroup", "
                     return this.wallHS;
             }
         };
+        RRCLineFollowingScene.prototype.getRobotStartPosition = function () {
+            switch (this.ageGroup) {
+                case AgeGroup_1.AgeGroup.ES:
+                    return { position: { x: 570, y: 314 }, rotation: 0 };
+                case AgeGroup_1.AgeGroup.MS:
+                    return { position: { x: 718, y: 248 }, rotation: 90 };
+                case AgeGroup_1.AgeGroup.HS:
+                    return { position: { x: 396, y: 270 }, rotation: -90 };
+            }
+        };
         RRCLineFollowingScene.prototype.getAsset = function () {
             switch (this.ageGroup) {
                 case AgeGroup_1.AgeGroup.ES:
@@ -158,12 +155,19 @@ define(["require", "exports", "./RRCScene", "../RRAssetLoader", "../AgeGroup", "
             }
         };
         RRCLineFollowingScene.prototype.onLoadAssets = function (chain) {
-            this.loader.load(function () {
+            SharedAssetLoader_1.SharedAssetLoader.load(function () {
                 chain.next();
             }, this.getAsset(), RRC.GOAL_BACKGROUND);
         };
         RRCLineFollowingScene.prototype.getMaximumTimeBonusScore = function () {
-            return 60 * 2;
+            switch (this.ageGroup) {
+                case AgeGroup_1.AgeGroup.ES:
+                    return 4 * 60;
+                case AgeGroup_1.AgeGroup.MS:
+                    return 5 * 60;
+                case AgeGroup_1.AgeGroup.HS:
+                    return 6 * 60;
+            }
         };
         /**
          * Returns the indices of the waypoints where a junction is
@@ -171,14 +175,14 @@ define(["require", "exports", "./RRCScene", "../RRAssetLoader", "../AgeGroup", "
         RRCLineFollowingScene.prototype.junctionIndices = function () {
             switch (this.ageGroup) {
                 case AgeGroup_1.AgeGroup.ES: return [];
-                case AgeGroup_1.AgeGroup.MS: return [17];
-                case AgeGroup_1.AgeGroup.HS: return [7, 22];
+                case AgeGroup_1.AgeGroup.MS: return [7];
+                case AgeGroup_1.AgeGroup.HS: return [6, 25];
                 default: Utils_1.Utils.exhaustiveSwitch(this.ageGroup);
             }
         };
         RRCLineFollowingScene.prototype.onInit = function (chain) {
             var _this = this;
-            this.initRobot({ position: { x: 62, y: 450 }, rotation: -90 });
+            this.initRobot(this.getRobotStartPosition());
             // TODO: Change the waypoints
             var waypointList = new WaypointList_1.WaypointList();
             var waypoints = this.getWaypoints();
@@ -211,8 +215,7 @@ define(["require", "exports", "./RRCScene", "../RRAssetLoader", "../AgeGroup", "
             });
             waypointList.append(reversedWaypoints);
             this.setWaypointList(waypointList);
-            var backgroundAsset = this.loader.get(this.getAsset()).texture;
-            this.getContainers().groundContainer.addChild(new PIXI.Sprite(backgroundAsset));
+            this.getContainers().groundContainer.addChild(this.getAsset().newSprite());
             this.addStaticWallInPixels(this.getWall(), { color: this.obstacleColor, strokeColor: this.obstacleColor });
             this.addWalls(true);
             chain.next();

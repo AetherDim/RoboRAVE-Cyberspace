@@ -25,7 +25,7 @@ var __read = (this && this.__read) || function (o, n) {
     }
     return ar;
 };
-define(["require", "exports", "./Random"], function (require, exports, Random_1) {
+define(["require", "exports", "./GlobalDebug", "./Random"], function (require, exports, GlobalDebug_1, Random_1) {
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.Utils = exports.asUniqueArray = void 0;
     var asUniqueArray = function (a) { return a; };
@@ -36,31 +36,36 @@ define(["require", "exports", "./Random"], function (require, exports, Random_1)
     var Utils = /** @class */ (function () {
         function Utils() {
         }
+        Utils.log = function (value) {
+            if (GlobalDebug_1.DEBUG) {
+                console.log(value);
+            }
+        };
         Utils.assertTrue = function (value) {
             if (!value) {
-                throw "The value is not `true`";
+                throw new Error("The value is not `true`");
             }
         };
         Utils.assertNonNull = function (value) {
             if (value === undefined || value === null) {
-                throw "The value is ".concat(value);
+                throw new Error("The value is ".concat(value));
             }
         };
         Utils.assertTypeOf = function (value, type) {
             if (typeof value != type) {
-                throw "The value '".concat(value, "' is not of type '").concat(type, "'");
+                throw new Error("The value '".concat(value, "' is not of type '").concat(type, "'"));
             }
         };
         Utils.assertType = function (type) {
             return function (value) {
                 if (typeof value != type) {
-                    throw "The value '".concat(value, "' is not of type '").concat(type, "'");
+                    throw new Error("The value '".concat(value, "' is not of type '").concat(type, "'"));
                 }
             };
         };
         Utils.assertInstanceOf = function (value, type) {
             if (!(value instanceof type)) {
-                throw "The value '".concat(value, "' is not of type '").concat(type, "'");
+                throw new Error("The value '".concat(value, "' is not of type '").concat(type, "'"));
             }
         };
         Utils.assertArrayOf = function (elementGuard) {
@@ -69,7 +74,7 @@ define(["require", "exports", "./Random"], function (require, exports, Random_1)
                     array.forEach(elementGuard);
                 }
                 else {
-                    throw "The value is not an array";
+                    throw new Error("The value is not an array");
                 }
             };
         };
@@ -253,7 +258,7 @@ define(["require", "exports", "./Random"], function (require, exports, Random_1)
         };
         ;
         Utils.genHtmlUid2 = function () {
-            var uid = 'uid:' + this.idNumber;
+            var uid = 'uid-' + this.idNumber;
             this.idNumber++;
             return uid;
         };
@@ -636,6 +641,18 @@ define(["require", "exports", "./Random"], function (require, exports, Random_1)
             else {
                 return array[(0, Random_1.randomIntBetween)(0, array.length - 1)];
             }
+        };
+        /**
+         * @param length The length of the resulting array
+         * @param mapping The method mapping over each index and returning a new element
+         * @returns An array of length `length`
+         */
+        Utils.arrayWithLength = function (length, mapping) {
+            var result = new Array(length);
+            for (var i = 0; i < length; i++) {
+                result[i] = mapping(i);
+            }
+            return result;
         };
         Utils.getRootURL = function (ignorePort) {
             if (ignorePort === void 0) { ignorePort = false; }

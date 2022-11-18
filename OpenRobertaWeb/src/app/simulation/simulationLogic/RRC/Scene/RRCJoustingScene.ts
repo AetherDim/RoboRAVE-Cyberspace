@@ -5,13 +5,13 @@ import {AgeGroup} from "../AgeGroup";
 import { WaypointList } from "../../Waypoints/WaypointList";
 import {ScoreWaypoint} from "../../Waypoints/ScoreWaypoint";
 import { Robot } from "../../Robot/Robot";
-import { Bodies, Body, Bounds, Composite, Constraint, Vector } from "matter-js";
+import { Composite, Vector } from "matter-js";
 import { DrawableEntity } from "../../Entities/DrawableEntity";
 import { PhysicsRectEntity } from "../../Entities/PhysicsRectEntity";
 import { RobotProgramGenerator } from "../../Robot/RobotProgramGenerator";
 import { GUIController } from "dat.gui";
 import { Utils } from "../../Utils";
-import { robot } from "guiState.model";
+import { SharedAssetLoader } from "../../SharedAssetLoader";
 
 
 export class RRCLineJoustingScene extends RRCScene {
@@ -97,7 +97,7 @@ export class RRCLineJoustingScene extends RRCScene {
 
 
 	onLoadAssets(chain: AsyncChain) {
-		this.loader.load(() => {
+		SharedAssetLoader.load(() => {
 			chain.next();
 		},
 			this.getAsset(),
@@ -191,7 +191,7 @@ export class RRCLineJoustingScene extends RRCScene {
 
 		// === set graphics ===
 
-		let backgroundAsset = this.loader.get(this.getAsset()).texture;
+		let backgroundAsset = SharedAssetLoader.get(this.getAsset()).texture;
 		//this.getContainers().groundContainer.addChild(new PIXI.Sprite(backgroundAsset));
 
 		[

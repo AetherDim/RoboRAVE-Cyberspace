@@ -18,6 +18,26 @@ export class Asset {
 	readonly path: string;
 }
 
+export class SpriteAsset extends Asset {
+
+	readonly xScaling: number = 1;
+	readonly yScaling: number = 1;
+
+	constructor(path: string, name?: string, xScaling?: number, yScaling?: number) {
+		super(path, name);
+
+		if(xScaling) this.xScaling = xScaling;
+		if(yScaling) this.yScaling = yScaling;
+	}
+
+	newSprite(): PIXI.Sprite {
+		let sprite = new PIXI.Sprite(SharedAssetLoader.get(this).texture);
+		sprite.scale.set(this.xScaling, this.yScaling);
+		return sprite;
+	}
+
+}
+
 export class FontAsset {
 
 	readonly families: string[];
@@ -37,14 +57,20 @@ export class FontAsset {
 
 }
 
-export class MultiAsset {
+export class MultiSpriteAsset {
 
-	constructor(prefix: string, postfix: string, idStart: number, idEnd:number, name?: string) {
+	readonly xScaling: number = 1;
+	readonly yScaling: number = 1;
+
+	constructor(prefix: string, postfix: string, idStart: number, idEnd:number, name?: string, xScaling?: number, yScaling?: number) {
 		this.prefix = prefix;
 		this.postfix = postfix;
 		this.idStart = idStart;
 		this.idEnd = idEnd;
 		this.name = name;
+
+		if(xScaling) this.xScaling = xScaling;
+		if(yScaling) this.yScaling = yScaling;
 	}
 
 	readonly prefix: string;
@@ -53,11 +79,11 @@ export class MultiAsset {
 	readonly idEnd: number;
 	readonly name?: string;
 
-	getAsset(id: number): Asset | undefined {
+	getAsset(id: number): SpriteAsset | undefined {
 		if(id >= this.idStart && id <= this.idEnd) {
 			let assetPath = this.prefix + id + this.postfix;
 			let assetName = this.getAssetName(id);
-			return new Asset(assetPath, assetName);
+			return new SpriteAsset(assetPath, assetName, this.xScaling, this.yScaling);
 		} else {
 			return undefined;
 		}
@@ -72,7 +98,7 @@ export class MultiAsset {
 		}
 	}
 
-	getRandomAsset(): Asset | undefined {
+	getRandomAsset(): SpriteAsset | undefined {
 		return this.getAsset(this.getRandomAssetID());
 	}
 
@@ -86,18 +112,26 @@ export class MultiAsset {
 
 }
 
-
-
 export class SharedAssetLoader {
 
-	private readonly loader = new PIXI.Loader(); // you can also create your own if you want
+	private static readonly loader = new PIXI.Loader(); // you can also create your own if you want
 	private static readonly fontMap = new Map<string, FontAsset>();
 
-	get(asset: Asset): PIXI.LoaderResource {
+	static get(asset: Asset): PIXI.LoaderResource {
 		return this.loader.resources[asset.name];
 	}
 
-	load(callback:() => void, ...assets: (Asset|FontAsset|undefined)[]) {
+	static load(callback:() => void, ...assets: (Asset|FontAsset|undefined)[]) {
+		if(this.loader.loading) {
+			this.loader.onComplete.once(() => {
+				this._load(callback, ...assets)
+			})
+		} else {
+			this._load(callback, ...assets)
+		}
+	}
+
+	private static _load(callback:() => void, ...assets: (Asset|FontAsset|undefined)[]) {
 		let fontsToLoad: FontAsset[] = <FontAsset[]>assets.filter(asset => {
 			return (asset instanceof FontAsset) && !SharedAssetLoader.fontMap.get(asset.name);
 		});
@@ -112,10 +146,10 @@ export class SharedAssetLoader {
 			}
 
 			if(this.get(assetToLoad)) {
-				console.log('asset found!');
+				Utils.log('asset found!');
 				return null;
 			} else {
-				console.log('asset not found, loading ...');
+				Utils.log('asset not found, loading ...');
 				return assetToLoad;
 			}
 		});
@@ -124,7 +158,7 @@ export class SharedAssetLoader {
 
 		// check whether we have anything to load
 		if((assetsToLoad.length + fontsToLoad.length) == 0) {
-			console.log('nothing to load.')
+			Utils.log('nothing to load.')
 			callback();
 			return;
 		}

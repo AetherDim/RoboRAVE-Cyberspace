@@ -1,11 +1,11 @@
-import { assert } from 'console';
 import dat = require('dat.gui');
 import { Scene } from './Scene/Scene';
 import { SceneRender } from './SceneRenderer';
 import { Timer } from './Timer';
 import { StringMap } from './Utils';
+import { RRCScoreScene } from "./RRC/Scene/RRCScoreScene";
 
-export const DEBUG = true
+export const DEBUG = false
 /**
  * Used in log.js
  */
@@ -30,7 +30,7 @@ function updateDebugDisplay() {
 	updatableList.forEach(element => {
 		try {
 			element.updateDisplay()
-		} catch (e) {
+		} catch (e) {
 			console.warn("An updatable debug element threw an error:")
 			console.warn(e)
 			element.remove()
@@ -87,7 +87,7 @@ function registerSearchBar() {
 	search[fieldName] = ""
 	const searchField = DebugGuiRoot!!.add(search, fieldName)
 	searchField.onChange((search) => {
-		//console.log(search)
+		//Utils.log(search)
 		searchGUI(search, searchField)
 	})
 }
@@ -100,7 +100,7 @@ function nameContains(searchParams: string[], name: string): boolean {
 function searchGUI(search: string, ignoreController: dat.GUIController) {
 	search = search.trim().toLowerCase()
 	if (DebugGuiRoot == undefined) {
-		throw "DebugGuiRoot is undefined"
+		throw new Error("DebugGuiRoot is undefined")
 	}
 	if(search.length == 0) {
 		resetAllFolders(DebugGuiRoot)
@@ -182,6 +182,15 @@ function _searchGUIElements(gui: dat.GUI, searchParams: string[], ignoreControll
 		}
 	})
 	return hasElementName
+}
+
+export function initGlobalDebug() {
+	if (DebugGuiRoot == undefined) {
+		return
+	}
+	const globalDebugFolder = DebugGuiRoot.addFolder("GlobalDebug")
+	globalDebugFolder.addButton('PIXI clearTextureCache', () => PIXI.utils.clearTextureCache())
+
 }
 
 
@@ -287,7 +296,7 @@ export class SceneDebug {
 	
 	createDebugGuiStatic() {
 		if(DEBUG && !this.disabled && DebugGuiRoot && !this.debugGuiStatic) {
-			this.debugGuiStatic = DebugGuiRoot.addFolder(this.scene.getName())
+			this.debugGuiStatic = DebugGuiRoot.addFolder(this.scene.name)
 			this.initSceneDebug()
 		}
 	}
@@ -310,15 +319,27 @@ export class SceneDebug {
 		const scene = this.scene
 		const gui = this.debugGuiStatic
 		if (gui == undefined) {
-			throw "gui is undefined"
+			throw new Error("gui is undefined")
 		}
 
 		gui.add(scene, 'autostartSim')
 		gui.add(scene, 'dt').min(0.001).max(0.1).step(0.001).onChange((dt) => scene.setDT(dt))
 		gui.add(scene, 'simSleepTime').min(0.001).max(0.1).step(0.001).onChange((s) => scene.setSimSleepTime(s))
-		gui.add(scene, 'simSpeedupFactor').min(1).max(1000).step(1).onChange((dt) => scene.setDT(dt))
+		gui.add(scene, 'simSpeedupFactor').min(1).max(1000).step(1).onChange((dt) => scene.setSpeedUpFactor(dt))
 		gui.addButton("Speeeeeed!!!!!", () => scene.setSpeedUpFactor(1000))
-		gui.addButton("Download background image", () => downloadJSONFile("pixelData "+scene.getName()+".json", scene.getContainers()._getPixelData()))
+		gui.addButton("Download background image", () => downloadJSONFile("pixelData "+scene.name+".json", scene.getContainers()._getPixelData()))
+
+		gui.add((scene as any).waypointsManager, "waypointVisibilityBehavior", ["hideAll", "showAll", "showNext", "hideAllPrevious", "showHalf"]).onChange((v) => {
+			let manager = (scene as any).waypointsManager
+			manager.waypointVisibilityBehavior = v
+			manager.updateWaypointVisibility()
+		})
+
+		if(scene instanceof RRCScoreScene) {
+			const rrc = gui.addFolder('RRC')
+			rrc.addUpdatable('Program time', () => (scene.getProgramRuntime() ?? 0).toString())
+			rrc.addUpdatable('Scene score', () => (scene.getScore() ?? 0).toString())
+		}
 
 		const unit = gui.addFolder('unit converter')
 		unit.addUpdatable('m', () => scene.unit.getLength(1))
@@ -375,9 +396,22 @@ declare module 'dat.gui' {
 		addButton(name: string, callback: () => void) : dat.GUIController
 		addUpdatable(name: string, callback: () => Object) : dat.GUIController
 
+		// used for better `propName` autocompletion
+		addGeneric<T>(target: T, propName: KeyPath<T, number | boolean | string>, a: never): GUIController;
+
+		addGeneric<T>(target: T, propName: KeyPath<T, number>, min?: number, max?: number, step?: number): GUIController;
+		addGeneric<T>(target: T, propName: KeyPath<T, boolean>, status: boolean): GUIController;
+		addGeneric<T>(target: T, propName: KeyPath<T, string>, items: string[]): GUIController;
+		addGeneric<T>(target: T, propName: KeyPath<T, number>, items: number[]): GUIController;
 	}
 
 }
+
+// type KeyPath<Root, PropertyType> = keyof { [K in keyof Root as Root[K] extends PropertyType ? K : never]: Root[K] }
+type KeyPath<Root, PropertyType> = Values<({ [K in keyof Root]: Root[K] extends PropertyType ? K : never })>
+type Values<T> = T[keyof T]
+
+dat.GUI.prototype.addGeneric = dat.GUI.prototype.add
 
 dat.GUI.prototype.addButton = function (name: string, callback: () => void) : dat.GUIController {
 	const func: any = {}
@@ -448,7 +482,7 @@ const removeFolderFromGui = dat.GUI.prototype.removeFolder
 dat.GUI.prototype.removeFolder = function(sub: dat.GUI) {
 	removeFolderFromUpdateTimer(sub)
 	removeFolderFromGui.call(this, sub)
-	//console.log('Removing dat.GUI (Folder)')
+	//Utils.log('Removing dat.GUI (Folder)')
 }
 
 const removeGUIController = dat.GUI.prototype.remove
@@ -456,6 +490,6 @@ const removeGUIController = dat.GUI.prototype.remove
 dat.GUI.prototype.remove = function(controller: dat.GUIController) {
 	removeControllerFromUpdateTimer(controller)
 	removeGUIController.call(this, controller)
-	//console.log('Removing dat.GUIController')
+	//Utils.log('Removing dat.GUIController')
 }
 

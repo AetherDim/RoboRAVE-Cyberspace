@@ -9,9 +9,9 @@ var __values = (this && this.__values) || function(o) {
     };
     throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
 };
-define(["require", "exports", "dat.gui", "./Timer"], function (require, exports, dat, Timer_1) {
+define(["require", "exports", "dat.gui", "./Timer", "./RRC/Scene/RRCScoreScene"], function (require, exports, dat, Timer_1, RRCScoreScene_1) {
     Object.defineProperty(exports, "__esModule", { value: true });
-    exports.downloadJSONFile = exports.downloadFile = exports.createReflectionGetter = exports.SceneDebug = exports.initGlobalSceneDebug = exports.createDebugGuiRoot = exports.clearDebugGuiRoot = exports.DebugGuiRoot = exports.registerDebugUpdatable = exports.DEBUG_UPDATE_TIMER = exports.DISABLE_WRAP = exports.PRINT_NON_WRAPPED_ERROR = exports.SEND_LOG = exports.DEBUG = void 0;
+    exports.downloadJSONFile = exports.downloadFile = exports.createReflectionGetter = exports.SceneDebug = exports.initGlobalSceneDebug = exports.initGlobalDebug = exports.createDebugGuiRoot = exports.clearDebugGuiRoot = exports.DebugGuiRoot = exports.registerDebugUpdatable = exports.DEBUG_UPDATE_TIMER = exports.DISABLE_WRAP = exports.PRINT_NON_WRAPPED_ERROR = exports.SEND_LOG = exports.DEBUG = void 0;
     exports.DEBUG = true;
     /**
      * Used in log.js
@@ -79,7 +79,7 @@ define(["require", "exports", "dat.gui", "./Timer"], function (require, exports,
         search[fieldName] = "";
         var searchField = exports.DebugGuiRoot.add(search, fieldName);
         searchField.onChange(function (search) {
-            //console.log(search)
+            //Utils.log(search)
             searchGUI(search, searchField);
         });
     }
@@ -90,7 +90,7 @@ define(["require", "exports", "dat.gui", "./Timer"], function (require, exports,
     function searchGUI(search, ignoreController) {
         search = search.trim().toLowerCase();
         if (exports.DebugGuiRoot == undefined) {
-            throw "DebugGuiRoot is undefined";
+            throw new Error("DebugGuiRoot is undefined");
         }
         if (search.length == 0) {
             resetAllFolders(exports.DebugGuiRoot);
@@ -168,6 +168,14 @@ define(["require", "exports", "dat.gui", "./Timer"], function (require, exports,
         });
         return hasElementName;
     }
+    function initGlobalDebug() {
+        if (exports.DebugGuiRoot == undefined) {
+            return;
+        }
+        var globalDebugFolder = exports.DebugGuiRoot.addFolder("GlobalDebug");
+        globalDebugFolder.addButton('PIXI clearTextureCache', function () { return PIXI.utils.clearTextureCache(); });
+    }
+    exports.initGlobalDebug = initGlobalDebug;
     function initGlobalSceneDebug(sceneRenderer) {
         if (!exports.DEBUG || exports.DebugGuiRoot == undefined) {
             return;
@@ -239,7 +247,7 @@ define(["require", "exports", "dat.gui", "./Timer"], function (require, exports,
         };
         SceneDebug.prototype.createDebugGuiStatic = function () {
             if (exports.DEBUG && !this.disabled && exports.DebugGuiRoot && !this.debugGuiStatic) {
-                this.debugGuiStatic = exports.DebugGuiRoot.addFolder(this.scene.getName());
+                this.debugGuiStatic = exports.DebugGuiRoot.addFolder(this.scene.name);
                 this.initSceneDebug();
             }
         };
@@ -258,14 +266,24 @@ define(["require", "exports", "dat.gui", "./Timer"], function (require, exports,
             var scene = this.scene;
             var gui = this.debugGuiStatic;
             if (gui == undefined) {
-                throw "gui is undefined";
+                throw new Error("gui is undefined");
             }
             gui.add(scene, 'autostartSim');
             gui.add(scene, 'dt').min(0.001).max(0.1).step(0.001).onChange(function (dt) { return scene.setDT(dt); });
             gui.add(scene, 'simSleepTime').min(0.001).max(0.1).step(0.001).onChange(function (s) { return scene.setSimSleepTime(s); });
-            gui.add(scene, 'simSpeedupFactor').min(1).max(1000).step(1).onChange(function (dt) { return scene.setDT(dt); });
+            gui.add(scene, 'simSpeedupFactor').min(1).max(1000).step(1).onChange(function (dt) { return scene.setSpeedUpFactor(dt); });
             gui.addButton("Speeeeeed!!!!!", function () { return scene.setSpeedUpFactor(1000); });
-            gui.addButton("Download background image", function () { return downloadJSONFile("pixelData " + scene.getName() + ".json", scene.getContainers()._getPixelData()); });
+            gui.addButton("Download background image", function () { return downloadJSONFile("pixelData " + scene.name + ".json", scene.getContainers()._getPixelData()); });
+            gui.add(scene.waypointsManager, "waypointVisibilityBehavior", ["hideAll", "showAll", "showNext", "hideAllPrevious", "showHalf"]).onChange(function (v) {
+                var manager = scene.waypointsManager;
+                manager.waypointVisibilityBehavior = v;
+                manager.updateWaypointVisibility();
+            });
+            if (scene instanceof RRCScoreScene_1.RRCScoreScene) {
+                var rrc = gui.addFolder('RRC');
+                rrc.addUpdatable('Program time', function () { var _a; return ((_a = scene.getProgramRuntime()) !== null && _a !== void 0 ? _a : 0).toString(); });
+                rrc.addUpdatable('Scene score', function () { var _a; return ((_a = scene.getScore()) !== null && _a !== void 0 ? _a : 0).toString(); });
+            }
             var unit = gui.addFolder('unit converter');
             unit.addUpdatable('m', function () { return scene.unit.getLength(1); });
             unit.addUpdatable('kg', function () { return scene.unit.getMass(1); });
@@ -313,6 +331,7 @@ define(["require", "exports", "dat.gui", "./Timer"], function (require, exports,
         };
     }
     exports.createReflectionGetter = createReflectionGetter;
+    dat.GUI.prototype.addGeneric = dat.GUI.prototype.add;
     dat.GUI.prototype.addButton = function (name, callback) {
         var func = {};
         func[name] = callback;
@@ -374,12 +393,12 @@ define(["require", "exports", "dat.gui", "./Timer"], function (require, exports,
     dat.GUI.prototype.removeFolder = function (sub) {
         removeFolderFromUpdateTimer(sub);
         removeFolderFromGui.call(this, sub);
-        //console.log('Removing dat.GUI (Folder)')
+        //Utils.log('Removing dat.GUI (Folder)')
     };
     var removeGUIController = dat.GUI.prototype.remove;
     dat.GUI.prototype.remove = function (controller) {
         removeControllerFromUpdateTimer(controller);
         removeGUIController.call(this, controller);
-        //console.log('Removing dat.GUIController')
+        //Utils.log('Removing dat.GUIController')
     };
 });

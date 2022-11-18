@@ -87,24 +87,22 @@ define(["require", "exports", "../../Utils"], function (require, exports, Utils_
         };
         //protected removeTexturesOnUnload = true;
         //protected removeBaseTexturesOnUnload = true;
+        ContainerManager.prototype.recursiveDestroySomeObjects = function (displayObject) {
+            var _this = this;
+            // Destroy all 'PIXI.Text' objects in order to prevent a large memory leak
+            // Note: Do not reuse 'PIXI.Text' objects for this reason
+            //
+            // maybe also destroy 'PIXI.Graphics' since it could be a minor memory leak
+            if (displayObject instanceof PIXI.Text) { // || displayObject instanceof PIXI.Graphics) {
+                displayObject.destroy(true);
+            }
+            else if (displayObject instanceof PIXI.Container) {
+                displayObject.children.slice().forEach(function (c) { return _this.recursiveDestroySomeObjects(c); });
+            }
+        };
         ContainerManager.prototype.clearContainer = function (container) {
-            // remove children from parent before destroy
-            // see: https://github.com/pixijs/pixi.js/issues/2800
-            // const children: PIXI.DisplayObject[] = []
-            // for (const child of container.children) {
-            // 	children.push(child)
-            // }
+            this.recursiveDestroySomeObjects(container);
             container.removeChildren();
-            // FIXME: Should we destroy the children?
-            // Note that e.g. scoreText has to be replaced since it might be destroyed
-            // children.forEach(child => {
-            // 	child.destroy();
-            // });
-            /*container.destroy({
-                children: true,
-                texture: this.removeTexturesOnUnload,
-                baseTexture: this.removeBaseTexturesOnUnload
-            });*/
         };
         ContainerManager.prototype._initialGroundDataFunction = function (x, y, w, h) {
             this.updateGroundImageDataFunction();
@@ -118,24 +116,48 @@ define(["require", "exports", "../../Utils"], function (require, exports, Utils_
         };
         ContainerManager.prototype.updateGroundImageDataFunction = function () {
             var _a;
-            console.log('init color sensor texture');
+            Utils_1.Utils.log('init color sensor texture');
             var groundVisible = this.groundContainer.visible;
             this.groundContainer.visible = true; // the container needs to be visible for this to work
             var bounds = this.groundContainer.getLocalBounds();
             var width = this.groundContainer.width;
             var height = this.groundContainer.height;
-            var pixelData = (_a = this.scene.getRenderer()) === null || _a === void 0 ? void 0 : _a.convertToPixels(this.groundContainer);
-            if (pixelData != undefined) {
-                this.pixelData = pixelData;
-                console.log("Ground container pixels checksum of " + this.scene.getName() + ": " + Utils_1.Utils.checksumFNV32(pixelData));
+            var resolution = 1;
+            // TODO: Test performance of color change of raw pixel data
+            // this.groundContainer.removeChild(...this.groundContainer.children.filter(c => c.name == "My Texture"))
+            var textureData = (_a = this.scene.getRenderer()) === null || _a === void 0 ? void 0 : _a.convertToPixels(this.groundContainer, resolution);
+            if (textureData != undefined) {
+                var pixelData_1 = textureData.data;
+                this.pixelData = pixelData_1;
+                Utils_1.Utils.log("Ground container pixels checksum of " + this.scene.name + ": " + Utils_1.Utils.checksumFNV32(pixelData_1));
+                // console.time("change array colors")
+                // const w = Math.round(width)
+                // for (let x = 0; x < textureData.width; x++) {
+                // 	for (let y = 0; y < textureData.height; y++) {
+                // 		const index = 4 * (x + y * width)
+                // 		const r = this.pixelData[index]
+                // 		if (r > 100) {
+                // 			// this.pixelData.set([0], index)
+                // 			//this.pixelData[index] = 0
+                // 		}
+                // 	}
+                // }
+                // console.timeEnd("change array colors")
+                // console.time("Make sprite")
+                // const texture = PIXI.Texture.fromBuffer(this.pixelData, textureData.width, textureData.height)
+                // const sprite = new PIXI.Sprite(texture)
+                // sprite.name = "My Texture"
+                // sprite.scale.set(1/resolution, 1/resolution)
+                // this.groundContainer.addChild(sprite)
+                // console.timeEnd("Make sprite")
                 this.getGroundImageData = function (x, y, w, h) {
                     var newX = x - bounds.x;
                     var newY = y - bounds.y;
                     var index = (Math.round(newX) + Math.round(newY) * Math.round(width)) * 4;
                     if (0 <= newX && newX <= width &&
                         0 <= newY && newY <= height &&
-                        0 <= index && index + 3 < pixelData.length) {
-                        return [pixelData[index], pixelData[index + 1], pixelData[index + 2], pixelData[index + 3]];
+                        0 <= index && index + 3 < pixelData_1.length) {
+                        return [pixelData_1[index], pixelData_1[index + 1], pixelData_1[index + 2], pixelData_1[index + 3]];
                     }
                     else {
                         return [0, 0, 0, 0];

@@ -38,7 +38,7 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
     }
     return to.concat(ar || Array.prototype.slice.call(from));
 };
-define(["require", "exports", "../RRC/Scene/RRCScene", "../Unit", "../RRC/RRAssetLoader", "../Random", "../Waypoints/WaypointList", "../Utils"], function (require, exports, RRCScene_1, Unit_1, RRC, Random_1, WaypointList_1, Utils_1) {
+define(["require", "exports", "../RRC/Scene/RRCScene", "../SharedAssetLoader", "../Unit", "../RRC/RRAssetLoader", "../Random", "../Waypoints/WaypointList", "../Utils"], function (require, exports, RRCScene_1, SharedAssetLoader_1, Unit_1, RRC, Random_1, WaypointList_1, Utils_1) {
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.TestScene2 = void 0;
     var TestScene2 = /** @class */ (function (_super) {
@@ -102,8 +102,7 @@ define(["require", "exports", "../RRC/Scene/RRCScene", "../Unit", "../RRC/RRAsse
             return new Unit_1.Unit({ m: 1000 });
         };
         TestScene2.prototype.onLoadAssets = function (chain) {
-            var _a;
-            (_a = this.loader).load.apply(_a, __spreadArray(__spreadArray([function () { return chain.next(); }], __read(this.assets), false), [RRC.GOAL_BACKGROUND], false));
+            SharedAssetLoader_1.SharedAssetLoader.load.apply(SharedAssetLoader_1.SharedAssetLoader, __spreadArray(__spreadArray([function () { return chain.next(); }], __read(this.assets), false), [RRC.GOAL_BACKGROUND], false));
         };
         TestScene2.prototype.onInit = function (chain) {
             var _this = this;
@@ -117,7 +116,7 @@ define(["require", "exports", "../RRC/Scene/RRCScene", "../Unit", "../RRC/RRAsse
                     SENSORS: portToSensorMapping
                 }
             ]);
-            var textures = this.assets.map(function (asset) { return _this.loader.get(asset).texture; });
+            var textures = this.assets.map(function (asset) { return SharedAssetLoader_1.SharedAssetLoader.get(asset).texture; });
             textures.forEach(function (texture) {
                 var sprite = new PIXI.Sprite(texture);
                 sprite.position.set((0, Random_1.randomIntBetween)(0, 300), (0, Random_1.randomIntBetween)(0, 300));

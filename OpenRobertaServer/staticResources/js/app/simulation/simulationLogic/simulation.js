@@ -23,7 +23,7 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
     }
     return to.concat(ar || Array.prototype.slice.call(from));
 };
-define(["require", "exports", "./external/SceneDesciptorList", "./Cyberspace/Cyberspace", "./UI/UIManager", "./RRC/Scene/RRCScoreScene", "./external/RESTApi", "jquery", "blockly", "guiState.controller", "nn.controller", "program.model", "message", "program.controller", "./simulation.constants", "tour.controller", "./util", "./GlobalDebug", "program.controller", "./BlocklyDebug", "./pixijs", "./ExtendedMatter"], function (require, exports, SceneDesciptorList_1, Cyberspace_1, UIManager_1, RRCScoreScene_1, RESTApi_1, $, Blockly, GUISTATE_C, NN_CTRL, PROGRAM, MSG, PROG_C, CONST, TOUR_C, UTIL, GlobalDebug_1, program_controller_1, BlocklyDebug_1) {
+define(["require", "exports", "./external/SceneDesciptorList", "./Cyberspace/Cyberspace", "./UI/UIManager", "./RRC/Scene/RRCScoreScene", "./external/RESTApi", "blockly", "guiState.controller", "nn.controller", "program.model", "message", "program.controller", "./simulation.constants", "tour.controller", "./util", "./GlobalDebug", "program.controller", "./BlocklyDebug", "./KeyManager", "./pixijs", "./ExtendedMatter"], function (require, exports, SceneDesciptorList_1, Cyberspace_1, UIManager_1, RRCScoreScene_1, RESTApi_1, Blockly, GUISTATE_C, NN_CTRL, PROGRAM, MSG, PROG_C, CONST, TOUR_C, UTIL, GlobalDebug_1, program_controller_1, BlocklyDebug_1, KeyManager_1) {
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.init = exports.setPause = void 0;
     //
@@ -31,6 +31,8 @@ define(["require", "exports", "./external/SceneDesciptorList", "./Cyberspace/Cyb
     //
     var cyberspace = new Cyberspace_1.Cyberspace('sceneCanvas', 'simDiv');
     var sceneManager = cyberspace.getSceneManager();
+    (0, GlobalDebug_1.initGlobalDebug)();
+    KeyManager_1.KeyManager.setup();
     function setInitialButtonState() {
         UIManager_1.UIManager.programControlButton.setInitialState();
         UIManager_1.UIManager.physicsSimControlButton.setInitialState();
@@ -62,6 +64,9 @@ define(["require", "exports", "./external/SceneDesciptorList", "./Cyberspace/Cyb
             return UIManager_1.UIManager.showScoreButton.setState(state == "hideScore" ? "showScore" : "hideScore");
         });
     });
+    cyberspace.onSwitchScene(function () {
+        setInitialButtonState();
+    });
     function setPause() {
         // TODO: Pause of stop?
         cyberspace.pausePrograms();
@@ -70,6 +75,7 @@ define(["require", "exports", "./external/SceneDesciptorList", "./Cyberspace/Cyb
     sceneManager.registerScene.apply(sceneManager, __spreadArray([], __read(SceneDesciptorList_1.cyberspaceScenes), false));
     // switch to first scene
     cyberspace.switchToNextScene(true);
+    buildSceneMenu();
     /**
      * @param programs
      * @param refresh `true` if "SIM" is pressed, `false` if play is pressed
@@ -96,14 +102,21 @@ define(["require", "exports", "./external/SceneDesciptorList", "./Cyberspace/Cyb
             callback(result);
         });
     }
+    /**
+     * Sets the same `robertaSetupData` for each robot.
+     * @param robertaSetupData The roberta setup data
+     */
+    function setSameSetupData(robertaSetupData) {
+        var setupDataList = Array.from({ length: cyberspace.robotCount() }).fill(robertaSetupData);
+        cyberspace.setRobertaRobotSetupData(setupDataList, GUISTATE_C.getRobotGroup());
+    }
     function simulateProgram(callback) {
         // TODO: use proper 'this' type
         requestSimAssemblyForProgram(function (result) {
             var _this = this;
             if (result.rc == 'ok') {
                 MSG.displayMessage('MESSAGE_EDIT_START', 'TOAST', GUISTATE_C.getProgramName(), undefined, undefined);
-                var setupDataList = Array.from({ length: cyberspace.robotCount() }).fill(result);
-                cyberspace.setRobertaRobotSetupData(setupDataList, GUISTATE_C.getRobotGroup());
+                setSameSetupData(result);
                 // setting the robot data might reset the scene since the configuration has changed
                 cyberspace.getScene().runAfterLoading(function () {
                     cyberspace.startPrograms();
@@ -177,13 +190,14 @@ define(["require", "exports", "./external/SceneDesciptorList", "./Cyberspace/Cyb
         cyberspace.resetView();
     });
     UIManager_1.UIManager.switchSceneButton.onClick(function () {
-        cyberspace.switchToNextScene();
+        var description = cyberspace.switchToNextScene();
+        sceneMenuSelect(description.ID);
     });
     var INITIAL_WIDTH = 0.5;
     function openSimulationView() {
         requestSimAssemblyForProgram(function (result) {
             if (result.rc == 'ok') {
-                cyberspace.setRobertaRobotSetupData([result], GUISTATE_C.getRobotGroup());
+                setSameSetupData(result);
                 if (TOUR_C.getInstance() && TOUR_C.getInstance().trigger) {
                     TOUR_C.getInstance().trigger('startSim');
                 }
@@ -293,7 +307,15 @@ define(["require", "exports", "./external/SceneDesciptorList", "./Cyberspace/Cyb
         position.left = $(window).width() - ($('#simVariablesModal').width() + 12);
         toggleModal('#simVariablesModal', position);
     });
-    function buildSceneMenu(menu, addString) {
+    function buildSceneMenu() {
+        _buildSceneMenu('#simSelectionMenuContentSmall', '_small_Menu_');
+        _buildSceneMenu('#simSelectionMenuContent', '');
+        var scenes = cyberspace.getScenes();
+        if (scenes.length > 0) {
+            sceneMenuSelect(scenes[0].ID);
+        }
+    }
+    function _buildSceneMenu(menu, addString) {
         // TODO: clear #simSelectionMenuContent??
         // seems to work without clear
         var scenes = cyberspace.getScenes();
@@ -305,16 +327,17 @@ define(["require", "exports", "./external/SceneDesciptorList", "./Cyberspace/Cyb
             }
         }
     }
-    buildSceneMenu('#simSelectionMenuContentSmall', '_small_Menu_');
-    buildSceneMenu('#simSelectionMenuContent', '');
-    $('.sim-nav').onWrap('click', 'li:not(.disabled) a', function (event) {
+    function sceneMenuSelect(sceneID) {
         $('.modal').modal('hide'); // remove modal
         $('.menuSim').parent().removeClass('disabled'); // enable all items in list
         $("#simButtonsCollapse").collapse('hide'); // collapse popup list
+        $('#' + sceneID).parent().addClass('disabled');
+        $('#' + sceneID + '_small_Menu_').parent().addClass('disabled');
+    }
+    $('.sim-nav').onWrap('click', 'li:not(.disabled) a', function (event) {
         var name = event.target.id.replace('_small_Menu_', '');
         cyberspace.loadScene(name);
-        $('#' + name).parent().addClass('disabled');
-        $('#' + name + '_small_Menu_').parent().addClass('disabled');
+        sceneMenuSelect(name);
     }, 'sim clicked');
     // UPLOAD Menu
     $('#head-navigation-upload').onWrap('click', '.dropdown-menu li:not(.disabled) a', function (event) {

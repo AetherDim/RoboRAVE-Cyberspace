@@ -185,7 +185,7 @@ export class State {
     public popArray(): StateValue[] {
         const value = this.popUnknown()
         if (!Array.isArray(value)) {
-            throw "The value not an array"
+            throw new Error("The value not an array")
         }
         return value
     }
@@ -206,9 +206,14 @@ export class State {
         return this.popUnknown() as StateValue
     }
 
-    public pop(): number {
+    public popNumber(): number {
         const value = this.popUnknown()
         Utils.assertTypeOf(value, "number")
+        return value
+    }
+
+    public pop(): unknown {
+        const value = this.popUnknown()
         return value
     }
 
@@ -271,7 +276,7 @@ export class State {
     }
 
     /**
-     * FOR DEBUGGING: write the actual array of operations to the 'console.log'. The actual operation is prefixed by '*'
+     * FOR DEBUGGING: write the actual array of operations to the 'Utils.log'. The actual operation is prefixed by '*'
      *
      * . @param msg the prefix of the message (for easy reading of the logs)
      */

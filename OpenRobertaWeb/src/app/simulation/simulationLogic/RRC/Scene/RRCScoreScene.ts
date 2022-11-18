@@ -8,30 +8,13 @@ import { EventManager, ParameterTypes } from "../../EventManager/EventManager";
 
 export class RRCScoreScene extends Scene {
 
-	readonly loader = new SharedAssetLoader();
-
 	private scoreContainer = new PIXI.Container()
 	private scoreTextContainer = new PIXI.Container()
 
 	private scoreBackgroundSprite?: PIXI.Sprite
-	private scoreText1 = new PIXI.Text("", new PIXI.TextStyle(
-	{
-		fontFamily: 'ProggyTiny',
-		fontSize: 140,
-		fill: 0xf48613
-	}))
-	private scoreText2 = new PIXI.Text("", new PIXI.TextStyle(
-	{
-		fontFamily: 'ProggyTiny',
-		fontSize: 140,
-		fill: 0xc00001
-	}))
-	private scoreText3 = new PIXI.Text("", new PIXI.TextStyle(
-	{
-		fontFamily: 'ProggyTiny',
-		fontSize: 140,
-		fill: 0x00cb01
-	}))
+	private scoreText1 = new PIXI.Text("")
+	private scoreText2 = new PIXI.Text("")
+	private scoreText3 = new PIXI.Text("")
 
 
 	score: number = 0
@@ -54,7 +37,7 @@ export class RRCScoreScene extends Scene {
 	}
 
 	onLoadScoreAssets(chain: AsyncChain) {
-		this.loader.load(() => chain.next(),
+		SharedAssetLoader.load(() => chain.next(),
 			GOAL_BACKGROUND,
 			PROGGY_TINY_FONT
 		)
@@ -63,9 +46,29 @@ export class RRCScoreScene extends Scene {
 	onInitScore(chain: AsyncChain) {
 		this.showScoreScreen(false)
 
+		const textStyle = new PIXI.TextStyle({
+			fontFamily: 'ProggyTiny',
+			fontSize: 140,
+			fill: 0xf48613
+		})
+		
+		if (this.scoreText1.parent != undefined) {
+			// if the 'scoreText' has a parent, it can be destroyed otherwise there is no
+			// gpu texture and PIXI crashes
+
+			// cleanup text (PIXI bug)
+			this.scoreText1.destroy()
+			this.scoreText2.destroy()
+			this.scoreText3.destroy()
+		}
+
+		this.scoreText1 = new PIXI.Text("", textStyle)
+		this.scoreText2 = new PIXI.Text("", textStyle)
+		this.scoreText3 = new PIXI.Text("", textStyle)
+
 		this.scoreContainer.zIndex = 1000;
 
-		let goal = this.loader.get(GOAL_BACKGROUND).texture;
+		let goal = SharedAssetLoader.get(GOAL_BACKGROUND).texture;
 		this.scoreBackgroundSprite = new PIXI.Sprite(goal)
 		this.scoreContainer.addChild(this.scoreBackgroundSprite);
 

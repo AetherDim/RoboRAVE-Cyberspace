@@ -13,7 +13,7 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-define(["require", "exports", "./RRCScene", "../RRAssetLoader", "../AgeGroup", "../../Waypoints/WaypointList", "matter-js", "../../Entities/DrawableEntity", "../../Entities/PhysicsRectEntity", "../../Robot/RobotProgramGenerator", "../../Utils"], function (require, exports, RRCScene_1, RRC, AgeGroup_1, WaypointList_1, matter_js_1, DrawableEntity_1, PhysicsRectEntity_1, RobotProgramGenerator_1, Utils_1) {
+define(["require", "exports", "./RRCScene", "../RRAssetLoader", "../AgeGroup", "../../Waypoints/WaypointList", "matter-js", "../../Entities/DrawableEntity", "../../Entities/PhysicsRectEntity", "../../Robot/RobotProgramGenerator", "../../Utils", "../../SharedAssetLoader"], function (require, exports, RRCScene_1, RRC, AgeGroup_1, WaypointList_1, matter_js_1, DrawableEntity_1, PhysicsRectEntity_1, RobotProgramGenerator_1, Utils_1, SharedAssetLoader_1) {
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.RRCLineJoustingScene = void 0;
     var RRCLineJoustingScene = /** @class */ (function (_super) {
@@ -98,7 +98,7 @@ define(["require", "exports", "./RRCScene", "../RRAssetLoader", "../AgeGroup", "
             }
         };
         RRCLineJoustingScene.prototype.onLoadAssets = function (chain) {
-            this.loader.load(function () {
+            SharedAssetLoader_1.SharedAssetLoader.load(function () {
                 chain.next();
             }, this.getAsset(), RRC.GOAL_BACKGROUND);
         };
@@ -153,7 +153,7 @@ define(["require", "exports", "./RRCScene", "../RRAssetLoader", "../AgeGroup", "
             // === set waypoints ===
             this.setWaypointList(waypointList);
             // === set graphics ===
-            var backgroundAsset = this.loader.get(this.getAsset()).texture;
+            var backgroundAsset = SharedAssetLoader_1.SharedAssetLoader.get(this.getAsset()).texture;
             //this.getContainers().groundContainer.addChild(new PIXI.Sprite(backgroundAsset));
             [
                 // white background

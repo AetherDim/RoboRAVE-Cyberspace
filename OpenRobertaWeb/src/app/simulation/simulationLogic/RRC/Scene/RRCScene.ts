@@ -23,6 +23,39 @@ export class RRCScene extends RRCScoreScene {
 			// after score init but before onInit
 			chain.addAfter(this.onInitScore, new AsyncListener(this.onRRCInit, this))
 		})
+
+		this.waypointsManager.onWaypointsDidChange = () => {
+			this.updateWaypointsText()
+		}
+
+		this.initDebugGUI()
+	}
+
+	initDebugGUI(): void {
+
+		const debug = this.debug.debugGuiStatic
+		if (debug == undefined) { return }
+		debug.addButton("Add next waypoint", () => {
+			// add a new waypoint near the selected waypoint
+			this.waypointsManager.waypointVisibilityBehavior = "showAll"
+			const waypoint = this.waypointsManager.getSelectedWaypoint()?.clone() ?? this.makeWaypoint({ x: 300, y: 300 }, 0, 30)
+			waypoint.position.x += Math.random() * 20
+			waypoint.updateGraphics()
+			this.waypointsManager.addWaypointAfterSelection(waypoint)
+		})
+		debug.addButton("Print waypoint code", () => {
+			let string = "[\n"
+			this.waypointsManager.getWaypoints().forEach(waypoint => {
+				string += waypoint.maxDistance == 30 ?
+					`wp(${waypoint.position.x}, ${waypoint.position.y}, ${waypoint.score})` :
+					`wp(${waypoint.position.x}, ${waypoint.position.y}, ${waypoint.score}, ${waypoint.maxDistance})`
+				string += ",\n"
+			})
+			string += "]"
+			Utils.log(string)
+		})
+		debug.addGeneric(this.waypointsManager, "waypointRasterSize", 0, 100, 5)
+		debug.addGeneric(this.waypointsManager, "userCanModifyWaypoints", true)
 	}
 
 	/**
@@ -36,7 +69,7 @@ export class RRCScene extends RRCScoreScene {
 
 	setWaypointList(list: WaypointList<ScoreWaypoint>, waypointVisibilityBehavior: WaypointVisibilityBehavior = "showNext") {
 		this.waypointsManager.waypointVisibilityBehavior = waypointVisibilityBehavior
-		
+
 		this.waypointsManager.resetListAndEvent(list, (idx, waypoint) => {
 			this.addToScore(waypoint.score)
 			if (idx == list.getLastWaypointIndex()) {
@@ -44,6 +77,9 @@ export class RRCScene extends RRCScoreScene {
 				this.showScoreScreen(true)
 			}
 		})
+	}
+
+	private updateWaypointsText() {
 
 		// add index text graphic to waypoints
 		this.waypointsManager.getWaypoints().forEach((waypoint, index) => {
@@ -64,11 +100,12 @@ export class RRCScene extends RRCScoreScene {
 				}))
 				text.resolution = 4
 				text.position.set(
-					waypoint.position.x - text.width/2 + xOffset,
-					waypoint.position.y - text.height/2 + yOffset)
+					- text.width/2 + xOffset,
+					- text.height/2 + yOffset)
 				return text
 			}
 
+			waypoint.graphics.removeChildren()
 			waypoint.graphics.addChild(
 				makeText(0x000000, +1, +1),
 				makeText(0x000000, -1, -1),

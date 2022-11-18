@@ -119,7 +119,7 @@ define(["require", "exports", "matter-js", "../Timer", "../ScrollView", "../Unit
             if (this.constructor.name === Scene.name) {
                 // No specialized scene => finished loading
                 this.autostartSim = false;
-                this.finishedLoading(new AsyncChain_1.AsyncChain());
+                this.finishedLoading(new AsyncChain_1.AsyncChain(), []);
             }
             // has to be called after the name has been defined
             // defined 
@@ -210,10 +210,7 @@ define(["require", "exports", "matter-js", "../Timer", "../ScrollView", "../Unit
         Scene.prototype.initDynamicDebugGui = function () {
             this.debug.createDebugGuiDynamic();
         };
-        Scene.prototype.getName = function () {
-            return this.name;
-        };
-        Scene.prototype.finishedLoading = function (chain) {
+        Scene.prototype.finishedLoading = function (chain, robotSetupData) {
             var _this_1 = this;
             var _a;
             // fake longer loading time for smooth animation
@@ -221,10 +218,12 @@ define(["require", "exports", "matter-js", "../Timer", "../ScrollView", "../Unit
             if (loadingTime < this.minLoadTime) {
                 var _this = this;
                 setTimeout(function () {
-                    _this_1.finishedLoading(chain);
+                    _this_1.finishedLoading(chain, robotSetupData);
                 }, this.minLoadTime - loadingTime);
                 return;
             }
+            // set the robot programs (after 'onInit')
+            this.setPrograms(robotSetupData);
             // update the scene size
             this.updateBounds();
             // reset view position
@@ -240,7 +239,7 @@ define(["require", "exports", "matter-js", "../Timer", "../ScrollView", "../Unit
                 // auto start simulation
                 this.startSim();
             }
-            console.log('Finished loading!');
+            Utils_1.Utils.log('Finished loading!');
             this.eventManager.onFinishedLoadingCallHandlers();
             this.finishedLoadingQueue.forEach(function (func) { return func(_this_1); });
             this.finishedLoadingQueue = [];
@@ -288,6 +287,8 @@ define(["require", "exports", "matter-js", "../Timer", "../ScrollView", "../Unit
             this.getContainers().resetGroundDataFunction();
             // remove entities
             this.getEntityManager().clear();
+            // TODO: Maybe clear texture cache in order to prevent a memory leak (check it!)
+            // PIXI.utils.clearTextureCache()
             chain.next();
         };
         /**
@@ -304,7 +305,6 @@ define(["require", "exports", "matter-js", "../Timer", "../ScrollView", "../Unit
             this.currentlyLoading = true; // this flag will start loading animation update
             this.hasFinishedLoading = false;
             this.getRobotManager().configurationManager.setRobotConfigurations(robotSetupData.map(function (setup) { return setup.configuration; }));
-            this.setPrograms(robotSetupData);
             // stop the simulation
             this.pauseSim();
             this.debug.clearDebugGuiDynamic(); // if dynamic debug gui exist, clear it
@@ -340,10 +340,12 @@ define(["require", "exports", "matter-js", "../Timer", "../ScrollView", "../Unit
                     chain.next();
                 }, thisContext: this }, { func: this.onInit, thisContext: this }, // init scene
             // swap from loading to scene, remove loading animation, cleanup, ...
-            { func: this.finishedLoading, thisContext: this });
+            { func: function (chain) {
+                    _this_1.finishedLoading(chain, robotSetupData);
+                }, thisContext: this });
             this.onChainCompleteListeners.forEach(function (listener) { return listener.call(_this_1, _this_1.loadingChain); });
-            console.log('starting to load scene!');
-            console.log('Loading stages: ' + this.loadingChain.length());
+            Utils_1.Utils.log('starting to load scene!');
+            Utils_1.Utils.log('Loading stages: ' + this.loadingChain.length());
             // start time
             this.loadingStartTime = Date.now();
             this.loadingChain.next();
@@ -479,7 +481,7 @@ define(["require", "exports", "matter-js", "../Timer", "../ScrollView", "../Unit
                     var mousePosition = ev.data.getCurrentLocalPosition();
                     var bodies = this.getBodiesAt(mousePosition);
                     if (GlobalDebug_1.DEBUG) {
-                        console.log("Mouse position: ".concat(JSON.stringify(mousePosition)));
+                        Utils_1.Utils.log("Mouse position: ".concat(JSON.stringify(mousePosition)));
                     }
                     if (bodies.length >= 1) {
                         var body = bodies[0];
@@ -514,6 +516,7 @@ define(["require", "exports", "matter-js", "../Timer", "../ScrollView", "../Unit
                 default:
                     break;
             }
+            this.waypointsManager.onInteractionEvent(ev);
             this.onInteractionEvent(ev);
         };
         /**
@@ -604,7 +607,7 @@ define(["require", "exports", "matter-js", "../Timer", "../ScrollView", "../Unit
          * unload all assets
          */
         Scene.prototype.onUnloadAssets = function (chain) {
-            console.log('on asset unload');
+            Utils_1.Utils.log('on asset unload');
             chain.next();
         };
         /**
@@ -612,7 +615,7 @@ define(["require", "exports", "matter-js", "../Timer", "../ScrollView", "../Unit
          * please do not block within this method and use the PIXI.Loader callbacks
          */
         Scene.prototype.onLoadAssets = function (chain) {
-            console.log('on asset load');
+            Utils_1.Utils.log('on asset load');
             chain.next();
         };
         /**
@@ -631,14 +634,14 @@ define(["require", "exports", "matter-js", "../Timer", "../ScrollView", "../Unit
         Scene.prototype.onInit = function (chain) {
             // create dynamic debug gui
             this.initDynamicDebugGui();
-            console.log('on init');
+            Utils_1.Utils.log('on init');
             chain.next();
         };
         /**
          * called on scene reset/unload
          */
         Scene.prototype.onDeInit = function (chain) {
-            console.log('on deinit/unload');
+            Utils_1.Utils.log('on deinit/unload');
             chain.next();
         };
         /**

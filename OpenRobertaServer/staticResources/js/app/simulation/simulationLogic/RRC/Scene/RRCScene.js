@@ -29,8 +29,41 @@ define(["require", "exports", "../../Scene/AsyncChain", "../../Robot/Robot", "ma
                 // after score init but before onInit
                 chain.addAfter(_this.onInitScore, new AsyncChain_1.AsyncListener(_this.onRRCInit, _this));
             });
+            _this.waypointsManager.onWaypointsDidChange = function () {
+                _this.updateWaypointsText();
+            };
+            _this.initDebugGUI();
             return _this;
         }
+        RRCScene.prototype.initDebugGUI = function () {
+            var _this = this;
+            var debug = this.debug.debugGuiStatic;
+            if (debug == undefined) {
+                return;
+            }
+            debug.addButton("Add next waypoint", function () {
+                var _a, _b;
+                // add a new waypoint near the selected waypoint
+                _this.waypointsManager.waypointVisibilityBehavior = "showAll";
+                var waypoint = (_b = (_a = _this.waypointsManager.getSelectedWaypoint()) === null || _a === void 0 ? void 0 : _a.clone()) !== null && _b !== void 0 ? _b : _this.makeWaypoint({ x: 300, y: 300 }, 0, 30);
+                waypoint.position.x += Math.random() * 20;
+                waypoint.updateGraphics();
+                _this.waypointsManager.addWaypointAfterSelection(waypoint);
+            });
+            debug.addButton("Print waypoint code", function () {
+                var string = "[\n";
+                _this.waypointsManager.getWaypoints().forEach(function (waypoint) {
+                    string += waypoint.maxDistance == 30 ?
+                        "wp(".concat(waypoint.position.x, ", ").concat(waypoint.position.y, ", ").concat(waypoint.score, ")") :
+                        "wp(".concat(waypoint.position.x, ", ").concat(waypoint.position.y, ", ").concat(waypoint.score, ", ").concat(waypoint.maxDistance, ")");
+                    string += ",\n";
+                });
+                string += "]";
+                Utils_1.Utils.log(string);
+            });
+            debug.addGeneric(this.waypointsManager, "waypointRasterSize", 0, 100, 5);
+            debug.addGeneric(this.waypointsManager, "userCanModifyWaypoints", true);
+        };
         /**
          * @param position The position of the waypoint in matter Units
          * @param score The score for reaching the waypoint
@@ -51,6 +84,8 @@ define(["require", "exports", "../../Scene/AsyncChain", "../../Robot/Robot", "ma
                     _this.showScoreScreen(true);
                 }
             });
+        };
+        RRCScene.prototype.updateWaypointsText = function () {
             // add index text graphic to waypoints
             this.waypointsManager.getWaypoints().forEach(function (waypoint, index) {
                 var waypointText = String(index);
@@ -67,9 +102,10 @@ define(["require", "exports", "../../Scene/AsyncChain", "../../Robot/Robot", "ma
                         align: 'center',
                     }));
                     text.resolution = 4;
-                    text.position.set(waypoint.position.x - text.width / 2 + xOffset, waypoint.position.y - text.height / 2 + yOffset);
+                    text.position.set(-text.width / 2 + xOffset, -text.height / 2 + yOffset);
                     return text;
                 }
+                waypoint.graphics.removeChildren();
                 waypoint.graphics.addChild(makeText(0x000000, +1, +1), makeText(0x000000, -1, -1), makeText(0xf48613, 0, 0));
             });
         };

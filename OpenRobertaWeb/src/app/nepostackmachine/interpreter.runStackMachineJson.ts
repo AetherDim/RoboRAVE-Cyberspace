@@ -165,5 +165,5 @@ function padEnd(s: string, len: number) {
 }
 
 function p(msg) {
-    console.log(msg);
+    Utils.log(msg);
 }

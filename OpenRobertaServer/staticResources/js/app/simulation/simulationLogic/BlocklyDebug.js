@@ -23,7 +23,7 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
     }
     return to.concat(ar || Array.prototype.slice.call(from));
 };
-define(["require", "exports", "blockly", "./Timer", "./interpreter.jsHelper"], function (require, exports, Blockly, Timer_1, stackmachineJsHelper) {
+define(["require", "exports", "blockly", "./Timer", "./interpreter.jsHelper", "./Utils"], function (require, exports, Blockly, Timer_1, stackmachineJsHelper, Utils_1) {
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.BlocklyDebug = void 0;
     var BlocklyDebug = /** @class */ (function () {
@@ -42,7 +42,7 @@ define(["require", "exports", "blockly", "./Timer", "./interpreter.jsHelper"], f
             });
             this.registerBlocklyChangeListener();
             this.startBlocklyUpdate();
-            console.log("Debug manager created!");
+            Utils_1.Utils.log("Debug manager created!");
         }
         BlocklyDebug.prototype.clearCurrentBlockIDs = function () {
             this.currentBlocks.splice(0, this.currentBlocks.length);
@@ -72,7 +72,6 @@ define(["require", "exports", "blockly", "./Timer", "./interpreter.jsHelper"], f
             var workspace = Blockly.getMainWorkspace();
             if (workspace) {
                 workspace.addChangeListener(function (event) {
-                    console.log(event);
                     if (event.element == "click") {
                         if (_this_1.debugMode) {
                             // Toggle breakpoint
@@ -190,7 +189,7 @@ define(["require", "exports", "blockly", "./Timer", "./interpreter.jsHelper"], f
         };
         /** removes breakpoint with breakpointID */
         BlocklyDebug.prototype.removeBreakpoint = function (breakpointID) {
-            console.log("remove breakpoint: " + breakpointID);
+            Utils_1.Utils.log("remove breakpoint: " + breakpointID);
             for (var i = 0; i < this.breakpointIDs.length; i++) {
                 if (this.breakpointIDs[i] === breakpointID) {
                     this.breakpointIDs.splice(i, 1);
@@ -200,7 +199,7 @@ define(["require", "exports", "blockly", "./Timer", "./interpreter.jsHelper"], f
             this.removeHighlights([breakpointID]);
         };
         BlocklyDebug.prototype.addBreakpoint = function (breakpointID) {
-            console.log("add breakpoint: " + breakpointID);
+            Utils_1.Utils.log("add breakpoint: " + breakpointID);
             // TODO: double includes if called from event
             if (!this.breakpointIDs.includes(breakpointID)) {
                 this.breakpointIDs.push(breakpointID);

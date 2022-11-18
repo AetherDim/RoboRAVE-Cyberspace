@@ -17,6 +17,8 @@ export class Waypoint extends DrawableEntity<PIXI.Graphics> {
 	 */
 	maxDistance: number
 
+	lineColor = 0x0000FF
+
 	readonly graphics: PIXI.Graphics
 
 	/**
@@ -49,11 +51,12 @@ export class Waypoint extends DrawableEntity<PIXI.Graphics> {
 	}
 
 	updateGraphics() {
+		this.graphics.position.set(this.position.x, this.position.y)
 		this.graphics
 			.clear()
-			.lineStyle(4, 0x0000FF)
+			.lineStyle(4, this.lineColor)
 			.beginFill(undefined, 0)
-			.drawCircle(this.position.x, this.position.y, this.maxDistance)
+			.drawCircle(0, 0, this.maxDistance)
 			.endFill()
 	}
 
