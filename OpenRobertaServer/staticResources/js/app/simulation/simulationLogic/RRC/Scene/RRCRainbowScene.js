@@ -467,7 +467,7 @@ define(["require", "exports", "./RRCScene", "../AgeGroup", "../RRAssetLoader", "
             }, this.backgroundAsset, RRC.GOAL_BACKGROUND);
         };
         RRCRainbowScene.prototype.getMaximumTimeBonusScore = function () {
-            return 60 * 5;
+            return 60 * 10;
         };
         RRCRainbowScene.prototype.onInit = function (chain) {
             var _this = this;

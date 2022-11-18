@@ -874,7 +874,7 @@ export class RRCLabyrinthScene extends RRCScene {
 	}
 
 	getMaximumTimeBonusScore() {
-		return 60 * 3
+		return 60 * 6
 	}
 
 	onInit(chain: AsyncChain) {

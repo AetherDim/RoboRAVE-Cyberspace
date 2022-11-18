@@ -849,7 +849,7 @@ define(["require", "exports", "../AgeGroup", "./RRCScene", "../RRAssetLoader", "
             }
         };
         RRCLabyrinthScene.prototype.getMaximumTimeBonusScore = function () {
-            return 60 * 3;
+            return 60 * 6;
         };
         RRCLabyrinthScene.prototype.onInit = function (chain) {
             var _this = this;

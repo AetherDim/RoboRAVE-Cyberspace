@@ -513,7 +513,7 @@ export class RRCRainbowScene extends RRCScene {
 	}
 
 	getMaximumTimeBonusScore() {
-		return 60 * 5
+		return 60 * 10
 	}
 
 	onInit(chain: AsyncChain) {
