@@ -23,21 +23,82 @@ export class UIRobertaButton extends UIElement {
 
 }
 
-export class UIRobertaStateButton<T extends { [key in string]: RobertaButtonSettings }> extends UIElement {
-	protected stateMappingObject: T
-	protected state: keyof T
-	readonly initialState: keyof T
+class OrderedMap<T extends [unknown, unknown][]> {
 
-	private stateChangeHandler?: (state: keyof T) => keyof T
-	private clickHandlers: ((state: keyof T) => void)[] = []
+	values: T
+	constructor(values: T) {
+		this.values = values
+	}
+
+	get(key: T[number][0]): T[number][1] | undefined {
+		const index = this.indexOfKey(key)
+		if (index == -1) {
+			return undefined
+		}
+		return this.values[index][1]
+	}
+
+	contains(key: T[number][0]): boolean {
+		return this.indexOfKey(key) != 1
+	}
+
+	set(key: T[number][0], value: T[number][1]) {
+		if (this.contains(key)) {
+			return
+		}
+		this.values.push([key, value])
+	}
+
+	indexOfKey(key: T[number][0]): number {
+		return this.values.findIndex(keyValue => keyValue[0] == key)
+	}
+}
+
+class ReadonlyOrderedMap<T extends readonly (readonly [unknown, unknown])[]> {
+
+	keyValuePairs: T
+	constructor(values: T) {
+		this.keyValuePairs = values
+	}
+
+	get(key: T[number][0]): T[number][1] | undefined {
+		const index = this.indexOfKey(key)
+		if (index == -1) {
+			return undefined
+		}
+		return this.keyValuePairs[index][1]
+	}
+
+	contains(key: T[number][0]): boolean {
+		return this.indexOfKey(key) != 1
+	}
+
+	indexOfKey(key: T[number][0]): number {
+		return this.keyValuePairs.findIndex(keyValue => keyValue[0] == key)
+	}
+}
+
+
+/**
+ * Use the state as an 'action' or actual 'state'. See `onClick`
+ */
+export class UIRobertaStateButton<State extends string> extends UIElement {
+
+	protected stateMappingObject: ReadonlyOrderedMap<readonly (readonly [State, RobertaButtonSettings])[]>
+	protected state: State
+	readonly initialState: State
+
+	private stateChangeHandler?: (state: State) => State
+	/** 'oldState' is equivalent to 'action' */
+	private clickHandlers: ((oldState: State, newState: State) => void)[] = []
 
 	// TODO: Convert all the 'onWrap' js code to use the 'UIManager'
 	// Workaround since 'onWrap' is not loaded initially
 	private needsOnWrapHandler = true
 
-	constructor(buttonID: string, initialState: keyof T, buttonSettingsState: T) {
+	constructor(buttonID: string, initialState: State, buttonSettingsState: readonly (readonly [State, RobertaButtonSettings])[]) {
 		super({ id : buttonID })
-		this.stateMappingObject = buttonSettingsState
+		this.stateMappingObject = new ReadonlyOrderedMap(buttonSettingsState)
 		this.state = initialState
 		this.initialState = initialState
 
@@ -46,7 +107,7 @@ export class UIRobertaStateButton<T extends { [key in string]: RobertaButtonSett
 		//this.setButtonEventHandler()
 	}
 
-	getState(): keyof T {
+	getState(): State {
 		return this.state
 	}
 
@@ -58,15 +119,15 @@ export class UIRobertaStateButton<T extends { [key in string]: RobertaButtonSett
 			return
 		}
 		if (this.jQueryHTMLElement.onWrap !== undefined) {
-			const t = this;
 			this.jQueryHTMLElement.onWrap("click", () => {
-				t.jQueryHTMLElement.removeClass(t.stateMappingObject[t.state].class)
-				const state = t.state
-				t.clickHandlers.forEach(handler => handler(state))
-				t.state = t.stateChangeHandler?.(state) ?? state
-				const buttonSettings = t.stateMappingObject[t.state]
-				t.jQueryHTMLElement.addClass(buttonSettings.class)
-				t.jQueryHTMLElement.attr("data-original-title", buttonSettings.tooltip ?? "");
+				
+				const oldState = this.state
+				const newState = this.stateChangeHandler?.(oldState) ?? oldState
+				this.state = newState
+
+				this.clickHandlers.forEach(handler => handler(oldState, newState))
+
+				this.update()
 			}, this.jQueryString + " clicked")
 		} else {
 			// workaround for onWrap not loaded
@@ -86,19 +147,20 @@ export class UIRobertaStateButton<T extends { [key in string]: RobertaButtonSett
 	 * 
 	 * @returns `this`
 	 */
-	setStateChangeHandler(stateChangeHandler: (state: keyof T) => keyof T): UIRobertaStateButton<T> {
+	setStateChangeHandler(stateChangeHandler: (state: State) => State): UIRobertaStateButton<State> {
 		this.stateChangeHandler = stateChangeHandler
 		return this
 	}
 
 	/**
 	 * Adds `onClickHandler` to the click handler list.
+	 * One can use the 'action' which is the 'oldState' as a button action, or use 'newState' as the actual state.
 	 * 
 	 * @param onClickHandler will be called with the state in which the button is in **before** the state change.
 	 * 
 	 * @returns `this`
 	 */
-	onClick(onClickHandler: (state: keyof T) => void): UIRobertaStateButton<T> {
+	onClick(onClickHandler: (action: State, newState: State) => void): UIRobertaStateButton<State> {
 		// TODO: 'setButtonEventHandler' to the constructor if all 'onWrap' code is converted to TypeScript 
 		this.setButtonEventHandler()
 		this.clickHandlers.push(onClickHandler)
@@ -107,15 +169,17 @@ export class UIRobertaStateButton<T extends { [key in string]: RobertaButtonSett
 
 	update() {
 		// remove all classes in 'stateMappingObject'
-		Object.values(this.stateMappingObject).forEach(buttonSettings =>
-			this.jQueryHTMLElement.removeClass(buttonSettings.class))
+		this.stateMappingObject.keyValuePairs.forEach(value =>
+			this.jQueryHTMLElement.removeClass(value[1].class))
 		// add the state class
-		const buttonSettings = this.stateMappingObject[this.state]
-		this.jQueryHTMLElement.addClass(buttonSettings.class)
-		this.jQueryHTMLElement.attr("data-original-title", buttonSettings.tooltip ?? "");
+		const buttonSettings = this.stateMappingObject.get(this.state)
+		if (buttonSettings != undefined) {
+			this.jQueryHTMLElement.addClass(buttonSettings.class)
+			this.jQueryHTMLElement.attr("data-original-title", buttonSettings.tooltip ?? "");
+		}
 	}
 
-	setState(state: keyof T) {
+	setState(state: State) {
 		this.state = state
 		this.update()
 	}
@@ -126,15 +190,21 @@ export type TwoProperties<T, PropertyType> =
 		? { [key in string]: PropertyType }
 		: never
 
-export class UIRobertaToggleStateButton<T extends TwoProperties<T, RobertaButtonSettings>> extends UIRobertaStateButton<T> {
+export class UIRobertaToggleStateButton<State extends string> extends UIRobertaStateButton<State> {
 
-	constructor(buttonID: string, initialState: keyof T, buttonSettingsState: T) {
-		super(buttonID, initialState, buttonSettingsState)
-		this.setStateChangeHandler(state => {
-			const keys = Object.keys(buttonSettingsState)
-			return keys[keys.indexOf(state as string) == 0 ? 1 : 0]
+	static make<Initial extends State, State extends string>(
+		buttonID: string,
+		initialState: Initial,
+		buttonSettingsState: readonly (readonly [State, RobertaButtonSettings])[],
+	): UIRobertaStateButton<State> {
+		const newButton = new UIRobertaToggleStateButton(buttonID, initialState, buttonSettingsState)
+		newButton.setStateChangeHandler(state => {
+			const index = newButton.stateMappingObject.indexOfKey(state) + 1
+			const values = newButton.stateMappingObject.keyValuePairs
+			return values[index % values.length][0]
 		})
-		this.setState(initialState)
+		newButton.setState(initialState)
+		return newButton
 	}
 
 }
@@ -143,29 +213,30 @@ const BlocklyMsg: any = Blockly.Msg
 
 export class UIManager {
 
-	static readonly programControlButton = new UIRobertaToggleStateButton(
-		"simControl", "start", {
-			start: { class: "typcn-media-play", tooltip: BlocklyMsg.MENU_SIM_START_TOOLTIP },
-			stop: { class: "typcn-media-stop", tooltip: BlocklyMsg.MENU_SIM_STOP_TOOLTIP }
-		})
+	static readonly programControlButton = UIRobertaToggleStateButton.make(
+		"simControl", "start", [
+			["start", { class: "typcn-media-play", tooltip: BlocklyMsg.MENU_SIM_START_TOOLTIP }],
+			["stop", { class: "typcn-media-stop", tooltip: BlocklyMsg.MENU_SIM_STOP_TOOLTIP }]
+		] as const)
 
-	static readonly physicsSimControlButton = new UIRobertaToggleStateButton(
-		"simFLowControl", "stop", {
-			start: { class: "typcn-flash-outline", tooltip: "Start simulation" },
-			stop: { class: "typcn-flash", tooltip: "Stop simulation"}
-		})
+	static readonly physicsSimControlButton = UIRobertaToggleStateButton.make(
+		"simFLowControl", "stop", [
+			["start", { class: "typcn-flash-outline", tooltip: "Start simulation" }],
+			["stop", { class: "typcn-flash", tooltip: "Stop simulation"}]
+		] as const)
 	
-	static readonly showScoreButton = new UIRobertaToggleStateButton(
-		"simScore", "showScore", {
-			showScore: { class: "typcn-star" },
-			hideScore: { class: "typcn-star-outline" },
-		})
+	static readonly showScoreButton = UIRobertaToggleStateButton.make(
+		"simScore", "showScore", [
+			["showScore", { class: "typcn-star" }],
+			["hideScore", { class: "typcn-star-outline" }],
+		] as const)
 	
-	static readonly simSpeedUpButton = new UIRobertaToggleStateButton(
-		"simSpeedUp", "fastForward" , {
-			fastForward: { class: "typcn-media-fast-forward-outline" },
-			normalSpeed: { class: "typcn-media-fast-forward" }
-		}
+	static readonly simSpeedUpButton = UIRobertaToggleStateButton.make(
+		"simSpeedUp", "fastForward" , [
+			["normalSpeed", { class: "typcn-media-fast-forward-outline" }],
+			["fastForward", { class: "typcn-media-fast-forward" }],
+			["ultraFast", { class: "typcn-infinity-outline" }]
+		] as const
 	)
 
 	// simResetPose is handled by roberta itself
@@ -189,9 +260,9 @@ export class UIManager {
 	static readonly debugVariablesButton = new UIRobertaButton({ id: "simVariables" })
 
 
-	static readonly simViewButton = new UIRobertaToggleStateButton("simButton", "open", {
-		closed: { class: "" },
-		open: { class: "" }
-	})
+	static readonly simViewButton = UIRobertaToggleStateButton.make("simButton", "open", [
+		["closed", { class: "" }],
+		["open", { class: "" }]
+	] as const)
 
 }

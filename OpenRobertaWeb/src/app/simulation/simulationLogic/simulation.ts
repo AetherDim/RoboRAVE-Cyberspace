@@ -19,6 +19,7 @@ import {DEBUG, initGlobalDebug} from "./GlobalDebug";
 import {getProgramLink} from "program.controller";
 import {BlocklyDebug} from "./BlocklyDebug";
 import { KeyManager } from './KeyManager';
+import { Utils } from './Utils';
 
 //
 // init all components for a simulation
@@ -35,9 +36,13 @@ function setInitialButtonState() {
 	UIManager.physicsSimControlButton.setInitialState()
 	const scene = cyberspace.getScene()
 	if (scene.getSpeedUpFactor() > scene.getMinSpeedUpFactor()) { 
-		UIManager.simSpeedUpButton.setState("normalSpeed")
+		if (scene.getSpeedUpFactor() > 10) {
+			UIManager.simSpeedUpButton.setState("ultraFast")
+		} else {
+			UIManager.simSpeedUpButton.setState("fastForward")
+		}
 	} else {
-		UIManager.simSpeedUpButton.setState("fastForward")
+		UIManager.simSpeedUpButton.setState("normalSpeed")
 	}
 	UIManager.showScoreButton.setInitialState()
 }
@@ -196,8 +201,14 @@ UIManager.showScoreButton.onClick(state => {
 	}
 })
 
-UIManager.simSpeedUpButton.onClick(state => {
-	const speedup = state == "normalSpeed" ? 1 : 10;
+UIManager.simSpeedUpButton.onClick((_, newState) => {
+	let speedup = 1
+	switch (newState) {
+		case "normalSpeed": speedup = 1; break
+		case "fastForward": speedup = 10; break
+		case "ultraFast": speedup = 100; break
+		default: Utils.exhaustiveSwitch(newState)
+	}
 	cyberspace.setSimulationSpeedupFactor(speedup)
 })
 

@@ -35,15 +35,63 @@ define(["require", "exports", "blockly", "./UIElement"], function (require, expo
         return UIRobertaButton;
     }(UIElement_1.UIElement));
     exports.UIRobertaButton = UIRobertaButton;
+    var OrderedMap = /** @class */ (function () {
+        function OrderedMap(values) {
+            this.values = values;
+        }
+        OrderedMap.prototype.get = function (key) {
+            var index = this.indexOfKey(key);
+            if (index == -1) {
+                return undefined;
+            }
+            return this.values[index][1];
+        };
+        OrderedMap.prototype.contains = function (key) {
+            return this.indexOfKey(key) != 1;
+        };
+        OrderedMap.prototype.set = function (key, value) {
+            if (this.contains(key)) {
+                return;
+            }
+            this.values.push([key, value]);
+        };
+        OrderedMap.prototype.indexOfKey = function (key) {
+            return this.values.findIndex(function (keyValue) { return keyValue[0] == key; });
+        };
+        return OrderedMap;
+    }());
+    var ReadonlyOrderedMap = /** @class */ (function () {
+        function ReadonlyOrderedMap(values) {
+            this.keyValuePairs = values;
+        }
+        ReadonlyOrderedMap.prototype.get = function (key) {
+            var index = this.indexOfKey(key);
+            if (index == -1) {
+                return undefined;
+            }
+            return this.keyValuePairs[index][1];
+        };
+        ReadonlyOrderedMap.prototype.contains = function (key) {
+            return this.indexOfKey(key) != 1;
+        };
+        ReadonlyOrderedMap.prototype.indexOfKey = function (key) {
+            return this.keyValuePairs.findIndex(function (keyValue) { return keyValue[0] == key; });
+        };
+        return ReadonlyOrderedMap;
+    }());
+    /**
+     * Use the state as an 'action' or actual 'state'. See `onClick`
+     */
     var UIRobertaStateButton = /** @class */ (function (_super) {
         __extends(UIRobertaStateButton, _super);
         function UIRobertaStateButton(buttonID, initialState, buttonSettingsState) {
             var _this = _super.call(this, { id: buttonID }) || this;
+            /** 'oldState' is equivalent to 'action' */
             _this.clickHandlers = [];
             // TODO: Convert all the 'onWrap' js code to use the 'UIManager'
             // Workaround since 'onWrap' is not loaded initially
             _this.needsOnWrapHandler = true;
-            _this.stateMappingObject = buttonSettingsState;
+            _this.stateMappingObject = new ReadonlyOrderedMap(buttonSettingsState);
             _this.state = initialState;
             _this.initialState = initialState;
             return _this;
@@ -63,16 +111,13 @@ define(["require", "exports", "blockly", "./UIElement"], function (require, expo
                 return;
             }
             if (this.jQueryHTMLElement.onWrap !== undefined) {
-                var t_1 = this;
                 this.jQueryHTMLElement.onWrap("click", function () {
-                    var _a, _b, _c;
-                    t_1.jQueryHTMLElement.removeClass(t_1.stateMappingObject[t_1.state].class);
-                    var state = t_1.state;
-                    t_1.clickHandlers.forEach(function (handler) { return handler(state); });
-                    t_1.state = (_b = (_a = t_1.stateChangeHandler) === null || _a === void 0 ? void 0 : _a.call(t_1, state)) !== null && _b !== void 0 ? _b : state;
-                    var buttonSettings = t_1.stateMappingObject[t_1.state];
-                    t_1.jQueryHTMLElement.addClass(buttonSettings.class);
-                    t_1.jQueryHTMLElement.attr("data-original-title", (_c = buttonSettings.tooltip) !== null && _c !== void 0 ? _c : "");
+                    var _a, _b;
+                    var oldState = _this.state;
+                    var newState = (_b = (_a = _this.stateChangeHandler) === null || _a === void 0 ? void 0 : _a.call(_this, oldState)) !== null && _b !== void 0 ? _b : oldState;
+                    _this.state = newState;
+                    _this.clickHandlers.forEach(function (handler) { return handler(oldState, newState); });
+                    _this.update();
                 }, this.jQueryString + " clicked");
             }
             else {
@@ -97,6 +142,7 @@ define(["require", "exports", "blockly", "./UIElement"], function (require, expo
         };
         /**
          * Adds `onClickHandler` to the click handler list.
+         * One can use the 'action' which is the 'oldState' as a button action, or use 'newState' as the actual state.
          *
          * @param onClickHandler will be called with the state in which the button is in **before** the state change.
          *
@@ -112,13 +158,15 @@ define(["require", "exports", "blockly", "./UIElement"], function (require, expo
             var _this = this;
             var _a;
             // remove all classes in 'stateMappingObject'
-            Object.values(this.stateMappingObject).forEach(function (buttonSettings) {
-                return _this.jQueryHTMLElement.removeClass(buttonSettings.class);
+            this.stateMappingObject.keyValuePairs.forEach(function (value) {
+                return _this.jQueryHTMLElement.removeClass(value[1].class);
             });
             // add the state class
-            var buttonSettings = this.stateMappingObject[this.state];
-            this.jQueryHTMLElement.addClass(buttonSettings.class);
-            this.jQueryHTMLElement.attr("data-original-title", (_a = buttonSettings.tooltip) !== null && _a !== void 0 ? _a : "");
+            var buttonSettings = this.stateMappingObject.get(this.state);
+            if (buttonSettings != undefined) {
+                this.jQueryHTMLElement.addClass(buttonSettings.class);
+                this.jQueryHTMLElement.attr("data-original-title", (_a = buttonSettings.tooltip) !== null && _a !== void 0 ? _a : "");
+            }
         };
         UIRobertaStateButton.prototype.setState = function (state) {
             this.state = state;
@@ -129,15 +177,19 @@ define(["require", "exports", "blockly", "./UIElement"], function (require, expo
     exports.UIRobertaStateButton = UIRobertaStateButton;
     var UIRobertaToggleStateButton = /** @class */ (function (_super) {
         __extends(UIRobertaToggleStateButton, _super);
-        function UIRobertaToggleStateButton(buttonID, initialState, buttonSettingsState) {
-            var _this = _super.call(this, buttonID, initialState, buttonSettingsState) || this;
-            _this.setStateChangeHandler(function (state) {
-                var keys = Object.keys(buttonSettingsState);
-                return keys[keys.indexOf(state) == 0 ? 1 : 0];
-            });
-            _this.setState(initialState);
-            return _this;
+        function UIRobertaToggleStateButton() {
+            return _super !== null && _super.apply(this, arguments) || this;
         }
+        UIRobertaToggleStateButton.make = function (buttonID, initialState, buttonSettingsState) {
+            var newButton = new UIRobertaToggleStateButton(buttonID, initialState, buttonSettingsState);
+            newButton.setStateChangeHandler(function (state) {
+                var index = newButton.stateMappingObject.indexOfKey(state) + 1;
+                var values = newButton.stateMappingObject.keyValuePairs;
+                return values[index % values.length][0];
+            });
+            newButton.setState(initialState);
+            return newButton;
+        };
         return UIRobertaToggleStateButton;
     }(UIRobertaStateButton));
     exports.UIRobertaToggleStateButton = UIRobertaToggleStateButton;
@@ -145,22 +197,23 @@ define(["require", "exports", "blockly", "./UIElement"], function (require, expo
     var UIManager = /** @class */ (function () {
         function UIManager() {
         }
-        UIManager.programControlButton = new UIRobertaToggleStateButton("simControl", "start", {
-            start: { class: "typcn-media-play", tooltip: BlocklyMsg.MENU_SIM_START_TOOLTIP },
-            stop: { class: "typcn-media-stop", tooltip: BlocklyMsg.MENU_SIM_STOP_TOOLTIP }
-        });
-        UIManager.physicsSimControlButton = new UIRobertaToggleStateButton("simFLowControl", "stop", {
-            start: { class: "typcn-flash-outline", tooltip: "Start simulation" },
-            stop: { class: "typcn-flash", tooltip: "Stop simulation" }
-        });
-        UIManager.showScoreButton = new UIRobertaToggleStateButton("simScore", "showScore", {
-            showScore: { class: "typcn-star" },
-            hideScore: { class: "typcn-star-outline" },
-        });
-        UIManager.simSpeedUpButton = new UIRobertaToggleStateButton("simSpeedUp", "fastForward", {
-            fastForward: { class: "typcn-media-fast-forward-outline" },
-            normalSpeed: { class: "typcn-media-fast-forward" }
-        });
+        UIManager.programControlButton = UIRobertaToggleStateButton.make("simControl", "start", [
+            ["start", { class: "typcn-media-play", tooltip: BlocklyMsg.MENU_SIM_START_TOOLTIP }],
+            ["stop", { class: "typcn-media-stop", tooltip: BlocklyMsg.MENU_SIM_STOP_TOOLTIP }]
+        ]);
+        UIManager.physicsSimControlButton = UIRobertaToggleStateButton.make("simFLowControl", "stop", [
+            ["start", { class: "typcn-flash-outline", tooltip: "Start simulation" }],
+            ["stop", { class: "typcn-flash", tooltip: "Stop simulation" }]
+        ]);
+        UIManager.showScoreButton = UIRobertaToggleStateButton.make("simScore", "showScore", [
+            ["showScore", { class: "typcn-star" }],
+            ["hideScore", { class: "typcn-star-outline" }],
+        ]);
+        UIManager.simSpeedUpButton = UIRobertaToggleStateButton.make("simSpeedUp", "fastForward", [
+            ["normalSpeed", { class: "typcn-media-fast-forward-outline" }],
+            ["fastForward", { class: "typcn-media-fast-forward" }],
+            ["ultraFast", { class: "typcn-infinity-outline" }]
+        ]);
         // simResetPose is handled by roberta itself
         UIManager.resetSceneButton = new UIRobertaButton({ id: "simResetPose" });
         UIManager.zoomOutButton = new UIRobertaButton({ id: "zoomOut" });
@@ -175,10 +228,10 @@ define(["require", "exports", "blockly", "./UIElement"], function (require, expo
         UIManager.debugStepIntoButton = new UIRobertaButton({ id: "simControlStepInto" });
         UIManager.debugStepBreakPointButton = new UIRobertaButton({ id: "simControlBreakPoint" });
         UIManager.debugVariablesButton = new UIRobertaButton({ id: "simVariables" });
-        UIManager.simViewButton = new UIRobertaToggleStateButton("simButton", "open", {
-            closed: { class: "" },
-            open: { class: "" }
-        });
+        UIManager.simViewButton = UIRobertaToggleStateButton.make("simButton", "open", [
+            ["closed", { class: "" }],
+            ["open", { class: "" }]
+        ]);
         return UIManager;
     }());
     exports.UIManager = UIManager;

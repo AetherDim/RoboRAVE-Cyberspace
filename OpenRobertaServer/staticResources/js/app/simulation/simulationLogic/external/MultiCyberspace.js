@@ -513,9 +513,22 @@ define(["require", "exports", "../Cyberspace/Cyberspace", "../GlobalDebug", "../
         UIManager_1.UIManager.physicsSimControlButton.onClick(function (state) {
             return sim(state == "start");
         });
-        UIManager_1.UIManager.simSpeedUpButton.setState("fastForward");
-        UIManager_1.UIManager.simSpeedUpButton.onClick(function (state) {
-            return setSimSpeed(state == "fastForward" ? 10 : 1);
+        UIManager_1.UIManager.simSpeedUpButton.setState("normalSpeed");
+        UIManager_1.UIManager.simSpeedUpButton.onClick(function (_, state) {
+            var speedup = 0;
+            switch (state) {
+                case "normalSpeed":
+                    speedup = 1;
+                    break;
+                case "fastForward":
+                    speedup = 10;
+                    break;
+                case "ultraFast":
+                    speedup = 100;
+                    break;
+                default: Utils_1.Utils.exhaustiveSwitch(state);
+            }
+            setSimSpeed(speedup);
         });
         UIManager_1.UIManager.resetSceneButton.onClick(function () {
             setInitialButtonState();

@@ -597,9 +597,17 @@ export function initEvents() {
 	UIManager.physicsSimControlButton.onClick(state =>
 		sim(state == "start"))
 
-	UIManager.simSpeedUpButton.setState("fastForward")
-	UIManager.simSpeedUpButton.onClick(state =>
-		setSimSpeed(state == "fastForward" ? 10 : 1))
+	UIManager.simSpeedUpButton.setState("normalSpeed")
+	UIManager.simSpeedUpButton.onClick((_, state) => {
+		let speedup = 0
+		switch (state) {
+			case "normalSpeed": speedup = 1; break
+			case "fastForward": speedup = 10; break
+			case "ultraFast": speedup = 100; break
+			default: Utils.exhaustiveSwitch(state)
+		}
+		setSimSpeed(speedup)
+	})
 
 	UIManager.resetSceneButton.onClick(() => {
 		setInitialButtonState()

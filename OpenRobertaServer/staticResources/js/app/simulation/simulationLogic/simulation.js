@@ -23,7 +23,7 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
     }
     return to.concat(ar || Array.prototype.slice.call(from));
 };
-define(["require", "exports", "./external/SceneDesciptorList", "./Cyberspace/Cyberspace", "./UI/UIManager", "./RRC/Scene/RRCScoreScene", "./external/RESTApi", "blockly", "guiState.controller", "nn.controller", "program.model", "message", "program.controller", "./simulation.constants", "tour.controller", "./util", "./GlobalDebug", "program.controller", "./BlocklyDebug", "./KeyManager", "./pixijs", "./ExtendedMatter"], function (require, exports, SceneDesciptorList_1, Cyberspace_1, UIManager_1, RRCScoreScene_1, RESTApi_1, Blockly, GUISTATE_C, NN_CTRL, PROGRAM, MSG, PROG_C, CONST, TOUR_C, UTIL, GlobalDebug_1, program_controller_1, BlocklyDebug_1, KeyManager_1) {
+define(["require", "exports", "./external/SceneDesciptorList", "./Cyberspace/Cyberspace", "./UI/UIManager", "./RRC/Scene/RRCScoreScene", "./external/RESTApi", "blockly", "guiState.controller", "nn.controller", "program.model", "message", "program.controller", "./simulation.constants", "tour.controller", "./util", "./GlobalDebug", "program.controller", "./BlocklyDebug", "./KeyManager", "./Utils", "./pixijs", "./ExtendedMatter"], function (require, exports, SceneDesciptorList_1, Cyberspace_1, UIManager_1, RRCScoreScene_1, RESTApi_1, Blockly, GUISTATE_C, NN_CTRL, PROGRAM, MSG, PROG_C, CONST, TOUR_C, UTIL, GlobalDebug_1, program_controller_1, BlocklyDebug_1, KeyManager_1, Utils_1) {
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.init = exports.setPause = void 0;
     //
@@ -38,10 +38,15 @@ define(["require", "exports", "./external/SceneDesciptorList", "./Cyberspace/Cyb
         UIManager_1.UIManager.physicsSimControlButton.setInitialState();
         var scene = cyberspace.getScene();
         if (scene.getSpeedUpFactor() > scene.getMinSpeedUpFactor()) {
-            UIManager_1.UIManager.simSpeedUpButton.setState("normalSpeed");
+            if (scene.getSpeedUpFactor() > 10) {
+                UIManager_1.UIManager.simSpeedUpButton.setState("ultraFast");
+            }
+            else {
+                UIManager_1.UIManager.simSpeedUpButton.setState("fastForward");
+            }
         }
         else {
-            UIManager_1.UIManager.simSpeedUpButton.setState("fastForward");
+            UIManager_1.UIManager.simSpeedUpButton.setState("normalSpeed");
         }
         UIManager_1.UIManager.showScoreButton.setInitialState();
     }
@@ -172,8 +177,20 @@ define(["require", "exports", "./external/SceneDesciptorList", "./Cyberspace/Cyb
             scene.showScoreScreen(state == "showScore");
         }
     });
-    UIManager_1.UIManager.simSpeedUpButton.onClick(function (state) {
-        var speedup = state == "normalSpeed" ? 1 : 10;
+    UIManager_1.UIManager.simSpeedUpButton.onClick(function (_, newState) {
+        var speedup = 1;
+        switch (newState) {
+            case "normalSpeed":
+                speedup = 1;
+                break;
+            case "fastForward":
+                speedup = 10;
+                break;
+            case "ultraFast":
+                speedup = 100;
+                break;
+            default: Utils_1.Utils.exhaustiveSwitch(newState);
+        }
         cyberspace.setSimulationSpeedupFactor(speedup);
     });
     UIManager_1.UIManager.resetSceneButton.onClick(function () {
