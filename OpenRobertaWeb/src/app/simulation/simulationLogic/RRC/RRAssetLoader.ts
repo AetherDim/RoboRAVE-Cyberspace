@@ -49,3 +49,5 @@ export const RAINBOW_BACKGROUND_MS_DINO = new RRCMultiAsset('rainbow/ms/dino', '
 export const RAINBOW_BACKGROUND_MS_SPACE_INVADERS = new RRCMultiAsset('rainbow/ms/cloud', '.png', 0, 23, undefined, 0.25, 0.25);
 
 export const RAINBOW_BACKGROUND_HS_SPACE_INVADERS = new RRCMultiAsset('rainbow/hs/rainbow', '.png', 0, 719, undefined, 0.25, 0.25);
+
+export const CHESS_PATTERN_LABYRINTH = new RRCSpriteAsset('ChessPatternSFZ.png', undefined, 0.25, 0.25);
