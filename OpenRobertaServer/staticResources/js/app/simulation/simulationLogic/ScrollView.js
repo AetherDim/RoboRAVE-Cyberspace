@@ -98,7 +98,7 @@ define(["require", "exports", "./pixijs"], function (require, exports) {
          * not used as of now
          */
         EventType[EventType["NONE"] = 6] = "NONE";
-    })(EventType = exports.EventType || (exports.EventType = {}));
+    })(EventType || (exports.EventType = EventType = {}));
     /**
      * All the available mouse buttons
      */
@@ -109,7 +109,7 @@ define(["require", "exports", "./pixijs"], function (require, exports) {
         MouseButton[MouseButton["RIGHT"] = 2] = "RIGHT";
         MouseButton[MouseButton["BACK"] = 3] = "BACK";
         MouseButton[MouseButton["FORWARD"] = 4] = "FORWARD";
-    })(MouseButton = exports.MouseButton || (exports.MouseButton = {}));
+    })(MouseButton || (exports.MouseButton = MouseButton = {}));
     /**
      * Copy point or vector
      * @param vec vector/point to copy

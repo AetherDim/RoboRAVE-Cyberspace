@@ -1,4 +1,4 @@
-define(["require", "exports", "util", "message", "guiState.controller", "progList.model", "program.model", "program.controller", "blockly", "jquery", "bootstrap-table", "bootstrap-tagsinput"], function (require, exports, UTIL, MSG, GUISTATE_C, PROGLIST, PROGRAM, PROGRAM_C, Blockly, $) {
+define(["require", "exports", "require", "log", "util", "comm", "message", "guiState.controller", "progList.model", "program.model", "program.controller", "blockly", "jquery", "bootstrap-table", "bootstrap-tagsinput"], function (require, exports, require, LOG, UTIL, COMM, MSG, GUISTATE_C, PROGLIST, PROGRAM, PROGRAM_C, Blockly, $) {
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.formatTags = exports.formatDate = exports.formatAuthor = exports.formatProgramDescription = exports.formatProgramName = exports.formatRobot = exports.titleLikes = exports.titleNumberOfViews = exports.rowAttributes = exports.rowStyle = exports.init = void 0;
     var BACKGROUND_COLORS = [

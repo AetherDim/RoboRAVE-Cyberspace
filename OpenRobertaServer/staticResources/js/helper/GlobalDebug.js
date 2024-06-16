@@ -12,7 +12,7 @@ var __values = (this && this.__values) || function(o) {
 define(["require", "exports", "dat.gui", "./Timer", "./RRC/Scene/RRCScoreScene"], function (require, exports, dat, Timer_1, RRCScoreScene_1) {
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.downloadJSONFile = exports.downloadFile = exports.createReflectionGetter = exports.SceneDebug = exports.initGlobalSceneDebug = exports.initGlobalDebug = exports.createDebugGuiRoot = exports.clearDebugGuiRoot = exports.DebugGuiRoot = exports.registerDebugUpdatable = exports.DEBUG_UPDATE_TIMER = exports.DISABLE_WRAP = exports.PRINT_NON_WRAPPED_ERROR = exports.SEND_LOG = exports.DEBUG = void 0;
-    exports.DEBUG = false;
+    exports.DEBUG = true;
     /**
      * Used in log.js
      */

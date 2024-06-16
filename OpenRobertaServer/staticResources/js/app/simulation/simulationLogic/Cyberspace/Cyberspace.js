@@ -40,8 +40,8 @@ define(["require", "exports", "./SimulationCache", "../Scene/Scene", "../RRC/Sce
     var Cyberspace = /** @class */ (function () {
         function Cyberspace(canvas, autoResizeTo, scenes) {
             var _a;
-            if (scenes === void 0) { scenes = []; }
             var _this = this;
+            if (scenes === void 0) { scenes = []; }
             this.sceneManager = new SceneManager_1.SceneManager();
             this.simulationCache = new SimulationCache_1.SimulationCache([], "");
             this.eventManager = EventManager_1.EventManager.init({

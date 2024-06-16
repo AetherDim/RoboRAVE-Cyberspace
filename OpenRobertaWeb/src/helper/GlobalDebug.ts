@@ -5,7 +5,7 @@ import { Timer } from './Timer';
 import { StringMap } from './Utils';
 import { RRCScoreScene } from "./RRC/Scene/RRCScoreScene";
 
-export const DEBUG = false
+export const DEBUG = true
 /**
  * Used in log.js
  */
@@ -323,9 +323,9 @@ export class SceneDebug {
 		}
 
 		gui.add(scene, 'autostartSim')
-		gui.add(scene, 'dt').min(0.001).max(0.1).step(0.001).onChange((dt) => scene.setDT(dt))
-		gui.add(scene, 'simSleepTime').min(0.001).max(0.1).step(0.001).onChange((s) => scene.setSimSleepTime(s))
-		gui.add(scene, 'simSpeedupFactor').min(1).max(1000).step(1).onChange((dt) => scene.setSpeedUpFactor(dt))
+		gui.add(scene, 'dt' as any).min(0.001).max(0.1).step(0.001).onChange((dt) => scene.setDT(dt))
+		gui.add(scene, 'simSleepTime' as any).min(0.001).max(0.1).step(0.001).onChange((s) => scene.setSimSleepTime(s))
+		gui.add(scene, 'simSpeedupFactor' as any).min(1).max(1000).step(1).onChange((dt) => scene.setSpeedUpFactor(dt))
 		gui.addButton("Speeeeeed!!!!!", () => scene.setSpeedUpFactor(1000))
 		gui.addButton("Download background image", () => downloadJSONFile("pixelData "+scene.name+".json", scene.getContainers()._getPixelData()))
 
@@ -358,8 +358,8 @@ export class SceneDebug {
 		const robot = gui.addFolder('Robot Manager')
 		const rm = scene.getRobotManager()
 
-		robot.add(rm, 'numberOfRobots').min(1).step(1).max(1000)
-		robot.add(rm, 'showRobotSensorValues')
+		robot.add(rm, 'numberOfRobots' as any).min(1).step(1).max(1000)
+		robot.add(rm, 'showRobotSensorValues' as any)
 		robot.addUpdatable('Actual number of robots', () => rm.getRobots().length)
 
 		const entity = gui.addFolder('Entity Manager')

@@ -166,7 +166,7 @@ export class RRCScene extends RRCScoreScene {
 	 * @param h height of rectangle
 	 * @param options options for 'RectEntityOptions'
 	 */
-	addStaticWallInPixels(wall: {x: number, y: number, w: number, h: number,}, options?: Partial<RectEntityOptions>) {
+	addStaticWallInPixels(wall: {x: number, y: number, w: number, h: number}, options?: Partial<RectEntityOptions>) {
 		const unit = this.getUnitConverter()
 		const x = unit.fromLength(wall.x)
 		const y = unit.fromLength(wall.y)
@@ -198,14 +198,14 @@ export class RRCScene extends RRCScoreScene {
 		return { x: -this.sceneFramePadding, y: -this.sceneFramePadding }
 	}
 
-	addWalls(visible: boolean = false) {
+	addWalls(visible: boolean = false, box: {x: number, y: number, w: number, h: number, t: number} = {t: 100, x: 0, y: 0, w: 800, h: 540}) {
 		const unit = this.getUnitConverter();
 
-		const t = unit.fromLength(100);
-		const x = unit.fromLength(0);
-		const y = unit.fromLength(0);
-		const w = unit.fromLength(800);
-		const h = unit.fromLength(540);
+		const t = unit.fromLength(box.t);
+		const x = unit.fromLength(box.x);
+		const y = unit.fromLength(box.y);
+		const w = unit.fromLength(box.w);
+		const h = unit.fromLength(box.h);
 
 		const options = {
 			color: 0x000000,

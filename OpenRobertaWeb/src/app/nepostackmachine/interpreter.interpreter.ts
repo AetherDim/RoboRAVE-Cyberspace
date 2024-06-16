@@ -651,7 +651,7 @@ export class Interpreter {
                 break;
             }
             case C.CREATE_LIST_REPEAT: {
-                const rep = this.state.pop();
+                const rep = this.state.popNumber();
                 const val = this.state.pop();
                 var arr = new Array();
                 for (let i = 0; i < rep; i++) {

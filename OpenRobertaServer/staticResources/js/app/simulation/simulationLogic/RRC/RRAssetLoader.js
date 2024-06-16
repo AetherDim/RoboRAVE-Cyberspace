@@ -53,9 +53,9 @@ define(["require", "exports", "../SharedAssetLoader"], function (require, export
     exports.LABYRINTH_BLANK_BACKGROUND_MS = new RRCSpriteAsset('labyrinth/ms/labyrinth.svg');
     exports.LABYRINTH_BLANK_BACKGROUND_HS = new RRCSpriteAsset('labyrinth/hs/labyrinth.svg');
     // line-following
-    exports.LINE_FOLLOWING_BACKGROUND_ES = new RRCSpriteAsset('line-following/es/linefollowing.jpeg', undefined, 0.25, 0.25);
-    exports.LINE_FOLLOWING_BACKGROUND_MS = new RRCSpriteAsset('line-following/ms/linefollowing.jpeg', undefined, 0.25, 0.25);
-    exports.LINE_FOLLOWING_BACKGROUND_HS = new RRCSpriteAsset('line-following/hs/linefollowing.jpeg', undefined, 0.25, 0.25);
+    exports.LINE_FOLLOWING_BACKGROUND_ES = new RRCSpriteAsset('line-following/es/linefollowing.png', undefined, 0.25, 0.25);
+    exports.LINE_FOLLOWING_BACKGROUND_MS = new RRCSpriteAsset('line-following/ms/linefollowing.png', undefined, 0.25, 0.25);
+    exports.LINE_FOLLOWING_BACKGROUND_HS = new RRCSpriteAsset('line-following/hs/linefollowing.png', undefined, 0.25, 0.25);
     // rainbow
     exports.RAINBOW_BACKGROUND_ES_DINO = new RRCSpriteAsset('rainbow/es/dino.jpeg', undefined, 0.25, 0.25);
     exports.RAINBOW_BACKGROUND_ES = new RRCSpriteAsset('rainbow/es/cloud.jpeg', undefined, 0.25, 0.25);

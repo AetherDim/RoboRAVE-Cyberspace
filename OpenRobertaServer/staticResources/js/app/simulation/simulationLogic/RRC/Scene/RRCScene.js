@@ -176,14 +176,15 @@ define(["require", "exports", "../../Scene/AsyncChain", "../../Robot/Robot", "ma
         RRCScene.prototype.getOrigin = function () {
             return { x: -this.sceneFramePadding, y: -this.sceneFramePadding };
         };
-        RRCScene.prototype.addWalls = function (visible) {
+        RRCScene.prototype.addWalls = function (visible, box) {
             if (visible === void 0) { visible = false; }
+            if (box === void 0) { box = { t: 100, x: 0, y: 0, w: 800, h: 540 }; }
             var unit = this.getUnitConverter();
-            var t = unit.fromLength(100);
-            var x = unit.fromLength(0);
-            var y = unit.fromLength(0);
-            var w = unit.fromLength(800);
-            var h = unit.fromLength(540);
+            var t = unit.fromLength(box.t);
+            var x = unit.fromLength(box.x);
+            var y = unit.fromLength(box.y);
+            var w = unit.fromLength(box.w);
+            var h = unit.fromLength(box.h);
             var options = {
                 color: 0x000000,
                 strokeColor: 0x000000,

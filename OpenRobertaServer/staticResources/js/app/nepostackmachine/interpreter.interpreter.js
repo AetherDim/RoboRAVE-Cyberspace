@@ -597,7 +597,7 @@ define(["require", "exports", "./interpreter.constants", "./interpreter.util", "
                     break;
                 }
                 case C.CREATE_LIST_REPEAT: {
-                    var rep = this.state.pop();
+                    var rep = this.state.popNumber();
                     var val = this.state.pop();
                     var arr = new Array();
                     for (var i = 0; i < rep; i++) {

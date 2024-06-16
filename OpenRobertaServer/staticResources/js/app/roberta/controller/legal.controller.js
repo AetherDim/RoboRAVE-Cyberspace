@@ -1,4 +1,4 @@
-define(["require", "exports", "log", "guiState.controller", "blockly", "jquery", "jquery-validate"], function (require, exports, LOG, GUISTATE_C, Blockly, $) {
+define(["require", "exports", "message", "log", "util", "guiState.controller", "blockly", "jquery", "jquery-validate"], function (require, exports, MSG, LOG, UTIL, GUISTATE_C, Blockly, $) {
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.loadLegalTexts = exports.initView = exports.init = void 0;
     var INITIAL_WIDTH = 0.5;

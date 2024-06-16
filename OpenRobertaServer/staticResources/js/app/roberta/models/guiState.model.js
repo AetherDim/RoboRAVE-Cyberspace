@@ -1,4 +1,4 @@
-define(["require", "exports", "comm"], function (require, exports, COMM) {
+define(["require", "exports", "exports", "message", "comm"], function (require, exports, exports, MSG, COMM) {
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.init = exports.robot = exports.toolbox = exports.configuration = exports.program = exports.user = exports.gui = exports.server = void 0;
     exports.server = {};

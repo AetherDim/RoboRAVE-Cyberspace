@@ -52,7 +52,7 @@ export class TestScene2 extends RRCScene {
 
 		const debug = this.getDebugGuiStatic()
 		if (debug != undefined) {
-			debug.add(this, "configurationIndex", 0, this.allSensorConfigurations.length - 1, 1)
+			debug.add(this, "configurationIndex" as any, 0, this.allSensorConfigurations.length - 1, 1)
 				.onChange(() => debug.updateDisplay())
 				.onFinishChange(() => this.reset([]))
 			debug.addUpdatable("configurationIndex: ", () =>

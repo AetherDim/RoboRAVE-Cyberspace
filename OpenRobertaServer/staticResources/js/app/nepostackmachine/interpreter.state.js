@@ -40,7 +40,7 @@ define(["require", "exports", "./interpreter.constants", "./interpreter.util", "
             this.checkValidName(name);
             this.checkValidValue(value);
             var nameBindings = this.bindings[name];
-            if (nameBindings === undefined || nameBindings === null || nameBindings === []) {
+            if (nameBindings === undefined || nameBindings === null || nameBindings.length == 0) {
                 this.bindings[name] = [value];
                 U.debug('bind new ' + name + ' with ' + value + ' of type ' + typeof value);
             }

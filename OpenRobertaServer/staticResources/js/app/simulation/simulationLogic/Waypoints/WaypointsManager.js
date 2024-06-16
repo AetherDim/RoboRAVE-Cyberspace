@@ -8,9 +8,9 @@ define(["require", "exports", "matter-js", "../ScrollView", "../Utils", "./Waypo
      */
     var WaypointsManager = /** @class */ (function () {
         function WaypointsManager(waypointList, waypointEvent) {
+            var _this = this;
             if (waypointList === void 0) { waypointList = new WaypointList_1.WaypointList([]); }
             if (waypointEvent === void 0) { waypointEvent = function (_) { }; }
-            var _this = this;
             this.waypointVisibilityBehavior = "showNext";
             this.waypointRasterSize = 0;
             this.userCanModifyWaypoints = false;

@@ -16,6 +16,7 @@
         "noUnusedLocals": false,
         "noUnusedParameters": false,
 		"allowJs": true,
+        "ignoreDeprecations": "5.0",
         "noImplicitUseStrict": true,
         "downlevelIteration": true, // iterator iteration with 'for of' loop
         "lib": [
