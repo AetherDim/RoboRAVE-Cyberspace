@@ -182,8 +182,8 @@ define(["require", "exports", "./RRCScene", "../RRAssetLoader", "../AgeGroup", "
         RRCLineFollowingScene.prototype.junctionIndices = function () {
             switch (this.ageGroup) {
                 case AgeGroup_1.AgeGroup.ES: return [];
-                case AgeGroup_1.AgeGroup.MS: return [7];
-                case AgeGroup_1.AgeGroup.HS: return [4, 16];
+                case AgeGroup_1.AgeGroup.MS: return [14];
+                case AgeGroup_1.AgeGroup.HS: return [8, 14];
                 default: Utils_1.Utils.exhaustiveSwitch(this.ageGroup);
             }
         };

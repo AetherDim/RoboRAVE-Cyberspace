@@ -193,8 +193,8 @@ export class RRCLineFollowingScene extends RRCScene {
 	junctionIndices(): number[] {
 		switch (this.ageGroup) {
 		case AgeGroup.ES: return []
-		case AgeGroup.MS: return [7]
-		case AgeGroup.HS: return [4, 16]
+		case AgeGroup.MS: return [14]
+		case AgeGroup.HS: return [8, 14]
 		default: Utils.exhaustiveSwitch(this.ageGroup)
 		}
 	}
