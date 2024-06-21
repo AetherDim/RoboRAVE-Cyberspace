@@ -169,8 +169,8 @@ define(["require", "exports", "../../Scene/AsyncChain", "../../Robot/Robot", "ma
         };
         RRCScene.prototype.getSize = function () {
             return {
-                width: 800 + 2 * this.sceneFramePadding,
-                height: 540 + 2 * this.sceneFramePadding
+                width: this.containerManager.groundContainer.width + 2 * this.sceneFramePadding,
+                height: this.containerManager.groundContainer.height + 2 * this.sceneFramePadding
             };
         };
         RRCScene.prototype.getOrigin = function () {

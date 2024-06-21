@@ -189,8 +189,8 @@ export class RRCScene extends RRCScoreScene {
 
 	getSize(): { width: number, height: number } {
 		return {
-			width: 800 + 2 * this.sceneFramePadding,
-			height: 540 + 2 * this.sceneFramePadding
+			width: this.containerManager.groundContainer.width + 2 * this.sceneFramePadding,
+			height: this.containerManager.groundContainer.height + 2 * this.sceneFramePadding
 		}
 	}
 

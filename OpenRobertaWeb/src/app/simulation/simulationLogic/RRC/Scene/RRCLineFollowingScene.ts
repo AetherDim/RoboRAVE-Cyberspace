@@ -253,7 +253,7 @@ export class RRCLineFollowingScene extends RRCScene {
 
 		this.addStaticWallInPixels(this.getWall(), {color: this.obstacleColor, strokeColor: this.obstacleColor})
 
-		this.addWalls(true, {t: 100, x:0, y:0, w: 4309/3, h: 2155/3});
+		this.addWalls(true, {t: 100, x:0, y:0, w: this.scoreBackgroundSprite!.width, h: this.scoreBackgroundSprite!.height});
 
 
 		chain.next();
