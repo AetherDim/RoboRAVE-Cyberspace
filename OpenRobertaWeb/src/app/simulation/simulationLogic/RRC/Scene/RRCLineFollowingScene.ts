@@ -246,6 +246,7 @@ export class RRCLineFollowingScene extends RRCScene {
 		this.setWaypointList(waypointList)
 
 		this.getContainers().groundContainer.addChild(this.getAsset().newSprite());
+		this.scoreBackgroundSprite!.scale.set(this.getContainers().groundContainer.width/this.scoreBackgroundSprite!.width, this.getContainers().groundContainer.height/this.scoreBackgroundSprite!.height);
 
 		this.addStaticWallInPixels(this.getWall(), {color: this.obstacleColor, strokeColor: this.obstacleColor})
 
