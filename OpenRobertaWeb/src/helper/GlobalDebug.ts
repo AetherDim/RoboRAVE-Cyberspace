@@ -5,7 +5,7 @@ import { Timer } from './Timer';
 import { StringMap } from './Utils';
 import { RRCScoreScene } from "./RRC/Scene/RRCScoreScene";
 
-export const DEBUG = true
+export const DEBUG = false
 /**
  * Used in log.js
  */
