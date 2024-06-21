@@ -183,7 +183,7 @@ export class Robot implements IContainerEntity, IUpdatableEntity, IPhysicsCompos
 		this.init()
 	}
 
-	private transferWheelForcesToRobotBody = false
+	transferWheelForcesToRobotBody = false
 
 	private addDebugSettings() {
 

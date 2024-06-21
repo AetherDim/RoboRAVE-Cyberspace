@@ -1,4 +1,4 @@
-define(["require", "exports", "message", "log", "util", "guiState.controller", "program.controller", "configuration.controller", "program.model", "robot.controller", "blockly", "jquery", "jquery-validate"], function (require, exports, MSG, LOG, UTIL, GUISTATE_C, PROGRAM_C, CONFIGURATION_C, PROGRAM, ROBOT_C, Blockly, $) {
+define(["require", "exports", "comm", "message", "log", "util", "guiState.controller", "program.controller", "configuration.controller", "program.model", "robot.controller", "blockly", "jquery", "jquery-validate"], function (require, exports, COMM, MSG, LOG, UTIL, GUISTATE_C, PROGRAM_C, CONFIGURATION_C, PROGRAM, ROBOT_C, Blockly, $) {
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.importNepoCodeToCompile = exports.importSourceCodeToCompile = exports.loadProgramFromXML = exports.openProgramFromXML = exports.importSourceCode = exports.importXml = exports.init = void 0;
     function init(callback) {

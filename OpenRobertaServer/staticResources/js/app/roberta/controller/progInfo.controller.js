@@ -1,4 +1,4 @@
-define(["require", "exports", "guiState.controller", "blockly", "jquery", "jquery-validate", "jquery-hotkeys", "bootstrap-tagsinput", "bootstrap.wysiwyg"], function (require, exports, GUISTATE_C, Blockly, $) {
+define(["require", "exports", "message", "log", "util", "guiState.controller", "blockly", "jquery", "jquery-validate", "jquery-hotkeys", "bootstrap-tagsinput", "bootstrap.wysiwyg"], function (require, exports, MSG, LOG, UTIL, GUISTATE_C, Blockly, $) {
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.init = void 0;
     var INITIAL_WIDTH = 0.3;

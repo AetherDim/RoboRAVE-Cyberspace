@@ -40,11 +40,11 @@ define(["require", "exports"], function (require, exports) {
     exports.AsyncListener = AsyncListener;
     var AsyncChain = /** @class */ (function () {
         function AsyncChain() {
+            var _this = this;
             var listeners = [];
             for (var _i = 0; _i < arguments.length; _i++) {
                 listeners[_i] = arguments[_i];
             }
-            var _this = this;
             this.index = 0;
             this.listeners = listeners;
             this.listenerFunctions = [];

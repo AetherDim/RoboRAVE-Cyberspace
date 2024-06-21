@@ -1,4 +1,4 @@
-define(["require", "exports", "log", "jquery", "robot.controller", "guiState.controller", "socket.io", "comm"], function (require, exports, LOG, $, ROBOT_C, GUISTATE_C, IO, COMM) {
+define(["require", "exports", "util", "log", "message", "jquery", "robot.controller", "guiState.controller", "guiState.model", "socket.io", "comm"], function (require, exports, UTIL, LOG, MSG, $, ROBOT_C, GUISTATE_C, GUISTATE, IO, COMM) {
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.uploadProgram = exports.getRobotList = exports.getPortList = exports.closeConnection = exports.init = exports.listRobotStop = exports.listRobotStart = void 0;
     var portList = [];

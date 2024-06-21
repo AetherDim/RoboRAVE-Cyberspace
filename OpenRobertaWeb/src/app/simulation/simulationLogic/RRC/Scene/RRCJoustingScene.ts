@@ -140,8 +140,8 @@ export class RRCLineJoustingScene extends RRCScene {
 		this.addEntity(this.constraintLine)
 
 		if (this.debugState == undefined) {
-			this.debugState = this.getDebugGuiStatic()?.add(this, "constraintStrength")
-			this.getDebugGuiStatic()?.add(this, "maxLancePositionDeviation")
+			this.debugState = this.getDebugGuiStatic()?.add(this, "constraintStrength" as any)
+			this.getDebugGuiStatic()?.add(this, "maxLancePositionDeviation" as any)
 		}
 
 		function addJoustingLance(robot: Robot, robotCategory: number) {

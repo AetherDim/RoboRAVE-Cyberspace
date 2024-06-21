@@ -6,5 +6,5 @@ define(["require", "exports"], function (require, exports) {
         AgeGroup["ES"] = "ES";
         AgeGroup["MS"] = "MS";
         AgeGroup["HS"] = "HS";
-    })(AgeGroup = exports.AgeGroup || (exports.AgeGroup = {}));
+    })(AgeGroup || (exports.AgeGroup = AgeGroup = {}));
 });

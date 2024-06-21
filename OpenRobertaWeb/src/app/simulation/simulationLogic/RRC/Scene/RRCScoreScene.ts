@@ -8,13 +8,13 @@ import { EventManager, ParameterTypes } from "../../EventManager/EventManager";
 
 export class RRCScoreScene extends Scene {
 
-	private scoreContainer = new PIXI.Container()
-	private scoreTextContainer = new PIXI.Container()
+	protected scoreContainer = new PIXI.Container()
+	protected scoreTextContainer = new PIXI.Container()
 
-	private scoreBackgroundSprite?: PIXI.Sprite
-	private scoreText1 = new PIXI.Text("")
-	private scoreText2 = new PIXI.Text("")
-	private scoreText3 = new PIXI.Text("")
+	protected scoreBackgroundSprite?: PIXI.Sprite
+	protected scoreText1 = new PIXI.Text("")
+	protected scoreText2 = new PIXI.Text("")
+	protected scoreText3 = new PIXI.Text("")
 
 
 	score: number = 0

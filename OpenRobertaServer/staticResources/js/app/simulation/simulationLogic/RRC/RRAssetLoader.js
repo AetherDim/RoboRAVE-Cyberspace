@@ -15,7 +15,7 @@ var __extends = (this && this.__extends) || (function () {
 })();
 define(["require", "exports", "../SharedAssetLoader"], function (require, exports, SharedAssetLoader_1) {
     Object.defineProperty(exports, "__esModule", { value: true });
-    exports.RAINBOW_BACKGROUND_HS_SPACE_INVADERS = exports.RAINBOW_BACKGROUND_MS_SPACE_INVADERS = exports.RAINBOW_BACKGROUND_MS_DINO = exports.RAINBOW_BACKGROUND_ES = exports.RAINBOW_BACKGROUND_ES_DINO = exports.LINE_FOLLOWING_BACKGROUND_HS = exports.LINE_FOLLOWING_BACKGROUND_MS = exports.LINE_FOLLOWING_BACKGROUND_ES = exports.LABYRINTH_BLANK_BACKGROUND_HS = exports.LABYRINTH_BLANK_BACKGROUND_MS = exports.LABYRINTH_BLANK_BACKGROUND_ES = exports.PROGGY_TINY_FONT = exports.GOAL_BACKGROUND = exports.BLANK_BACKGROUND = exports.RRC_ASSET_PATH = void 0;
+    exports.CHESS_PATTERN_LABYRINTH = exports.RAINBOW_BACKGROUND_HS_SPACE_INVADERS = exports.RAINBOW_BACKGROUND_MS_SPACE_INVADERS = exports.RAINBOW_BACKGROUND_MS_DINO = exports.RAINBOW_BACKGROUND_ES = exports.RAINBOW_BACKGROUND_ES_DINO = exports.LINE_FOLLOWING_BACKGROUND_HS = exports.LINE_FOLLOWING_BACKGROUND_MS = exports.LINE_FOLLOWING_BACKGROUND_ES = exports.LABYRINTH_BLANK_BACKGROUND_HS = exports.LABYRINTH_BLANK_BACKGROUND_MS = exports.LABYRINTH_BLANK_BACKGROUND_ES = exports.PROGGY_TINY_FONT = exports.GOAL_BACKGROUND = exports.BLANK_BACKGROUND = exports.RRC_ASSET_PATH = void 0;
     exports.RRC_ASSET_PATH = 'assets/roborave/';
     var RRCAsset = /** @class */ (function (_super) {
         __extends(RRCAsset, _super);
@@ -53,13 +53,14 @@ define(["require", "exports", "../SharedAssetLoader"], function (require, export
     exports.LABYRINTH_BLANK_BACKGROUND_MS = new RRCSpriteAsset('labyrinth/ms/labyrinth.svg');
     exports.LABYRINTH_BLANK_BACKGROUND_HS = new RRCSpriteAsset('labyrinth/hs/labyrinth.svg');
     // line-following
-    exports.LINE_FOLLOWING_BACKGROUND_ES = new RRCSpriteAsset('line-following/es/linefollowing.jpeg', undefined, 0.25, 0.25);
-    exports.LINE_FOLLOWING_BACKGROUND_MS = new RRCSpriteAsset('line-following/ms/linefollowing.jpeg', undefined, 0.25, 0.25);
-    exports.LINE_FOLLOWING_BACKGROUND_HS = new RRCSpriteAsset('line-following/hs/linefollowing.jpeg', undefined, 0.25, 0.25);
+    exports.LINE_FOLLOWING_BACKGROUND_ES = new RRCSpriteAsset('line-following/es/linefollowing.png', undefined, 0.25, 0.25);
+    exports.LINE_FOLLOWING_BACKGROUND_MS = new RRCSpriteAsset('line-following/ms/linefollowing.png', undefined, 0.25, 0.25);
+    exports.LINE_FOLLOWING_BACKGROUND_HS = new RRCSpriteAsset('line-following/hs/linefollowing.png', undefined, 0.25, 0.25);
     // rainbow
     exports.RAINBOW_BACKGROUND_ES_DINO = new RRCSpriteAsset('rainbow/es/dino.jpeg', undefined, 0.25, 0.25);
     exports.RAINBOW_BACKGROUND_ES = new RRCSpriteAsset('rainbow/es/cloud.jpeg', undefined, 0.25, 0.25);
     exports.RAINBOW_BACKGROUND_MS_DINO = new RRCMultiAsset('rainbow/ms/dino', '.png', 0, 23, undefined, 0.25, 0.25);
     exports.RAINBOW_BACKGROUND_MS_SPACE_INVADERS = new RRCMultiAsset('rainbow/ms/cloud', '.png', 0, 23, undefined, 0.25, 0.25);
     exports.RAINBOW_BACKGROUND_HS_SPACE_INVADERS = new RRCMultiAsset('rainbow/hs/rainbow', '.png', 0, 719, undefined, 0.25, 0.25);
+    exports.CHESS_PATTERN_LABYRINTH = new RRCSpriteAsset('ChessPatternSFZ.png', undefined, 0.25, 0.25);
 });

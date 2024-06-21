@@ -74,5 +74,5 @@ define(["require", "exports", "./../GlobalDebug"], function (require, exports, G
         ResultErrorType[ResultErrorType["USER_VERIFICATION_FAILED"] = 1] = "USER_VERIFICATION_FAILED";
         ResultErrorType[ResultErrorType["INVALID_ARGUMENTS"] = 2] = "INVALID_ARGUMENTS";
         ResultErrorType[ResultErrorType["SQL_ERROR"] = 3] = "SQL_ERROR";
-    })(ResultErrorType = exports.ResultErrorType || (exports.ResultErrorType = {}));
+    })(ResultErrorType || (exports.ResultErrorType = ResultErrorType = {}));
 });

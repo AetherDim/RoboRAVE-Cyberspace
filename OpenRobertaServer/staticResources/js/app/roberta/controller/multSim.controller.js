@@ -5,7 +5,7 @@
 /**
  * Controller for multiple simulation part of the project
  */
-define(["require", "exports", "message", "util", "progList.model", "program.model", "guiState.controller", "simulation.simulation", "jquery", "blockly"], function (require, exports, MSG, UTIL, PROGLIST, PROGRAM_M, GUISTATE_C, SIM, $, Blockly) {
+define(["require", "exports", "message", "util", "progList.model", "program.controller", "program.model", "guiState.controller", "simulation.simulation", "jquery", "blockly"], function (require, exports, MSG, UTIL, PROGLIST, PROG_C, PROGRAM_M, GUISTATE_C, SIM, $, Blockly) {
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.showListProg = void 0;
     function showListProg() {
