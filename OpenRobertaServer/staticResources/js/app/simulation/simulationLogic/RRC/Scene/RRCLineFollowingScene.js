@@ -23,6 +23,7 @@ define(["require", "exports", "./RRCScene", "../RRAssetLoader", "../AgeGroup", "
             _this.bigWaypointSize = 70;
             // Waypoints
             _this.waypointsES = [
+                (0, RRCScene_1.wp)(200, 658, 0),
                 (0, RRCScene_1.wp)(200.34844892201156, 581.7628880718204, 0),
                 (0, RRCScene_1.wp)(201.05381418950202, 415.9109290560717, 0),
                 (0, RRCScene_1.wp)(200.7823137787071, 225.59317349047413, 0),
@@ -44,6 +45,7 @@ define(["require", "exports", "./RRCScene", "../RRAssetLoader", "../AgeGroup", "
                 (0, RRCScene_1.wp)(1169.0845542327245, 87.23701768225374, 0),
             ];
             _this.waypointsMS = [
+                (0, RRCScene_1.wp)(154, 658, 0),
                 (0, RRCScene_1.wp)(151.4375628102969, 580.9113640556752, 0),
                 (0, RRCScene_1.wp)(153.25472866293472, 453.4993112217108, 0),
                 (0, RRCScene_1.wp)(154.52485858538657, 318.9641801923209, 0),
@@ -72,6 +74,7 @@ define(["require", "exports", "./RRCScene", "../RRAssetLoader", "../AgeGroup", "
                 (0, RRCScene_1.wp)(1194.0042870567916, 83.07129304832286, 0),
             ];
             _this.waypointsHS = [
+                (0, RRCScene_1.wp)(196, 658, 0),
                 (0, RRCScene_1.wp)(197.89112824111325, 583.9401725614232, 0),
                 (0, RRCScene_1.wp)(196.94775150300399, 437.5023686314429, 0),
                 (0, RRCScene_1.wp)(199.57838503080174, 267.7290979592269, 0),

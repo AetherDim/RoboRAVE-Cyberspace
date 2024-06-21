@@ -13,6 +13,7 @@ export class RRCLineFollowingScene extends RRCScene {
 
 	// Waypoints
 	readonly waypointsES = [
+		wp(200, 658, 0),
 		wp(200.34844892201156, 581.7628880718204, 0),
 		wp(201.05381418950202, 415.9109290560717, 0),
 		wp(200.7823137787071, 225.59317349047413, 0),
@@ -35,6 +36,7 @@ export class RRCLineFollowingScene extends RRCScene {
 	]
 
 	readonly waypointsMS = [
+		wp(154, 658, 0),
 		wp(151.4375628102969, 580.9113640556752, 0),
 		wp(153.25472866293472, 453.4993112217108, 0),
 		wp(154.52485858538657, 318.9641801923209, 0),
@@ -64,6 +66,7 @@ export class RRCLineFollowingScene extends RRCScene {
 	]
 
 	readonly waypointsHS = [
+		wp(196, 658, 0),
 		wp(197.89112824111325, 583.9401725614232, 0),
 		wp(196.94775150300399, 437.5023686314429, 0),
 		wp(199.57838503080174, 267.7290979592269, 0),
