@@ -124,7 +124,10 @@ export class SharedAssetLoader {
 	static load(callback:() => void, ...assets: (Asset|FontAsset|undefined)[]) {
 		if(this.loader.loading) {
 			this.loader.onComplete.once(() => {
-				this._load(callback, ...assets)
+				// Call `load` again to make sure that the PIXI.Loader is not 'loading'.
+				// Use timeout since (if the loader is loading) the 'load' call adds a new 'onComplete' handler
+				// while the handler is executing which results in an infinite (indirect) recursion
+				setTimeout(() => this.load(callback, ...assets), 0)
 			})
 		} else {
 			this._load(callback, ...assets)
