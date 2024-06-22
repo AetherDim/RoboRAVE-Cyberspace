@@ -146,7 +146,8 @@ define(["require", "exports", "webfontloader", "./Random", "./Utils", "./pixijs"
             }
             if (this.loader.loading) {
                 this.loader.onComplete.once(function () {
-                    // use timeout since (if the loader is loading) the 'load' call adds a new 'onComplete' handler
+                    // Call `load` again to make sure that the PIXI.Loader is not 'loading'.
+                    // Use timeout since (if the loader is loading) the 'load' call adds a new 'onComplete' handler
                     // while the handler is executing which results in an infinite (indirect) recursion
                     setTimeout(function () { return _this.load.apply(_this, __spreadArray([callback], __read(assets), false)); }, 0);
                 });
