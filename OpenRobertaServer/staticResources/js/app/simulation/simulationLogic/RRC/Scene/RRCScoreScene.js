@@ -29,6 +29,7 @@ define(["require", "exports", "../../Scene/AsyncChain", "../../Scene/Scene", "..
             _this.scoreEventManager = EventManager_1.EventManager.init({
                 onShowHideScore: new EventManager_1.ParameterTypes()
             });
+            _this.didShowEndScreen = false;
             _this.addOnAsyncChainBuildCompleteLister(function (chain) {
                 chain.addBefore(_this.onInit, new AsyncChain_1.AsyncListener(_this.onInitScore, _this));
                 chain.addBefore(_this.onLoadAssets, new AsyncChain_1.AsyncListener(_this.onLoadScoreAssets, _this));
@@ -97,10 +98,12 @@ define(["require", "exports", "../../Scene/AsyncChain", "../../Scene/Scene", "..
             this.programEventTimes = undefined;
         };
         RRCScoreScene.prototype.reset = function (robotSetupData) {
+            this.didShowEndScreen = false;
             this.resetScoreAndProgramRuntime();
             _super.prototype.reset.call(this, robotSetupData);
         };
         RRCScoreScene.prototype.fullReset = function (robotSetupData) {
+            this.didShowEndScreen = false;
             this.resetScoreAndProgramRuntime();
             _super.prototype.fullReset.call(this, robotSetupData);
         };
@@ -118,6 +121,10 @@ define(["require", "exports", "../../Scene/AsyncChain", "../../Scene/Scene", "..
             return this.containerManager.topContainer.children.includes(this.scoreContainer);
         };
         RRCScoreScene.prototype.showScoreScreen = function (visible) {
+            if (visible) {
+                this.didShowEndScreen = true;
+                this.pauseSim();
+            }
             this.showScoreScreenNoButtonChange(visible);
             this.scoreEventManager.onShowHideScoreCallHandlers(visible ? "showScore" : "hideScore");
         };
@@ -139,7 +146,14 @@ define(["require", "exports", "../../Scene/AsyncChain", "../../Scene/Scene", "..
                 return undefined;
             }
         };
+        RRCScoreScene.prototype.getMaxRuntime = function () {
+            return Infinity;
+        };
         RRCScoreScene.prototype.onUpdatePrePhysics = function () {
+            var _a;
+            if (!this.didShowEndScreen && ((_a = this.getProgramRuntime()) !== null && _a !== void 0 ? _a : 0) > this.getMaxRuntime()) {
+                this.showScoreScreen(true);
+            }
             var robots = this.getRobotManager().getRobots();
             if (robots.length > 0) {
                 if (robots[0].programManager.allProgramsTerminated() === false && robots[0].programManager.isAnyProgramRunning()) {

@@ -512,6 +512,10 @@ export class RRCRainbowScene extends RRCScene {
 		);
 	}
 
+	getMaxRuntime(): number {
+		return 60 * 5
+	}
+
 	getMaximumTimeBonusScore() {
 		return 60 * 10
 	}

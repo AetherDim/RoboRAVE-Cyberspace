@@ -340,6 +340,10 @@ export class RRCLabyrinthScene extends RRCScene {
 		}
 	}
 
+	getMaxRuntime(): number {
+		return 60 * 3
+	}
+
 	getMaximumTimeBonusScore() {
 		return 60 * 6
 	}

@@ -322,6 +322,9 @@ define(["require", "exports", "../AgeGroup", "./RRCScene", "../RRAssetLoader", "
                     return RRC.LABYRINTH_BLANK_BACKGROUND_HS;
             }
         };
+        RRCLabyrinthScene.prototype.getMaxRuntime = function () {
+            return 60 * 3;
+        };
         RRCLabyrinthScene.prototype.getMaximumTimeBonusScore = function () {
             return 60 * 6;
         };

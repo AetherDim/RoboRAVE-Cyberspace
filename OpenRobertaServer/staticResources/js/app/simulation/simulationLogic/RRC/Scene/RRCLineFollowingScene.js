@@ -169,6 +169,9 @@ define(["require", "exports", "./RRCScene", "../RRAssetLoader", "../AgeGroup", "
                 chain.next();
             }, this.getAsset(), RRC.GOAL_BACKGROUND);
         };
+        RRCLineFollowingScene.prototype.getMaxRuntime = function () {
+            return 60 * 2;
+        };
         RRCLineFollowingScene.prototype.getMaximumTimeBonusScore = function () {
             switch (this.ageGroup) {
                 case AgeGroup_1.AgeGroup.ES:
