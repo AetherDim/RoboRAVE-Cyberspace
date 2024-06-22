@@ -57,8 +57,8 @@ define(["require", "exports", "../SharedAssetLoader"], function (require, export
     exports.LINE_FOLLOWING_BACKGROUND_MS = new RRCSpriteAsset('line-following/ms/linefollowing.png', undefined, 0.25, 0.25);
     exports.LINE_FOLLOWING_BACKGROUND_HS = new RRCSpriteAsset('line-following/hs/linefollowing.png', undefined, 0.25, 0.25);
     // rainbow
-    exports.RAINBOW_BACKGROUND_ES_DINO = new RRCSpriteAsset('rainbow/es/dino.jpeg', undefined, 0.25, 0.25);
-    exports.RAINBOW_BACKGROUND_ES = new RRCSpriteAsset('rainbow/es/cloud.jpeg', undefined, 0.25, 0.25);
+    exports.RAINBOW_BACKGROUND_ES_DINO = new RRCSpriteAsset('rainbow/es/dino.png', undefined, 0.25, 0.25);
+    exports.RAINBOW_BACKGROUND_ES = new RRCSpriteAsset('rainbow/es/cloud.png', undefined, 0.25, 0.25);
     exports.RAINBOW_BACKGROUND_MS_DINO = new RRCMultiAsset('rainbow/ms/dino', '.png', 0, 23, undefined, 0.25, 0.25);
     exports.RAINBOW_BACKGROUND_MS_SPACE_INVADERS = new RRCMultiAsset('rainbow/ms/cloud', '.png', 0, 23, undefined, 0.25, 0.25);
     exports.RAINBOW_BACKGROUND_HS_SPACE_INVADERS = new RRCMultiAsset('rainbow/hs/rainbow', '.png', 0, 719, undefined, 0.25, 0.25);
