@@ -177,6 +177,10 @@ export class RRCLineFollowingScene extends RRCScene {
 		);
 	}
 
+	getMaxRuntime(): number {
+		return 60 * 2
+	}
+
 	getMaximumTimeBonusScore() {
 		switch (this.ageGroup) {
 			case AgeGroup.ES:

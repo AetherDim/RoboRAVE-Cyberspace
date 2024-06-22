@@ -90,6 +90,7 @@ export class RRCLabyrinthScene extends RRCScene {
 	}];
 
 	readonly MazeObstacleList_ES_Waypoints = [
+		wp(752, 490, 0, 60),
 		wp(745.471943488454, 56.41573850292542, 10, 60),
 		wp(54.561521089673086, 54.578616428501704, 10, 60),
 		wp(56.94166548626347, 153.83907315081825, 10, 60),
@@ -172,6 +173,7 @@ export class RRCLabyrinthScene extends RRCScene {
 		}];
 
 	readonly MazeObstacleList_MS_Waypoints = [
+		wp(752, 490, 0, 60),
 		wp(749.9644930779159, 53.57101801235041, 10, 60),
 		wp(163.44368626752964, 57.55270502937634, 10, 60),
 		wp(158.1736200600906, 159.90933810929084, 10, 60),
@@ -179,8 +181,8 @@ export class RRCLabyrinthScene extends RRCScene {
 		wp(639.6051457735002, 485.8895109324285, 10, 60),
 		wp(154.14101385658392, 483.90361435263895, 10, 60),
 		wp(157.3926998275401, 267.87910873898966, 10, 60),
-		wp(545.788756034993, 390.5184603269341, 10, 60),
 		wp(542.5111920355592, 259.5994071096399, 10, 60),
+		wp(545.788756034993, 390.5184603269341, 10, 60),
 		wp(267.8770860374464, 382.6234479916538, 10, 60),
 	]
 
@@ -259,6 +261,7 @@ export class RRCLabyrinthScene extends RRCScene {
 		}];
 
 	readonly MazeObstacleList_HS_Waypoints = [
+		wp(752, 490, 0, 60),
 		wp(749.9644930779159, 53.57101801235041, 10, 60),
 		wp(163.44368626752964, 57.55270502937634, 10, 60),
 		wp(158.1736200600906, 159.90933810929084, 10, 60),
@@ -335,6 +338,10 @@ export class RRCLabyrinthScene extends RRCScene {
 			case AgeGroup.HS:
 				return RRC.LABYRINTH_BLANK_BACKGROUND_HS;
 		}
+	}
+
+	getMaxRuntime(): number {
+		return 60 * 3
 	}
 
 	getMaximumTimeBonusScore() {

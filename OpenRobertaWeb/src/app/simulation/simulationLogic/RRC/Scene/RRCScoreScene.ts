@@ -112,11 +112,13 @@ export class RRCScoreScene extends Scene {
 	}
 
 	reset(robotSetupData: RobotSetupData[]) {
+		this.didShowEndScreen = false
 		this.resetScoreAndProgramRuntime()
 		super.reset(robotSetupData)
 	}
 
 	fullReset(robotSetupData: RobotSetupData[]) {
+		this.didShowEndScreen = false
 		this.resetScoreAndProgramRuntime()
 		super.fullReset(robotSetupData)
 	}
@@ -136,6 +138,10 @@ export class RRCScoreScene extends Scene {
 	}
 
 	showScoreScreen(visible: boolean) {
+		if (visible) {
+			this.didShowEndScreen = true
+			this.pauseSim()
+		}
 		this.showScoreScreenNoButtonChange(visible)
 		this.scoreEventManager.onShowHideScoreCallHandlers(visible ? "showScore" : "hideScore")
 	}
@@ -158,9 +164,19 @@ export class RRCScoreScene extends Scene {
 		}
 	}
 
+	private didShowEndScreen = false
+	getMaxRuntime(): number {
+		return Infinity
+	}
+
 	private programEventTimes?: { startTime: number, stopTime?: number }
 
 	onUpdatePrePhysics() {
+		
+		if (!this.didShowEndScreen && (this.getProgramRuntime() ?? 0) > this.getMaxRuntime()) {
+			this.showScoreScreen(true)
+		}
+
 		const robots = this.getRobotManager().getRobots()
 		if (robots.length > 0) {
 			if (robots[0].programManager.allProgramsTerminated() === false && robots[0].programManager.isAnyProgramRunning()) {

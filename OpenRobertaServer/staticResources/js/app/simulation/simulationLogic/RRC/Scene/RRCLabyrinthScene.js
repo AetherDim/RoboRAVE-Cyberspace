@@ -91,6 +91,7 @@ define(["require", "exports", "../AgeGroup", "./RRCScene", "../RRAssetLoader", "
                 }
             ];
             _this.MazeObstacleList_ES_Waypoints = [
+                (0, RRCScene_1.wp)(752, 490, 0, 60),
                 (0, RRCScene_1.wp)(745.471943488454, 56.41573850292542, 10, 60),
                 (0, RRCScene_1.wp)(54.561521089673086, 54.578616428501704, 10, 60),
                 (0, RRCScene_1.wp)(56.94166548626347, 153.83907315081825, 10, 60),
@@ -171,6 +172,7 @@ define(["require", "exports", "../AgeGroup", "./RRCScene", "../RRAssetLoader", "
                 }
             ];
             _this.MazeObstacleList_MS_Waypoints = [
+                (0, RRCScene_1.wp)(752, 490, 0, 60),
                 (0, RRCScene_1.wp)(749.9644930779159, 53.57101801235041, 10, 60),
                 (0, RRCScene_1.wp)(163.44368626752964, 57.55270502937634, 10, 60),
                 (0, RRCScene_1.wp)(158.1736200600906, 159.90933810929084, 10, 60),
@@ -178,8 +180,8 @@ define(["require", "exports", "../AgeGroup", "./RRCScene", "../RRAssetLoader", "
                 (0, RRCScene_1.wp)(639.6051457735002, 485.8895109324285, 10, 60),
                 (0, RRCScene_1.wp)(154.14101385658392, 483.90361435263895, 10, 60),
                 (0, RRCScene_1.wp)(157.3926998275401, 267.87910873898966, 10, 60),
-                (0, RRCScene_1.wp)(545.788756034993, 390.5184603269341, 10, 60),
                 (0, RRCScene_1.wp)(542.5111920355592, 259.5994071096399, 10, 60),
+                (0, RRCScene_1.wp)(545.788756034993, 390.5184603269341, 10, 60),
                 (0, RRCScene_1.wp)(267.8770860374464, 382.6234479916538, 10, 60),
             ];
             _this.MazeObstacleList_HS = [
@@ -256,6 +258,7 @@ define(["require", "exports", "../AgeGroup", "./RRCScene", "../RRAssetLoader", "
                 }
             ];
             _this.MazeObstacleList_HS_Waypoints = [
+                (0, RRCScene_1.wp)(752, 490, 0, 60),
                 (0, RRCScene_1.wp)(749.9644930779159, 53.57101801235041, 10, 60),
                 (0, RRCScene_1.wp)(163.44368626752964, 57.55270502937634, 10, 60),
                 (0, RRCScene_1.wp)(158.1736200600906, 159.90933810929084, 10, 60),
@@ -318,6 +321,9 @@ define(["require", "exports", "../AgeGroup", "./RRCScene", "../RRAssetLoader", "
                 case AgeGroup_1.AgeGroup.HS:
                     return RRC.LABYRINTH_BLANK_BACKGROUND_HS;
             }
+        };
+        RRCLabyrinthScene.prototype.getMaxRuntime = function () {
+            return 60 * 3;
         };
         RRCLabyrinthScene.prototype.getMaximumTimeBonusScore = function () {
             return 60 * 6;
